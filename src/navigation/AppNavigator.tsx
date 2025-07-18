@@ -278,7 +278,7 @@ function HomeScreen({
 }: Readonly<{
   theme: ThemeColors;
   isMobile: boolean;
-  createMobileButton: (isPrimary: boolean) => React.CSSProperties;
+  createMobileButton: (isPrimary?: boolean, size?: 'small' | 'medium' | 'large') => React.CSSProperties;
   navigate: (screenName: string) => void;
   getResponsivePadding: () => string;
   getCardPadding: () => string;
@@ -423,7 +423,7 @@ function WeatherDetailsScreen({
   theme: ThemeColors;
   isMobile: boolean;
   navigate: (screenName: string) => void;
-  createMobileButton: (isPrimary: boolean) => React.CSSProperties;
+  createMobileButton: (isPrimary?: boolean, size?: 'small' | 'medium' | 'large') => React.CSSProperties;
   city: string;
   setCity: (city: string) => void;
   loading: boolean;

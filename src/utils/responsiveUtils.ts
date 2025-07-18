@@ -243,7 +243,7 @@ export const mobileStyles = {
       WebkitTapHighlightColor: 'transparent',
       tapHighlightColor: 'transparent',
       touchAction: 'manipulation', // Critical for mobile touch
-      pointerEvents: 'auto', // Ensure pointer events work
+      pointerEvents: 'auto' as const, // Ensure pointer events work
       position: 'relative' as const,
       display: 'inline-block',
       textAlign: 'center' as const,
