@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
 import { useTouchGestures } from '../utils/useMobileOptimization';
@@ -262,6 +262,7 @@ const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
   return next7Days;
 };
 
+// Move DailyForecastSection outside AppNavigator (see below)
 const AppNavigator = () => {
   const { theme, isMobile, isTablet, createMobileButton } = useTheme();
   const gestures = useTouchGestures();
@@ -293,7 +294,7 @@ const AppNavigator = () => {
     return '60px 40px';
   };
 
-  const getWeather = async () => {
+  const getWeather = useCallback(async () => {
     if (!city.trim()) {
       setError('Please enter a city name');
       return;
@@ -343,125 +344,148 @@ const AppNavigator = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [city]);
 
   // Inline components for each screen
-  const HomeScreen = () => (
-    <>
-      <ThemeToggle />
-      <div
-        style={{
-          minHeight: '100vh',
-          background: theme.appBackground,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: getResponsivePadding(),
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          transition: 'background 0.6s ease'
-        }}
-        {...(isMobile ? swipeHandlers : {})}
-      >
-        <div style={{
-          backgroundColor: theme.cardBackground,
-          backdropFilter: 'blur(20px)',
-          borderRadius: isMobile ? '20px' : '24px',
-          padding: getCardPadding(),
-          textAlign: 'center',
-          boxShadow: theme.cardShadow,
-          border: `1px solid ${theme.cardBorder}`,
-          maxWidth: isMobile ? '340px' : '500px',
-          width: '100%',
-          transition: 'all 0.6s ease'
-        }}>
-          <div style={{
-            width: '120px',
-            height: '120px',
-            background: theme.primaryGradient,
-            borderRadius: '30px',
-            margin: '0 auto 30px',
+  // HomeScreen component moved outside AppNavigator
+  const HomeScreen = useCallback(({
+    theme,
+    isMobile,
+    createMobileButton,
+    navigate,
+    swipeHandlers,
+    getResponsivePadding,
+    getCardPadding
+  }: Readonly<{
+    theme: ThemeColors;
+    isMobile: boolean;
+    createMobileButton: (isPrimary: boolean) => React.CSSProperties;
+    navigate: (screenName: string) => void;
+    swipeHandlers: {
+      onTouchStart?: (e: React.TouchEvent) => void;
+      onTouchMove?: (e: React.TouchEvent) => void;
+      onTouchEnd?: (e: React.TouchEvent) => void;
+    };
+    getResponsivePadding: () => string;
+    getCardPadding: () => string;
+  }>) => {
+    return (
+      <>
+        <ThemeToggle />
+        <div
+          style={{
+            minHeight: '100vh',
+            background: theme.appBackground,
             display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            boxShadow: theme.buttonShadow
-          }}>
-            <WeatherIcon code={0} size={64} animated={true} className="home-main-icon" />
-            <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
-              <WeatherIcon code={61} size={24} animated={true} className="home-floating-icon" />
-            </div>
-            <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
-              <WeatherIcon code={3} size={20} animated={true} className="home-floating-icon" />
-            </div>
-          </div>
-          <h1 style={{
-            fontSize: isMobile ? '24px' : '32px',
-            fontWeight: '700',
-            marginBottom: '16px',
-            color: theme.primaryText,
-            letterSpacing: '-0.5px',
-            transition: 'color 0.5s ease'
-          }}>
-            Weather App
-          </h1>
-          <p style={{
-            fontSize: isMobile ? '16px' : '18px',
-            color: theme.secondaryText,
-            marginBottom: isMobile ? '24px' : '32px',
-            lineHeight: '1.6',
-            transition: 'color 0.5s ease'
-          }}>
-            Get real-time weather information for any city around the world
-          </p>
+            padding: getResponsivePadding(),
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            transition: 'background 0.6s ease'
+          }}
+          {...(isMobile ? swipeHandlers : {})}
+        >
           <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '16px',
-            marginBottom: '40px',
-            flexWrap: 'wrap'
+            backgroundColor: theme.cardBackground,
+            backdropFilter: 'blur(20px)',
+            borderRadius: isMobile ? '20px' : '24px',
+            padding: getCardPadding(),
+            textAlign: 'center',
+            boxShadow: theme.cardShadow,
+            border: `1px solid ${theme.cardBorder}`,
+            maxWidth: isMobile ? '340px' : '500px',
+            width: '100%',
+            transition: 'all 0.6s ease'
           }}>
-            {[
-              { code: 0, label: 'Sunny' },
-              { code: 61, label: 'Rainy' },
-              { code: 71, label: 'Snow' },
-              { code: 95, label: 'Storms' }
-            ].map(({ code, label }) => (
-              <div key={label} style={{ textAlign: 'center' }}>
-                <WeatherIcon code={code} size={32} animated={true} />
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>{label}</div>
+            <div style={{
+              width: '120px',
+              height: '120px',
+              background: theme.primaryGradient,
+              borderRadius: '30px',
+              margin: '0 auto 30px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              boxShadow: theme.buttonShadow
+            }}>
+              <WeatherIcon code={0} size={64} animated={true} className="home-main-icon" />
+              <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
+                <WeatherIcon code={61} size={24} animated={true} className="home-floating-icon" />
               </div>
-            ))}
-          </div>
-          <button
-            onClick={() => navigate('WeatherDetails')}
-            style={{
-              ...(isMobile ? createMobileButton(true) : createButtonStyle(theme, true)),
-              padding: isMobile ? '14px 24px' : '16px 32px',
+              <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
+                <WeatherIcon code={3} size={20} animated={true} className="home-floating-icon" />
+              </div>
+            </div>
+            <h1 style={{
+              fontSize: isMobile ? '24px' : '32px',
+              fontWeight: '700',
+              marginBottom: '16px',
+              color: theme.primaryText,
+              letterSpacing: '-0.5px',
+              transition: 'color 0.5s ease'
+            }}>
+              Weather App
+            </h1>
+            <p style={{
               fontSize: isMobile ? '16px' : '18px',
-              boxShadow: theme.buttonShadow,
-              transform: 'translateY(0)',
-              letterSpacing: '0.5px'
-            }}
-            onMouseEnter={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = 'translateY(-2px)';
-              target.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4)';
-            }}
-            onMouseLeave={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = 'translateY(0)';
-              target.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
-            }}
-          >
-            Check Weather →
-          </button>
+              color: theme.secondaryText,
+              marginBottom: isMobile ? '24px' : '32px',
+              lineHeight: '1.6',
+              transition: 'color 0.5s ease'
+            }}>
+              Get real-time weather information for any city around the world
+            </p>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '16px',
+              marginBottom: '40px',
+              flexWrap: 'wrap'
+            }}>
+              {[
+                { code: 0, label: 'Sunny' },
+                { code: 61, label: 'Rainy' },
+                { code: 71, label: 'Snow' },
+                { code: 95, label: 'Storms' }
+              ].map(({ code, label }) => (
+                <div key={label} style={{ textAlign: 'center' }}>
+                  <WeatherIcon code={code} size={32} animated={true} />
+                  <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>{label}</div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => navigate('WeatherDetails')}
+              style={{
+                ...(isMobile ? createMobileButton(true) : createButtonStyle(theme, true)),
+                padding: isMobile ? '14px 24px' : '16px 32px',
+                fontSize: isMobile ? '16px' : '18px',
+                boxShadow: theme.buttonShadow,
+                transform: 'translateY(0)',
+                letterSpacing: '0.5px'
+              }}
+              onMouseEnter={e => {
+                const target = e.target as HTMLButtonElement;
+                target.style.transform = 'translateY(-2px)';
+                target.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4)';
+              }}
+              onMouseLeave={e => {
+                const target = e.target as HTMLButtonElement;
+                target.style.transform = 'translateY(0)';
+                target.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
+              }}
+            >
+              Check Weather →
+            </button>
+          </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  }, []);
 
-  const WeatherDetailsScreen = () => (
+  const WeatherDetailsScreen = useCallback(() => (
     <>
       <ThemeToggle />
       <div
@@ -651,7 +675,7 @@ const AppNavigator = () => {
         `}</style>
       </div>
     </>
-  );
+  ), [theme, isMobile, swipeHandlers, city, loading, error, weather, hourlyForecast, dailyForecast, weatherCode, getWeather, createMobileButton]);
 
   // Helper components for main weather card, hourly and daily forecast
   function WeatherMainCard({ weather, city, theme, isMobile, weatherCode }: Readonly<{
@@ -982,9 +1006,9 @@ const AppNavigator = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'flex-end',
-                    fontSize: '11px',
+                    fontSize: '12px',
                     color: theme.secondaryText,
-                    minWidth: '60px'
+                    gap: '2px'
                   }}>
                     {day.precipitation > 0 && (
                       <span>🌧️ {day.precipitation}mm</span>
@@ -1001,7 +1025,18 @@ const AppNavigator = () => {
     return null;
   }
 
-  if (currentScreen === 'Home') return <HomeScreen />;
+  if (currentScreen === 'Home')
+    return (
+      <HomeScreen
+        theme={theme}
+        isMobile={isMobile}
+        createMobileButton={createMobileButton}
+        navigate={navigate}
+        swipeHandlers={swipeHandlers}
+        getResponsivePadding={getResponsivePadding}
+        getCardPadding={getCardPadding}
+      />
+    );
   if (currentScreen === 'WeatherDetails') return <WeatherDetailsScreen />;
   return <div>Unknown screen</div>;
 };

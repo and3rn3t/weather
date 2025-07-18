@@ -24,7 +24,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [themeName, setThemeName] = useState<ThemeName>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('weather-app-theme') as ThemeName;
-      return savedTheme || 'light';
+      // Validate the saved theme and fallback to 'light' if invalid
+      return (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'light';
     }
     return 'light';
   });
