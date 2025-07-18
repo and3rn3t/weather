@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
+import { useTouchGestures } from '../utils/useMobileOptimization';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
+import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
 
 /**
  * OpenMeteo API response interfaces
@@ -128,29 +130,60 @@ type DailyForecast = {
  * @returns JSX.Element - The complete weather application interface
  */
 // ============================================================================
-// UTILITY FUNCTIONS AND STYLE OBJECTS
+// UTILITY FUNCTIONS AND STYLE OBJECTS (MOBILE-OPTIMIZED)
 // ============================================================================
 
-/** Common button style creator */
-const createButtonStyle = (theme: ThemeColors, isPrimary = true) => ({
-  background: isPrimary ? theme.buttonGradient : theme.toggleBackground,
-  color: theme.inverseText,
-  border: isPrimary ? 'none' : `1px solid ${theme.toggleBorder}`,
-  borderRadius: '16px',
-  fontSize: '16px',
-  fontWeight: isPrimary ? '600' : '500',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  backdropFilter: isPrimary ? 'none' : 'blur(10px)'
-});
+/** Mobile-optimized button style creator with proper touch targets */
+const createButtonStyle = (theme: ThemeColors, isPrimary = true, size: 'small' | 'medium' | 'large' = 'medium') => {
+  const baseStyle = {
+    background: isPrimary ? theme.buttonGradient : theme.toggleBackground,
+    color: theme.inverseText,
+    border: isPrimary ? 'none' : `1px solid ${theme.toggleBorder}`,
+    fontSize: '16px',
+    fontWeight: isPrimary ? '600' : '500',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    backdropFilter: isPrimary ? 'none' : 'blur(10px)',
+    // Mobile touch optimizations
+    minHeight: '44px', // WCAG compliant touch target
+    minWidth: '44px',
+    borderRadius: '16px',
+    userSelect: 'none' as const,
+    WebkitTapHighlightColor: 'transparent',
+    // Enhanced touch feedback
+    ':active': {
+      transform: 'scale(0.98)',
+      opacity: '0.8'
+    }
+  };
 
-/** Common card style object to reduce repetition */
+  // Size-specific adjustments
+  const sizeStyles = {
+    small: { padding: '8px 16px', fontSize: '14px', minHeight: '40px' },
+    medium: { padding: '12px 20px', fontSize: '16px', minHeight: '44px' },
+    large: { padding: '16px 24px', fontSize: '18px', minHeight: '48px' }
+  };
+
+  return { ...baseStyle, ...sizeStyles[size] };
+};
+
+/** Mobile-optimized card style with responsive padding */
 const createCardStyle = (theme: ThemeColors, isWeatherCard = false) => ({
   backgroundColor: isWeatherCard ? theme.weatherCardBackground : theme.forecastCardBackground,
-  padding: '16px',
+  padding: '16px', // Base mobile padding
   borderRadius: '12px',
   border: `1px solid ${isWeatherCard ? theme.weatherCardBorder : theme.forecastCardBorder}`,
-  transition: 'all 0.5s ease'
+  transition: 'all 0.5s ease',
+  // Mobile optimizations
+  minHeight: '44px', // Ensure touch-friendly minimum size
+  boxSizing: 'border-box' as const,
+  // Responsive padding via CSS custom properties
+  '@media (min-width: 768px)': {
+    padding: '20px'
+  },
+  '@media (min-width: 1024px)': {
+    padding: '24px'
+  }
 });
 
 /** Weather detail item configuration */
@@ -230,189 +263,72 @@ const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
 };
 
 const AppNavigator = () => {
-  // ============================================================================
-  // THEME AND STATE MANAGEMENT
-  // ============================================================================
-  
-  /** Theme configuration and toggle functionality */
-  const { theme } = useTheme();
-  
-  /** Current active screen ('Home' | 'WeatherDetails') */
+  const { theme, isMobile, isTablet, createMobileButton } = useTheme();
+  const gestures = useTouchGestures();
   const [currentScreen, setCurrentScreen] = useState('Home');
-  
-  /** User input city name for weather search */
   const [city, setCity] = useState('');
-  
-  /** Transformed weather data from OpenMeteo API */
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  
-  /** Current weather code from OpenMeteo (used for icon selection) */
   const [weatherCode, setWeatherCode] = useState(0);
-  
-  /** Loading state for API requests */
   const [loading, setLoading] = useState(false);
-  
-  /** Error message for display to user */
   const [error, setError] = useState('');
-
-  /** Hourly forecast data (24 hours) */
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
-  
-  /** Daily forecast data (7 days) */
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
 
-  // ============================================================================
-  // NAVIGATION FUNCTIONS
-  // ============================================================================
-  
-  /**
-   * Navigate between screens
-   * @param screenName - Target screen name
-   */
-  const navigate = (screenName: string) => {
-    setCurrentScreen(screenName);
-  };
+  const navigate = (screenName: string) => setCurrentScreen(screenName);
 
-  // ============================================================================
-  // MAIN WEATHER API FUNCTION
-  // ============================================================================
-  
-  /**
-   * Fetches weather data using a two-step process:
-   * 1. Convert city name to coordinates using OpenStreetMap Nominatim
-   * 2. Get weather data from OpenMeteo using coordinates
-   * 
-   * This approach ensures accurate weather data for any global location
-   * while using completely free APIs with no rate limits or API keys required.
-   */
+  const swipeHandlers = gestures.createSwipeHandler(
+    () => currentScreen === 'Home' && navigate('WeatherDetails'),
+    () => currentScreen === 'WeatherDetails' && navigate('Home')
+  );
+
+  const getResponsivePadding = () => isMobile ? '16px' : isTablet ? '24px' : '32px';
+  const getCardPadding = () => isMobile ? '40px 24px' : isTablet ? '50px 32px' : '60px 40px';
+
   const getWeather = async () => {
-    // Input validation
     if (!city.trim()) {
       setError('Please enter a city name');
       return;
     }
-
     setLoading(true);
     setError('');
-    
     try {
-      // ========================================================================
-      // STEP 1: GEOCODING - Convert city name to coordinates
-      // ========================================================================
-      
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
       const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
-      
-      console.log('🔍 Geocoding city:', city);
       const geoResponse = await fetch(geoUrl, {
-        headers: {
-          // Required by Nominatim API for compliance and abuse prevention
-          'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)'
-        }
+        headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' }
       });
-      
-      if (!geoResponse.ok) {
-        throw new Error(`Geocoding failed: ${geoResponse.status}`);
-      }
-      
+      if (!geoResponse.ok) throw new Error(`Geocoding failed: ${geoResponse.status}`);
       const geoData = await geoResponse.json();
-      
-      if (!geoData || geoData.length === 0) {
-        throw new Error('City not found. Please check the spelling and try again.');
-      }
-      
+      if (!geoData || geoData.length === 0) throw new Error('City not found. Please check the spelling and try again.');
       const { lat, lon } = geoData[0];
-      console.log(`📍 Coordinates found: ${city} → lat=${lat}, lon=${lon}`);
-
-      // ========================================================================
-      // STEP 2: WEATHER DATA - Get current conditions and hourly data
-      // ========================================================================
-      
       const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
       const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
-      
-      console.log('🌤️ Fetching weather data from OpenMeteo...');
       const weatherResponse = await fetch(weatherUrl);
-      
-      if (!weatherResponse.ok) {
-        const errorData = await weatherResponse.text();
-        console.error('❌ OpenMeteo API Error:', errorData);
-        throw new Error(`Weather API failed: ${weatherResponse.status}`);
-      }
-      
+      if (!weatherResponse.ok) throw new Error(`Weather API failed: ${weatherResponse.status}`);
       const weatherData = await weatherResponse.json();
-      console.log('✅ Weather data received:', weatherData);
-
-      // ========================================================================
-      // STEP 3: DATA PROCESSING - Extract and transform weather information
-      // ========================================================================
-      
-      // Get weather code for icon selection
       const currentWeatherCode = weatherData.current_weather?.weathercode || 0;
       setWeatherCode(currentWeatherCode);
-      
-      // ========================================================================
-      // STEP 4: DATA TRANSFORMATION - Convert to standardized format
-      // ========================================================================
-      
-      /*
-       * OpenMeteo API Structure:
-       * - current_weather: Basic conditions (temp, wind, weather code)
-       * - hourly: Detailed metrics in arrays (humidity, pressure, UV, etc.)
-       * 
-       * We extract current hour data from hourly arrays for detailed metrics
-       */
       const currentHour = new Date().getHours();
       const hourlyData = weatherData.hourly;
-      
       const transformedData = {
         main: {
-          // Temperature from current_weather (always available)
           temp: weatherData.current_weather?.temperature || 0,
-          
-          // Feels-like temperature from hourly data, fallback to actual temp
-          feels_like: hourlyData?.apparent_temperature?.[currentHour] || 
-                     weatherData.current_weather?.temperature || 0,
-          
-          // Humidity from hourly data with reasonable default
+          feels_like: hourlyData?.apparent_temperature?.[currentHour] || weatherData.current_weather?.temperature || 0,
           humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-          
-          // Atmospheric pressure from hourly data with sea level default
           pressure: hourlyData?.surface_pressure?.[currentHour] || 1013
         },
-        weather: [{
-          description: getWeatherDescription(currentWeatherCode)
-        }],
+        weather: [{ description: getWeatherDescription(currentWeatherCode) }],
         wind: {
-          // Wind data from current_weather
           speed: weatherData.current_weather?.windspeed || 0,
           deg: weatherData.current_weather?.winddirection || 0
         },
-        // Additional metrics from hourly data
         uv_index: hourlyData?.uv_index?.[currentHour] || 0,
         visibility: hourlyData?.visibility?.[currentHour] || 0
       };
-      
       setWeather(transformedData);
-      
-      // ========================================================================
-      // STEP 5: FORECAST PROCESSING - Transform hourly and daily data
-      // ========================================================================
-      
-      // Process and set forecast data using extracted utility functions
-      const hourlyForecastData = processHourlyForecast(hourlyData as HourlyData);
-      const dailyForecastData = processDailyForecast(weatherData.daily as DailyData);
-      
-      setHourlyForecast(hourlyForecastData);
-      setDailyForecast(dailyForecastData);
-      
-      console.log('📊 Hourly forecast processed:', hourlyForecastData.length, 'hours');
-      console.log('📅 Daily forecast processed:', dailyForecastData.length, 'days');
-      
-      console.log('🎉 Weather data successfully processed and displayed');
-      
+      setHourlyForecast(processHourlyForecast(hourlyData as HourlyData));
+      setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
     } catch (error) {
-      console.error('💥 Error in weather fetch process:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setError(`Failed to fetch weather data: ${errorMessage}`);
     } finally {
@@ -420,109 +336,75 @@ const AppNavigator = () => {
     }
   };
 
-  // ============================================================================
-  // RENDER LOGIC - SCREEN ROUTING
-  // ============================================================================
-
-  // HOME SCREEN - Landing page with app introduction
-  if (currentScreen === 'Home') {
-    return (
-      <>
-        <ThemeToggle />
-        <div style={{ 
+  // Inline components for each screen
+  const HomeScreen = () => (
+    <>
+      <ThemeToggle />
+      <div
+        style={{
           minHeight: '100vh',
           background: theme.appBackground,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '20px',
+          padding: getResponsivePadding(),
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           transition: 'background 0.6s ease'
+        }}
+        {...(isMobile ? swipeHandlers : {})}
+      >
+        <div style={{
+          backgroundColor: theme.cardBackground,
+          backdropFilter: 'blur(20px)',
+          borderRadius: isMobile ? '20px' : '24px',
+          padding: getCardPadding(),
+          textAlign: 'center',
+          boxShadow: theme.cardShadow,
+          border: `1px solid ${theme.cardBorder}`,
+          maxWidth: isMobile ? '340px' : '500px',
+          width: '100%',
+          transition: 'all 0.6s ease'
         }}>
-          {/* Glassmorphism Card Container */}
           <div style={{
-            backgroundColor: theme.cardBackground,
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            padding: '60px 40px',
-            textAlign: 'center',
-            boxShadow: theme.cardShadow,
-            border: `1px solid ${theme.cardBorder}`,
-            maxWidth: '500px',
-            width: '100%',
-            transition: 'all 0.6s ease'
+            width: '120px',
+            height: '120px',
+            background: theme.primaryGradient,
+            borderRadius: '30px',
+            margin: '0 auto 30px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            boxShadow: theme.buttonShadow
           }}>
-            {/* App Icon with Weather Icons */}
-            <div style={{
-              width: '120px',
-              height: '120px',
-              background: theme.primaryGradient,
-              borderRadius: '30px',
-              margin: '0 auto 30px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              boxShadow: theme.buttonShadow
-            }}>
-            <WeatherIcon 
-              code={0} 
-              size={64} 
-              animated={true}
-              className="home-main-icon"
-            />
-            {/* Floating weather icons around the main icon */}
-            <div style={{
-              position: 'absolute',
-              top: '-10px',
-              right: '-10px'
-            }}>
-              <WeatherIcon 
-                code={61} 
-                size={24} 
-                animated={true}
-                className="home-floating-icon"
-              />
+            <WeatherIcon code={0} size={64} animated={true} className="home-main-icon" />
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
+              <WeatherIcon code={61} size={24} animated={true} className="home-floating-icon" />
             </div>
-            <div style={{
-              position: 'absolute',
-              bottom: '-8px',
-              left: '-8px'
-            }}>
-              <WeatherIcon 
-                code={3} 
-                size={20} 
-                animated={true}
-                className="home-floating-icon"
-              />
+            <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
+              <WeatherIcon code={3} size={20} animated={true} className="home-floating-icon" />
             </div>
           </div>
-          
-          {/* App Title */}
-          <h1 style={{ 
-            fontSize: '32px', 
+          <h1 style={{
+            fontSize: isMobile ? '24px' : '32px',
             fontWeight: '700',
-            marginBottom: '16px', 
+            marginBottom: '16px',
             color: theme.primaryText,
             letterSpacing: '-0.5px',
             transition: 'color 0.5s ease'
           }}>
             Weather App
           </h1>
-          
-          {/* App Description */}
           <p style={{
-            fontSize: '18px',
+            fontSize: isMobile ? '16px' : '18px',
             color: theme.secondaryText,
-            marginBottom: '32px',
+            marginBottom: isMobile ? '24px' : '32px',
             lineHeight: '1.6',
             transition: 'color 0.5s ease'
           }}>
             Get real-time weather information for any city around the world
           </p>
-          
-          {/* Weather Icons Preview */}
           <div style={{
             display: 'flex',
             justifyContent: 'center',
@@ -530,41 +412,34 @@ const AppNavigator = () => {
             marginBottom: '40px',
             flexWrap: 'wrap'
           }}>
-            <div style={{ textAlign: 'center' }}>
-              <WeatherIcon code={0} size={32} animated={true} />
-              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Sunny</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <WeatherIcon code={61} size={32} animated={true} />
-              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Rainy</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <WeatherIcon code={71} size={32} animated={true} />
-              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Snow</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <WeatherIcon code={95} size={32} animated={true} />
-              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Storms</div>
-            </div>
+            {[
+              { code: 0, label: 'Sunny' },
+              { code: 61, label: 'Rainy' },
+              { code: 71, label: 'Snow' },
+              { code: 95, label: 'Storms' }
+            ].map(({ code, label }) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <WeatherIcon code={code} size={32} animated={true} />
+                <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>{label}</div>
+              </div>
+            ))}
           </div>
-          
-          {/* Navigation Button */}
-          <button 
+          <button
             onClick={() => navigate('WeatherDetails')}
             style={{
-              ...createButtonStyle(theme, true),
-              padding: '16px 32px',
-              fontSize: '18px',
+              ...(isMobile ? createMobileButton(true) : createButtonStyle(theme, true)),
+              padding: isMobile ? '14px 24px' : '16px 32px',
+              fontSize: isMobile ? '16px' : '18px',
               boxShadow: theme.buttonShadow,
               transform: 'translateY(0)',
               letterSpacing: '0.5px'
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               const target = e.target as HTMLButtonElement;
               target.style.transform = 'translateY(-2px)';
               target.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4)';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               const target = e.target as HTMLButtonElement;
               target.style.transform = 'translateY(0)';
               target.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
@@ -574,41 +449,42 @@ const AppNavigator = () => {
           </button>
         </div>
       </div>
-      </>
-    );
-  }
+    </>
+  );
 
-  // WEATHER DETAILS SCREEN - Main weather interface
-  if (currentScreen === 'WeatherDetails') {
-    return (
-      <>
-        <ThemeToggle />
-        <div style={{ 
+  const WeatherDetailsScreen = () => (
+    <>
+      <ThemeToggle />
+      <div
+        style={{
           minHeight: '100vh',
           background: theme.appBackground,
           padding: '20px',
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           transition: 'background 0.6s ease'
-        }}>
-          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <button 
+        }}
+        {...(isMobile ? swipeHandlers : {})}
+      >
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <button
             onClick={() => navigate('Home')}
             style={{
-              ...createButtonStyle(theme, false),
-              padding: '12px 20px',
+              ...(isMobile ? createMobileButton(false) : createButtonStyle(theme, false)),
+              padding: isMobile ? '14px 20px' : '12px 20px',
               marginBottom: '30px'
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               const target = e.target as HTMLButtonElement;
               target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               const target = e.target as HTMLButtonElement;
               target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             }}
           >
             ← Back to Home
-          </button>          <div style={{
+          </button>
+          <div style={{
             backgroundColor: theme.cardBackground,
             backdropFilter: 'blur(20px)',
             borderRadius: '24px',
@@ -617,10 +493,10 @@ const AppNavigator = () => {
             border: `1px solid ${theme.cardBorder}`,
             transition: 'all 0.6s ease'
           }}>
-            <h1 style={{ 
-              fontSize: '28px', 
+            <h1 style={{
+              fontSize: '28px',
               fontWeight: '700',
-              marginBottom: '32px', 
+              marginBottom: '32px',
               color: theme.primaryText,
               textAlign: 'center',
               letterSpacing: '-0.5px',
@@ -629,22 +505,11 @@ const AppNavigator = () => {
               justifyContent: 'center',
               gap: '16px'
             }}>
-              <WeatherIcon 
-                code={0} 
-                size={36} 
-                animated={true}
-                className="header-weather-icon"
-              />
+              <WeatherIcon code={0} size={36} animated={true} className="header-weather-icon" />
               Weather Forecast
-              <WeatherIcon 
-                code={1} 
-                size={36} 
-                animated={true}
-                className="header-weather-icon"
-              />
+              <WeatherIcon code={1} size={36} animated={true} className="header-weather-icon" />
             </h1>
-            
-            <div style={{ 
+            <div style={{
               marginBottom: '32px',
               display: 'flex',
               gap: '12px',
@@ -654,7 +519,7 @@ const AppNavigator = () => {
                 type="text"
                 placeholder="Enter city name..."
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={e => setCity(e.target.value)}
                 style={{
                   flex: '1',
                   minWidth: '250px',
@@ -669,21 +534,21 @@ const AppNavigator = () => {
                   transition: 'all 0.3s ease',
                   outline: 'none'
                 }}
-                onFocus={(e) => {
+                onFocus={e => {
                   const target = e.target as HTMLInputElement;
                   target.style.borderColor = theme.weatherCardBorder;
                   target.style.backgroundColor = theme.cardBackground;
                   target.style.boxShadow = `0 0 0 3px ${theme.weatherCardBorder}33`;
                 }}
-                onBlur={(e) => {
+                onBlur={e => {
                   const target = e.target as HTMLInputElement;
                   target.style.borderColor = theme.cardBorder;
                   target.style.backgroundColor = theme.cardBackground;
                   target.style.boxShadow = 'none';
                 }}
-                onKeyDown={(e) => e.key === 'Enter' && getWeather()}
+                onKeyDown={e => e.key === 'Enter' && getWeather()}
               />
-              <button 
+              <button
                 onClick={getWeather}
                 disabled={loading}
                 style={{
@@ -702,7 +567,7 @@ const AppNavigator = () => {
               >
                 {loading ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ 
+                    <span style={{
                       display: 'inline-block',
                       width: '16px',
                       height: '16px',
@@ -718,7 +583,6 @@ const AppNavigator = () => {
                 )}
               </button>
             </div>
-
             {error && (
               <div style={{
                 background: theme.errorBackground,
@@ -733,402 +597,403 @@ const AppNavigator = () => {
                 ⚠️ {error}
               </div>
             )}
-
+            {loading && !weather && <WeatherCardSkeleton />}
             {weather && (
-              <div style={{
-                background: theme.weatherCardBackground,
-                padding: '32px',
-                borderRadius: '20px',
-                border: `2px solid ${theme.weatherCardBorder}`,
-                boxShadow: '0 10px 30px rgba(14, 165, 233, 0.1)',
-                textAlign: 'center',
-                transition: 'all 0.6s ease'
-              }}>
-                <div style={{
-                  display: 'inline-block',
-                  background: theme.weatherCardBadge,
-                  color: theme.inverseText,
-                  padding: '12px 24px',
-                  borderRadius: '50px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  marginBottom: '24px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}>
-                  📍 {city}
-                </div>
-                
-                {/* Main Temperature */}
-                <div style={{
-                  fontSize: '48px',
-                  fontWeight: '800',
-                  color: theme.primaryText,
-                  marginBottom: '8px',
-                  letterSpacing: '-2px'
-                }}>
-                  {Math.round(weather.main.temp)}°F
-                </div>
-                
-                <div style={{
-                  fontSize: '16px',
-                  color: theme.secondaryText,
-                  marginBottom: '8px'
-                }}>
-                  Feels like {Math.round(weather.main.feels_like)}°F
-                </div>
-                
-                <div style={{
-                  fontSize: '20px',
-                  color: theme.primaryText,
-                  textTransform: 'capitalize',
-                  fontWeight: '500',
-                  marginBottom: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '12px'
-                }}>
-                  <WeatherIcon 
-                    code={weatherCode} 
-                    size={48} 
-                    animated={true}
-                    className="main-weather-icon"
-                  />
-                  {weather.weather[0].description}
-                </div>
-                
-                {/* Weather Details Grid */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                  gap: '16px',
-                  marginBottom: '16px',
-                  textAlign: 'left'
-                }}>
-                  {weatherDetailItems.map((item) => (
-                    <div
-                      key={item.key}
-                      style={createCardStyle(theme)}
-                    >
-                      <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
-                        {item.icon} {item.label}
-                      </div>
-                      <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
-                        {item.getValue(weather)}
-                      </div>
-                      {item.subValue && (
-                        <div style={{ fontSize: '12px', color: theme.secondaryText }}>
-                          {item.subValue(weather)}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  
-                  {weather.uv_index > 0 && (
-                    <div style={createCardStyle(theme)}>
-                      <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
-                        ☀️ UV INDEX
-                      </div>
-                      <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
-                        {Math.round(weather.uv_index)}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {weather.visibility > 0 && (
-                    <div style={createCardStyle(theme)}>
-                      <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
-                        👁️ VISIBILITY
-                      </div>
-                      <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
-                        {Math.round(weather.visibility / 1000)} km
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <div style={{
-                  width: '60px',
-                  height: '4px',
-                  background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-                  borderRadius: '2px',
-                  margin: '0 auto',
-                  marginBottom: '32px'
-                }}></div>
-
-                {/* ================================================================ */}
-                {/* HOURLY FORECAST - Next 24 hours */}
-                {/* ================================================================ */}
-                {hourlyForecast.length > 0 && (
-                  <div style={{ marginBottom: '32px' }}>
-                    <h3 style={{
-                      fontSize: '20px',
-                      fontWeight: '600',
-                      color: theme.primaryText,
-                      marginBottom: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      🕐 24-Hour Forecast
-                    </h3>
-                    
-                    <div style={{
-                      display: 'flex',
-                      gap: '12px',
-                      overflowX: 'auto',
-                      paddingBottom: '8px',
-                      scrollbarWidth: 'thin'
-                    }}>
-                      {hourlyForecast.slice(0, 24).map((hour, index) => {
-                        const timeStr = formatHourTime(hour.time);
-                        
-                        return (
-                          <div
-                            key={`hour-${hour.time}-${index}`}
-                            style={{
-                              minWidth: '80px',
-                              ...createCardStyle(theme),
-                              padding: '12px 8px',
-                              textAlign: 'center',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                            }}
-                          >
-                            <div style={{ 
-                              fontSize: '12px', 
-                              color: theme.secondaryText, 
-                              fontWeight: '500',
-                              marginBottom: '6px'
-                            }}>
-                              {timeStr}
-                            </div>
-                            
-                            <div style={{ marginBottom: '8px' }}>
-                              <WeatherIcon 
-                                code={hour.weatherCode} 
-                                size={32} 
-                                animated={true}
-                              />
-                            </div>
-                            
-                            <div style={{ 
-                              fontSize: '16px', 
-                              fontWeight: '700', 
-                              color: theme.primaryText,
-                              marginBottom: '4px'
-                            }}>
-                              {hour.temperature}°F
-                            </div>
-                            
-                            <div style={{ 
-                              fontSize: '10px', 
-                              color: theme.secondaryText,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: '1px'
-                            }}>
-                              <span>💧 {hour.humidity}%</span>
-                              <span>Feels {hour.feelsLike}°</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* ================================================================ */}
-                {/* DAILY FORECAST - Next 7 days */}
-                {/* ================================================================ */}
-                {dailyForecast.length > 0 && (
-                  <div style={{ marginBottom: '16px' }}>
-                    <h3 style={{
-                      fontSize: '20px',
-                      fontWeight: '600',
-                      color: theme.primaryText,
-                      marginBottom: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      📅 7-Day Forecast
-                    </h3>
-                    
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px'
-                    }}>
-                      {dailyForecast.map((day, index) => {
-                        const { dayName, dateStr, isToday } = formatDayInfo(day.date, index);
-                        
-                        return (
-                          <div
-                            key={`day-${day.date}-${index}`}
-                            style={{
-                              ...createCardStyle(theme),
-                              backgroundColor: isToday ? 
-                                `${theme.weatherCardBorder}20` : 
-                                theme.forecastCardBackground,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              border: `1px solid ${isToday ? 
-                                `${theme.weatherCardBorder}50` : 
-                                theme.forecastCardBorder}`,
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                            }}
-                          >
-                            {/* Date and Day */}
-                            <div style={{ 
-                              display: 'flex', 
-                              flexDirection: 'column',
-                              minWidth: '80px'
-                            }}>
-                              <div style={{ 
-                                fontSize: '16px', 
-                                fontWeight: isToday ? '700' : '600', 
-                                color: isToday ? theme.weatherCardBorder : theme.primaryText
-                              }}>
-                                {dayName}
-                              </div>
-                              <div style={{ 
-                                fontSize: '12px', 
-                                color: theme.secondaryText
-                              }}>
-                                {dateStr}
-                              </div>
-                            </div>
-
-                            {/* Weather Icon */}
-                            <div style={{ 
-                              display: 'flex', 
-                              alignItems: 'center',
-                              flex: '1',
-                              justifyContent: 'center'
-                            }}>
-                              <WeatherIcon 
-                                code={day.weatherCode} 
-                                size={36} 
-                                animated={true}
-                              />
-                            </div>
-
-                            {/* Temperature Range */}
-                            <div style={{ 
-                              display: 'flex', 
-                              alignItems: 'center',
-                              gap: '8px',
-                              minWidth: '100px',
-                              justifyContent: 'flex-end'
-                            }}>
-                              <div style={{ 
-                                fontSize: '16px', 
-                                fontWeight: '700', 
-                                color: theme.primaryText
-                              }}>
-                                {day.tempMax}°
-                              </div>
-                              <div style={{ 
-                                fontSize: '14px', 
-                                color: theme.secondaryText
-                              }}>
-                                {day.tempMin}°
-                              </div>
-                            </div>
-
-                            {/* Additional Info */}
-                            <div style={{ 
-                              display: 'flex', 
-                              flexDirection: 'column',
-                              alignItems: 'flex-end',
-                              fontSize: '11px',
-                              color: theme.secondaryText,
-                              minWidth: '60px'
-                            }}>
-                              {day.precipitation > 0 && (
-                                <span>🌧️ {day.precipitation}mm</span>
-                              )}
-                              <span>💨 {day.windSpeed}mph</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <WeatherMainCard
+                weather={weather}
+                city={city}
+                theme={theme}
+                isMobile={isMobile}
+                weatherCode={weatherCode}
+              />
             )}
+            <HourlyForecastSection
+              loading={loading}
+              hourlyForecast={hourlyForecast}
+              theme={theme}
+              isMobile={isMobile}
+            />
+            <DailyForecastSection
+              loading={loading}
+              dailyForecast={dailyForecast}
+              theme={theme}
+            />
           </div>
         </div>
-        
-        {/* CSS Animations for loading spinner and weather icons */}
         <style>{`
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
           }
-          
           @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { 
-              transform: translateY(0); 
-            }
-            40% { 
-              transform: translateY(-8px); 
-            }
-            60% { 
-              transform: translateY(-4px); 
-            }
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
           }
-          
-          /* Weather Icon Animations */
           ${weatherIconStyles}
-          
-          /* Home Screen Special Effects */
-          .home-main-icon {
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-          }
-          
-          .home-floating-icon {
-            animation: float 6s ease-in-out infinite;
-            opacity: 0.8;
-          }
-          
-          .home-floating-icon:hover {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-          
-          .header-weather-icon {
-            opacity: 0.8;
-          }
-          
-          /* Forecast Scrolling */
-          div::-webkit-scrollbar {
-            height: 6px;
-          }
-          
-          div::-webkit-scrollbar-track {
-            background: rgba(14, 165, 233, 0.1);
-            border-radius: 3px;
-          }
-          
-          div::-webkit-scrollbar-thumb {
-            background: rgba(14, 165, 233, 0.3);
-            border-radius: 3px;
-          }
-          
-          div::-webkit-scrollbar-thumb:hover {
-            background: rgba(14, 165, 233, 0.5);
-          }
+          .home-main-icon { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); }
+          .home-floating-icon { animation: float 6s ease-in-out infinite; opacity: 0.8; }
+          .home-floating-icon:hover { opacity: 1; transform: scale(1.2); }
+          .header-weather-icon { opacity: 0.8; }
+          div::-webkit-scrollbar { height: 6px; }
+          div::-webkit-scrollbar-track { background: rgba(14, 165, 233, 0.1); border-radius: 3px; }
+          div::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 3px; }
+          div::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
         `}</style>
       </div>
-      </>
+    </>
+  );
+
+  // Helper components for main weather card, hourly and daily forecast
+  function WeatherMainCard({ weather, city, theme, isMobile, weatherCode }: {
+    weather: WeatherData,
+    city: string,
+    theme: ThemeColors,
+    isMobile: boolean,
+    weatherCode: number
+  }) {
+    return (
+      <div style={{
+        background: theme.weatherCardBackground,
+        padding: '32px',
+        borderRadius: '20px',
+        border: `2px solid ${theme.weatherCardBorder}`,
+        boxShadow: '0 10px 30px rgba(14, 165, 233, 0.1)',
+        textAlign: 'center',
+        transition: 'all 0.6s ease'
+      }}>
+        <div style={{
+          display: 'inline-block',
+          background: theme.weatherCardBadge,
+          color: theme.inverseText,
+          padding: '12px 24px',
+          borderRadius: '50px',
+          fontSize: '14px',
+          fontWeight: '600',
+          marginBottom: '24px',
+          textTransform: 'uppercase',
+          letterSpacing: '1px'
+        }}>
+          📍 {city}
+        </div>
+        <div style={{
+          fontSize: isMobile ? '36px' : '48px',
+          fontWeight: '800',
+          color: theme.primaryText,
+          marginBottom: '8px',
+          letterSpacing: isMobile ? '-1px' : '-2px'
+        }}>
+          {Math.round(weather.main.temp)}°F
+        </div>
+        <div style={{
+          fontSize: '16px',
+          color: theme.secondaryText,
+          marginBottom: '8px'
+        }}>
+          Feels like {Math.round(weather.main.feels_like)}°F
+        </div>
+        <div style={{
+          fontSize: '20px',
+          color: theme.primaryText,
+          textTransform: 'capitalize',
+          fontWeight: '500',
+          marginBottom: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px'
+        }}>
+          <WeatherIcon code={weatherCode} size={48} animated={true} className="main-weather-icon" />
+          {weather.weather[0].description}
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+          gap: '16px',
+          marginBottom: '16px',
+          textAlign: 'left'
+        }}>
+          {weatherDetailItems.map(item => (
+            <div key={item.key} style={createCardStyle(theme)}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
+                {item.icon} {item.label}
+              </div>
+              <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
+                {item.getValue(weather)}
+              </div>
+              {item.subValue && (
+                <div style={{ fontSize: '12px', color: theme.secondaryText }}>
+                  {item.subValue(weather)}
+                </div>
+              )}
+            </div>
+          ))}
+          {weather.uv_index > 0 && (
+            <div style={createCardStyle(theme)}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
+                ☀️ UV INDEX
+              </div>
+              <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
+                {Math.round(weather.uv_index)}
+              </div>
+            </div>
+          )}
+          {weather.visibility > 0 && (
+            <div style={createCardStyle(theme)}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
+                👁️ VISIBILITY
+              </div>
+              <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
+                {Math.round(weather.visibility / 1000)} km
+              </div>
+            </div>
+          )}
+        </div>
+        <div style={{
+          width: '60px',
+          height: '4px',
+          background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
+          borderRadius: '2px',
+          margin: '0 auto',
+          marginBottom: '32px'
+        }}></div>
+      </div>
     );
   }
 
-  // Fallback for unknown screen states
+  function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: {
+    loading: boolean,
+    hourlyForecast: HourlyForecast[],
+    theme: ThemeColors,
+    isMobile: boolean
+  }) {
+    if (loading && hourlyForecast.length === 0) {
+      return (
+        <div style={{ marginBottom: '32px' }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: '600',
+            color: theme.primaryText,
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            🕐 24-Hour Forecast
+          </h3>
+          <HourlyForecastSkeleton />
+        </div>
+      );
+    }
+    if (hourlyForecast.length > 0) {
+      return (
+        <div style={{ marginBottom: '32px' }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: '600',
+            color: theme.primaryText,
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            🕐 24-Hour Forecast
+          </h3>
+          <div style={{
+            display: 'flex',
+            gap: '12px',
+            overflowX: 'auto',
+            paddingBottom: '8px',
+            scrollbarWidth: 'thin',
+            WebkitOverflowScrolling: 'touch',
+            scrollBehavior: 'smooth',
+            scrollSnapType: isMobile ? 'x mandatory' : 'none',
+            scrollPadding: '16px'
+          }}>
+            {hourlyForecast.slice(0, 24).map((hour, index) => {
+              const timeStr = formatHourTime(hour.time);
+              return (
+                <div
+                  key={`hour-${hour.time}-${index}`}
+                  style={{
+                    minWidth: '80px',
+                    ...createCardStyle(theme),
+                    padding: '12px 8px',
+                    textAlign: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                    scrollSnapAlign: isMobile ? 'start' : 'none',
+                    flexShrink: 0
+                  }}
+                >
+                  <div style={{
+                    fontSize: '12px',
+                    color: theme.secondaryText,
+                    fontWeight: '500',
+                    marginBottom: '6px'
+                  }}>
+                    {timeStr}
+                  </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <WeatherIcon code={hour.weatherCode} size={32} animated={true} />
+                  </div>
+                  <div style={{
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    color: theme.primaryText,
+                    marginBottom: '4px'
+                  }}>
+                    {hour.temperature}°F
+                  </div>
+                  <div style={{
+                    fontSize: '10px',
+                    color: theme.secondaryText,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1px'
+                  }}>
+                    <span>💧 {hour.humidity}%</span>
+                    <span>Feels {hour.feelsLike}°</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
+
+  function DailyForecastSection({ loading, dailyForecast, theme }: {
+    loading: boolean,
+    dailyForecast: DailyForecast[],
+    theme: ThemeColors
+  }) {
+    if (loading && dailyForecast.length === 0) {
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: '600',
+            color: theme.primaryText,
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            📅 7-Day Forecast
+          </h3>
+          <ForecastListSkeleton items={7} />
+        </div>
+      );
+    }
+    if (dailyForecast.length > 0) {
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: '600',
+            color: theme.primaryText,
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            📅 7-Day Forecast
+          </h3>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {dailyForecast.map((day, index) => {
+              const { dayName, dateStr, isToday } = formatDayInfo(day.date, index);
+              return (
+                <div
+                  key={`day-${day.date}-${index}`}
+                  style={{
+                    ...createCardStyle(theme),
+                    backgroundColor: isToday ? `${theme.weatherCardBorder}20` : theme.forecastCardBackground,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    border: `1px solid ${isToday ? `${theme.weatherCardBorder}50` : theme.forecastCardBorder}`,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: '80px'
+                  }}>
+                    <div style={{
+                      fontSize: '16px',
+                      fontWeight: isToday ? '700' : '600',
+                      color: isToday ? theme.weatherCardBorder : theme.primaryText
+                    }}>
+                      {dayName}
+                    </div>
+                    <div style={{
+                      fontSize: '12px',
+                      color: theme.secondaryText
+                    }}>
+                      {dateStr}
+                    </div>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flex: '1',
+                    justifyContent: 'center'
+                  }}>
+                    <WeatherIcon code={day.weatherCode} size={36} animated={true} />
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    minWidth: '100px',
+                    justifyContent: 'flex-end'
+                  }}>
+                    <div style={{
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      color: theme.primaryText
+                    }}>
+                      {day.tempMax}°
+                    </div>
+                    <div style={{
+                      fontSize: '14px',
+                      color: theme.secondaryText
+                    }}>
+                      {day.tempMin}°
+                    </div>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    fontSize: '11px',
+                    color: theme.secondaryText,
+                    minWidth: '60px'
+                  }}>
+                    {day.precipitation > 0 && (
+                      <span>🌧️ {day.precipitation}mm</span>
+                    )}
+                    <span>💨 {day.windSpeed}mph</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
+
+  if (currentScreen === 'Home') return <HomeScreen />;
+  if (currentScreen === 'WeatherDetails') return <WeatherDetailsScreen />;
   return <div>Unknown screen</div>;
 };
 

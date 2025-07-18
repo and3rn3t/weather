@@ -112,7 +112,7 @@ export const darkTheme: ThemeColors = {
   // Text colors
   primaryText: '#f8fafc',      // Light gray
   secondaryText: '#cbd5e1',    // Medium light gray
-  inverseText: '#1e1b4b',      // Dark for light buttons
+  inverseText: '#ffffff',      // White for buttons/badges
   
   // Interactive elements
   buttonGradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',

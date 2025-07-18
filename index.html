@@ -3,8 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    
+    <!-- Enhanced Mobile Viewport Configuration -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    
+    <!-- Mobile Web App Metadata -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Weather App" />
+    
+    <!-- Performance and SEO -->
+    <meta name="description" content="Premium weather app with real-time forecasts, beautiful animations, and modern design" />
+    <meta name="theme-color" content="#667eea" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://api.open-meteo.com" />
+    <link rel="preconnect" href="https://nominatim.openstreetmap.org" />
+    
+    <title>Weather App - Premium Weather Forecasts</title>
   </head>
   <body>
     <div id="root"></div>

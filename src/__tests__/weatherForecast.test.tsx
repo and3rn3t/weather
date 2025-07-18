@@ -8,13 +8,21 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AppNavigator from '../navigation/AppNavigator';
+import { ThemeProvider } from '../utils/themeContext';
+
+// Wrapper component with theme provider
+const AppWithTheme = () => (
+  <ThemeProvider>
+    <AppNavigator />
+  </ThemeProvider>
+);
 
 describe('Weather Forecast Features', () => {
   test('displays hourly forecast after weather search', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate to weather details
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     // Enter a city name
@@ -36,10 +44,10 @@ describe('Weather Forecast Features', () => {
   });
 
   test('displays daily forecast after weather search', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate to weather details
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     // Enter a city name
@@ -61,10 +69,10 @@ describe('Weather Forecast Features', () => {
   });
 
   test('hourly forecast shows temperature and weather icons', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate to weather details and search
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     const cityInput = screen.getByPlaceholderText('Enter city name...');
@@ -89,10 +97,10 @@ describe('Weather Forecast Features', () => {
   });
 
   test('daily forecast shows min/max temperatures', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate and search
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     const cityInput = screen.getByPlaceholderText('Enter city name...');
@@ -116,10 +124,10 @@ describe('Weather Forecast Features', () => {
   });
 
   test('forecast data updates when searching different cities', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate to weather details
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     // Search for first city
@@ -152,10 +160,10 @@ describe('Weather Forecast Features', () => {
 
 describe('Forecast UI Components', () => {
   test('hourly forecast is horizontally scrollable', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate and search
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     const cityInput = screen.getByPlaceholderText('Enter city name...');
@@ -171,15 +179,15 @@ describe('Forecast UI Components', () => {
     
     // Check for horizontal scroll container
     const forecastContainer = screen.getByText('🕐 24-Hour Forecast').closest('div');
-    const scrollContainer = forecastContainer?.querySelector('[style*="overflowX"]');
+    const scrollContainer = forecastContainer?.querySelector('[style*="overflow-x"]');
     expect(scrollContainer).toBeInTheDocument();
   });
 
   test('daily forecast highlights today differently', async () => {
-    render(<AppNavigator />);
+    render(<AppWithTheme />);
     
     // Navigate and search
-    const checkWeatherButton = screen.getByText('Check Weather');
+    const checkWeatherButton = screen.getByText('Check Weather →');
     fireEvent.click(checkWeatherButton);
     
     const cityInput = screen.getByPlaceholderText('Enter city name...');
