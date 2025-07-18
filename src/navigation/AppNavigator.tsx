@@ -281,8 +281,17 @@ const AppNavigator = () => {
     () => currentScreen === 'WeatherDetails' && navigate('Home')
   );
 
-  const getResponsivePadding = () => isMobile ? '16px' : isTablet ? '24px' : '32px';
-  const getCardPadding = () => isMobile ? '40px 24px' : isTablet ? '50px 32px' : '60px 40px';
+  const getResponsivePadding = () => {
+    if (isMobile) return '16px';
+    if (isTablet) return '24px';
+    return '32px';
+  };
+  
+  const getCardPadding = () => {
+    if (isMobile) return '40px 24px';
+    if (isTablet) return '50px 32px';
+    return '60px 40px';
+  };
 
   const getWeather = async () => {
     if (!city.trim()) {
@@ -645,13 +654,13 @@ const AppNavigator = () => {
   );
 
   // Helper components for main weather card, hourly and daily forecast
-  function WeatherMainCard({ weather, city, theme, isMobile, weatherCode }: {
+  function WeatherMainCard({ weather, city, theme, isMobile, weatherCode }: Readonly<{
     weather: WeatherData,
     city: string,
     theme: ThemeColors,
     isMobile: boolean,
     weatherCode: number
-  }) {
+  }>) {
     return (
       <div style={{
         background: theme.weatherCardBackground,
@@ -761,12 +770,12 @@ const AppNavigator = () => {
     );
   }
 
-  function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: {
+  function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Readonly<{
     loading: boolean,
     hourlyForecast: HourlyForecast[],
     theme: ThemeColors,
     isMobile: boolean
-  }) {
+  }>) {
     if (loading && hourlyForecast.length === 0) {
       return (
         <div style={{ marginBottom: '32px' }}>
@@ -864,11 +873,11 @@ const AppNavigator = () => {
     return null;
   }
 
-  function DailyForecastSection({ loading, dailyForecast, theme }: {
+  function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
     loading: boolean,
     dailyForecast: DailyForecast[],
     theme: ThemeColors
-  }) {
+  }>) {
     if (loading && dailyForecast.length === 0) {
       return (
         <div style={{ marginBottom: '16px' }}>
@@ -917,7 +926,7 @@ const AppNavigator = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    border: `1px solid ${isToday ? `${theme.weatherCardBorder}50` : theme.forecastCardBorder}`,
+                    border: `1px solid ${isToday ? theme.weatherCardBorder + '50' : theme.forecastCardBorder}`,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                   }}
                 >

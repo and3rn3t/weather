@@ -186,17 +186,20 @@ export const HourlyForecastSkeleton: React.FC = () => {
       gap: '12px',
       padding: '16px',
       overflowX: 'auto',
-      scrollbarWidth: 'thin'
+      scrollbarWidth: 'thin',
+      WebkitOverflowScrolling: 'touch', // Mobile optimization
+      scrollSnapType: isMobile ? 'x mandatory' : 'none'
     }}>
       {Array.from({ length: 24 }, (_, index) => (
         <div key={`hourly-${index}`} style={{
           backgroundColor: theme.forecastCardBackground,
           borderRadius: '12px',
-          padding: '12px',
+          padding: isMobile ? '10px' : '12px',
           border: `1px solid ${theme.forecastCardBorder}`,
-          minWidth: '80px',
+          minWidth: isMobile ? '70px' : '80px',
           flex: '0 0 auto',
-          textAlign: 'center'
+          textAlign: 'center',
+          scrollSnapAlign: 'start'
         }}>
           {/* Hour */}
           <div style={{
