@@ -5,12 +5,14 @@
 ## ✨ Features
 
 ### 🎨 Modern Design
+
 - **Glassmorphism UI**: Stunning glass-effect design with backdrop blur
 - **Animated Icons**: Weather-specific emoji icons with gentle bounce animations
 - **Responsive Layout**: Works perfectly on desktop and mobile devices
 - **Gradient Backgrounds**: Beautiful purple-to-blue gradient themes
 
 ### 🌍 Weather Data
+
 - **Real-time Conditions**: Current temperature, humidity, pressure, and wind
 - **Feels-Like Temperature**: Apparent temperature for accurate comfort assessment
 - **UV Index**: Sun exposure safety information
@@ -18,6 +20,7 @@
 - **Weather Descriptions**: Clear, human-readable condition descriptions
 
 ### 🔧 Technical Excellence
+
 - **Zero API Costs**: Uses completely free OpenMeteo and Nominatim APIs
 - **No Rate Limits**: Unlimited weather requests
 - **TypeScript**: Full type safety and excellent developer experience
@@ -39,15 +42,6 @@
    ```powershell
    npm install
    ```
-
-2. **Start development server:**
-
-   ```powershell
-   npm run dev
-   ```
-
-3. **Open your browser:**
-   Navigate to `http://localhost:5173` and start checking weather!
 
 2. **Start development server:**
 
@@ -90,6 +84,42 @@ The app is built on React Native foundation and ready for mobile deployment:
 
 - **iOS**: Use Expo or React Native CLI
 - **Android**: Use Expo or React Native CLI
+
+## 🧪 Testing
+
+### Running Tests
+
+```powershell
+# Run all tests once
+npm test
+
+# Run tests in watch mode (for development)
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+
+# Run tests for CI/CD
+npm run test:ci
+```
+
+### Test Coverage
+
+The project includes comprehensive test coverage:
+- **Unit Tests**: Individual component and function testing
+- **Integration Tests**: Complete user workflow testing
+- **API Mocking**: Realistic API response simulation
+- **Error Handling**: Edge cases and failure scenarios
+
+### Test Structure
+
+- `src/__tests__/` - Integration and configuration tests
+- `src/navigation/__tests__/` - AppNavigator component tests
+- `src/screens/__tests__/` - Legacy component tests
+- `src/services/__tests__/` - API service tests
+- `src/utils/testUtils.ts` - Testing utilities and helpers
+
+For detailed testing documentation, see [TESTING_DOCUMENTATION.md](./TESTING_DOCUMENTATION.md).
 
 ## 🛠️ Development Commands
 
