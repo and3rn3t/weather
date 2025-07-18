@@ -6,7 +6,8 @@
  */
 
 import React from 'react';
-import { useSwipeGestures, SwipeIndicator } from './useSwipeGestures';
+import { useSwipeGestures } from './useSwipeGestures';
+import { SwipeIndicator } from './SwipeIndicator';
 import type { ThemeColors } from './themeConfig';
 
 export interface SwipeNavigationProps {
