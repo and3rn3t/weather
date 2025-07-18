@@ -117,6 +117,5 @@ export const HapticWrapper: React.FC<HapticWrapperProps> = ({
 // EXPORTS
 // ============================================================================
 
-export { HapticPattern };
 export type { HapticConfig, HapticFeedbackContextType };
 export { HapticFeedbackContext };

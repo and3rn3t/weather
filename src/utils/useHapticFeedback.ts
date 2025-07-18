@@ -122,7 +122,9 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
     
     if (!capabilities.isSupported || !capabilities.isEnabled) {
       if (debugMode) {
-        console.log('🔇 Haptic feedback not available:', capabilities);
+        if (import.meta.env.DEV) {
+          console.log('🔇 Haptic feedback not available:', capabilities);
+        }
       }
       return false;
     }
@@ -131,7 +133,9 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
     const now = Date.now();
     if (respectSystemSettings && now - lastVibrationTime.current < 50) {
       if (debugMode) {
-        console.log('🔇 Haptic feedback rate limited');
+        if (import.meta.env.DEV) {
+          console.log('🔇 Haptic feedback rate limited');
+        }
       }
       return false;
     }
@@ -142,7 +146,9 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
       lastVibrationTime.current = now;
       
       if (debugMode) {
-        console.log('📳 Haptic feedback executed:', { pattern, result });
+        if (import.meta.env.DEV) {
+          console.log('📳 Haptic feedback executed:', { pattern, result });
+        }
       }
       
       return result;

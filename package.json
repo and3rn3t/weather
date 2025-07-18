@@ -29,14 +29,9 @@
     "deploy:production": "npm run build:production && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01"
   },
   "dependencies": {
-    "@react-navigation/native": "^7.1.14",
-    "@react-navigation/stack": "^7.4.2",
     "axios": "^1.10.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-native": "^0.80.1",
-    "react-native-web": "^0.20.0",
-    "wrangler": "^4.25.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
@@ -60,6 +55,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.25.0"
   }
 }

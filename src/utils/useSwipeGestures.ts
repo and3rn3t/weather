@@ -5,7 +5,7 @@
  * haptic integration, and smooth animations for mobile navigation.
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useHaptic } from './hapticHooks';
 
 export interface SwipeState {
