@@ -1,25 +1,31 @@
 # Copilot Instructions
 
-This project is a weather app built using React Native, TypeScript, and Vite. Below are the key features and components implemented so far:
+This project is a premium weather app built using React + TypeScript + Vite with professional-grade features and animations.
 
 ## Current Implementation Status ✅
 
-### Completed Features
-- **HomeScreen**: Modern glassmorphism design with gradient background and weather emoji icon.
-- **WeatherDetailsScreen**: Stylish interface for city input with real-time weather data display using OpenMeteo API.
-- **AppNavigator**: Custom navigation system using React state (inline components) - works reliably in browser environment.
-- **Weather Service**: Real API integration with OpenMeteo (completely free) and OpenStreetMap Nominatim for geocoding.
-- **Modern UI**: Beautiful glassmorphism design with gradients, animations, and responsive layout.
-- **No API Key Required**: Uses free OpenMeteo API service with no rate limits or subscription requirements.
-- **Error Handling**: Comprehensive error handling for API failures, invalid cities, and network issues.
-- **Loading States**: Animated loading indicators with spinning icons during API calls.
+### 🎨 **Advanced UI Features** (NEW)
+- **Dark/Light Theme System**: Complete theme switching with React Context API and localStorage persistence
+- **Animated Weather Icons**: 7 custom SVG weather icons with CSS animations (sun rotation, rain drops, lightning effects)
+- **Enhanced Glassmorphism**: Premium card designs with backdrop blur effects and smooth transitions
+- **Smooth Animations**: 0.5-0.6s theme transitions for professional feel across all UI elements
+- **Theme Toggle Button**: Floating sun/moon button with elegant hover effects and position persistence
 
-### Technical Architecture
-- **Frontend**: React + TypeScript + Vite for fast development and hot reloading
-- **Navigation**: Custom state-based navigation (inline components in AppNavigator.tsx)
-- **API Integration**: OpenMeteo for weather data + OpenStreetMap Nominatim for geocoding (both free)
-- **Styling**: Modern glassmorphism design with CSS-in-JS, gradients, and animations
-- **Units**: Imperial units (Fahrenheit) for temperature display
+### 🌤️ **Core Weather Features**
+- **HomeScreen**: Modern glassmorphism design with animated weather icon preview grid
+- **WeatherDetailsScreen**: Comprehensive weather interface with current conditions and extended forecasts
+- **Real-time Weather Data**: OpenMeteo API integration with current conditions, temperature, humidity, wind, pressure
+- **24-Hour Forecast**: Hourly temperature and weather conditions with animated icons
+- **7-Day Forecast**: Daily temperature ranges, weather conditions, and precipitation data
+- **Error Handling**: User-friendly error messages with themed styling for all failure scenarios
+
+### 🏗️ **Technical Architecture**
+- **Frontend**: React 18 + TypeScript + Vite 7.0.5 for fast development and optimal performance
+- **Theme System**: React Context API with TypeScript interfaces for type-safe theming
+- **Navigation**: Custom state-based navigation (inline components) - proven reliable in browser environment
+- **API Integration**: OpenMeteo (weather) + OpenStreetMap Nominatim (geocoding) - both completely free
+- **Styling**: CSS-in-JS with comprehensive theme support and smooth transition animations
+- **State Management**: React hooks with TypeScript for weather data, forecasts, and theme persistence
 
 ## Important Technical Notes ⚠️
 
@@ -47,7 +53,38 @@ This project is a weather app built using React Native, TypeScript, and Vite. Be
 ```
 src/
 ├── navigation/
-│   └── AppNavigator.tsx          # Main navigation with inline screen components and modern UI
+│   └── AppNavigator.tsx          # Main app component with inline screens, theme integration, and weather logic
+├── utils/
+│   ├── weatherIcons.tsx          # Custom SVG weather icons with CSS animations
+│   ├── themeConfig.ts            # Light/dark theme color configuration and TypeScript interfaces
+│   ├── themeContext.tsx          # React Context provider for theme state management
+│   └── ThemeToggle.tsx           # Floating theme toggle button component
+├── services/
+│   └── weatherService.ts         # Legacy service (kept for reference, not actively used)
+└── screens/                     # Legacy separate components (DO NOT USE - causes blank screens)
+    ├── HomeScreen.tsx           # Deprecated - causes rendering issues
+    └── WeatherDetailsScreen.tsx # Deprecated - causes rendering issues
+```
+
+## API Integration Details
+
+### OpenMeteo Weather API (Primary)
+- **Endpoint**: `https://api.open-meteo.com/v1/forecast`
+- **Features**: Current weather, hourly forecasts (24h), daily forecasts (7d)
+- **Parameters**: 
+  - `latitude` & `longitude`: From geocoding step
+  - `current_weather=true`: Current conditions
+  - `hourly`: temperature_2m, weather_code, relative_humidity_2m
+  - `daily`: temperature_2m_max, temperature_2m_min, weather_code, precipitation_sum
+  - `temperature_unit=fahrenheit`: Imperial units
+- **Weather Codes**: Mapped to human-readable descriptions and animated icons
+- **Rate Limits**: None - completely free service with no API key required
+
+### OpenStreetMap Nominatim Geocoding
+- **Endpoint**: `https://nominatim.openstreetmap.org/search`
+- **Parameters**: `q` (city name), `format=json`, `limit=1`
+- **Headers**: `User-Agent` header required for API compliance
+- **Response**: Returns latitude/longitude coordinates for weather API calls
 ├── services/
 │   └── weatherService.ts         # Legacy OpenWeatherMap service (kept for reference, not used)
 └── screens/                     # Legacy separate components (DO NOT USE)

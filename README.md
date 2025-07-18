@@ -1,31 +1,38 @@
-# 🌤️ Modern Weather App
+# 🌤️ Premium Weather App
 
-> A beautiful, responsive weather application built with React, TypeScript, and Vite. Features real-time weather data, modern glassmorphism design, and animated weather icons - all powered by completely free APIs.
+> A professional-grade weather application with dark/light themes, animated SVG icons, and comprehensive forecasting. Built with React + TypeScript + Vite for optimal performance and user experience.
 
-## ✨ Features
+## ✨ Key Features
 
-### 🎨 Modern Design
+### 🎨 **Advanced Theme System**
 
-- **Glassmorphism UI**: Stunning glass-effect design with backdrop blur
-- **Animated Icons**: Weather-specific emoji icons with gentle bounce animations
-- **Responsive Layout**: Works perfectly on desktop and mobile devices
-- **Gradient Backgrounds**: Beautiful purple-to-blue gradient themes
+- **Dark/Light Mode Toggle**: Smooth 0.6s animated transitions
+- **Floating Theme Button**: Sun/moon toggle with elegant hover effects  
+- **Persistent Preferences**: Remembers your theme choice across sessions
+- **Comprehensive Theming**: Every UI element supports both themes
 
-### 🌍 Weather Data
+### 🌟 **Animated Weather Icons**
 
-- **Real-time Conditions**: Current temperature, humidity, pressure, and wind
-- **Feels-Like Temperature**: Apparent temperature for accurate comfort assessment
-- **UV Index**: Sun exposure safety information
-- **Visibility**: Atmospheric visibility conditions
-- **Weather Descriptions**: Clear, human-readable condition descriptions
+- **7 Custom SVG Icons**: Sun, moon, clouds, rain, snow, thunderstorm, fog
+- **CSS Animations**: Rotating sun rays, falling raindrops, lightning effects
+- **Dynamic Sizing**: 24px-64px responsive icon scaling
+- **Theme Integration**: Icons adapt to light/dark mode contexts
 
-### 🔧 Technical Excellence
+### 🌍 **Comprehensive Weather Data**
 
-- **Zero API Costs**: Uses completely free OpenMeteo and Nominatim APIs
-- **No Rate Limits**: Unlimited weather requests
-- **TypeScript**: Full type safety and excellent developer experience
-- **Fast Performance**: Sub-2-second weather data loading
-- **Error Handling**: Comprehensive error management with user-friendly messages
+- **Current Conditions**: Temperature, humidity, pressure, wind speed/direction
+- **24-Hour Forecast**: Hourly temperature and weather conditions
+- **7-Day Forecast**: Daily highs/lows with precipitation data
+- **Smart Geocoding**: City name → coordinates → weather data pipeline
+- **Real-time Updates**: Live weather data from OpenMeteo API
+
+### 🏗️ **Technical Excellence**
+
+- **React 18 + TypeScript**: Modern development with full type safety
+- **Vite 7.0.5**: Lightning-fast builds and hot module replacement
+- **Free APIs**: OpenMeteo + Nominatim (no API keys or rate limits)
+- **Glassmorphism Design**: Premium card layouts with backdrop blur effects
+- **Responsive Layout**: Mobile-first design that scales beautifully
 
 ## 🚀 Quick Start
 
@@ -106,6 +113,7 @@ npm run test:ci
 ### Test Coverage
 
 The project includes comprehensive test coverage:
+
 - **Unit Tests**: Individual component and function testing
 - **Integration Tests**: Complete user workflow testing
 - **API Mocking**: Realistic API response simulation

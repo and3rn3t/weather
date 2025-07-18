@@ -1,8 +1,10 @@
 {
-  "name": "weather",
+  "name": "premium-weather-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Premium weather app with dark/light themes, animated SVG icons, and comprehensive forecasting",
+  "keywords": ["weather", "react", "typescript", "theme", "forecast", "animated-icons"],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

@@ -1,4 +1,62 @@
 import { useState } from 'react';
+import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
+import { useTheme } from '../utils/useTheme';
+import type { ThemeColors } from '../utils/themeConfig';
+import ThemeToggle from '../utils/ThemeToggle';
+
+/**
+ * OpenMeteo API response interfaces
+ */
+interface HourlyData {
+  time: string[];
+  temperature_2m: number[];
+  weathercode: number[];
+  relative_humidity_2m: number[];
+  apparent_temperature: number[];
+  surface_pressure: number[];
+  uv_index: number[];
+  visibility: number[];
+}
+
+interface DailyData {
+  time: string[];
+  weathercode: number[];
+  temperature_2m_max: number[];
+  temperature_2m_min: number[];
+  precipitation_sum: number[];
+  windspeed_10m_max: number[];
+}
+
+/**
+ * Maps OpenMeteo weather codes to human-readable descriptions
+ * Reference: https://open-meteo.com/en/docs
+ */
+const getWeatherDescription = (code: number): string => {
+  const descriptions: { [key: number]: string } = {
+    0: 'clear sky',
+    1: 'mainly clear', 
+    2: 'partly cloudy',
+    3: 'overcast',
+    45: 'fog',
+    48: 'depositing rime fog',
+    51: 'light drizzle',
+    53: 'moderate drizzle', 
+    55: 'dense drizzle',
+    61: 'light rain',
+    63: 'moderate rain',
+    65: 'heavy rain',
+    71: 'light snow',
+    73: 'moderate snow',
+    75: 'heavy snow',
+    80: 'light rain showers',
+    81: 'moderate rain showers',
+    82: 'violent rain showers',
+    95: 'thunderstorm',
+    96: 'thunderstorm with slight hail',
+    99: 'thunderstorm with heavy hail'
+  };
+  return descriptions[code] || 'unknown';
+};
 
 /**
  * WeatherData type definition for the transformed weather response
@@ -20,6 +78,29 @@ type WeatherData = {
   };
   uv_index: number;         // UV index (0-11+ scale)
   visibility: number;       // Visibility in meters
+};
+
+/**
+ * HourlyForecast type definition for hourly weather forecast
+ */
+type HourlyForecast = {
+  time: string;             // ISO timestamp
+  temperature: number;      // Temperature in Fahrenheit
+  weatherCode: number;      // OpenMeteo weather code
+  humidity: number;         // Relative humidity percentage
+  feelsLike: number;        // Apparent temperature
+};
+
+/**
+ * DailyForecast type definition for daily weather forecast
+ */
+type DailyForecast = {
+  date: string;             // ISO date
+  weatherCode: number;      // OpenMeteo weather code
+  tempMax: number;          // Maximum temperature in Fahrenheit
+  tempMin: number;          // Minimum temperature in Fahrenheit
+  precipitation: number;    // Total precipitation in mm
+  windSpeed: number;        // Maximum wind speed in mph
 };
 
 /**
@@ -46,10 +127,115 @@ type WeatherData = {
  * 
  * @returns JSX.Element - The complete weather application interface
  */
+// ============================================================================
+// UTILITY FUNCTIONS AND STYLE OBJECTS
+// ============================================================================
+
+/** Common button style creator */
+const createButtonStyle = (theme: ThemeColors, isPrimary = true) => ({
+  background: isPrimary ? theme.buttonGradient : theme.toggleBackground,
+  color: theme.inverseText,
+  border: isPrimary ? 'none' : `1px solid ${theme.toggleBorder}`,
+  borderRadius: '16px',
+  fontSize: '16px',
+  fontWeight: isPrimary ? '600' : '500',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  backdropFilter: isPrimary ? 'none' : 'blur(10px)'
+});
+
+/** Common card style object to reduce repetition */
+const createCardStyle = (theme: ThemeColors, isWeatherCard = false) => ({
+  backgroundColor: isWeatherCard ? theme.weatherCardBackground : theme.forecastCardBackground,
+  padding: '16px',
+  borderRadius: '12px',
+  border: `1px solid ${isWeatherCard ? theme.weatherCardBorder : theme.forecastCardBorder}`,
+  transition: 'all 0.5s ease'
+});
+
+/** Weather detail item configuration */
+const weatherDetailItems = [
+  { key: 'humidity', icon: '💧', label: 'HUMIDITY', getValue: (weather: WeatherData) => `${weather.main.humidity}%` },
+  { key: 'wind', icon: '💨', label: 'WIND', getValue: (weather: WeatherData) => `${Math.round(weather.wind.speed)} mph`, subValue: (weather: WeatherData) => `${weather.wind.deg}° direction` },
+  { key: 'pressure', icon: '🌡️', label: 'PRESSURE', getValue: (weather: WeatherData) => `${Math.round(weather.main.pressure)} hPa` },
+];
+
+/** Process hourly forecast data into structured format */
+const processHourlyForecast = (hourlyData: HourlyData): HourlyForecast[] => {
+  if (!hourlyData?.time || !hourlyData?.temperature_2m) {
+    console.warn('⚠️ No hourly data available for forecast');
+    return [];
+  }
+
+  const currentTime = new Date();
+  const next24Hours: HourlyForecast[] = [];
+  
+  for (let i = 0; i < Math.min(24, hourlyData.time.length); i++) {
+    const forecastTime = new Date(hourlyData.time[i]);
+    
+    if (forecastTime > currentTime) {
+      next24Hours.push({
+        time: hourlyData.time[i],
+        temperature: Math.round(hourlyData.temperature_2m[i] || 0),
+        weatherCode: hourlyData.weathercode?.[i] || 0,
+        humidity: Math.round(hourlyData.relative_humidity_2m?.[i] || 0),
+        feelsLike: Math.round(hourlyData.apparent_temperature?.[i] || 0)
+      });
+    }
+    
+    if (next24Hours.length >= 24) break;
+  }
+  
+  return next24Hours;
+};
+
+/** Format time for hourly forecast display */
+const formatHourTime = (timeString: string): string => {
+  return new Date(timeString).toLocaleTimeString([], { 
+    hour: 'numeric',
+    hour12: true 
+  });
+};
+
+/** Format date for daily forecast display */
+const formatDayInfo = (dateString: string, index: number) => {
+  const dayDate = new Date(dateString);
+  const isToday = index === 0;
+  const dayName = isToday ? 'Today' : dayDate.toLocaleDateString([], { weekday: 'short' });
+  const dateStr = dayDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return { dayName, dateStr, isToday };
+};
+
+/** Process daily forecast data into structured format */
+const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
+  if (!dailyData?.time || !dailyData?.temperature_2m_max) {
+    console.warn('⚠️ No daily data available for forecast');
+    return [];
+  }
+
+  const next7Days: DailyForecast[] = [];
+  
+  for (let i = 0; i < Math.min(7, dailyData.time.length); i++) {
+    next7Days.push({
+      date: dailyData.time[i],
+      weatherCode: dailyData.weathercode?.[i] || 0,
+      tempMax: Math.round(dailyData.temperature_2m_max[i] || 0),
+      tempMin: Math.round(dailyData.temperature_2m_min[i] || 0),
+      precipitation: Math.round((dailyData.precipitation_sum?.[i] || 0) * 10) / 10,
+      windSpeed: Math.round(dailyData.windspeed_10m_max?.[i] || 0)
+    });
+  }
+  
+  return next7Days;
+};
+
 const AppNavigator = () => {
   // ============================================================================
-  // STATE MANAGEMENT
+  // THEME AND STATE MANAGEMENT
   // ============================================================================
+  
+  /** Theme configuration and toggle functionality */
+  const { theme } = useTheme();
   
   /** Current active screen ('Home' | 'WeatherDetails') */
   const [currentScreen, setCurrentScreen] = useState('Home');
@@ -69,6 +255,12 @@ const AppNavigator = () => {
   /** Error message for display to user */
   const [error, setError] = useState('');
 
+  /** Hourly forecast data (24 hours) */
+  const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
+  
+  /** Daily forecast data (7 days) */
+  const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
+
   // ============================================================================
   // NAVIGATION FUNCTIONS
   // ============================================================================
@@ -79,28 +271,6 @@ const AppNavigator = () => {
    */
   const navigate = (screenName: string) => {
     setCurrentScreen(screenName);
-  };
-
-  // ============================================================================
-  // WEATHER ICON MAPPING
-  // ============================================================================
-  
-  /**
-   * Maps OpenMeteo weather codes to animated emoji icons
-   * @param code - OpenMeteo weather code (0-99)
-   * @returns Emoji string for the weather condition
-   */
-  const getWeatherIcon = (code: number) => {
-    if (code === 0) return '☀️';                    // Clear sky
-    if (code === 1) return '🌤️';                   // Mainly clear
-    if (code === 2 || code === 3) return '☁️';     // Partly cloudy / Overcast
-    if (code === 45 || code === 48) return '🌫️';  // Fog / Depositing rime fog
-    if (code >= 51 && code <= 55) return '🌦️';    // Drizzle (light to dense)
-    if (code >= 61 && code <= 65) return '🌧️';    // Rain (light to heavy)
-    if (code >= 71 && code <= 75) return '❄️';     // Snow (light to heavy)
-    if (code >= 80 && code <= 82) return '🌦️';    // Rain showers (light to violent)
-    if (code >= 95 && code <= 99) return '⛈️';     // Thunderstorms (with/without hail)
-    return '🌤️';                                   // Default fallback
   };
 
   // ============================================================================
@@ -159,7 +329,7 @@ const AppNavigator = () => {
       // ========================================================================
       
       const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
-      const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;
+      const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
       
       console.log('🌤️ Fetching weather data from OpenMeteo...');
       const weatherResponse = await fetch(weatherUrl);
@@ -180,37 +350,6 @@ const AppNavigator = () => {
       // Get weather code for icon selection
       const currentWeatherCode = weatherData.current_weather?.weathercode || 0;
       setWeatherCode(currentWeatherCode);
-      
-      /**
-       * Maps OpenMeteo weather codes to human-readable descriptions
-       * Reference: https://open-meteo.com/en/docs
-       */
-      const getWeatherDescription = (code: number) => {
-        const descriptions: { [key: number]: string } = {
-          0: 'clear sky',
-          1: 'mainly clear', 
-          2: 'partly cloudy',
-          3: 'overcast',
-          45: 'fog',
-          48: 'depositing rime fog',
-          51: 'light drizzle',
-          53: 'moderate drizzle', 
-          55: 'dense drizzle',
-          61: 'light rain',
-          63: 'moderate rain',
-          65: 'heavy rain',
-          71: 'light snow',
-          73: 'moderate snow',
-          75: 'heavy snow',
-          80: 'light rain showers',
-          81: 'moderate rain showers',
-          82: 'violent rain showers',
-          95: 'thunderstorm',
-          96: 'thunderstorm with slight hail',
-          99: 'thunderstorm with heavy hail'
-        };
-        return descriptions[code] || 'unknown';
-      };
       
       // ========================================================================
       // STEP 4: DATA TRANSFORMATION - Convert to standardized format
@@ -255,6 +394,21 @@ const AppNavigator = () => {
       };
       
       setWeather(transformedData);
+      
+      // ========================================================================
+      // STEP 5: FORECAST PROCESSING - Transform hourly and daily data
+      // ========================================================================
+      
+      // Process and set forecast data using extracted utility functions
+      const hourlyForecastData = processHourlyForecast(hourlyData as HourlyData);
+      const dailyForecastData = processDailyForecast(weatherData.daily as DailyData);
+      
+      setHourlyForecast(hourlyForecastData);
+      setDailyForecast(dailyForecastData);
+      
+      console.log('📊 Hourly forecast processed:', hourlyForecastData.length, 'hours');
+      console.log('📅 Daily forecast processed:', dailyForecastData.length, 'days');
+      
       console.log('🎉 Weather data successfully processed and displayed');
       
     } catch (error) {
@@ -273,41 +427,76 @@ const AppNavigator = () => {
   // HOME SCREEN - Landing page with app introduction
   if (currentScreen === 'Home') {
     return (
-      <div style={{ 
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '20px',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        {/* Glassmorphism Card Container */}
-        <div style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: '24px',
-          padding: '60px 40px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          maxWidth: '500px',
-          width: '100%'
+      <>
+        <ThemeToggle />
+        <div style={{ 
+          minHeight: '100vh',
+          background: theme.appBackground,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          transition: 'background 0.6s ease'
         }}>
-          {/* App Icon */}
+          {/* Glassmorphism Card Container */}
           <div style={{
-            width: '80px',
-            height: '80px',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-            borderRadius: '20px',
-            margin: '0 auto 30px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '36px'
+            backgroundColor: theme.cardBackground,
+            backdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            padding: '60px 40px',
+            textAlign: 'center',
+            boxShadow: theme.cardShadow,
+            border: `1px solid ${theme.cardBorder}`,
+            maxWidth: '500px',
+            width: '100%',
+            transition: 'all 0.6s ease'
           }}>
-            🌤️
+            {/* App Icon with Weather Icons */}
+            <div style={{
+              width: '120px',
+              height: '120px',
+              background: theme.primaryGradient,
+              borderRadius: '30px',
+              margin: '0 auto 30px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              boxShadow: theme.buttonShadow
+            }}>
+            <WeatherIcon 
+              code={0} 
+              size={64} 
+              animated={true}
+              className="home-main-icon"
+            />
+            {/* Floating weather icons around the main icon */}
+            <div style={{
+              position: 'absolute',
+              top: '-10px',
+              right: '-10px'
+            }}>
+              <WeatherIcon 
+                code={61} 
+                size={24} 
+                animated={true}
+                className="home-floating-icon"
+              />
+            </div>
+            <div style={{
+              position: 'absolute',
+              bottom: '-8px',
+              left: '-8px'
+            }}>
+              <WeatherIcon 
+                code={3} 
+                size={20} 
+                animated={true}
+                className="home-floating-icon"
+              />
+            </div>
           </div>
           
           {/* App Title */}
@@ -315,8 +504,9 @@ const AppNavigator = () => {
             fontSize: '32px', 
             fontWeight: '700',
             marginBottom: '16px', 
-            color: '#1a202c',
-            letterSpacing: '-0.5px'
+            color: theme.primaryText,
+            letterSpacing: '-0.5px',
+            transition: 'color 0.5s ease'
           }}>
             Weather App
           </h1>
@@ -324,27 +514,48 @@ const AppNavigator = () => {
           {/* App Description */}
           <p style={{
             fontSize: '18px',
-            color: '#718096',
-            marginBottom: '40px',
-            lineHeight: '1.6'
+            color: theme.secondaryText,
+            marginBottom: '32px',
+            lineHeight: '1.6',
+            transition: 'color 0.5s ease'
           }}>
             Get real-time weather information for any city around the world
           </p>
+          
+          {/* Weather Icons Preview */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '16px',
+            marginBottom: '40px',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <WeatherIcon code={0} size={32} animated={true} />
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Sunny</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <WeatherIcon code={61} size={32} animated={true} />
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Rainy</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <WeatherIcon code={71} size={32} animated={true} />
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Snow</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <WeatherIcon code={95} size={32} animated={true} />
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>Storms</div>
+            </div>
+          </div>
           
           {/* Navigation Button */}
           <button 
             onClick={() => navigate('WeatherDetails')}
             style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '16px',
+              ...createButtonStyle(theme, true),
               padding: '16px 32px',
               fontSize: '18px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              boxShadow: '0 10px 25px rgba(102, 126, 234, 0.3)',
-              transition: 'all 0.3s ease',
+              boxShadow: theme.buttonShadow,
               transform: 'translateY(0)',
               letterSpacing: '0.5px'
             }}
@@ -363,33 +574,29 @@ const AppNavigator = () => {
           </button>
         </div>
       </div>
+      </>
     );
   }
 
   // WEATHER DETAILS SCREEN - Main weather interface
   if (currentScreen === 'WeatherDetails') {
     return (
-      <div style={{ 
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '20px',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <>
+        <ThemeToggle />
+        <div style={{ 
+          minHeight: '100vh',
+          background: theme.appBackground,
+          padding: '20px',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          transition: 'background 0.6s ease'
+        }}>
+          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <button 
             onClick={() => navigate('Home')}
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(10px)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '12px',
+              ...createButtonStyle(theme, false),
               padding: '12px 20px',
-              fontSize: '16px',
-              cursor: 'pointer',
-              marginBottom: '30px',
-              fontWeight: '500',
-              transition: 'all 0.3s ease'
+              marginBottom: '30px'
             }}
             onMouseEnter={(e) => {
               const target = e.target as HTMLButtonElement;
@@ -401,25 +608,40 @@ const AppNavigator = () => {
             }}
           >
             ← Back to Home
-          </button>
-          
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          </button>          <div style={{
+            backgroundColor: theme.cardBackground,
             backdropFilter: 'blur(20px)',
             borderRadius: '24px',
             padding: '40px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            boxShadow: theme.cardShadow,
+            border: `1px solid ${theme.cardBorder}`,
+            transition: 'all 0.6s ease'
           }}>
             <h1 style={{ 
               fontSize: '28px', 
               fontWeight: '700',
               marginBottom: '32px', 
-              color: '#1a202c',
+              color: theme.primaryText,
               textAlign: 'center',
-              letterSpacing: '-0.5px'
+              letterSpacing: '-0.5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '16px'
             }}>
-              🌍 Weather Forecast
+              <WeatherIcon 
+                code={0} 
+                size={36} 
+                animated={true}
+                className="header-weather-icon"
+              />
+              Weather Forecast
+              <WeatherIcon 
+                code={1} 
+                size={36} 
+                animated={true}
+                className="header-weather-icon"
+              />
             </h1>
             
             <div style={{ 
@@ -437,26 +659,26 @@ const AppNavigator = () => {
                   flex: '1',
                   minWidth: '250px',
                   height: '56px',
-                  border: '2px solid #e2e8f0',
+                  border: `2px solid ${theme.cardBorder}`,
                   borderRadius: '16px',
                   padding: '0 20px',
                   fontSize: '16px',
                   fontFamily: 'inherit',
-                  backgroundColor: '#f8fafc',
-                  color: '#1a202c',
+                  backgroundColor: theme.cardBackground,
+                  color: theme.primaryText,
                   transition: 'all 0.3s ease',
                   outline: 'none'
                 }}
                 onFocus={(e) => {
                   const target = e.target as HTMLInputElement;
-                  target.style.borderColor = '#667eea';
-                  target.style.backgroundColor = '#ffffff';
-                  target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                  target.style.borderColor = theme.weatherCardBorder;
+                  target.style.backgroundColor = theme.cardBackground;
+                  target.style.boxShadow = `0 0 0 3px ${theme.weatherCardBorder}33`;
                 }}
                 onBlur={(e) => {
                   const target = e.target as HTMLInputElement;
-                  target.style.borderColor = '#e2e8f0';
-                  target.style.backgroundColor = '#f8fafc';
+                  target.style.borderColor = theme.cardBorder;
+                  target.style.backgroundColor = theme.cardBackground;
                   target.style.boxShadow = 'none';
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && getWeather()}
@@ -465,15 +687,15 @@ const AppNavigator = () => {
                 onClick={getWeather}
                 disabled={loading}
                 style={{
-                  background: loading ? 'linear-gradient(135deg, #a0a0a0, #808080)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
+                  background: loading ? theme.loadingBackground : theme.buttonGradient,
+                  color: theme.inverseText,
                   border: 'none',
                   borderRadius: '16px',
                   padding: '16px 32px',
                   fontSize: '16px',
                   fontWeight: '600',
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: loading ? 'none' : '0 10px 25px rgba(102, 126, 234, 0.3)',
+                  boxShadow: loading ? 'none' : theme.buttonShadow,
                   transition: 'all 0.3s ease',
                   minWidth: '140px'
                 }}
@@ -499,12 +721,12 @@ const AppNavigator = () => {
 
             {error && (
               <div style={{
-                background: 'linear-gradient(135deg, #fee2e2, #fecaca)',
-                color: '#dc2626',
+                background: theme.errorBackground,
+                color: theme.errorText,
                 padding: '20px',
                 borderRadius: '16px',
                 marginBottom: '24px',
-                border: '1px solid #fca5a5',
+                border: `1px solid ${theme.errorBorder}`,
                 fontSize: '16px',
                 fontWeight: '500'
               }}>
@@ -514,17 +736,18 @@ const AppNavigator = () => {
 
             {weather && (
               <div style={{
-                background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
+                background: theme.weatherCardBackground,
                 padding: '32px',
                 borderRadius: '20px',
-                border: '2px solid #0ea5e9',
+                border: `2px solid ${theme.weatherCardBorder}`,
                 boxShadow: '0 10px 30px rgba(14, 165, 233, 0.1)',
-                textAlign: 'center'
+                textAlign: 'center',
+                transition: 'all 0.6s ease'
               }}>
                 <div style={{
                   display: 'inline-block',
-                  background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-                  color: 'white',
+                  background: theme.weatherCardBadge,
+                  color: theme.inverseText,
                   padding: '12px 24px',
                   borderRadius: '50px',
                   fontSize: '14px',
@@ -540,7 +763,7 @@ const AppNavigator = () => {
                 <div style={{
                   fontSize: '48px',
                   fontWeight: '800',
-                  color: '#0c4a6e',
+                  color: theme.primaryText,
                   marginBottom: '8px',
                   letterSpacing: '-2px'
                 }}>
@@ -549,7 +772,7 @@ const AppNavigator = () => {
                 
                 <div style={{
                   fontSize: '16px',
-                  color: '#0369a1',
+                  color: theme.secondaryText,
                   marginBottom: '8px'
                 }}>
                   Feels like {Math.round(weather.main.feels_like)}°F
@@ -557,7 +780,7 @@ const AppNavigator = () => {
                 
                 <div style={{
                   fontSize: '20px',
-                  color: '#0369a1',
+                  color: theme.primaryText,
                   textTransform: 'capitalize',
                   fontWeight: '500',
                   marginBottom: '24px',
@@ -566,12 +789,12 @@ const AppNavigator = () => {
                   justifyContent: 'center',
                   gap: '12px'
                 }}>
-                  <span style={{
-                    fontSize: '32px',
-                    animation: 'bounce 2s ease-in-out infinite'
-                  }}>
-                    {getWeatherIcon(weatherCode)}
-                  </span>
+                  <WeatherIcon 
+                    code={weatherCode} 
+                    size={48} 
+                    animated={true}
+                    className="main-weather-icon"
+                  />
                   {weather.weather[0].description}
                 </div>
                 
@@ -583,78 +806,42 @@ const AppNavigator = () => {
                   marginBottom: '16px',
                   textAlign: 'left'
                 }}>
-                  <div style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    padding: '16px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(14, 165, 233, 0.2)'
-                  }}>
-                    <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px', fontWeight: '600' }}>
-                      💧 HUMIDITY
+                  {weatherDetailItems.map((item) => (
+                    <div
+                      key={item.key}
+                      style={createCardStyle(theme)}
+                    >
+                      <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
+                        {item.icon} {item.label}
+                      </div>
+                      <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
+                        {item.getValue(weather)}
+                      </div>
+                      {item.subValue && (
+                        <div style={{ fontSize: '12px', color: theme.secondaryText }}>
+                          {item.subValue(weather)}
+                        </div>
+                      )}
                     </div>
-                    <div style={{ fontSize: '18px', color: '#0c4a6e', fontWeight: '700' }}>
-                      {weather.main.humidity}%
-                    </div>
-                  </div>
-                  
-                  <div style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    padding: '16px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(14, 165, 233, 0.2)'
-                  }}>
-                    <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px', fontWeight: '600' }}>
-                      💨 WIND
-                    </div>
-                    <div style={{ fontSize: '18px', color: '#0c4a6e', fontWeight: '700' }}>
-                      {Math.round(weather.wind.speed)} mph
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#64748b' }}>
-                      {weather.wind.deg}° direction
-                    </div>
-                  </div>
-                  
-                  <div style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    padding: '16px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(14, 165, 233, 0.2)'
-                  }}>
-                    <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px', fontWeight: '600' }}>
-                      🌡️ PRESSURE
-                    </div>
-                    <div style={{ fontSize: '18px', color: '#0c4a6e', fontWeight: '700' }}>
-                      {Math.round(weather.main.pressure)} hPa
-                    </div>
-                  </div>
+                  ))}
                   
                   {weather.uv_index > 0 && (
-                    <div style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                      padding: '16px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(14, 165, 233, 0.2)'
-                    }}>
-                      <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px', fontWeight: '600' }}>
+                    <div style={createCardStyle(theme)}>
+                      <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
                         ☀️ UV INDEX
                       </div>
-                      <div style={{ fontSize: '18px', color: '#0c4a6e', fontWeight: '700' }}>
+                      <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
                         {Math.round(weather.uv_index)}
                       </div>
                     </div>
                   )}
                   
                   {weather.visibility > 0 && (
-                    <div style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                      padding: '16px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(14, 165, 233, 0.2)'
-                    }}>
-                      <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px', fontWeight: '600' }}>
+                    <div style={createCardStyle(theme)}>
+                      <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
                         👁️ VISIBILITY
                       </div>
-                      <div style={{ fontSize: '18px', color: '#0c4a6e', fontWeight: '700' }}>
+                      <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
                         {Math.round(weather.visibility / 1000)} km
                       </div>
                     </div>
@@ -666,14 +853,217 @@ const AppNavigator = () => {
                   height: '4px',
                   background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
                   borderRadius: '2px',
-                  margin: '0 auto'
+                  margin: '0 auto',
+                  marginBottom: '32px'
                 }}></div>
+
+                {/* ================================================================ */}
+                {/* HOURLY FORECAST - Next 24 hours */}
+                {/* ================================================================ */}
+                {hourlyForecast.length > 0 && (
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{
+                      fontSize: '20px',
+                      fontWeight: '600',
+                      color: theme.primaryText,
+                      marginBottom: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      🕐 24-Hour Forecast
+                    </h3>
+                    
+                    <div style={{
+                      display: 'flex',
+                      gap: '12px',
+                      overflowX: 'auto',
+                      paddingBottom: '8px',
+                      scrollbarWidth: 'thin'
+                    }}>
+                      {hourlyForecast.slice(0, 24).map((hour, index) => {
+                        const timeStr = formatHourTime(hour.time);
+                        
+                        return (
+                          <div
+                            key={`hour-${hour.time}-${index}`}
+                            style={{
+                              minWidth: '80px',
+                              ...createCardStyle(theme),
+                              padding: '12px 8px',
+                              textAlign: 'center',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                            }}
+                          >
+                            <div style={{ 
+                              fontSize: '12px', 
+                              color: theme.secondaryText, 
+                              fontWeight: '500',
+                              marginBottom: '6px'
+                            }}>
+                              {timeStr}
+                            </div>
+                            
+                            <div style={{ marginBottom: '8px' }}>
+                              <WeatherIcon 
+                                code={hour.weatherCode} 
+                                size={32} 
+                                animated={true}
+                              />
+                            </div>
+                            
+                            <div style={{ 
+                              fontSize: '16px', 
+                              fontWeight: '700', 
+                              color: theme.primaryText,
+                              marginBottom: '4px'
+                            }}>
+                              {hour.temperature}°F
+                            </div>
+                            
+                            <div style={{ 
+                              fontSize: '10px', 
+                              color: theme.secondaryText,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '1px'
+                            }}>
+                              <span>💧 {hour.humidity}%</span>
+                              <span>Feels {hour.feelsLike}°</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* ================================================================ */}
+                {/* DAILY FORECAST - Next 7 days */}
+                {/* ================================================================ */}
+                {dailyForecast.length > 0 && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{
+                      fontSize: '20px',
+                      fontWeight: '600',
+                      color: theme.primaryText,
+                      marginBottom: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      📅 7-Day Forecast
+                    </h3>
+                    
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      {dailyForecast.map((day, index) => {
+                        const { dayName, dateStr, isToday } = formatDayInfo(day.date, index);
+                        
+                        return (
+                          <div
+                            key={`day-${day.date}-${index}`}
+                            style={{
+                              ...createCardStyle(theme),
+                              backgroundColor: isToday ? 
+                                `${theme.weatherCardBorder}20` : 
+                                theme.forecastCardBackground,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              border: `1px solid ${isToday ? 
+                                `${theme.weatherCardBorder}50` : 
+                                theme.forecastCardBorder}`,
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                            }}
+                          >
+                            {/* Date and Day */}
+                            <div style={{ 
+                              display: 'flex', 
+                              flexDirection: 'column',
+                              minWidth: '80px'
+                            }}>
+                              <div style={{ 
+                                fontSize: '16px', 
+                                fontWeight: isToday ? '700' : '600', 
+                                color: isToday ? theme.weatherCardBorder : theme.primaryText
+                              }}>
+                                {dayName}
+                              </div>
+                              <div style={{ 
+                                fontSize: '12px', 
+                                color: theme.secondaryText
+                              }}>
+                                {dateStr}
+                              </div>
+                            </div>
+
+                            {/* Weather Icon */}
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center',
+                              flex: '1',
+                              justifyContent: 'center'
+                            }}>
+                              <WeatherIcon 
+                                code={day.weatherCode} 
+                                size={36} 
+                                animated={true}
+                              />
+                            </div>
+
+                            {/* Temperature Range */}
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center',
+                              gap: '8px',
+                              minWidth: '100px',
+                              justifyContent: 'flex-end'
+                            }}>
+                              <div style={{ 
+                                fontSize: '16px', 
+                                fontWeight: '700', 
+                                color: theme.primaryText
+                              }}>
+                                {day.tempMax}°
+                              </div>
+                              <div style={{ 
+                                fontSize: '14px', 
+                                color: theme.secondaryText
+                              }}>
+                                {day.tempMin}°
+                              </div>
+                            </div>
+
+                            {/* Additional Info */}
+                            <div style={{ 
+                              display: 'flex', 
+                              flexDirection: 'column',
+                              alignItems: 'flex-end',
+                              fontSize: '11px',
+                              color: theme.secondaryText,
+                              minWidth: '60px'
+                            }}>
+                              {day.precipitation > 0 && (
+                                <span>🌧️ {day.precipitation}mm</span>
+                              )}
+                              <span>💨 {day.windSpeed}mph</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
         
-        {/* CSS Animations for loading spinner and weather icon bounce */}
+        {/* CSS Animations for loading spinner and weather icons */}
         <style>{`
           @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -691,8 +1081,50 @@ const AppNavigator = () => {
               transform: translateY(-4px); 
             }
           }
+          
+          /* Weather Icon Animations */
+          ${weatherIconStyles}
+          
+          /* Home Screen Special Effects */
+          .home-main-icon {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+          }
+          
+          .home-floating-icon {
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.8;
+          }
+          
+          .home-floating-icon:hover {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+          
+          .header-weather-icon {
+            opacity: 0.8;
+          }
+          
+          /* Forecast Scrolling */
+          div::-webkit-scrollbar {
+            height: 6px;
+          }
+          
+          div::-webkit-scrollbar-track {
+            background: rgba(14, 165, 233, 0.1);
+            border-radius: 3px;
+          }
+          
+          div::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.3);
+            border-radius: 3px;
+          }
+          
+          div::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.5);
+          }
         `}</style>
       </div>
+      </>
     );
   }
 
