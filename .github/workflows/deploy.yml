@@ -2,9 +2,13 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
+
+permissions:
+  contents: read
+  deployments: write
 
 jobs:
   test:
