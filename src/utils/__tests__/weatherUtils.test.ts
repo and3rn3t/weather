@@ -294,7 +294,7 @@ describe('Weather Utility Functions', () => {
           return [];
         }
         
-        const data = dailyData as Record<string, unknown>;
+        const data = dailyData as any;
         if (!Array.isArray(data.time) || !Array.isArray(data.temperature_2m_max)) {
           return [];
         }
@@ -311,7 +311,6 @@ describe('Weather Utility Functions', () => {
           windSpeed: number;
         }> = [];
         
-        const data = dailyData as any;
         for (let i = 0; i < Math.min(7, data.time.length); i++) {
           next7Days.push({
             date: data.time[i] as string,
