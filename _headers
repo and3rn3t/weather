@@ -1,0 +1,47 @@
+# Cloudflare Pages Configuration
+# https://developers.cloudflare.com/pages/
+
+# Build configuration
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Build environment variables
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--version"
+
+# Headers for better performance and security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Performance headers
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Specific headers for index.html
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Headers for API calls (if needed)
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Redirects for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Functions configuration (if needed for future API endpoints)
+[functions]
+  directory = "functions"

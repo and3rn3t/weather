@@ -1,8 +1,10 @@
 import { useState, useCallback } from 'react';
 import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
-import { useTouchGestures } from '../utils/useMobileOptimization';
 import { useHaptic } from '../utils/hapticHooks';
+import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
+import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
+import DeploymentStatus from '../utils/DeploymentStatus';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
@@ -270,7 +272,6 @@ function HomeScreen({
   isMobile,
   createMobileButton,
   navigate,
-  swipeHandlers,
   getResponsivePadding,
   getCardPadding,
   haptic
@@ -279,11 +280,6 @@ function HomeScreen({
   isMobile: boolean;
   createMobileButton: (isPrimary: boolean) => React.CSSProperties;
   navigate: (screenName: string) => void;
-  swipeHandlers: {
-    onTouchStart?: (e: React.TouchEvent) => void;
-    onTouchMove?: (e: React.TouchEvent) => void;
-    onTouchEnd?: (e: React.TouchEvent) => void;
-  };
   getResponsivePadding: () => string;
   getCardPadding: () => string;
   haptic: ReturnType<typeof useHaptic>;
@@ -303,7 +299,6 @@ function HomeScreen({
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           transition: 'background 0.6s ease'
         }}
-        {...(isMobile ? swipeHandlers : {})}
       >
         <div style={{
           backgroundColor: theme.cardBackground,
@@ -411,7 +406,6 @@ function HomeScreen({
 function WeatherDetailsScreen({
   theme,
   isMobile,
-  swipeHandlers,
   navigate,
   createMobileButton,
   city,
@@ -428,11 +422,6 @@ function WeatherDetailsScreen({
 }: Readonly<{
   theme: ThemeColors;
   isMobile: boolean;
-  swipeHandlers: {
-    onTouchStart?: (e: React.TouchEvent) => void;
-    onTouchMove?: (e: React.TouchEvent) => void;
-    onTouchEnd?: (e: React.TouchEvent) => void;
-  };
   navigate: (screenName: string) => void;
   createMobileButton: (isPrimary: boolean) => React.CSSProperties;
   city: string;
@@ -464,7 +453,6 @@ function WeatherDetailsScreen({
           style={{
             padding: '20px',
           }}
-          {...(isMobile ? swipeHandlers : {})}
         >
           <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <button
@@ -1009,8 +997,7 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
 }
 
 const AppNavigator = () => {
-  const { theme, isMobile, isTablet, createMobileButton } = useTheme();
-  const gestures = useTouchGestures();
+  const { theme, themeName, isMobile, isTablet, createMobileButton } = useTheme();
   const haptic = useHaptic();
   const [currentScreen, setCurrentScreen] = useState('Home');
   const [city, setCity] = useState('');
@@ -1021,16 +1008,25 @@ const AppNavigator = () => {
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
 
+  // Get swipe configuration for current screen
+  const swipeConfig = useScreenSwipeConfig(currentScreen);
+
   const navigate = (screenName: string) => {
-    // Trigger haptic feedback for navigation
-    haptic.navigationSwipe();
     setCurrentScreen(screenName);
   };
 
-  const swipeHandlers = gestures.createSwipeHandler(
-    () => currentScreen === 'Home' && navigate('WeatherDetails'),
-    () => currentScreen === 'WeatherDetails' && navigate('Home')
-  );
+  // Enhanced swipe navigation handlers
+  const handleSwipeLeft = () => {
+    if (currentScreen === 'Home') {
+      navigate('WeatherDetails');
+    }
+  };
+
+  const handleSwipeRight = () => {
+    if (currentScreen === 'WeatherDetails') {
+      navigate('Home');
+    }
+  };
 
   const getResponsivePadding = () => {
     if (isMobile) return '16px';
@@ -1109,40 +1105,59 @@ const AppNavigator = () => {
       await getWeather();
     }
   }, [city, weather, getWeather, haptic]);
-  if (currentScreen === 'Home')
-    return (
-      <HomeScreen
+
+  return (
+    <>
+      <SwipeNavigationContainer
+        currentScreen={currentScreen}
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
+        canSwipeLeft={swipeConfig.canSwipeLeft}
+        canSwipeRight={swipeConfig.canSwipeRight}
         theme={theme}
         isMobile={isMobile}
-        createMobileButton={createMobileButton}
-        navigate={navigate}
-        swipeHandlers={swipeHandlers}
-        getResponsivePadding={getResponsivePadding}
-        getCardPadding={getCardPadding}
-        haptic={haptic}
-      />
-    );
-  if (currentScreen === 'WeatherDetails') return (
-    <WeatherDetailsScreen
-      theme={theme}
-      isMobile={isMobile}
-      swipeHandlers={swipeHandlers}
-      navigate={navigate}
-      createMobileButton={createMobileButton}
-      city={city}
-      setCity={setCity}
-      loading={loading}
-      error={error}
-      weather={weather}
-      hourlyForecast={hourlyForecast}
-      dailyForecast={dailyForecast}
-      weatherCode={weatherCode}
-      getWeather={getWeather}
-      onRefresh={handleRefresh}
-      haptic={haptic}
-    />
+        swipeThreshold={80}
+        enableDesktopSupport={false}
+      >
+        {currentScreen === 'Home' && (
+          <HomeScreen
+            theme={theme}
+            isMobile={isMobile}
+            createMobileButton={createMobileButton}
+            navigate={navigate}
+            getResponsivePadding={getResponsivePadding}
+            getCardPadding={getCardPadding}
+            haptic={haptic}
+          />
+        )}
+        
+        {currentScreen === 'WeatherDetails' && (
+          <WeatherDetailsScreen
+            theme={theme}
+            isMobile={isMobile}
+            navigate={navigate}
+            createMobileButton={createMobileButton}
+            city={city}
+            setCity={setCity}
+            loading={loading}
+            error={error}
+            weather={weather}
+            hourlyForecast={hourlyForecast}
+            dailyForecast={dailyForecast}
+            weatherCode={weatherCode}
+            getWeather={getWeather}
+            onRefresh={handleRefresh}
+            haptic={haptic}
+          />
+        )}
+      </SwipeNavigationContainer>
+      
+      {/* Deployment Status Indicator - Only show in production */}
+      {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
+        <DeploymentStatus theme={themeName} />
+      )}
+    </>
   );
-  return <div>Unknown screen</div>;
 };
 
 export default AppNavigator;

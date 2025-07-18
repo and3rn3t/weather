@@ -1,0 +1,36 @@
+# Cloudflare Workers/Pages Configuration
+# For Pages deployment with optional Functions support
+
+name = "premium-weather-app"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Build configuration
+[build]
+command = "npm run build"
+cwd = "."
+watch_dir = "src"
+
+# Environment variables
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+
+# Pages configuration
+[pages]
+build_command = "npm run build"
+destination_dir = "dist"
+source_dir = "."
+
+# Optional: Add functions support for future API endpoints
+# [env.production.vars]
+# API_KEY = "your-api-key"
+# DATABASE_URL = "your-database-url"
+
+# Optional: Add KV namespaces for data storage
+# [[kv_namespaces]]
+# binding = "WEATHER_CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"

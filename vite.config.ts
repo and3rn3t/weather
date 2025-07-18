@@ -5,6 +5,26 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  
+  // Build configuration for production deployment
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    minify: 'esbuild',
+    target: 'es2020',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          utils: ['axios']
+        }
+      }
+    }
+  },
+  
+  // Base URL for deployment (will be updated per environment)
+  base: '/',
+  
   optimizeDeps: {
     exclude: ['react-native']
   },

@@ -7,7 +7,7 @@
 
 import React, { createContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { useHapticFeedback, type HapticConfig, HapticPattern } from './useHapticFeedback';
+import { useHapticFeedback, type HapticConfig, HapticPattern, type HapticPatternType } from './useHapticFeedback';
 
 // ============================================================================
 // HAPTIC FEEDBACK CONTEXT
@@ -66,7 +66,7 @@ export const HapticFeedbackProvider: React.FC<HapticFeedbackProviderProps> = ({
 interface HapticWrapperProps {
   children: ReactNode;
   onPress?: () => void;
-  hapticPattern?: HapticPattern;
+  hapticPattern?: HapticPatternType;
   disabled?: boolean;
   className?: string;
   style?: React.CSSProperties;

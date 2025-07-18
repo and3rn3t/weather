@@ -15,13 +15,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:production": "NODE_ENV=production tsc -b && vite build --mode production",
+    "build:analyze": "tsc -b && vite build --mode production && npx vite-bundle-analyzer dist/stats.html",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "test:ci": "vitest run --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "deploy:preview": "npm run build && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01",
+    "deploy:production": "npm run build:production && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01"
   },
   "dependencies": {
     "@react-navigation/native": "^7.1.14",
@@ -30,7 +35,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-native": "^0.80.1",
-    "react-native-web": "^0.20.0"
+    "react-native-web": "^0.20.0",
+    "wrangler": "^4.25.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
