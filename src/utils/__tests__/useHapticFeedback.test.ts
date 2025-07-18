@@ -6,10 +6,11 @@
  */
 
 import { renderHook, act } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { useHapticFeedback, HapticPattern } from '../useHapticFeedback';
 
 // Mock navigator.vibrate
-const mockVibrate = jest.fn();
+const mockVibrate = vi.fn();
 Object.defineProperty(navigator, 'vibrate', {
   writable: true,
   value: mockVibrate
@@ -23,7 +24,7 @@ Object.defineProperty(navigator, 'userAgent', {
 
 describe('useHapticFeedback', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockVibrate.mockReturnValue(true);
   });
 

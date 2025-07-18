@@ -5,10 +5,11 @@
  */
 
 import { renderHook, act } from '@testing-library/react';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { useHapticFeedback, HapticPattern } from '../useHapticFeedback';
 
 // Mock the Web Vibration API
-const mockVibrate = jest.fn(() => true);
+const mockVibrate = vi.fn(() => true);
 Object.defineProperty(navigator, 'vibrate', {
   value: mockVibrate,
   writable: true,
@@ -23,7 +24,7 @@ Object.defineProperty(navigator, 'userAgent', {
 describe('Haptic Feedback System', () => {
   beforeEach(() => {
     mockVibrate.mockClear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('useHapticFeedback Hook', () => {
@@ -176,7 +177,11 @@ describe('Haptic Feedback System', () => {
 
     it('should handle missing vibration API', () => {
       const originalVibrate = navigator.vibrate;
-      delete (navigator as unknown as { vibrate?: typeof navigator.vibrate }).vibrate;
+      // Mock navigator without vibrate property
+      Object.defineProperty(navigator, 'vibrate', {
+        value: undefined,
+        configurable: true,
+      });
       
       const { result } = renderHook(() => useHapticFeedback());
       
@@ -188,8 +193,11 @@ describe('Haptic Feedback System', () => {
       
       // Should not throw, should fail silently
       
-      // Restore
-      (navigator as unknown as { vibrate: typeof navigator.vibrate }).vibrate = originalVibrate;
+      // Restore original vibrate function
+      Object.defineProperty(navigator, 'vibrate', {
+        value: originalVibrate,
+        configurable: true,
+      });
     });
   });
 

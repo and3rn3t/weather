@@ -5,6 +5,7 @@ import { useHaptic } from '../utils/hapticHooks';
 import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
 import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
 import DeploymentStatus from '../utils/DeploymentStatus';
+import LocationButton from '../utils/LocationButton';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
@@ -412,11 +413,13 @@ function WeatherDetailsScreen({
   setCity,
   loading,
   error,
+  setError,
   weather,
   hourlyForecast,
   dailyForecast,
   weatherCode,
   getWeather,
+  getWeatherByLocation,
   onRefresh,
   haptic
 }: Readonly<{
@@ -428,11 +431,13 @@ function WeatherDetailsScreen({
   setCity: (city: string) => void;
   loading: boolean;
   error: string;
+  setError: (error: string) => void;
   weather: WeatherData | null;
   hourlyForecast: HourlyForecast[];
   dailyForecast: DailyForecast[];
   weatherCode: number;
   getWeather: () => void;
+  getWeatherByLocation: (city: string, lat: number, lon: number) => Promise<void>;
   onRefresh: () => Promise<void>;
   haptic: ReturnType<typeof useHaptic>;
 }>) {
@@ -545,43 +550,62 @@ function WeatherDetailsScreen({
                   }
                 }}
               />
-              <button
-                onClick={() => {
-                  haptic.buttonConfirm(); // Haptic feedback for search button
-                  getWeather();
-                }}
-                disabled={loading}
-                style={{
-                  background: loading ? theme.loadingBackground : theme.buttonGradient,
-                  color: theme.inverseText,
-                  border: 'none',
-                  borderRadius: '16px',
-                  padding: '16px 32px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: loading ? 'none' : theme.buttonShadow,
-                  transition: 'all 0.3s ease',
-                  minWidth: '140px'
-                }}
-              >
-                {loading ? (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      borderTop: '2px solid white',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
-                    }}></span>{' '}
-                    Loading...
-                  </span>
-                ) : (
-                  '🔍 Search'
-                )}
-              </button>
+              <div style={{ 
+                display: 'flex', 
+                gap: '8px',
+                flexWrap: isMobile ? 'wrap' : 'nowrap'
+              }}>
+                <LocationButton
+                  theme={theme}
+                  isMobile={isMobile}
+                  onLocationReceived={getWeatherByLocation}
+                  onError={(error) => {
+                    // Set error state for location failures
+                    setError(error);
+                  }}
+                  disabled={loading}
+                  variant="secondary"
+                  size={isMobile ? "medium" : "medium"}
+                  showLabel={!isMobile} // Hide label on mobile for space
+                />
+                <button
+                  onClick={() => {
+                    haptic.buttonConfirm(); // Haptic feedback for search button
+                    getWeather();
+                  }}
+                  disabled={loading}
+                  style={{
+                    background: loading ? theme.loadingBackground : theme.buttonGradient,
+                    color: theme.inverseText,
+                    border: 'none',
+                    borderRadius: '16px',
+                    padding: '16px 32px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    boxShadow: loading ? 'none' : theme.buttonShadow,
+                    transition: 'all 0.3s ease',
+                    minWidth: '140px'
+                  }}
+                >
+                  {loading ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid rgba(255,255,255,0.3)',
+                        borderTop: '2px solid white',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }}></span>{' '}
+                      Loading...
+                    </span>
+                  ) : (
+                    '🔍 Search'
+                  )}
+                </button>
+              </div>
             </div>
             {error && (
               <div style={{
@@ -819,9 +843,6 @@ function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Rea
             return (
               <div
                 key={`hour-${hour.time}-${index}`}
-                onClick={() => {
-                  haptic.buttonPress(); // Haptic feedback for forecast selection
-                }}
                 style={{
                   minWidth: '80px',
                   ...createCardStyle(theme),
@@ -829,19 +850,7 @@ function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Rea
                   textAlign: 'center',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                   scrollSnapAlign: isMobile ? 'start' : 'none',
-                  flexShrink: 0,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={e => {
-                  const target = e.target as HTMLDivElement;
-                  target.style.transform = 'translateY(-2px)';
-                  target.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
-                }}
-                onMouseLeave={e => {
-                  const target = e.target as HTMLDivElement;
-                  target.style.transform = 'translateY(0)';
-                  target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+                  flexShrink: 0
                 }}
               >
                 <div style={{
@@ -930,9 +939,6 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
             return (
               <div
                 key={`day-${day.date}-${index}`}
-                onClick={() => {
-                  haptic.buttonPress(); // Haptic feedback for daily forecast selection
-                }}
                 style={{
                   ...createCardStyle(theme),
                   backgroundColor: isToday ? `${theme.weatherCardBorder}20` : theme.forecastCardBackground,
@@ -940,19 +946,7 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   border: `1px solid ${isToday ? theme.weatherCardBorder + '50' : theme.forecastCardBorder}`,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={e => {
-                  const target = e.target as HTMLDivElement;
-                  target.style.transform = 'translateY(-1px)';
-                  target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.1)';
-                }}
-                onMouseLeave={e => {
-                  const target = e.target as HTMLDivElement;
-                  target.style.transform = 'translateY(0)';
-                  target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                 }}
               >
                 <div style={{
@@ -1078,6 +1072,37 @@ const AppNavigator = () => {
     return '60px 40px';
   };
 
+  // Common weather data fetching logic
+  const fetchWeatherData = useCallback(async (lat: number, lon: number) => {
+    const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+    const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
+    const weatherResponse = await fetch(weatherUrl);
+    if (!weatherResponse.ok) throw new Error(`Weather API failed: ${weatherResponse.status}`);
+    const weatherData = await weatherResponse.json();
+    const currentWeatherCode = weatherData.current_weather?.weathercode || 0;
+    setWeatherCode(currentWeatherCode);
+    const currentHour = new Date().getHours();
+    const hourlyData = weatherData.hourly;
+    const transformedData = {
+      main: {
+        temp: weatherData.current_weather?.temperature || 0,
+        feels_like: hourlyData?.apparent_temperature?.[currentHour] || weatherData.current_weather?.temperature || 0,
+        humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
+        pressure: hourlyData?.surface_pressure?.[currentHour] || 1013
+      },
+      weather: [{ description: getWeatherDescription(currentWeatherCode) }],
+      wind: {
+        speed: weatherData.current_weather?.windspeed || 0,
+        deg: weatherData.current_weather?.winddirection || 0
+      },
+      uv_index: hourlyData?.uv_index?.[currentHour] || 0,
+      visibility: hourlyData?.visibility?.[currentHour] || 0
+    };
+    setWeather(transformedData);
+    setHourlyForecast(processHourlyForecast(hourlyData as HourlyData));
+    setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
+  }, []);
+
   const getWeather = useCallback(async () => {
     if (!city.trim()) {
       setError('Please enter a city name');
@@ -1097,33 +1122,7 @@ const AppNavigator = () => {
       const geoData = await geoResponse.json();
       if (!geoData || geoData.length === 0) throw new Error('City not found. Please check the spelling and try again.');
       const { lat, lon } = geoData[0];
-      const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
-      const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
-      const weatherResponse = await fetch(weatherUrl);
-      if (!weatherResponse.ok) throw new Error(`Weather API failed: ${weatherResponse.status}`);
-      const weatherData = await weatherResponse.json();
-      const currentWeatherCode = weatherData.current_weather?.weathercode || 0;
-      setWeatherCode(currentWeatherCode);
-      const currentHour = new Date().getHours();
-      const hourlyData = weatherData.hourly;
-      const transformedData = {
-        main: {
-          temp: weatherData.current_weather?.temperature || 0,
-          feels_like: hourlyData?.apparent_temperature?.[currentHour] || weatherData.current_weather?.temperature || 0,
-          humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-          pressure: hourlyData?.surface_pressure?.[currentHour] || 1013
-        },
-        weather: [{ description: getWeatherDescription(currentWeatherCode) }],
-        wind: {
-          speed: weatherData.current_weather?.windspeed || 0,
-          deg: weatherData.current_weather?.winddirection || 0
-        },
-        uv_index: hourlyData?.uv_index?.[currentHour] || 0,
-        visibility: hourlyData?.visibility?.[currentHour] || 0
-      };
-      setWeather(transformedData);
-      setHourlyForecast(processHourlyForecast(hourlyData as HourlyData));
-      setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
+      await fetchWeatherData(lat, lon);
       haptic.searchSuccess(); // Haptic feedback for successful weather fetch
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -1132,7 +1131,25 @@ const AppNavigator = () => {
     } finally {
       setLoading(false);
     }
-  }, [city, haptic]);
+  }, [city, haptic, fetchWeatherData]);
+
+  // Location-based weather fetching
+  const getWeatherByLocation = useCallback(async (locationCity: string, lat: number, lon: number) => {
+    setLoading(true);
+    setError('');
+    setCity(locationCity); // Update city state with location name
+    haptic.dataLoad(); // Light haptic feedback when starting location-based search
+    try {
+      await fetchWeatherData(lat, lon);
+      haptic.searchSuccess(); // Haptic feedback for successful location-based weather fetch
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(`Failed to fetch weather data for your location: ${errorMessage}`);
+      haptic.searchError(); // Haptic feedback for location-based search error
+    } finally {
+      setLoading(false);
+    }
+  }, [haptic, fetchWeatherData]);
 
   // Pull-to-refresh handler - refreshes current weather data
   const handleRefresh = useCallback(async () => {
@@ -1179,11 +1196,13 @@ const AppNavigator = () => {
             setCity={setCity}
             loading={loading}
             error={error}
+            setError={setError}
             weather={weather}
             hourlyForecast={hourlyForecast}
             dailyForecast={dailyForecast}
             weatherCode={weatherCode}
             getWeather={getWeather}
+            getWeatherByLocation={getWeatherByLocation}
             onRefresh={handleRefresh}
             haptic={haptic}
           />

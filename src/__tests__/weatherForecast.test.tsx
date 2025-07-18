@@ -9,17 +9,20 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AppNavigator from '../navigation/AppNavigator';
 import { ThemeProvider } from '../utils/themeContext';
+import { HapticFeedbackProvider } from '../utils/hapticContext';
 
-// Wrapper component with theme provider
-const AppWithTheme = () => (
-  <ThemeProvider>
-    <AppNavigator />
-  </ThemeProvider>
+// Wrapper component with all providers
+const AppWithProviders = () => (
+  <HapticFeedbackProvider>
+    <ThemeProvider>
+      <AppNavigator />
+    </ThemeProvider>
+  </HapticFeedbackProvider>
 );
 
 describe('Weather Forecast Features', () => {
   test('displays hourly forecast after weather search', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate to weather details
     const checkWeatherButton = screen.getByText('Check Weather →');
@@ -44,7 +47,7 @@ describe('Weather Forecast Features', () => {
   });
 
   test('displays daily forecast after weather search', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate to weather details
     const checkWeatherButton = screen.getByText('Check Weather →');
@@ -69,7 +72,7 @@ describe('Weather Forecast Features', () => {
   });
 
   test('hourly forecast shows temperature and weather icons', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate to weather details and search
     const checkWeatherButton = screen.getByText('Check Weather →');
@@ -97,7 +100,7 @@ describe('Weather Forecast Features', () => {
   });
 
   test('daily forecast shows min/max temperatures', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate and search
     const checkWeatherButton = screen.getByText('Check Weather →');
@@ -124,7 +127,7 @@ describe('Weather Forecast Features', () => {
   });
 
   test('forecast data updates when searching different cities', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate to weather details
     const checkWeatherButton = screen.getByText('Check Weather →');
@@ -160,7 +163,7 @@ describe('Weather Forecast Features', () => {
 
 describe('Forecast UI Components', () => {
   test('hourly forecast is horizontally scrollable', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate and search
     const checkWeatherButton = screen.getByText('Check Weather →');
@@ -184,7 +187,7 @@ describe('Forecast UI Components', () => {
   });
 
   test('daily forecast highlights today differently', async () => {
-    render(<AppWithTheme />);
+    render(<AppWithProviders />);
     
     // Navigate and search
     const checkWeatherButton = screen.getByText('Check Weather →');
