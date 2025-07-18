@@ -125,11 +125,11 @@ describe('AppNavigator Component', () => {
               winddirection: 180
             },
             hourly: {
-              apparent_temperature: [72],
-              relative_humidity_2m: [65],
-              surface_pressure: [1013],
-              uv_index: [5],
-              visibility: [10000]
+              apparent_temperature: Array(24).fill(72),
+              relative_humidity_2m: Array(24).fill(65),
+              surface_pressure: Array(24).fill(1013),
+              uv_index: Array(24).fill(5),
+              visibility: Array(24).fill(10000)
             }
           })
         });
@@ -186,11 +186,11 @@ describe('AppNavigator Component', () => {
             winddirection: 180
           },
           hourly: {
-            apparent_temperature: [70],
-            relative_humidity_2m: [65],
-            surface_pressure: [1013],
-            uv_index: [5],
-            visibility: [10000]
+            apparent_temperature: Array(24).fill(70), // Provide 24 hours of data
+            relative_humidity_2m: Array(24).fill(65),
+            surface_pressure: Array(24).fill(1013),
+            uv_index: Array(24).fill(5),
+            visibility: Array(24).fill(10000)
           }
         })
       });
@@ -225,7 +225,13 @@ describe('AppNavigator Component', () => {
             ok: true,
             json: async () => ({
               current_weather: { temperature: 72, weathercode: 0, windspeed: 5, winddirection: 180 },
-              hourly: { apparent_temperature: [70], relative_humidity_2m: [65], surface_pressure: [1013], uv_index: [5], visibility: [10000] }
+              hourly: { 
+                apparent_temperature: Array(24).fill(70), 
+                relative_humidity_2m: Array(24).fill(65), 
+                surface_pressure: Array(24).fill(1013), 
+                uv_index: Array(24).fill(5), 
+                visibility: Array(24).fill(10000) 
+              }
             })
           }), 100);
         }));
@@ -354,11 +360,11 @@ describe('AppNavigator Component', () => {
               winddirection: 180
             },
             hourly: {
-              apparent_temperature: [70],
-              relative_humidity_2m: [65],
-              surface_pressure: [1013],
-              uv_index: [5],
-              visibility: [10000]
+              apparent_temperature: Array(24).fill(70),
+              relative_humidity_2m: Array(24).fill(65),
+              surface_pressure: Array(24).fill(1013),
+              uv_index: Array(24).fill(5),
+              visibility: Array(24).fill(10000)
             }
           })
         });
@@ -408,11 +414,11 @@ describe('AppNavigator Component', () => {
               winddirection: 225
             },
             hourly: {
-              apparent_temperature: [73.1],
-              relative_humidity_2m: [68],
-              surface_pressure: [1015.3],
-              uv_index: [7.2],
-              visibility: [15000]
+              apparent_temperature: Array(24).fill(73),
+              relative_humidity_2m: Array(24).fill(68),
+              surface_pressure: Array(24).fill(1015),
+              uv_index: Array(24).fill(7),
+              visibility: Array(24).fill(15000)
             }
           })
         });
@@ -460,11 +466,11 @@ describe('AppNavigator Component', () => {
               winddirection: 90
             },
             hourly: {
-              apparent_temperature: [68],
-              relative_humidity_2m: [null],
-              surface_pressure: [null],
-              uv_index: [0],
-              visibility: [0]
+              apparent_temperature: Array(24).fill(68),
+              relative_humidity_2m: Array(24).fill(null),
+              surface_pressure: Array(24).fill(null),
+              uv_index: Array(24).fill(0),
+              visibility: Array(24).fill(0)
             }
           })
         });

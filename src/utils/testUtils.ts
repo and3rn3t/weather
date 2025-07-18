@@ -1,7 +1,8 @@
 /**
  * Test Utilities
  * 
- * Common utilities and helpers for testing across the weather app
+ * Common utilities and helpers for testing the modern weather app
+ * All components use inline implementations in AppNavigator.tsx
  */
 
 // ========================================================================
@@ -9,7 +10,7 @@
 // ========================================================================
 
 /**
- * Generates mock weather data for testing
+ * Generates mock weather data for modern OpenMeteo API format
  */
 export const createMockWeatherData = (overrides = {}) => ({
   main: {
@@ -48,11 +49,11 @@ export const createMockOpenMeteoResponse = (overrides = {}) => ({
     winddirection: 180,
   },
   hourly: {
-    apparent_temperature: [70, 71, 72, 73],
-    relative_humidity_2m: [65, 66, 67, 68],
-    surface_pressure: [1013, 1014, 1015, 1016],
-    uv_index: [5, 6, 7, 8],
-    visibility: [10000, 10000, 10000, 10000]
+    apparent_temperature: Array(24).fill(70),
+    relative_humidity_2m: Array(24).fill(70),
+    surface_pressure: Array(24).fill(1013),
+    uv_index: Array(24).fill(5),
+    visibility: Array(24).fill(10000)
   },
   ...overrides
 });
