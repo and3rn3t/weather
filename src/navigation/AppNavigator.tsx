@@ -1,46 +1,122 @@
 import { useState } from 'react';
 
+/**
+ * WeatherData type definition for the transformed weather response
+ * This structure standardizes the OpenMeteo API response for our UI components
+ */
 type WeatherData = {
   main: {
-    temp: number;
-    feels_like: number;
-    humidity: number;
-    pressure: number;
+    temp: number;           // Current temperature in Fahrenheit
+    feels_like: number;     // Apparent temperature in Fahrenheit
+    humidity: number;       // Relative humidity percentage
+    pressure: number;       // Atmospheric pressure in hPa
   };
   weather: {
-    description: string;
+    description: string;    // Human-readable weather condition
   }[];
   wind: {
-    speed: number;
-    deg: number;
+    speed: number;          // Wind speed in mph
+    deg: number;            // Wind direction in degrees
   };
-  uv_index: number;
-  visibility: number;
+  uv_index: number;         // UV index (0-11+ scale)
+  visibility: number;       // Visibility in meters
 };
 
 /**
- * AppNavigator component.
- * Sets up a modern navigation structure for the weather app with two screens: Home and WeatherDetails.
+ * AppNavigator - Main Weather App Component
  * 
- * Features:
- * - Glassmorphism design with gradient backgrounds
- * - OpenMeteo weather API integration (free, no API key required)
- * - OpenStreetMap Nominatim geocoding (free)
- * - Responsive animations and hover effects
- * - Imperial units (Fahrenheit) display
+ * A modern, responsive weather application built with React and TypeScript.
+ * Features a glassmorphism design with real-time weather data from free APIs.
+ * 
+ * Key Features:
+ * - 🎨 Modern glassmorphism UI with gradient backgrounds
+ * - 🌍 OpenMeteo weather API integration (completely free, no API key required)
+ * - 📍 OpenStreetMap Nominatim geocoding (free city-to-coordinates conversion)
+ * - 🎭 Animated weather icons with bounce effects
+ * - 📱 Responsive design with hover animations
+ * - 🌡️ Imperial units (Fahrenheit, mph) for US users
+ * - ⚡ Real-time weather data including humidity, pressure, wind, UV index
+ * 
+ * Technical Architecture:
+ * - Custom state-based navigation (inline components for browser compatibility)
+ * - Two-step API process: City name → Coordinates → Weather data
+ * - Hourly data extraction for current conditions (humidity, pressure, etc.)
+ * - Comprehensive error handling and loading states
+ * - CSS-in-JS styling with modern animations
+ * 
+ * @returns JSX.Element - The complete weather application interface
  */
 const AppNavigator = () => {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+  
+  /** Current active screen ('Home' | 'WeatherDetails') */
   const [currentScreen, setCurrentScreen] = useState('Home');
+  
+  /** User input city name for weather search */
   const [city, setCity] = useState('');
+  
+  /** Transformed weather data from OpenMeteo API */
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  
+  /** Current weather code from OpenMeteo (used for icon selection) */
+  const [weatherCode, setWeatherCode] = useState(0);
+  
+  /** Loading state for API requests */
   const [loading, setLoading] = useState(false);
+  
+  /** Error message for display to user */
   const [error, setError] = useState('');
 
+  // ============================================================================
+  // NAVIGATION FUNCTIONS
+  // ============================================================================
+  
+  /**
+   * Navigate between screens
+   * @param screenName - Target screen name
+   */
   const navigate = (screenName: string) => {
     setCurrentScreen(screenName);
   };
 
+  // ============================================================================
+  // WEATHER ICON MAPPING
+  // ============================================================================
+  
+  /**
+   * Maps OpenMeteo weather codes to animated emoji icons
+   * @param code - OpenMeteo weather code (0-99)
+   * @returns Emoji string for the weather condition
+   */
+  const getWeatherIcon = (code: number) => {
+    if (code === 0) return '☀️';                    // Clear sky
+    if (code === 1) return '🌤️';                   // Mainly clear
+    if (code === 2 || code === 3) return '☁️';     // Partly cloudy / Overcast
+    if (code === 45 || code === 48) return '🌫️';  // Fog / Depositing rime fog
+    if (code >= 51 && code <= 55) return '🌦️';    // Drizzle (light to dense)
+    if (code >= 61 && code <= 65) return '🌧️';    // Rain (light to heavy)
+    if (code >= 71 && code <= 75) return '❄️';     // Snow (light to heavy)
+    if (code >= 80 && code <= 82) return '🌦️';    // Rain showers (light to violent)
+    if (code >= 95 && code <= 99) return '⛈️';     // Thunderstorms (with/without hail)
+    return '🌤️';                                   // Default fallback
+  };
+
+  // ============================================================================
+  // MAIN WEATHER API FUNCTION
+  // ============================================================================
+  
+  /**
+   * Fetches weather data using a two-step process:
+   * 1. Convert city name to coordinates using OpenStreetMap Nominatim
+   * 2. Get weather data from OpenMeteo using coordinates
+   * 
+   * This approach ensures accurate weather data for any global location
+   * while using completely free APIs with no rate limits or API keys required.
+   */
   const getWeather = async () => {
+    // Input validation
     if (!city.trim()) {
       setError('Please enter a city name');
       return;
@@ -50,14 +126,18 @@ const AppNavigator = () => {
     setError('');
     
     try {
-      // Step 1: Get coordinates from city name using OpenStreetMap Nominatim (free geocoding)
+      // ========================================================================
+      // STEP 1: GEOCODING - Convert city name to coordinates
+      // ========================================================================
+      
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
       const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
       
-      console.log('Getting coordinates for city:', city);
+      console.log('🔍 Geocoding city:', city);
       const geoResponse = await fetch(geoUrl, {
         headers: {
-          'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' // Required by Nominatim for API compliance
+          // Required by Nominatim API for compliance and abuse prevention
+          'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)'
         }
       });
       
@@ -72,41 +152,49 @@ const AppNavigator = () => {
       }
       
       const { lat, lon } = geoData[0];
-      console.log(`Coordinates for ${city}: lat=${lat}, lon=${lon}`);
+      console.log(`📍 Coordinates found: ${city} → lat=${lat}, lon=${lon}`);
 
-      // Step 2: Get weather data using OpenMeteo API (completely free, no API key required)
+      // ========================================================================
+      // STEP 2: WEATHER DATA - Get current conditions and hourly data
+      // ========================================================================
+      
       const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
       const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;
       
-      console.log('Getting weather data from OpenMeteo...');
+      console.log('🌤️ Fetching weather data from OpenMeteo...');
       const weatherResponse = await fetch(weatherUrl);
       
       if (!weatherResponse.ok) {
         const errorData = await weatherResponse.text();
-        console.error('OpenMeteo API Error:', errorData);
+        console.error('❌ OpenMeteo API Error:', errorData);
         throw new Error(`Weather API failed: ${weatherResponse.status}`);
       }
       
       const weatherData = await weatherResponse.json();
-      console.log('Weather data received:', weatherData);
-      console.log('Current weather object:', weatherData.current_weather);
-      console.log('Current data object:', weatherData.current);
-      console.log('Available current properties:', weatherData.current ? Object.keys(weatherData.current) : 'No current object');
+      console.log('✅ Weather data received:', weatherData);
+
+      // ========================================================================
+      // STEP 3: DATA PROCESSING - Extract and transform weather information
+      // ========================================================================
       
-      // Get weather code from current_weather data
-      const weatherCode = weatherData.current_weather?.weathercode || 0;
+      // Get weather code for icon selection
+      const currentWeatherCode = weatherData.current_weather?.weathercode || 0;
+      setWeatherCode(currentWeatherCode);
       
-      // Weather codes mapping for OpenMeteo API
+      /**
+       * Maps OpenMeteo weather codes to human-readable descriptions
+       * Reference: https://open-meteo.com/en/docs
+       */
       const getWeatherDescription = (code: number) => {
         const descriptions: { [key: number]: string } = {
           0: 'clear sky',
-          1: 'mainly clear',
+          1: 'mainly clear', 
           2: 'partly cloudy',
           3: 'overcast',
           45: 'fog',
           48: 'depositing rime fog',
           51: 'light drizzle',
-          53: 'moderate drizzle',
+          53: 'moderate drizzle', 
           55: 'dense drizzle',
           61: 'light rain',
           63: 'moderate rain',
@@ -124,40 +212,65 @@ const AppNavigator = () => {
         return descriptions[code] || 'unknown';
       };
       
-      // Transform OpenMeteo response to match our expected format
-      // Since current object doesn't exist, we'll use current_weather and get current hour from hourly data
+      // ========================================================================
+      // STEP 4: DATA TRANSFORMATION - Convert to standardized format
+      // ========================================================================
+      
+      /*
+       * OpenMeteo API Structure:
+       * - current_weather: Basic conditions (temp, wind, weather code)
+       * - hourly: Detailed metrics in arrays (humidity, pressure, UV, etc.)
+       * 
+       * We extract current hour data from hourly arrays for detailed metrics
+       */
       const currentHour = new Date().getHours();
       const hourlyData = weatherData.hourly;
       
       const transformedData = {
         main: {
+          // Temperature from current_weather (always available)
           temp: weatherData.current_weather?.temperature || 0,
-          feels_like: hourlyData?.apparent_temperature?.[currentHour] || weatherData.current_weather?.temperature || 0,
-          humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50, // Default reasonable value
-          pressure: hourlyData?.surface_pressure?.[currentHour] || 1013 // Default sea level pressure
+          
+          // Feels-like temperature from hourly data, fallback to actual temp
+          feels_like: hourlyData?.apparent_temperature?.[currentHour] || 
+                     weatherData.current_weather?.temperature || 0,
+          
+          // Humidity from hourly data with reasonable default
+          humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
+          
+          // Atmospheric pressure from hourly data with sea level default
+          pressure: hourlyData?.surface_pressure?.[currentHour] || 1013
         },
         weather: [{
-          description: getWeatherDescription(weatherCode)
+          description: getWeatherDescription(currentWeatherCode)
         }],
         wind: {
+          // Wind data from current_weather
           speed: weatherData.current_weather?.windspeed || 0,
           deg: weatherData.current_weather?.winddirection || 0
         },
+        // Additional metrics from hourly data
         uv_index: hourlyData?.uv_index?.[currentHour] || 0,
         visibility: hourlyData?.visibility?.[currentHour] || 0
       };
       
       setWeather(transformedData);
+      console.log('🎉 Weather data successfully processed and displayed');
       
     } catch (error) {
-      console.error('Error fetching weather data:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('💥 Error in weather fetch process:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setError(`Failed to fetch weather data: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
 
+  // ============================================================================
+  // RENDER LOGIC - SCREEN ROUTING
+  // ============================================================================
+
+  // HOME SCREEN - Landing page with app introduction
   if (currentScreen === 'Home') {
     return (
       <div style={{ 
@@ -170,6 +283,7 @@ const AppNavigator = () => {
         padding: '20px',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
+        {/* Glassmorphism Card Container */}
         <div style={{
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(20px)',
@@ -181,6 +295,7 @@ const AppNavigator = () => {
           maxWidth: '500px',
           width: '100%'
         }}>
+          {/* App Icon */}
           <div style={{
             width: '80px',
             height: '80px',
@@ -195,6 +310,7 @@ const AppNavigator = () => {
             🌤️
           </div>
           
+          {/* App Title */}
           <h1 style={{ 
             fontSize: '32px', 
             fontWeight: '700',
@@ -205,6 +321,7 @@ const AppNavigator = () => {
             Weather App
           </h1>
           
+          {/* App Description */}
           <p style={{
             fontSize: '18px',
             color: '#718096',
@@ -214,6 +331,7 @@ const AppNavigator = () => {
             Get real-time weather information for any city around the world
           </p>
           
+          {/* Navigation Button */}
           <button 
             onClick={() => navigate('WeatherDetails')}
             style={{
@@ -248,6 +366,7 @@ const AppNavigator = () => {
     );
   }
 
+  // WEATHER DETAILS SCREEN - Main weather interface
   if (currentScreen === 'WeatherDetails') {
     return (
       <div style={{ 
@@ -441,8 +560,18 @@ const AppNavigator = () => {
                   color: '#0369a1',
                   textTransform: 'capitalize',
                   fontWeight: '500',
-                  marginBottom: '24px'
+                  marginBottom: '24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px'
                 }}>
+                  <span style={{
+                    fontSize: '32px',
+                    animation: 'bounce 2s ease-in-out infinite'
+                  }}>
+                    {getWeatherIcon(weatherCode)}
+                  </span>
                   {weather.weather[0].description}
                 </div>
                 
@@ -544,16 +673,30 @@ const AppNavigator = () => {
           </div>
         </div>
         
+        {/* CSS Animations for loading spinner and weather icon bounce */}
         <style>{`
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+          }
+          
+          @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { 
+              transform: translateY(0); 
+            }
+            40% { 
+              transform: translateY(-8px); 
+            }
+            60% { 
+              transform: translateY(-4px); 
+            }
           }
         `}</style>
       </div>
     );
   }
 
+  // Fallback for unknown screen states
   return <div>Unknown screen</div>;
 };
 
