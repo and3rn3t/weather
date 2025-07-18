@@ -241,7 +241,17 @@ export const mobileStyles = {
       cursor: 'pointer',
       userSelect: 'none' as const,
       WebkitTapHighlightColor: 'transparent',
+      tapHighlightColor: 'transparent',
+      touchAction: 'manipulation', // Critical for mobile touch
+      pointerEvents: 'auto', // Ensure pointer events work
+      position: 'relative' as const,
+      display: 'inline-block',
+      textAlign: 'center' as const,
+      textDecoration: 'none',
+      border: 'none',
+      outline: 'none',
       transition: 'all 0.2s ease',
+      zIndex: 1, // Ensure button is above other elements
       
       // Enhanced touch feedback
       ':active': {

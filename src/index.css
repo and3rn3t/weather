@@ -11,6 +11,34 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Critical mobile touch optimizations */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Ensure all interactive elements are touch-friendly */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Mobile touch optimizations */
+button, input, select, textarea, a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Special handling for text inputs */
+input[type="text"], 
+input[type="search"], 
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 a {
@@ -45,13 +73,37 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  
+  /* Enhanced mobile touch support */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px; /* WCAG compliant touch target */
+  min-width: 44px;
+  position: relative;
+  z-index: 1;
+  
+  /* Ensure buttons are accessible */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  user-select: none;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+button:active {
+  transform: scale(0.98);
+  opacity: 0.8;
 }
 
 @media (prefers-color-scheme: light) {
