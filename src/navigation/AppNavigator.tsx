@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
 import { useTouchGestures } from '../utils/useMobileOptimization';
+import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
@@ -271,7 +272,8 @@ function HomeScreen({
   navigate,
   swipeHandlers,
   getResponsivePadding,
-  getCardPadding
+  getCardPadding,
+  haptic
 }: Readonly<{
   theme: ThemeColors;
   isMobile: boolean;
@@ -284,6 +286,7 @@ function HomeScreen({
   };
   getResponsivePadding: () => string;
   getCardPadding: () => string;
+  haptic: ReturnType<typeof useHaptic>;
 }>) {
   return (
     <>
@@ -373,7 +376,10 @@ function HomeScreen({
             ))}
           </div>
           <button
-            onClick={() => navigate('WeatherDetails')}
+            onClick={() => {
+              haptic.buttonPress(); // Haptic feedback for navigation button
+              navigate('WeatherDetails');
+            }}
             style={{
               ...(isMobile ? createMobileButton(true) : createButtonStyle(theme, true)),
               padding: isMobile ? '14px 24px' : '16px 32px',
@@ -417,7 +423,8 @@ function WeatherDetailsScreen({
   dailyForecast,
   weatherCode,
   getWeather,
-  onRefresh
+  onRefresh,
+  haptic
 }: Readonly<{
   theme: ThemeColors;
   isMobile: boolean;
@@ -438,6 +445,7 @@ function WeatherDetailsScreen({
   weatherCode: number;
   getWeather: () => void;
   onRefresh: () => Promise<void>;
+  haptic: ReturnType<typeof useHaptic>;
 }>) {
   return (
     <>
@@ -460,7 +468,10 @@ function WeatherDetailsScreen({
         >
           <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <button
-            onClick={() => navigate('Home')}
+            onClick={() => {
+              haptic.buttonPress(); // Haptic feedback for back button
+              navigate('Home');
+            }}
             style={{
               ...(isMobile ? createMobileButton(false) : createButtonStyle(theme, false)),
               padding: isMobile ? '14px 20px' : '12px 20px',
@@ -539,10 +550,18 @@ function WeatherDetailsScreen({
                   target.style.backgroundColor = theme.cardBackground;
                   target.style.boxShadow = 'none';
                 }}
-                onKeyDown={e => e.key === 'Enter' && getWeather()}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    haptic.buttonConfirm(); // Haptic feedback for Enter key search
+                    getWeather();
+                  }
+                }}
               />
               <button
-                onClick={getWeather}
+                onClick={() => {
+                  haptic.buttonConfirm(); // Haptic feedback for search button
+                  getWeather();
+                }}
                 disabled={loading}
                 style={{
                   background: loading ? theme.loadingBackground : theme.buttonGradient,
@@ -992,6 +1011,7 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
 const AppNavigator = () => {
   const { theme, isMobile, isTablet, createMobileButton } = useTheme();
   const gestures = useTouchGestures();
+  const haptic = useHaptic();
   const [currentScreen, setCurrentScreen] = useState('Home');
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -1001,7 +1021,11 @@ const AppNavigator = () => {
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
 
-  const navigate = (screenName: string) => setCurrentScreen(screenName);
+  const navigate = (screenName: string) => {
+    // Trigger haptic feedback for navigation
+    haptic.navigationSwipe();
+    setCurrentScreen(screenName);
+  };
 
   const swipeHandlers = gestures.createSwipeHandler(
     () => currentScreen === 'Home' && navigate('WeatherDetails'),
@@ -1023,10 +1047,12 @@ const AppNavigator = () => {
   const getWeather = useCallback(async () => {
     if (!city.trim()) {
       setError('Please enter a city name');
+      haptic.searchError(); // Haptic feedback for input validation error
       return;
     }
     setLoading(true);
     setError('');
+    haptic.dataLoad(); // Light haptic feedback when starting search
     try {
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
       const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
@@ -1064,22 +1090,25 @@ const AppNavigator = () => {
       setWeather(transformedData);
       setHourlyForecast(processHourlyForecast(hourlyData as HourlyData));
       setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
+      haptic.searchSuccess(); // Haptic feedback for successful weather fetch
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setError(`Failed to fetch weather data: ${errorMessage}`);
+      haptic.searchError(); // Haptic feedback for search error
     } finally {
       setLoading(false);
     }
-  }, [city]);
+  }, [city, haptic]);
 
   // Pull-to-refresh handler - refreshes current weather data
   const handleRefresh = useCallback(async () => {
     if (city.trim() && weather) {
+      haptic.weatherRefresh(); // Haptic feedback for pull-to-refresh
       // Add a small delay for better UX feedback
       await new Promise(resolve => setTimeout(resolve, 500));
       await getWeather();
     }
-  }, [city, weather, getWeather]);
+  }, [city, weather, getWeather, haptic]);
   if (currentScreen === 'Home')
     return (
       <HomeScreen
@@ -1090,6 +1119,7 @@ const AppNavigator = () => {
         swipeHandlers={swipeHandlers}
         getResponsivePadding={getResponsivePadding}
         getCardPadding={getCardPadding}
+        haptic={haptic}
       />
     );
   if (currentScreen === 'WeatherDetails') return (
@@ -1109,6 +1139,7 @@ const AppNavigator = () => {
       weatherCode={weatherCode}
       getWeather={getWeather}
       onRefresh={handleRefresh}
+      haptic={haptic}
     />
   );
   return <div>Unknown screen</div>;

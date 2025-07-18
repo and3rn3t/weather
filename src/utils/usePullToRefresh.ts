@@ -2,16 +2,18 @@
  * Pull-to-Refresh Hook
  * 
  * Implements native mobile pull-to-refresh behavior for React components.
- * Provides smooth animations and haptic-like feedback for enhanced UX.
+ * Provides smooth animations and haptic feedback for enhanced UX.
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useHapticFeedback, HapticPattern } from './useHapticFeedback';
 
 interface PullToRefreshOptions {
   maxPullDistance?: number;
   triggerDistance?: number;
   refreshThreshold?: number;
   disabled?: boolean;
+  enableHaptics?: boolean;
 }
 
 interface PullToRefreshState {
@@ -29,8 +31,12 @@ export const usePullToRefresh = (
     maxPullDistance = 120,
     triggerDistance = 70,
     refreshThreshold = 60,
-    disabled = false
+    disabled = false,
+    enableHaptics = true
   } = options;
+
+  // Initialize haptic feedback
+  const haptic = useHapticFeedback({ enabled: enableHaptics });
 
   const [state, setState] = useState<PullToRefreshState>({
     isPulling: false,
@@ -69,11 +75,14 @@ export const usePullToRefresh = (
     if (disabled || state.isRefreshing) return;
     
     if (canPull()) {
+      // Light haptic feedback when starting to pull
+      haptic.triggerHaptic(HapticPattern.LIGHT);
+      
       touchStartY.current = e.touches[0].clientY;
       lastTouchY.current = e.touches[0].clientY;
       setState(prev => ({ ...prev, isPulling: true }));
     }
-  }, [disabled, state.isRefreshing, canPull]);
+  }, [disabled, state.isRefreshing, canPull, haptic]);
 
   // Handle touch move
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
@@ -88,10 +97,18 @@ export const usePullToRefresh = (
       const resistance = 0.5;
       const distance = Math.min(deltaY * resistance, maxPullDistance);
       
+      const wasCanRefresh = state.canRefresh;
+      const newCanRefresh = distance >= refreshThreshold;
+      
+      // Trigger haptic when crossing refresh threshold
+      if (!wasCanRefresh && newCanRefresh) {
+        haptic.triggerHaptic(HapticPattern.MEDIUM);
+      }
+      
       setState(prev => ({
         ...prev,
         pullDistance: distance,
-        canRefresh: distance >= refreshThreshold
+        canRefresh: newCanRefresh
       }));
       
       // Prevent scrolling when pulling
@@ -103,13 +120,16 @@ export const usePullToRefresh = (
     }
     
     lastTouchY.current = currentY;
-  }, [disabled, state.isRefreshing, state.isPulling, canPull, maxPullDistance, refreshThreshold, resetState]);
+  }, [disabled, state.isRefreshing, state.isPulling, state.canRefresh, canPull, maxPullDistance, refreshThreshold, resetState, haptic]);
 
   // Handle touch end
   const handleTouchEnd = useCallback(async () => {
     if (disabled || state.isRefreshing || !state.isPulling) return;
     
     if (state.canRefresh && state.pullDistance >= refreshThreshold) {
+      // Success haptic when refresh is triggered
+      haptic.triggerHaptic(HapticPattern.REFRESH);
+      
       setState(prev => ({
         ...prev,
         isRefreshing: true,
@@ -119,8 +139,12 @@ export const usePullToRefresh = (
       
       try {
         await onRefresh();
+        // Success haptic when refresh completes
+        haptic.triggerHaptic(HapticPattern.SUCCESS);
       } catch (error) {
         console.error('Pull-to-refresh error:', error);
+        // Error haptic when refresh fails
+        haptic.triggerHaptic(HapticPattern.ERROR);
       } finally {
         setState(prev => ({
           ...prev,
@@ -130,9 +154,11 @@ export const usePullToRefresh = (
         }));
       }
     } else {
+      // Light haptic when release without refresh
+      haptic.triggerHaptic(HapticPattern.LIGHT);
       resetState();
     }
-  }, [disabled, state.isRefreshing, state.isPulling, state.canRefresh, state.pullDistance, refreshThreshold, triggerDistance, onRefresh, resetState]);
+  }, [disabled, state.isRefreshing, state.isPulling, state.canRefresh, state.pullDistance, refreshThreshold, triggerDistance, onRefresh, resetState, haptic]);
 
   // Touch event handlers
   const pullToRefreshHandlers = {
