@@ -819,6 +819,9 @@ function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Rea
             return (
               <div
                 key={`hour-${hour.time}-${index}`}
+                onClick={() => {
+                  haptic.buttonPress(); // Haptic feedback for forecast selection
+                }}
                 style={{
                   minWidth: '80px',
                   ...createCardStyle(theme),
@@ -826,7 +829,19 @@ function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Rea
                   textAlign: 'center',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                   scrollSnapAlign: isMobile ? 'start' : 'none',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={e => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.transform = 'translateY(-2px)';
+                  target.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                }}
+                onMouseLeave={e => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.transform = 'translateY(0)';
+                  target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
                 }}
               >
                 <div style={{
@@ -915,6 +930,9 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
             return (
               <div
                 key={`day-${day.date}-${index}`}
+                onClick={() => {
+                  haptic.buttonPress(); // Haptic feedback for daily forecast selection
+                }}
                 style={{
                   ...createCardStyle(theme),
                   backgroundColor: isToday ? `${theme.weatherCardBorder}20` : theme.forecastCardBackground,
@@ -922,7 +940,19 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   border: `1px solid ${isToday ? theme.weatherCardBorder + '50' : theme.forecastCardBorder}`,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={e => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.transform = 'translateY(-1px)';
+                  target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.1)';
+                }}
+                onMouseLeave={e => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.transform = 'translateY(0)';
+                  target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
                 }}
               >
                 <div style={{
@@ -1015,16 +1045,24 @@ const AppNavigator = () => {
     setCurrentScreen(screenName);
   };
 
-  // Enhanced swipe navigation handlers
+  // Enhanced swipe navigation handlers with haptic feedback
   const handleSwipeLeft = () => {
     if (currentScreen === 'Home') {
+      haptic.triggerHaptic('navigation');
       navigate('WeatherDetails');
+    } else {
+      // Subtle error feedback for invalid swipe
+      haptic.triggerHaptic('light');
     }
   };
 
   const handleSwipeRight = () => {
     if (currentScreen === 'WeatherDetails') {
+      haptic.triggerHaptic('navigation');
       navigate('Home');
+    } else {
+      // Subtle error feedback for invalid swipe
+      haptic.triggerHaptic('light');
     }
   };
 

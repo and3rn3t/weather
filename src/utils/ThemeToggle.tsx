@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from './useTheme';
+import { useHaptic } from './hapticHooks';
 
 interface ThemeToggleProps {
   className?: string;
@@ -8,10 +9,16 @@ interface ThemeToggleProps {
 
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, style }) => {
   const { theme, isDark, toggleTheme } = useTheme();
+  const haptic = useHaptic();
+
+  const handleThemeToggle = () => {
+    haptic.settingsChange(); // Haptic feedback for theme change
+    toggleTheme();
+  };
 
   return (
     <button
-      onClick={toggleTheme}
+      onClick={handleThemeToggle}
       className={className}
       style={{
         position: 'fixed',
