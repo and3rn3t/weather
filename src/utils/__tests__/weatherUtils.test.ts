@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Import the functions we want to test from AppNavigator
@@ -288,21 +289,40 @@ describe('Weather Utility Functions', () => {
     });
 
     it('should limit results to 7 days', () => {
-      const processDailyForecast = (dailyData: any) => {
-        if (!dailyData?.time || !dailyData?.temperature_2m_max) {
+      const processDailyForecast = (dailyData: unknown) => {
+        if (!dailyData || typeof dailyData !== 'object') {
+          return [];
+        }
+        
+        const data = dailyData as Record<string, unknown>;
+        if (!Array.isArray(data.time) || !Array.isArray(data.temperature_2m_max)) {
           return [];
         }
 
-        const next7Days: any[] = [];
+        const next7Days: Array<{
+          date: string;
+          maxTemp: number;
+          minTemp: number;
+          description: string;
+          weatherCode: number;
+          tempMax: number;
+          tempMin: number;
+          precipitation: number;
+          windSpeed: number;
+        }> = [];
         
-        for (let i = 0; i < Math.min(7, dailyData.time.length); i++) {
+        const data = dailyData as any;
+        for (let i = 0; i < Math.min(7, data.time.length); i++) {
           next7Days.push({
-            date: dailyData.time[i],
-            weatherCode: dailyData.weathercode?.[i] || 0,
-            tempMax: Math.round(dailyData.temperature_2m_max[i] || 0),
-            tempMin: Math.round(dailyData.temperature_2m_min[i] || 0),
-            precipitation: Math.round((dailyData.precipitation_sum?.[i] || 0) * 10) / 10,
-            windSpeed: Math.round(dailyData.windspeed_10m_max?.[i] || 0)
+            date: data.time[i] as string,
+            maxTemp: Math.round(data.temperature_2m_max?.[i] || 0),
+            minTemp: Math.round(data.temperature_2m_min?.[i] || 0), 
+            description: 'sunny',
+            weatherCode: data.weathercode?.[i] || 0,
+            tempMax: Math.round(data.temperature_2m_max[i] || 0),
+            tempMin: Math.round(data.temperature_2m_min[i] || 0),
+            precipitation: Math.round((data.precipitation_sum?.[i] || 0) * 10) / 10,
+            windSpeed: Math.round(data.windspeed_10m_max?.[i] || 0)
           });
         }
         
