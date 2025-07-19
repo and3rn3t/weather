@@ -14,6 +14,8 @@ import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
 import PullToRefresh from '../utils/PullToRefresh';
+// PWA utilities available but not imported yet - will be added when needed
+// import { usePWAInstall, useServiceWorker, useNetworkStatus, usePWAUpdate } from '../utils/pwaUtils';
 
 /**
  * OpenMeteo API response interfaces
@@ -1012,6 +1014,13 @@ const AppNavigator = () => {
   const { theme, themeName, isMobile, isTablet, createMobileButton } = useTheme();
   const haptic = useHaptic();
   const { addToRecent, setCurrentCity } = useCityManagement();
+  
+  // PWA functionality will be added here when needed
+  // const pwaInstall = usePWAInstall();
+  // const serviceWorker = useServiceWorker();
+  // const { isOnline } = useNetworkStatus();
+  // const { updateAvailable, applyUpdate } = usePWAUpdate();
+  
   const [currentScreen, setCurrentScreen] = useState('Home');
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState<WeatherData | null>(null);
