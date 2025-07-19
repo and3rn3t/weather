@@ -164,7 +164,7 @@ describe('useLocationServices', () => {
 
     it('should handle location errors', async () => {
       const mockError = { code: 1, message: 'Permission denied' };
-      mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+      mockGeolocation.getCurrentPosition.mockImplementation((_, error) => {
         error(mockError);
       });
 
@@ -394,7 +394,7 @@ describe('LocationButton', () => {
 
   it('should handle location errors', async () => {
     const mockError = { code: 1, message: 'Permission denied' };
-    mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+    mockGeolocation.getCurrentPosition.mockImplementation((_, error) => {
       error(mockError);
     });
 
