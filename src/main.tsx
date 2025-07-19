@@ -4,13 +4,16 @@ import './index.css'
 import AppNavigator from './navigation/AppNavigator';
 import { ThemeProvider } from './utils/themeContext';
 import { HapticFeedbackProvider } from './utils/hapticContext';
+import ErrorBoundary from './ErrorBoundary';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <HapticFeedbackProvider>
-        <AppNavigator />
-      </HapticFeedbackProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <HapticFeedbackProvider>
+          <AppNavigator />
+        </HapticFeedbackProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 )

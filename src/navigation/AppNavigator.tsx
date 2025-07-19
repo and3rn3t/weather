@@ -6,6 +6,10 @@ import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
 import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
 import DeploymentStatus from '../utils/DeploymentStatus';
 import LocationButton from '../utils/LocationButton';
+import CitySelector from '../utils/CitySelector';
+import AutoCompleteSearch from '../utils/AutoCompleteSearch';
+import GeolocationVerification from '../utils/GeolocationVerification';
+import { useCityManagement } from '../utils/useCityManagement';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
@@ -410,7 +414,6 @@ function WeatherDetailsScreen({
   navigate,
   createMobileButton,
   city,
-  setCity,
   loading,
   error,
   setError,
@@ -421,14 +424,14 @@ function WeatherDetailsScreen({
   getWeather,
   getWeatherByLocation,
   onRefresh,
-  haptic
+  haptic,
+  handleLocationDetected
 }: Readonly<{
   theme: ThemeColors;
   isMobile: boolean;
   navigate: (screenName: string) => void;
   createMobileButton: (isPrimary?: boolean, size?: 'small' | 'medium' | 'large') => React.CSSProperties;
   city: string;
-  setCity: (city: string) => void;
   loading: boolean;
   error: string;
   setError: (error: string) => void;
@@ -440,6 +443,7 @@ function WeatherDetailsScreen({
   getWeatherByLocation: (city: string, lat: number, lon: number) => Promise<void>;
   onRefresh: () => Promise<void>;
   haptic: ReturnType<typeof useHaptic>;
+  handleLocationDetected: (cityName: string, latitude: number, longitude: number) => void;
 }>) {
   return (
     <>
@@ -512,44 +516,21 @@ function WeatherDetailsScreen({
               gap: '12px',
               flexWrap: 'wrap'
             }}>
-              <input
-                type="text"
-                placeholder="Enter city name..."
-                value={city}
-                onChange={e => setCity(e.target.value)}
-                style={{
-                  flex: '1',
-                  minWidth: '250px',
-                  height: '56px',
-                  border: `2px solid ${theme.cardBorder}`,
-                  borderRadius: '16px',
-                  padding: '0 20px',
-                  fontSize: '16px',
-                  fontFamily: 'inherit',
-                  backgroundColor: theme.cardBackground,
-                  color: theme.primaryText,
-                  transition: 'all 0.3s ease',
-                  outline: 'none'
-                }}
-                onFocus={e => {
-                  const target = e.target as HTMLInputElement;
-                  target.style.borderColor = theme.weatherCardBorder;
-                  target.style.backgroundColor = theme.cardBackground;
-                  target.style.boxShadow = `0 0 0 3px ${theme.weatherCardBorder}33`;
-                }}
-                onBlur={e => {
-                  const target = e.target as HTMLInputElement;
-                  target.style.borderColor = theme.cardBorder;
-                  target.style.backgroundColor = theme.cardBackground;
-                  target.style.boxShadow = 'none';
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    haptic.buttonConfirm(); // Haptic feedback for Enter key search
-                    getWeather();
-                  }
-                }}
+              <AutoCompleteSearch
+                theme={theme}
+                isMobile={isMobile}
+                onCitySelected={getWeatherByLocation}
+                onError={(error) => setError(error)}
+                disabled={loading}
+                placeholder="Search for a city..."
+                initialValue={city}
               />
+              <style>{`
+                .autocomplete-search {
+                  flex: 1;
+                  min-width: 250px;
+                }
+              `}</style>
               <div style={{ 
                 display: 'flex', 
                 gap: '8px',
@@ -558,7 +539,7 @@ function WeatherDetailsScreen({
                 <LocationButton
                   theme={theme}
                   isMobile={isMobile}
-                  onLocationReceived={getWeatherByLocation}
+                  onLocationReceived={handleLocationDetected}
                   onError={(error) => {
                     // Set error state for location failures
                     setError(error);
@@ -567,6 +548,13 @@ function WeatherDetailsScreen({
                   variant="secondary"
                   size={isMobile ? "medium" : "medium"}
                   showLabel={!isMobile} // Hide label on mobile for space
+                />
+                <CitySelector
+                  theme={theme}
+                  isMobile={isMobile}
+                  onCitySelected={getWeatherByLocation}
+                  disabled={loading}
+                  currentCity={city}
                 />
                 <button
                   onClick={() => {
@@ -1023,14 +1011,34 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
 const AppNavigator = () => {
   const { theme, themeName, isMobile, isTablet, createMobileButton } = useTheme();
   const haptic = useHaptic();
+  const { addToRecent, setCurrentCity } = useCityManagement();
   const [currentScreen, setCurrentScreen] = useState('Home');
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherCode, setWeatherCode] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showLocationVerification, setShowLocationVerification] = useState(false);
+  const [pendingLocationData, setPendingLocationData] = useState<{
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    address?: { city?: string; display?: string };
+  } | null>(null);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
+
+  // Location detection handler - must be defined early for use in JSX
+  const handleLocationDetected = useCallback((cityName: string, latitude: number, longitude: number) => {
+    // Show verification dialog for GPS-detected locations
+    setPendingLocationData({
+      latitude: latitude,
+      longitude: longitude,
+      accuracy: 0,
+      address: { city: cityName, display: cityName }
+    });
+    setShowLocationVerification(true);
+  }, []);
 
   // Get swipe configuration for current screen
   const swipeConfig = useScreenSwipeConfig(currentScreen);
@@ -1133,12 +1141,17 @@ const AppNavigator = () => {
     }
   }, [city, haptic, fetchWeatherData]);
 
-  // Location-based weather fetching
+  // Direct weather fetching (from autocomplete, city selector, etc.)
   const getWeatherByLocation = useCallback(async (locationCity: string, lat: number, lon: number) => {
     setLoading(true);
     setError('');
     setCity(locationCity); // Update city state with location name
     haptic.dataLoad(); // Light haptic feedback when starting location-based search
+    
+    // Add to city management
+    setCurrentCity(locationCity, lat, lon);
+    addToRecent(locationCity, lat, lon);
+    
     try {
       await fetchWeatherData(lat, lon);
       haptic.searchSuccess(); // Haptic feedback for successful location-based weather fetch
@@ -1149,7 +1162,20 @@ const AppNavigator = () => {
     } finally {
       setLoading(false);
     }
-  }, [haptic, fetchWeatherData]);
+  }, [haptic, fetchWeatherData, setCurrentCity, addToRecent]);
+
+  // Handle verification confirmation
+  const handleVerificationConfirm = useCallback((cityName: string, latitude: number, longitude: number) => {
+    setShowLocationVerification(false);
+    setPendingLocationData(null);
+    getWeatherByLocation(cityName, latitude, longitude);
+  }, [getWeatherByLocation]);
+
+  // Handle verification cancel
+  const handleVerificationCancel = useCallback(() => {
+    setShowLocationVerification(false);
+    setPendingLocationData(null);
+  }, []);
 
   // Pull-to-refresh handler - refreshes current weather data
   const handleRefresh = useCallback(async () => {
@@ -1193,7 +1219,6 @@ const AppNavigator = () => {
             navigate={navigate}
             createMobileButton={createMobileButton}
             city={city}
-            setCity={setCity}
             loading={loading}
             error={error}
             setError={setError}
@@ -1205,6 +1230,7 @@ const AppNavigator = () => {
             getWeatherByLocation={getWeatherByLocation}
             onRefresh={handleRefresh}
             haptic={haptic}
+            handleLocationDetected={handleLocationDetected}
           />
         )}
       </SwipeNavigationContainer>
@@ -1213,6 +1239,16 @@ const AppNavigator = () => {
       {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
         <DeploymentStatus theme={themeName} />
       )}
+
+      {/* Geolocation Verification Modal */}
+      <GeolocationVerification
+        isOpen={showLocationVerification}
+        locationData={pendingLocationData}
+        theme={theme}
+        isMobile={isMobile}
+        onConfirm={handleVerificationConfirm}
+        onCancel={handleVerificationCancel}
+      />
     </>
   );
 };
