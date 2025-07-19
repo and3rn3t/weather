@@ -12,13 +12,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* Critical mobile touch optimizations */
+  /* Mobile touch optimizations - allow normal touch behavior */
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  /* Allow text selection for content but not UI elements */
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
 }
 
 /* Ensure all interactive elements are touch-friendly */
@@ -26,19 +27,26 @@
   box-sizing: border-box;
 }
 
-/* Mobile touch optimizations */
+/* Mobile touch optimizations - allow normal scrolling by default */
 button, input, select, textarea, a {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
-/* Special handling for text inputs */
+/* Allow text selection in text inputs and content areas */
 input[type="text"], 
 input[type="search"], 
-textarea {
+textarea,
+[contenteditable] {
   user-select: text;
   -webkit-user-select: text;
+  touch-action: manipulation;
+}
+
+/* Allow normal touch behavior for scrollable content */
+body, #root, main, section, article, div {
+  touch-action: auto;
 }
 
 a {

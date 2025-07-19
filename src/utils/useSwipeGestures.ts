@@ -209,15 +209,21 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
 
     return {
       onTouchStart: (e: React.TouchEvent) => {
-        e.preventDefault();
+        // Don't prevent default on touch start - allow normal scrolling
         handleStart(e.touches[0].clientX, e.touches[0].clientY);
       },
       onTouchMove: (e: React.TouchEvent) => {
-        e.preventDefault();
+        // Only prevent default if we're in a horizontal drag
+        if (isDragging.current) {
+          e.preventDefault();
+        }
         handleMove(e.touches[0].clientX, e.touches[0].clientY);
       },
       onTouchEnd: (e: React.TouchEvent) => {
-        e.preventDefault();
+        // Only prevent default if we were dragging
+        if (isDragging.current) {
+          e.preventDefault();
+        }
         endX = e.changedTouches[0].clientX;
         endY = e.changedTouches[0].clientY;
         handleEnd(endX, endY);
