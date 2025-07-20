@@ -14,6 +14,7 @@ import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
 import PullToRefresh from '../utils/PullToRefresh';
+import NativeStatusDisplay from '../utils/NativeStatusDisplay';
 // PWA utilities available but not imported yet - will be added when needed
 // import { usePWAInstall, useServiceWorker, useNetworkStatus, usePWAUpdate } from '../utils/pwaUtils';
 
@@ -145,7 +146,9 @@ type DailyForecast = {
 // ============================================================================
 
 /** Mobile-optimized button style creator with proper touch targets */
-const createButtonStyle = (theme: ThemeColors, isPrimary = true, size: 'small' | 'medium' | 'large' = 'medium') => {
+type ButtonSize = 'small' | 'medium' | 'large';
+
+const createButtonStyle = (theme: ThemeColors, isPrimary = true, size: ButtonSize = 'medium') => {
   const baseStyle = {
     background: isPrimary ? theme.buttonGradient : theme.toggleBackground,
     color: theme.inverseText,
@@ -169,7 +172,7 @@ const createButtonStyle = (theme: ThemeColors, isPrimary = true, size: 'small' |
   };
 
   // Size-specific adjustments
-  const sizeStyles = {
+  const sizeStyles: Record<ButtonSize, { padding: string; fontSize: string; minHeight: string }> = {
     small: { padding: '8px 16px', fontSize: '14px', minHeight: '40px' },
     medium: { padding: '12px 20px', fontSize: '16px', minHeight: '44px' },
     large: { padding: '16px 24px', fontSize: '18px', minHeight: '48px' }
@@ -548,9 +551,10 @@ function WeatherDetailsScreen({
                   }}
                   disabled={loading}
                   variant="secondary"
-                  size={isMobile ? "medium" : "medium"}
+                  size="medium"
                   showLabel={!isMobile} // Hide label on mobile for space
                 />
+                
                 <CitySelector
                   theme={theme}
                   isMobile={isMobile}
@@ -1198,6 +1202,9 @@ const AppNavigator = () => {
 
   return (
     <>
+      {/* Native API Status Display - Shows native capabilities when on mobile */}
+      <NativeStatusDisplay theme={theme} isMobile={isMobile} />
+      
       <SwipeNavigationContainer
         currentScreen={currentScreen}
         onSwipeLeft={handleSwipeLeft}
