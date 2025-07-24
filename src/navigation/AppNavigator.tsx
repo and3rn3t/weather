@@ -20,7 +20,8 @@ import { useWeatherBackgroundRefresh } from '../utils/useBackgroundRefresh';
 import { useWeatherAPIOptimization, useWeatherDataTransform } from '../utils/useWeatherOptimization';
 import PerformanceMonitor from '../utils/PerformanceMonitor';
 import { LocationTester } from '../utils/LocationTester';
-import { testGeolocation, testReverseGeocoding, runFullTest } from '../utils/locationDebug';
+import MobileDebug from '../utils/MobileDebug';
+import MobileTest from '../components/MobileTest';
 import { 
   getScreenInfo, 
   getAdaptiveFontSizes,
@@ -264,7 +265,6 @@ function HomeScreen({
   adaptiveFonts,
   adaptiveSpacing,
   adaptiveBorders,
-  createMobileButton,
   navigate,
   haptic
 }: Readonly<{
@@ -273,114 +273,119 @@ function HomeScreen({
   adaptiveFonts: ReturnType<typeof getAdaptiveFontSizes>;
   adaptiveSpacing: ReturnType<typeof getAdaptiveSpacing>;
   adaptiveBorders: ReturnType<typeof getAdaptiveBorderRadius>;
-  createMobileButton: (isPrimary?: boolean, size?: 'small' | 'medium' | 'large') => React.CSSProperties;
   navigate: (screenName: string) => void;
   haptic: ReturnType<typeof useHaptic>;
 }>) {
-  const containerStyles = getMobileOptimizedContainer(theme, screenInfo);
-  const cardStyles = getMobileOptimizedCard(theme, screenInfo);
 
   return (
-    <>
+    <div className="mobile-container fade-in">
       <ThemeToggle />
-      <div style={containerStyles}>
+      <div className="mobile-card weather-display">
         <div style={{
-          ...cardStyles,
-          textAlign: 'center',
+          width: screenInfo.isVerySmallScreen ? '100px' : '120px',
+          height: screenInfo.isVerySmallScreen ? '100px' : '120px',
+          background: theme.primaryGradient,
+          borderRadius: adaptiveBorders.large,
+          margin: `0 auto ${adaptiveSpacing.sectionGap}`,
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          position: 'relative',
+          boxShadow: theme.buttonShadow
         }}>
-          <div style={{
-            width: screenInfo.isVerySmallScreen ? '100px' : '120px',
-            height: screenInfo.isVerySmallScreen ? '100px' : '120px',
-            background: theme.primaryGradient,
-            borderRadius: adaptiveBorders.large,
-            margin: `0 auto ${adaptiveSpacing.sectionGap}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            boxShadow: theme.buttonShadow
-          }}>
-            <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} className="home-main-icon" />
-            <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
-              <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} className="home-floating-icon" />
-            </div>
-            <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
-              <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} className="home-floating-icon" />
-            </div>
+          <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} className="home-main-icon" />
+          <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
+            <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} className="home-floating-icon" />
           </div>
-          <h1 style={{
-            fontSize: adaptiveFonts.heroTitle,
-            fontWeight: '700',
-            marginBottom: adaptiveSpacing.elementGap,
-            color: theme.primaryText,
-            letterSpacing: screenInfo.isVerySmallScreen ? '-0.3px' : '-0.5px',
+          <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
+            <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} className="home-floating-icon" />
+          </div>
+        </div>
+        <h1 className="mobile-title" style={{
+          color: theme.primaryText,
+          letterSpacing: screenInfo.isVerySmallScreen ? '-0.3px' : '-0.5px',
             transition: 'color 0.5s ease'
-          }}>
-            Weather App
-          </h1>
-          <p style={{
-            fontSize: adaptiveFonts.bodyLarge,
-            color: theme.secondaryText,
-            marginBottom: adaptiveSpacing.sectionGap,
-            lineHeight: '1.6',
-            transition: 'color 0.5s ease',
-            textAlign: 'center',
-            maxWidth: screenInfo.isVerySmallScreen ? '280px' : '100%'
-          }}>
-            Get real-time weather information for any city around the world
-          </p>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: adaptiveSpacing.elementGap,
-            marginBottom: adaptiveSpacing.sectionGap,
-            flexWrap: 'wrap'
-          }}>
-            {[
-              { code: 0, label: 'Sunny' },
-              { code: 61, label: 'Rainy' },
-              { code: 71, label: 'Snow' },
-              { code: 95, label: 'Storms' }
-            ].map(({ code, label }) => (
-              <div key={label} style={{ textAlign: 'center' }}>
-                <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
-                <div style={{ 
-                  fontSize: adaptiveFonts.bodySmall, 
-                  color: theme.secondaryText, 
-                  marginTop: '4px' 
-                }}>{label}</div>
-              </div>
-            ))}
-          </div>
+        }}>
+          Weather App
+        </h1>
+        <p className="mobile-body" style={{
+          color: theme.secondaryText,
+          lineHeight: '1.6',
+          transition: 'color 0.5s ease',
+          textAlign: 'center',
+          maxWidth: screenInfo.isVerySmallScreen ? '280px' : '100%'
+        }}>
+          Get real-time weather information for any city around the world
+        </p>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: adaptiveSpacing.elementGap,
+          marginBottom: adaptiveSpacing.sectionGap,
+          flexWrap: 'wrap'
+        }}>
+          {[
+            { code: 0, label: 'Sunny' },
+            { code: 61, label: 'Rainy' },
+            { code: 71, label: 'Snow' },
+            { code: 95, label: 'Storms' }
+          ].map(({ code, label }) => (
+            <div key={label} style={{ textAlign: 'center' }}>
+              <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
+              <div style={{ 
+                fontSize: adaptiveFonts.bodySmall, 
+                color: theme.secondaryText, 
+                marginTop: '4px' 
+              }}>{label}</div>
+            </div>
+          ))}
+        </div>
+        <button
+          className="mobile-button mobile-button-large"
+          onClick={() => {
+            haptic.buttonPress(); // Haptic feedback for navigation button
+            navigate('WeatherDetails');
+          }}
+          style={{
+            background: theme.primaryGradient,
+            color: theme.inverseText,
+            boxShadow: theme.buttonShadow,
+            letterSpacing: '0.5px',
+            marginBottom: '12px'
+          }}
+          onMouseEnter={e => {
+            const target = e.target as HTMLButtonElement;
+            target.style.transform = 'translateY(-2px)';
+            target.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4)';
+          }}
+          onMouseLeave={e => {
+            const target = e.target as HTMLButtonElement;
+            target.style.transform = 'translateY(0)';
+            target.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
+          }}
+        >
+          Check Weather →
+        </button>
+        
+        {/* Mobile Test Button - Development only */}
+        {import.meta.env.DEV && (
           <button
+            className="mobile-button"
             onClick={() => {
-              haptic.buttonPress(); // Haptic feedback for navigation button
-              navigate('WeatherDetails');
+              haptic.buttonPress();
+              navigate('MobileTest');
             }}
             style={{
-              ...createMobileButton(true, 'large'),
-              letterSpacing: '0.5px'
-            }}
-            onMouseEnter={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = 'translateY(-2px)';
-              target.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4)';
-            }}
-            onMouseLeave={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = 'translateY(0)';
-              target.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: theme.primaryText,
+              border: `1px solid ${theme.primaryText}30`
             }}
           >
-            Check Weather →
+            🔧 Mobile Test
           </button>
-        </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -428,22 +433,21 @@ function WeatherDetailsScreen({
   haptic: ReturnType<typeof useHaptic>;
   handleLocationDetected: (cityName: string, latitude: number, longitude: number) => void;
 }>) {
-  const containerStyles = getMobileOptimizedContainer(theme, screenInfo);
   const cardStyles = getMobileOptimizedCard(theme, screenInfo);
 
   return (
-    <>
+    <div className="mobile-container">
       <ThemeToggle />
       <PullToRefresh
         onRefresh={onRefresh}
         disabled={loading}
-        style={containerStyles}
+        style={{ width: '100%' }}
       >
-        <div style={{ padding: adaptiveSpacing.containerPadding }}>
-          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <button
-              onClick={() => {
-                haptic.buttonPress(); // Haptic feedback for back button
+        <div className="mobile-navigation">
+          <button
+            className="mobile-back-button"
+            onClick={() => {
+              haptic.buttonPress(); // Haptic feedback for back button
                 navigate('Home');
               }}
               style={{
@@ -629,7 +633,7 @@ function WeatherDetailsScreen({
         `}</style>
         </div>
       </PullToRefresh>
-    </>
+    </div>
   );
 }
 
@@ -1252,7 +1256,13 @@ const AppNavigator = () => {
   }, [city, weather, backgroundRefresh, haptic, getWeather]);
 
   return (
-    <>
+    <div 
+      className="safe-area-container"
+      style={{
+        ...getMobileOptimizedContainer(theme, screenInfo),
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}
+    >
       {/* Native API Status Display - Shows native capabilities when on mobile */}
       <NativeStatusDisplay theme={theme} isMobile={screenInfo.width < 768} />
       
@@ -1301,7 +1311,6 @@ const AppNavigator = () => {
             adaptiveFonts={adaptiveFonts}
             adaptiveSpacing={adaptiveSpacing}
             adaptiveBorders={adaptiveBorders}
-            createMobileButton={createMobileButton}
             navigate={navigate}
             haptic={haptic}
           />
@@ -1331,6 +1340,10 @@ const AppNavigator = () => {
             handleLocationDetected={handleLocationDetected}
           />
         )}
+        
+        {currentScreen === 'MobileTest' && (
+          <MobileTest />
+        )}
       </SwipeNavigationContainer>
       
       {/* Deployment Status Indicator - Only show in production */}
@@ -1354,7 +1367,13 @@ const AppNavigator = () => {
         enabled={import.meta.env.DEV}
         position="bottom-left"
       />
-    </>
+
+      {/* Mobile Debug - Development only */}
+      <MobileDebug
+        enabled={import.meta.env.DEV}
+        position="bottom-right"
+      />
+    </div>
   );
 };
 

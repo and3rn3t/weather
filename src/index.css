@@ -1,5 +1,10 @@
+/* Import critical mobile fixes first */
+@import './styles/mobile-fixes.css';
+/* Import mobile-first optimizations */
+@import './styles/mobile.css';
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -12,14 +17,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* Mobile touch optimizations - allow normal touch behavior */
+  /* Mobile touch optimizations */
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  /* Allow text selection for content but not UI elements */
-  -webkit-user-select: auto;
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
   
   /* Safe area support for notched devices */
   --safe-area-inset-top: env(safe-area-inset-top);

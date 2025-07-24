@@ -1,0 +1,487 @@
+/**
+ * Mobile-First CSS Optimizations
+ * 
+ * Comprehensive mobile styles for the weather app
+ * Following modern mobile-first responsive design principles
+ */
+
+/* ============================================================================
+   GLOBAL MOBILE OPTIMIZATIONS
+   ============================================================================ */
+
+/* Viewport and scroll optimizations */
+html {
+  font-size: 16px; /* Prevent zoom on iOS */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  
+  /* Touch optimizations */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  
+  /* Font rendering optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* ============================================================================
+   SAFE AREA AND NOTCH SUPPORT
+   ============================================================================ */
+
+.safe-area-container {
+  padding-top: max(env(safe-area-inset-top), 12px);
+  padding-bottom: max(env(safe-area-inset-bottom), 12px);
+  padding-left: max(env(safe-area-inset-left), 16px);
+  padding-right: max(env(safe-area-inset-right), 16px);
+  box-sizing: border-box;
+}
+
+/* ============================================================================
+   RESPONSIVE CONTAINERS
+   ============================================================================ */
+
+.mobile-container {
+  width: 100%;
+  max-width: 100vw;
+  padding: 16px;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+/* Small screens (320px - 375px) */
+@media (max-width: 375px) {
+  .mobile-container {
+    padding: 12px;
+  }
+  
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Very small screens (< 320px) */
+@media (max-width: 320px) {
+  .mobile-container {
+    padding: 8px;
+  }
+  
+  html {
+    font-size: 13px;
+  }
+}
+
+/* Larger mobile screens and tablets */
+@media (min-width: 768px) {
+  .mobile-container {
+    max-width: 600px;
+    padding: 24px;
+  }
+  
+  html {
+    font-size: 16px;
+  }
+}
+
+/* ============================================================================
+   MOBILE-OPTIMIZED COMPONENTS
+   ============================================================================ */
+
+/* Touch-friendly buttons */
+.mobile-button {
+  min-height: 44px; /* iOS minimum touch target */
+  min-width: 44px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.mobile-button:active {
+  transform: scale(0.98);
+}
+
+.mobile-button-large {
+  min-height: 52px;
+  padding: 16px 32px;
+  font-size: 18px;
+}
+
+.mobile-button-small {
+  min-height: 36px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* Mobile cards */
+.mobile-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 375px) {
+  .mobile-card {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+/* Weather display components */
+.weather-display {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.weather-temperature {
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin: 8px 0;
+}
+
+.weather-description {
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  font-weight: 500;
+  margin: 8px 0;
+  text-transform: capitalize;
+}
+
+.weather-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+@media (max-width: 375px) {
+  .weather-details {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+}
+
+.weather-detail-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 375px) {
+  .weather-detail-item {
+    padding: 12px 8px;
+    border-radius: 8px;
+  }
+}
+
+/* Forecast components */
+.forecast-container {
+  margin: 24px 0;
+}
+
+.forecast-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding: 16px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.forecast-item {
+  flex: 0 0 auto;
+  min-width: 80px;
+  text-align: center;
+  padding: 16px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  scroll-snap-align: start;
+}
+
+@media (max-width: 375px) {
+  .forecast-item {
+    min-width: 70px;
+    padding: 12px 8px;
+    border-radius: 8px;
+  }
+  
+  .forecast-list {
+    gap: 8px;
+    padding: 12px 0;
+  }
+}
+
+/* ============================================================================
+   TYPOGRAPHY OPTIMIZATION
+   ============================================================================ */
+
+.mobile-title {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.mobile-subtitle {
+  font-size: clamp(1.125rem, 4vw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 12px 0;
+}
+
+.mobile-body {
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.mobile-caption {
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  line-height: 1.4;
+  margin: 4px 0;
+  opacity: 0.8;
+}
+
+/* ============================================================================
+   LOADING AND FEEDBACK STATES
+   ============================================================================ */
+
+.mobile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.mobile-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mobile-error {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: center;
+  color: #ff3b30;
+}
+
+/* ============================================================================
+   PULL TO REFRESH OPTIMIZATION
+   ============================================================================ */
+
+.pull-to-refresh-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.pull-to-refresh-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================
+   NAVIGATION OPTIMIZATION
+   ============================================================================ */
+
+.mobile-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.mobile-back-button:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+   ANIMATIONS AND TRANSITIONS
+   ============================================================================ */
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================================================ */
+
+/* Focus styles for keyboard navigation */
+.mobile-button:focus-visible,
+.mobile-back-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mobile-card,
+  .weather-detail-item,
+  .forecast-item {
+    border-width: 2px;
+    border-color: currentColor;
+  }
+}
+
+/* ============================================================================
+   LANDSCAPE MODE OPTIMIZATIONS
+   ============================================================================ */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .weather-display {
+    padding: 16px;
+  }
+  
+  .weather-temperature {
+    font-size: clamp(2rem, 6vw, 2.5rem);
+  }
+  
+  .mobile-title {
+    font-size: clamp(1.25rem, 5vw, 1.5rem);
+    margin: 8px 0;
+  }
+  
+  .forecast-container {
+    margin: 16px 0;
+  }
+}
