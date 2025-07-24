@@ -4,14 +4,11 @@
  * Clean version focused on mobile optimization testing
  */
 
-import React, { useState, useCallback, useMemo, Suspense } from 'react';
-import { getScreenInfo, getAdaptiveFontSizes, getAdaptiveSpacing, getAdaptiveBorderRadius } from '../utils/mobileScreenOptimization';
+import React, { useState, useMemo, Suspense } from 'react';
+import { getScreenInfo, getAdaptiveSpacing, getAdaptiveBorderRadius } from '../utils/mobileScreenOptimization';
 import ThemeToggle from '../utils/ThemeToggle';
 import useLocationServices from '../utils/useLocationServices';
 import { WeatherCardSkeleton } from '../utils/LoadingSkeletons';
-
-const MobileTest = React.lazy(() => import('../components/MobileTest'));
-const MobileDebug = React.lazy(() => import('../utils/MobileDebug'));
 const WeatherIcon = React.lazy(() => import('../utils/weatherIcons'));
 
 type WeatherData = {
@@ -70,9 +67,8 @@ const getWeatherDescription = (code: number): string => {
 
 const SimpleMobileApp: React.FC = () => {
   // const { theme } = useTheme();
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'test'>('home');
+  // Only one screen now
   const screenInfo = useMemo(() => getScreenInfo(), []);
-  const adaptiveFonts = useMemo(() => getAdaptiveFontSizes(screenInfo), [screenInfo]);
   const adaptiveSpacing = useMemo(() => getAdaptiveSpacing(screenInfo), [screenInfo]);
   const adaptiveBorders = useMemo(() => getAdaptiveBorderRadius(screenInfo), [screenInfo]);
 
@@ -177,36 +173,6 @@ const SimpleMobileApp: React.FC = () => {
     }
   };
 
-  // Navigation function
-  const navigate = useCallback((screen: 'home' | 'test') => {
-    setCurrentScreen(screen);
-  }, []);
-
-  if (currentScreen === 'test') {
-    return (
-      <div className="safe-area-container" style={{ background: 'var(--primary-gradient)', minHeight: '100vh' }}>
-        <Suspense fallback={null}>
-          <MobileTest />
-        </Suspense>
-        <button 
-          className="mobile-back-button fixed-top-left glass-blur"
-          onClick={() => navigate('home')}
-          aria-label="Go back to home screen"
-          style={{
-            background: 'var(--toggle-background)',
-            color: 'var(--primary-text)',
-            border: '1px solid var(--toggle-border)'
-          }}
-        >
-          Back
-        </button>
-        <Suspense fallback={null}>
-          <MobileDebug enabled={true} position="bottom-right" />
-        </Suspense>
-      </div>
-    );
-  }
-
   return (
     <div className="safe-area-container" style={{ background: 'var(--primary-gradient)', minHeight: '100vh' }}>
       <ThemeToggle />
@@ -235,31 +201,10 @@ const SimpleMobileApp: React.FC = () => {
             </div>
           </Suspense>
           
-          <h1 className="mobile-title custom-font">
-            Mobile Weather App
+          <h1 className="mobile-title custom-font" style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, textAlign: 'center', letterSpacing: '-0.5px' }}>
+            Weather
           </h1>
-          
-          <p className="mobile-body custom-font text-center">
-            Testing mobile optimizations for better usability on mobile devices
-          </p>
-          
-          <div className="flex-row-wrap-center" style={{ gap: adaptiveSpacing.elementGap, marginBottom: adaptiveSpacing.sectionGap }}>
-            {[
-              { code: 0, label: 'Sunny' },
-              { code: 61, label: 'Rainy' },
-              { code: 71, label: 'Snow' },
-              { code: 95, label: 'Storms' }
-            ].map(({ code, label }) => (
-              <div key={label} className="text-center">
-                <Suspense fallback={null}>
-                  <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
-                </Suspense>
-                <div className="custom-font" style={{ fontSize: adaptiveFonts.bodySmall, color: 'var(--secondary-text)', marginTop: '4px' }}>{label}</div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="flex-center-col">
+          <div className="flex-center-col" style={{ marginBottom: 16 }}>
             <button
               className="mobile-button mobile-button-large custom-shadow"
               style={{
@@ -268,23 +213,16 @@ const SimpleMobileApp: React.FC = () => {
                 boxShadow: 'var(--button-shadow)',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 8
+                gap: 8,
+                fontSize: 18,
+                minWidth: 160,
+                minHeight: 48
               }}
               onClick={handleCheckWeather}
-              aria-label="Check weather (demo button)"
+              aria-label="Check weather"
             >
-              <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>🌦️</span>
+              <span style={{ fontSize: 20, display: 'inline-flex', alignItems: 'center' }}>🌦️</span>
               Check Weather
-            </button>
-            
-            <button
-              className="mobile-button-glass"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
-              onClick={() => navigate('test')}
-              aria-label="Test mobile UI"
-            >
-              <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>🔧</span>
-              Test Mobile UI
             </button>
           </div>
           {/* Weather loading/error/city input UI */}
@@ -436,9 +374,6 @@ const SimpleMobileApp: React.FC = () => {
         </div>
       </div>
       
-      <Suspense fallback={null}>
-        <MobileDebug enabled={true} position="bottom-right" />
-      </Suspense>
     </div>
   );
 };

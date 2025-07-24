@@ -785,3 +785,63 @@ body.dark-theme {
   max-height: 48px !important;
   padding: 0 !important;
 }
+
+/* Weather Results Polishing */
+.weather-display {
+  padding: 24px 12px 24px 12px;
+  background: var(--card-background);
+  border-radius: 20px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+  margin-bottom: 24px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hourly-forecast-section {
+  border-top: 1px solid var(--forecast-card-border, #e5e7eb);
+  margin-top: 24px;
+  padding-top: 16px;
+  background: none;
+}
+
+.daily-forecast-section {
+  border-top: 1px solid var(--forecast-card-border, #e5e7eb);
+  margin-top: 24px;
+  padding-top: 16px;
+  background: none;
+}
+
+.hourly-forecast-section h3,
+.daily-forecast-section h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-text);
+}
+
+.hourly-forecast-section > div,
+.daily-forecast-section > div {
+  /* forecast card containers */
+  margin-bottom: 0;
+}
+
+/* Make forecast cards more touch-friendly */
+.hourly-forecast-section [style*='minWidth: 80px'],
+.daily-forecast-section [style*='border-radius: 12px'] {
+  min-height: 72px;
+  padding: 12px 8px;
+  font-size: 16px;
+}
+
+/* Current weather section */
+.mobile-body.mt-20 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--primary-text);
+  background: var(--forecast-card-background, #f3f4f6);
+  border-radius: 14px;
+  padding: 16px 12px 12px 12px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
