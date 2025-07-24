@@ -48,6 +48,12 @@ export const MobileDebug: React.FC<MobileDebugProps> = ({
 
   if (!enabled) return null;
 
+  const getScreenSizeDescription = () => {
+    if (screenInfo.isVerySmallScreen) return 'Very Small';
+    if (screenInfo.isSmallScreen) return 'Small';
+    return 'Normal';
+  };
+
   const getPositionStyles = () => {
     const baseStyles = {
       position: 'fixed' as const,
@@ -79,10 +85,16 @@ export const MobileDebug: React.FC<MobileDebugProps> = ({
   };
 
   return (
-    <div
+    <button
       style={getPositionStyles()}
       onClick={() => setIsVisible(!isVisible)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setIsVisible(!isVisible);
+        }
+      }}
       title="Click to toggle mobile debug info"
+      aria-label="Toggle mobile debug information"
     >
       <div>📱 Mobile Debug</div>
       {isVisible && (
@@ -90,7 +102,7 @@ export const MobileDebug: React.FC<MobileDebugProps> = ({
           <div>Screen: {screenInfo.width}×{screenInfo.height}</div>
           <div>Pixel Ratio: {screenInfo.pixelRatio}</div>
           <div>Orientation: {screenInfo.isLandscape ? 'Landscape' : 'Portrait'}</div>
-          <div>Size: {screenInfo.isVerySmallScreen ? 'Very Small' : screenInfo.isSmallScreen ? 'Small' : 'Normal'}</div>
+          <div>Size: {getScreenSizeDescription()}</div>
           <div>Safe Area: T:{screenInfo.safeAreaTop} B:{screenInfo.safeAreaBottom}</div>
           <div>Has Notch: {screenInfo.hasNotch ? 'Yes' : 'No'}</div>
           <div>Touches: {touchCount}</div>
@@ -106,7 +118,7 @@ export const MobileDebug: React.FC<MobileDebugProps> = ({
           )}
         </>
       )}
-    </div>
+    </button>
   );
 };
 

@@ -6,14 +6,19 @@
 
 import React from 'react';
 import { useTheme } from '../utils/useTheme';
-import { getScreenInfo, getAdaptiveFontSizes, getAdaptiveSpacing } from '../utils/mobileScreenOptimization';
+import { getScreenInfo, getAdaptiveFontSizes } from '../utils/mobileScreenOptimization';
 import '../styles/mobile-fixes.css';
 
 export const MobileTest: React.FC = () => {
   const { theme } = useTheme();
   const screenInfo = getScreenInfo();
   const adaptiveFonts = getAdaptiveFontSizes(screenInfo);
-  const adaptiveSpacing = getAdaptiveSpacing(screenInfo);
+
+  const getScreenSizeDescription = () => {
+    if (screenInfo.isVerySmallScreen) return 'Very Small';
+    if (screenInfo.isSmallScreen) return 'Small';
+    return 'Normal';
+  };
 
   return (
     <div className="mobile-container fade-in" style={{ background: theme.primaryGradient }}>
@@ -32,7 +37,7 @@ export const MobileTest: React.FC = () => {
           </div>
           <div className="weather-detail-item" style={{ background: theme.cardBackground, color: theme.primaryText }}>
             <div>Size</div>
-            <div>{screenInfo.isVerySmallScreen ? 'Very Small' : screenInfo.isSmallScreen ? 'Small' : 'Normal'}</div>
+            <div>{getScreenSizeDescription()}</div>
           </div>
           <div className="weather-detail-item" style={{ background: theme.cardBackground, color: theme.primaryText }}>
             <div>Safe Area</div>

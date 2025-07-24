@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import React from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
@@ -448,24 +447,26 @@ function WeatherDetailsScreen({
             className="mobile-back-button"
             onClick={() => {
               haptic.buttonPress(); // Haptic feedback for back button
-                navigate('Home');
-              }}
-              style={{
-                ...createMobileButton(false, 'medium'),
-                marginBottom: adaptiveSpacing.sectionGap
-              }}
-              onMouseEnter={e => {
-                const target = e.target as HTMLButtonElement;
-                target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-              }}
-              onMouseLeave={e => {
-                const target = e.target as HTMLButtonElement;
-                target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-              }}
-            >
-              ← Back to Home
-            </button>
-            <div style={cardStyles}>
+              navigate('Home');
+            }}
+            style={{
+              ...createMobileButton(false, 'medium'),
+              marginBottom: adaptiveSpacing.sectionGap
+            }}
+            onMouseEnter={e => {
+              const target = e.target as HTMLButtonElement;
+              target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseLeave={e => {
+              const target = e.target as HTMLButtonElement;
+              target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            }}
+          >
+            ← Back to Home
+          </button>
+        </div>
+        
+        <div style={cardStyles}>
               <h1 style={{
                 fontSize: adaptiveFonts.pageTitle,
                 fontWeight: '700',
@@ -499,12 +500,6 @@ function WeatherDetailsScreen({
                   placeholder="Search for a city..."
                   initialValue={city}
                 />
-                <style>{`
-                  .autocomplete-search {
-                    flex: 1;
-                    min-width: ${screenInfo.isVerySmallScreen ? '100%' : '250px'};
-                  }
-                `}</style>
                 <div style={{ 
                   display: 'flex', 
                   gap: adaptiveSpacing.elementGap,
@@ -567,7 +562,10 @@ function WeatherDetailsScreen({
                         {screenInfo.isVerySmallScreen ? '...' : 'Loading...'}
                       </span>
                     ) : (
-                      `🔍 ${screenInfo.isVerySmallScreen ? 'Go' : 'Search'}`
+                      (() => {
+                        const searchText = screenInfo.isVerySmallScreen ? 'Go' : 'Search';
+                        return `🔍 ${searchText}`;
+                      })()
                     )}
                   </button>
                 </div>
@@ -608,10 +606,13 @@ function WeatherDetailsScreen({
               theme={theme}
             />
           </div>
-        </div>
         
         {/* Add styles */}
         <style>{`
+          .autocomplete-search {
+            flex: 1;
+            min-width: ${screenInfo.isVerySmallScreen ? '100%' : '250px'};
+          }
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -631,7 +632,6 @@ function WeatherDetailsScreen({
           div::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 3px; }
           div::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
         `}</style>
-        </div>
       </PullToRefresh>
     </div>
   );
