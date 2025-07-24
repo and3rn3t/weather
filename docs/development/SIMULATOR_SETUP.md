@@ -188,6 +188,14 @@ npx cap run ios
 - ✅ **Memory usage**
 - ✅ **Network requests**
 
+## 🆕 Accessibility & Touch Testing Checklist (2025)
+
+- Verify all buttons and interactive elements have `aria-label` attributes (screen reader support)
+- Confirm touch targets are 44px+ and use utility classes
+- Check that animations are smooth (using transform/opacity)
+- Memoized components (WeatherIcon, MobileDebug) should not re-render unnecessarily
+- Test on real devices and emulators for accessibility and touch responsiveness
+
 ## 🏆 Pro Tips
 
 1. **Use Live Reload** for faster development:

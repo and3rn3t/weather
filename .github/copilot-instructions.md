@@ -202,3 +202,11 @@ npm run preview
 - No API keys or environment variables required - the app works immediately after setup.
 
 For more details, visit the [OpenMeteo documentation](https://open-meteo.com/en/docs) and [React Native documentation](https://reactnative.dev/).
+
+## 🆕 Accessibility & Performance Best Practices (2025)
+
+- Use CSS utility classes (see src/styles/mobile.css) for layout, spacing, and effects instead of repeated inline styles
+- All interactive elements (buttons, toggles) must have descriptive `aria-label` attributes for accessibility
+- Memoize heavy or frequently rendered components (e.g., WeatherIcon, MobileDebug) with React.memo
+- Prefer CSS animations/transitions using `transform` and `opacity` for GPU acceleration
+- Test all UI on real devices and emulators for touch responsiveness and accessibility

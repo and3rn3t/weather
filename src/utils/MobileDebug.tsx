@@ -4,7 +4,7 @@
  * Shows mobile viewport information and identifies touch issues
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { getScreenInfo } from './mobileScreenOptimization';
 
 interface MobileDebugProps {
@@ -12,7 +12,7 @@ interface MobileDebugProps {
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 }
 
-export const MobileDebug: React.FC<MobileDebugProps> = ({ 
+const MobileDebugComponent: React.FC<MobileDebugProps> = ({ 
   enabled = true, 
   position = 'bottom-right' 
 }) => {
@@ -122,4 +122,5 @@ export const MobileDebug: React.FC<MobileDebugProps> = ({
   );
 };
 
+const MobileDebug = memo(MobileDebugComponent);
 export default MobileDebug;

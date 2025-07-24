@@ -118,3 +118,12 @@ If you encounter issues:
 ---
 
 🎉 **Ready to deploy to mobile!** Your weather app will work perfectly on iOS and Android devices.
+
+## 🆕 Mobile UI & Accessibility Optimizations (2025)
+
+- All buttons and interactive elements have `aria-label` attributes for accessibility
+- Touch targets are 44px+ and use utility classes for consistent sizing
+- CSS utility classes ensure maintainable, performant layouts
+- WeatherIcon and MobileDebug are memoized for better performance
+- Animations use transform/opacity for smoothness
+- Test accessibility and touch responsiveness on real devices and emulators

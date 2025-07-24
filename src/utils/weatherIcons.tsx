@@ -13,6 +13,7 @@
  */
 
 import React from 'react';
+import { memo } from 'react';
 
 // ============================================================================
 // WEATHER ICON COMPONENT TYPES
@@ -312,7 +313,7 @@ const FogIcon: React.FC<{ size: number; animated: boolean }> = ({ size, animated
  * Renders appropriate weather icon based on OpenMeteo weather codes
  * with day/night variations and smooth animations.
  */
-const WeatherIcon: React.FC<WeatherIconProps> = ({ 
+const WeatherIconComponent: React.FC<WeatherIconProps> = ({ 
   code, 
   size = 64, 
   isDay = true, 
@@ -458,4 +459,5 @@ export const weatherIconStyles = `
   }
 `;
 
+const WeatherIcon = memo(WeatherIconComponent);
 export default WeatherIcon;

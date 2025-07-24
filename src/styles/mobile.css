@@ -485,3 +485,74 @@ body {
     margin: 16px 0;
   }
 }
+
+/* Utility for custom background gradient (set via inline style if dynamic) */
+.bg-gradient {
+  /* background: var(--custom-gradient); */
+}
+
+/* Utility for fixed position top-left button */
+.fixed-top-left {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+/* Utility for glassmorphism effect */
+.glass-blur {
+  backdrop-filter: blur(10px);
+}
+
+/* Utility for custom box shadow (set via inline style if dynamic) */
+.custom-shadow {
+  /* box-shadow: var(--custom-shadow); */
+}
+
+/* Utility for flex center column */
+.flex-center-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Utility for flex row wrap center */
+.flex-row-wrap-center {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--element-gap, 12px);
+  margin-bottom: var(--section-gap, 16px);
+}
+
+/* Utility for absolute positioning */
+.abs-top-right {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+}
+.abs-bottom-left {
+  position: absolute;
+  bottom: -8px;
+  left: -8px;
+}
+
+/* Utility for text center */
+.text-center {
+  text-align: center;
+}
+
+/* Utility for margin top */
+.mt-24 {
+  margin-top: 24px;
+}
+.mt-20 {
+  margin-top: 20px;
+}
+
+/* Utility for custom font size and color (set via inline style if dynamic) */
+.custom-font {
+  /* font-size: var(--custom-font-size); */
+  /* color: var(--custom-color); */
+}

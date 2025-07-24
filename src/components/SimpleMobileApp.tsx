@@ -31,20 +31,16 @@ const SimpleMobileApp: React.FC = () => {
       <div className="safe-area-container" style={{ background: theme.primaryGradient, minHeight: '100vh' }}>
         <MobileTest />
         <button 
-          className="mobile-back-button"
+          className="mobile-back-button fixed-top-left glass-blur"
           onClick={() => navigate('home')}
+          aria-label="Go back to home screen"
           style={{
-            position: 'fixed',
-            top: '20px',
-            left: '20px',
-            zIndex: 1000,
             background: 'rgba(255, 255, 255, 0.2)',
             color: theme.primaryText,
             border: `1px solid ${theme.primaryText}30`,
-            backdropFilter: 'blur(10px)'
           }}
         >
-          ← Back
+           Back
         </button>
         <MobileDebug enabled={true} position="bottom-right" />
       </div>
@@ -57,82 +53,73 @@ const SimpleMobileApp: React.FC = () => {
       
       <div className="mobile-container fade-in">
         <div className="mobile-card weather-display">
-          <div style={{
-            width: screenInfo.isVerySmallScreen ? '100px' : '120px',
-            height: screenInfo.isVerySmallScreen ? '100px' : '120px',
-            background: theme.primaryGradient,
-            borderRadius: adaptiveBorders.large,
-            margin: `0 auto ${adaptiveSpacing.sectionGap}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            boxShadow: theme.buttonShadow
-          }}>
+          <div
+            className="flex-center-col custom-shadow"
+            style={{
+              width: screenInfo.isVerySmallScreen ? '100px' : '120px',
+              height: screenInfo.isVerySmallScreen ? '100px' : '120px',
+              background: theme.primaryGradient,
+              borderRadius: adaptiveBorders.large,
+              margin: `0 auto ${adaptiveSpacing.sectionGap}`,
+              boxShadow: theme.buttonShadow
+            }}
+          >
             <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} />
-            <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
+            <div className="abs-top-right">
               <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} />
             </div>
-            <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
+            <div className="abs-bottom-left">
               <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} />
             </div>
           </div>
           
-          <h1 className="mobile-title" style={{ color: theme.primaryText }}>
+          <h1 className="mobile-title custom-font" style={{ color: theme.primaryText }}>
             Mobile Weather App
           </h1>
           
-          <p className="mobile-body" style={{ color: theme.secondaryText, textAlign: 'center' }}>
+          <p className="mobile-body custom-font text-center" style={{ color: theme.secondaryText }}>
             Testing mobile optimizations for better usability on mobile devices
           </p>
           
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: adaptiveSpacing.elementGap,
-            marginBottom: adaptiveSpacing.sectionGap,
-            flexWrap: 'wrap'
-          }}>
+          <div className="flex-row-wrap-center" style={{ gap: adaptiveSpacing.elementGap, marginBottom: adaptiveSpacing.sectionGap }}>
             {[
               { code: 0, label: 'Sunny' },
               { code: 61, label: 'Rainy' },
               { code: 71, label: 'Snow' },
               { code: 95, label: 'Storms' }
             ].map(({ code, label }) => (
-              <div key={label} style={{ textAlign: 'center' }}>
+              <div key={label} className="text-center">
                 <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
-                <div style={{ 
-                  fontSize: adaptiveFonts.bodySmall, 
-                  color: theme.secondaryText, 
-                  marginTop: '4px' 
-                }}>{label}</div>
+                <div className="custom-font" style={{ fontSize: adaptiveFonts.bodySmall, color: theme.secondaryText, marginTop: '4px' }}>{label}</div>
               </div>
             ))}
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+          <div className="flex-center-col">
             <button
-              className="mobile-button mobile-button-large"
+              className="mobile-button mobile-button-large custom-shadow"
               style={{
                 background: theme.primaryGradient,
                 color: theme.inverseText,
                 boxShadow: theme.buttonShadow
               }}
               onClick={() => alert('Weather functionality will be added!')}
+              aria-label="Check weather (demo button)"
             >
-              Check Weather →
+              Check Weather 
             </button>
             
             <button
-              className="mobile-button"
+              className="mobile-button custom-shadow"
               style={{
                 background: 'rgba(255, 255, 255, 0.2)',
                 color: theme.primaryText,
                 border: `1px solid ${theme.primaryText}30`
               }}
               onClick={() => navigate('test')}
+              aria-label="Test mobile UI"
             >
-              🔧 Test Mobile UI
+               Test Mobile UI
             </button>
           </div>
         </div>
