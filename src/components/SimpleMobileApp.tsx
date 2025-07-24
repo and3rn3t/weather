@@ -4,12 +4,12 @@
  * Clean version focused on mobile optimization testing
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, Suspense } from 'react';
 import { getScreenInfo, getAdaptiveFontSizes, getAdaptiveSpacing, getAdaptiveBorderRadius } from '../utils/mobileScreenOptimization';
 import ThemeToggle from '../utils/ThemeToggle';
-import MobileTest from '../components/MobileTest';
-import MobileDebug from '../utils/MobileDebug';
-import WeatherIcon from '../utils/weatherIcons';
+const MobileTest = React.lazy(() => import('../components/MobileTest'));
+const MobileDebug = React.lazy(() => import('../utils/MobileDebug'));
+const WeatherIcon = React.lazy(() => import('../utils/weatherIcons'));
 
 const SimpleMobileApp: React.FC = () => {
   // const { theme } = useTheme();
@@ -27,7 +27,9 @@ const SimpleMobileApp: React.FC = () => {
   if (currentScreen === 'test') {
     return (
       <div className="safe-area-container" style={{ background: 'var(--primary-gradient)', minHeight: '100vh' }}>
-        <MobileTest />
+        <Suspense fallback={null}>
+          <MobileTest />
+        </Suspense>
         <button 
           className="mobile-back-button fixed-top-left glass-blur"
           onClick={() => navigate('home')}
@@ -40,7 +42,9 @@ const SimpleMobileApp: React.FC = () => {
         >
           Back
         </button>
-        <MobileDebug enabled={true} position="bottom-right" />
+        <Suspense fallback={null}>
+          <MobileDebug enabled={true} position="bottom-right" />
+        </Suspense>
       </div>
     );
   }
@@ -51,25 +55,27 @@ const SimpleMobileApp: React.FC = () => {
       
       <div className="mobile-container fade-in">
         <div className="mobile-card weather-display">
-          <div
-            className="flex-center-col custom-shadow"
-            style={{
-              width: screenInfo.isVerySmallScreen ? '100px' : '120px',
-              height: screenInfo.isVerySmallScreen ? '100px' : '120px',
-              background: 'var(--primary-gradient)',
-              borderRadius: adaptiveBorders.large,
-              margin: `0 auto ${adaptiveSpacing.sectionGap}`,
-              boxShadow: 'var(--button-shadow)'
-            }}
-          >
-            <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} />
-            <div className="abs-top-right">
-              <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} />
+          <Suspense fallback={null}>
+            <div
+              className="flex-center-col custom-shadow"
+              style={{
+                width: screenInfo.isVerySmallScreen ? '100px' : '120px',
+                height: screenInfo.isVerySmallScreen ? '100px' : '120px',
+                background: 'var(--primary-gradient)',
+                borderRadius: adaptiveBorders.large,
+                margin: `0 auto ${adaptiveSpacing.sectionGap}`,
+                boxShadow: 'var(--button-shadow)'
+              }}
+            >
+              <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} />
+              <div className="abs-top-right">
+                <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} />
+              </div>
+              <div className="abs-bottom-left">
+                <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} />
+              </div>
             </div>
-            <div className="abs-bottom-left">
-              <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} />
-            </div>
-          </div>
+          </Suspense>
           
           <h1 className="mobile-title custom-font">
             Mobile Weather App
@@ -87,7 +93,9 @@ const SimpleMobileApp: React.FC = () => {
               { code: 95, label: 'Storms' }
             ].map(({ code, label }) => (
               <div key={label} className="text-center">
-                <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
+                <Suspense fallback={null}>
+                  <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
+                </Suspense>
                 <div className="custom-font" style={{ fontSize: adaptiveFonts.bodySmall, color: 'var(--secondary-text)', marginTop: '4px' }}>{label}</div>
               </div>
             ))}
@@ -123,7 +131,9 @@ const SimpleMobileApp: React.FC = () => {
         </div>
       </div>
       
-      <MobileDebug enabled={true} position="bottom-right" />
+      <Suspense fallback={null}>
+        <MobileDebug enabled={true} position="bottom-right" />
+      </Suspense>
     </div>
   );
 };
