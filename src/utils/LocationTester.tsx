@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { useLocationServices } from './useLocationServices';
 
 export const LocationTester: React.FC = () => {
-  const { state, getCurrentLocation, checkPermissionStatus } = useLocationServices();
+  const { 
+    isLoading, 
+    isPermissionGranted, 
+    location, 
+    error, 
+    getCurrentLocation, 
+    checkPermissionStatus 
+  } = useLocationServices();
   const [testResults, setTestResults] = useState<string[]>([]);
 
   const addResult = (message: string) => {
@@ -54,7 +61,7 @@ export const LocationTester: React.FC = () => {
       <div style={{ marginBottom: '15px' }}>
         <button 
           onClick={runLocationTest}
-          disabled={state.isLoading}
+          disabled={isLoading}
           style={{
             padding: '10px 15px',
             marginRight: '10px',
@@ -65,7 +72,7 @@ export const LocationTester: React.FC = () => {
             cursor: 'pointer'
           }}
         >
-          {state.isLoading ? '⏳ Testing...' : '🧪 Run Location Test'}
+          {isLoading ? '⏳ Testing...' : '🧪 Run Location Test'}
         </button>
         
         <button 
@@ -92,25 +99,36 @@ export const LocationTester: React.FC = () => {
         overflowY: 'auto'
       }}>
         <h4>Current State:</h4>
-        <p>Loading: {state.isLoading ? '✅' : '❌'}</p>
-        <p>Permission: {state.isPermissionGranted === null ? '❓' : state.isPermissionGranted ? '✅' : '❌'}</p>
-        <p>Location: {state.location ? `${state.location.latitude}, ${state.location.longitude}` : '❌'}</p>
-        <p>Error: {state.error?.userFriendlyMessage || 'None'}</p>
+        <p>Loading: {isLoading ? '✅' : '❌'}</p>
+        <p>Permission: {(() => {
+          if (isPermissionGranted === null) return '❓';
+          return isPermissionGranted ? '✅' : '❌';
+        })()}</p>
+        <p>Location: {location ? `${location.latitude}, ${location.longitude}` : '❌'}</p>
+        <p>Error: {error?.userFriendlyMessage || 'None'}</p>
         
         <h4>Test Results:</h4>
         {testResults.length === 0 ? (
           <p style={{ color: '#6c757d' }}>No tests run yet</p>
         ) : (
           <div>
-            {testResults.map((result, index) => (
-              <div key={index} style={{ 
-                marginBottom: '5px',
-                padding: '5px',
-                backgroundColor: result.includes('❌') ? '#ffe6e6' : result.includes('✅') ? '#e6ffe6' : '#f8f9fa'
-              }}>
-                {result}
-              </div>
-            ))}
+            {testResults.map((result, index) => {
+              const backgroundColor = (() => {
+                if (result.includes('❌')) return '#ffe6e6';
+                if (result.includes('✅')) return '#e6ffe6';
+                return '#f8f9fa';
+              })();
+              
+              return (
+                <div key={`test-${index}-${result.slice(0, 10)}`} style={{ 
+                  marginBottom: '5px',
+                  padding: '5px',
+                  backgroundColor
+                }}>
+                  {result}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
