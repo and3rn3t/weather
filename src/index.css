@@ -20,6 +20,12 @@
   -moz-user-select: auto;
   -ms-user-select: auto;
   user-select: auto;
+  
+  /* Safe area support for notched devices */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
 }
 
 /* Ensure all interactive elements are touch-friendly */
@@ -47,6 +53,31 @@ textarea,
 /* Allow normal touch behavior for scrollable content */
 body, #root, main, section, article, div {
   touch-action: auto;
+  /* Prevent overscroll bounce on iOS Safari */
+  overscroll-behavior: none;
+}
+
+/* Mobile viewport optimizations */
+html {
+  /* Prevent zoom on input focus (iOS Safari) */
+  font-size: 16px;
+  /* Improve scroll performance */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Responsive container for small screens */
+@media (max-width: 360px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+/* Very small screens optimization */
+@media (max-width: 320px) {
+  :root {
+    font-size: 13px;
+  }
 }
 
 a {
@@ -64,6 +95,22 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height for mobile */
+  /* Prevent address bar from affecting layout */
+  height: 100vh;
+  height: 100dvh;
+  /* Safe area support */
+  padding-top: var(--safe-area-inset-top, 0);
+  padding-bottom: var(--safe-area-inset-bottom, 0);
+  padding-left: var(--safe-area-inset-left, 0);
+  padding-right: var(--safe-area-inset-right, 0);
+}
+
+#root {
+  width: 100%;
+  min-height: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
@@ -98,6 +145,30 @@ button {
   text-decoration: none;
   outline: none;
   user-select: none;
+  
+  /* Improve button appearance on mobile */
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Mobile-specific button optimizations */
+@media (max-width: 768px) {
+  button {
+    min-height: 48px; /* Android touch target guideline */
+    padding: 12px 16px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+/* Very small screen button optimizations */
+@media (max-width: 360px) {
+  button {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 15px;
+  }
 }
 
 button:hover {

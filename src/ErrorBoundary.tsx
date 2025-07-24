@@ -8,16 +8,23 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: string;
+  retryCount: number;
 }
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, retryCount: 0 };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { 
+      hasError: true, 
+      error,
+      errorInfo: error.stack || 'No stack trace available',
+      retryCount: 0
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: { componentStack: string }) {

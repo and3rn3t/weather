@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import React from 'react';
 import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
@@ -15,6 +16,22 @@ import ThemeToggle from '../utils/ThemeToggle';
 import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
 import PullToRefresh from '../utils/PullToRefresh';
 import NativeStatusDisplay from '../utils/NativeStatusDisplay';
+import { useWeatherBackgroundRefresh } from '../utils/useBackgroundRefresh';
+import { useWeatherAPIOptimization, useWeatherDataTransform } from '../utils/useWeatherOptimization';
+import PerformanceMonitor from '../utils/PerformanceMonitor';
+import { LocationTester } from '../utils/LocationTester';
+import { testGeolocation, testReverseGeocoding, runFullTest } from '../utils/locationDebug';
+import { 
+  getScreenInfo, 
+  getAdaptiveFontSizes,
+  getAdaptiveSpacing,
+  getAdaptiveBorderRadius,
+  getTouchOptimizedButton,
+  getMobileOptimizedContainer,
+  getMobileOptimizedCard,
+  handleOrientationChange,
+  type ScreenInfo
+} from '../utils/mobileScreenOptimization';
 // PWA utilities available but not imported yet - will be added when needed
 // import { usePWAInstall, useServiceWorker, useNetworkStatus, usePWAUpdate } from '../utils/pwaUtils';
 
@@ -146,41 +163,6 @@ type DailyForecast = {
 // ============================================================================
 
 /** Mobile-optimized button style creator with proper touch targets */
-type ButtonSize = 'small' | 'medium' | 'large';
-
-const createButtonStyle = (theme: ThemeColors, isPrimary = true, size: ButtonSize = 'medium') => {
-  const baseStyle = {
-    background: isPrimary ? theme.buttonGradient : theme.toggleBackground,
-    color: theme.inverseText,
-    border: isPrimary ? 'none' : `1px solid ${theme.toggleBorder}`,
-    fontSize: '16px',
-    fontWeight: isPrimary ? '600' : '500',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    backdropFilter: isPrimary ? 'none' : 'blur(10px)',
-    // Mobile touch optimizations
-    minHeight: '44px', // WCAG compliant touch target
-    minWidth: '44px',
-    borderRadius: '16px',
-    userSelect: 'none' as const,
-    WebkitTapHighlightColor: 'transparent',
-    // Enhanced touch feedback
-    ':active': {
-      transform: 'scale(0.98)',
-      opacity: '0.8'
-    }
-  };
-
-  // Size-specific adjustments
-  const sizeStyles: Record<ButtonSize, { padding: string; fontSize: string; minHeight: string }> = {
-    small: { padding: '8px 16px', fontSize: '14px', minHeight: '40px' },
-    medium: { padding: '12px 20px', fontSize: '16px', minHeight: '44px' },
-    large: { padding: '16px 24px', fontSize: '18px', minHeight: '48px' }
-  };
-
-  return { ...baseStyle, ...sizeStyles[size] };
-};
-
 /** Mobile-optimized card style with responsive padding */
 const createCardStyle = (theme: ThemeColors, isWeatherCard = false) => ({
   backgroundColor: isWeatherCard ? theme.weatherCardBackground : theme.forecastCardBackground,
@@ -276,96 +258,86 @@ const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
   return next7Days;
 };
 
-// HomeScreen component definition
 function HomeScreen({
   theme,
-  isMobile,
+  screenInfo,
+  adaptiveFonts,
+  adaptiveSpacing,
+  adaptiveBorders,
   createMobileButton,
   navigate,
-  getResponsivePadding,
-  getCardPadding,
   haptic
 }: Readonly<{
   theme: ThemeColors;
-  isMobile: boolean;
+  screenInfo: ScreenInfo;
+  adaptiveFonts: ReturnType<typeof getAdaptiveFontSizes>;
+  adaptiveSpacing: ReturnType<typeof getAdaptiveSpacing>;
+  adaptiveBorders: ReturnType<typeof getAdaptiveBorderRadius>;
   createMobileButton: (isPrimary?: boolean, size?: 'small' | 'medium' | 'large') => React.CSSProperties;
   navigate: (screenName: string) => void;
-  getResponsivePadding: () => string;
-  getCardPadding: () => string;
   haptic: ReturnType<typeof useHaptic>;
 }>) {
+  const containerStyles = getMobileOptimizedContainer(theme, screenInfo);
+  const cardStyles = getMobileOptimizedCard(theme, screenInfo);
+
   return (
     <>
       <ThemeToggle />
-      <div
-        style={{
-          minHeight: '100vh',
-          background: theme.appBackground,
+      <div style={containerStyles}>
+        <div style={{
+          ...cardStyles,
+          textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
           alignItems: 'center',
-          padding: getResponsivePadding(),
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          transition: 'background 0.6s ease'
-        }}
-      >
-        <div style={{
-          backgroundColor: theme.cardBackground,
-          backdropFilter: 'blur(20px)',
-          borderRadius: isMobile ? '20px' : '24px',
-          padding: getCardPadding(),
-          textAlign: 'center',
-          boxShadow: theme.cardShadow,
-          border: `1px solid ${theme.cardBorder}`,
-          maxWidth: isMobile ? '340px' : '500px',
-          width: '100%',
-          transition: 'all 0.6s ease'
+          justifyContent: 'center'
         }}>
           <div style={{
-            width: '120px',
-            height: '120px',
+            width: screenInfo.isVerySmallScreen ? '100px' : '120px',
+            height: screenInfo.isVerySmallScreen ? '100px' : '120px',
             background: theme.primaryGradient,
-            borderRadius: '30px',
-            margin: '0 auto 30px',
+            borderRadius: adaptiveBorders.large,
+            margin: `0 auto ${adaptiveSpacing.sectionGap}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
             boxShadow: theme.buttonShadow
           }}>
-            <WeatherIcon code={0} size={64} animated={true} className="home-main-icon" />
+            <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} className="home-main-icon" />
             <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
-              <WeatherIcon code={61} size={24} animated={true} className="home-floating-icon" />
+              <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} className="home-floating-icon" />
             </div>
             <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
-              <WeatherIcon code={3} size={20} animated={true} className="home-floating-icon" />
+              <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} className="home-floating-icon" />
             </div>
           </div>
           <h1 style={{
-            fontSize: isMobile ? '24px' : '32px',
+            fontSize: adaptiveFonts.heroTitle,
             fontWeight: '700',
-            marginBottom: '16px',
+            marginBottom: adaptiveSpacing.elementGap,
             color: theme.primaryText,
-            letterSpacing: '-0.5px',
+            letterSpacing: screenInfo.isVerySmallScreen ? '-0.3px' : '-0.5px',
             transition: 'color 0.5s ease'
           }}>
             Weather App
           </h1>
           <p style={{
-            fontSize: isMobile ? '16px' : '18px',
+            fontSize: adaptiveFonts.bodyLarge,
             color: theme.secondaryText,
-            marginBottom: isMobile ? '24px' : '32px',
+            marginBottom: adaptiveSpacing.sectionGap,
             lineHeight: '1.6',
-            transition: 'color 0.5s ease'
+            transition: 'color 0.5s ease',
+            textAlign: 'center',
+            maxWidth: screenInfo.isVerySmallScreen ? '280px' : '100%'
           }}>
             Get real-time weather information for any city around the world
           </p>
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '16px',
-            marginBottom: '40px',
+            gap: adaptiveSpacing.elementGap,
+            marginBottom: adaptiveSpacing.sectionGap,
             flexWrap: 'wrap'
           }}>
             {[
@@ -375,8 +347,12 @@ function HomeScreen({
               { code: 95, label: 'Storms' }
             ].map(({ code, label }) => (
               <div key={label} style={{ textAlign: 'center' }}>
-                <WeatherIcon code={code} size={32} animated={true} />
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '4px' }}>{label}</div>
+                <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
+                <div style={{ 
+                  fontSize: adaptiveFonts.bodySmall, 
+                  color: theme.secondaryText, 
+                  marginTop: '4px' 
+                }}>{label}</div>
               </div>
             ))}
           </div>
@@ -386,11 +362,7 @@ function HomeScreen({
               navigate('WeatherDetails');
             }}
             style={{
-              ...(isMobile ? createMobileButton(true) : createButtonStyle(theme, true)),
-              padding: isMobile ? '14px 24px' : '16px 32px',
-              fontSize: isMobile ? '16px' : '18px',
-              boxShadow: theme.buttonShadow,
-              transform: 'translateY(0)',
+              ...createMobileButton(true, 'large'),
               letterSpacing: '0.5px'
             }}
             onMouseEnter={e => {
@@ -415,7 +387,10 @@ function HomeScreen({
 // WeatherDetailsScreen component definition
 function WeatherDetailsScreen({
   theme,
-  isMobile,
+  screenInfo,
+  adaptiveFonts,
+  adaptiveSpacing,
+  adaptiveBorders,
   navigate,
   createMobileButton,
   city,
@@ -433,7 +408,10 @@ function WeatherDetailsScreen({
   handleLocationDetected
 }: Readonly<{
   theme: ThemeColors;
-  isMobile: boolean;
+  screenInfo: ScreenInfo;
+  adaptiveFonts: ReturnType<typeof getAdaptiveFontSizes>;
+  adaptiveSpacing: ReturnType<typeof getAdaptiveSpacing>;
+  adaptiveBorders: ReturnType<typeof getAdaptiveBorderRadius>;
   navigate: (screenName: string) => void;
   createMobileButton: (isPrimary?: boolean, size?: 'small' | 'medium' | 'large') => React.CSSProperties;
   city: string;
@@ -450,157 +428,146 @@ function WeatherDetailsScreen({
   haptic: ReturnType<typeof useHaptic>;
   handleLocationDetected: (cityName: string, latitude: number, longitude: number) => void;
 }>) {
+  const containerStyles = getMobileOptimizedContainer(theme, screenInfo);
+  const cardStyles = getMobileOptimizedCard(theme, screenInfo);
+
   return (
     <>
       <ThemeToggle />
       <PullToRefresh
         onRefresh={onRefresh}
         disabled={loading}
-        style={{
-          minHeight: '100vh',
-          background: theme.appBackground,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          transition: 'background 0.6s ease'
-        }}
+        style={containerStyles}
       >
-        <div
-          style={{
-            padding: '20px',
-          }}
-        >
+        <div style={{ padding: adaptiveSpacing.containerPadding }}>
           <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <button
-            onClick={() => {
-              haptic.buttonPress(); // Haptic feedback for back button
-              navigate('Home');
-            }}
-            style={{
-              ...(isMobile ? createMobileButton(false) : createButtonStyle(theme, false)),
-              padding: isMobile ? '14px 20px' : '12px 20px',
-              marginBottom: '30px'
-            }}
-            onMouseEnter={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-            }}
-            onMouseLeave={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            }}
-          >
-            ← Back to Home
-          </button>
-          <div style={{
-            backgroundColor: theme.cardBackground,
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            padding: '40px',
-            boxShadow: theme.cardShadow,
-            border: `1px solid ${theme.cardBorder}`,
-            transition: 'all 0.6s ease'
-          }}>
-            <h1 style={{
-              fontSize: '28px',
-              fontWeight: '700',
-              marginBottom: '32px',
-              color: theme.primaryText,
-              textAlign: 'center',
-              letterSpacing: '-0.5px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '16px'
-            }}>
-              <WeatherIcon code={0} size={36} animated={true} className="header-weather-icon" />
-              Weather Forecast
-              <WeatherIcon code={1} size={36} animated={true} className="header-weather-icon" />
-            </h1>
-            <div style={{
-              marginBottom: '32px',
-              display: 'flex',
-              gap: '12px',
-              flexWrap: 'wrap'
-            }}>
-              <AutoCompleteSearch
-                theme={theme}
-                isMobile={isMobile}
-                onCitySelected={getWeatherByLocation}
-                onError={(error) => setError(error)}
-                disabled={loading}
-                placeholder="Search for a city..."
-                initialValue={city}
-              />
-              <style>{`
-                .autocomplete-search {
-                  flex: 1;
-                  min-width: 250px;
-                }
-              `}</style>
-              <div style={{ 
-                display: 'flex', 
-                gap: '8px',
-                flexWrap: isMobile ? 'wrap' : 'nowrap'
+            <button
+              onClick={() => {
+                haptic.buttonPress(); // Haptic feedback for back button
+                navigate('Home');
+              }}
+              style={{
+                ...createMobileButton(false, 'medium'),
+                marginBottom: adaptiveSpacing.sectionGap
+              }}
+              onMouseEnter={e => {
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+              }}
+              onMouseLeave={e => {
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+            >
+              ← Back to Home
+            </button>
+            <div style={cardStyles}>
+              <h1 style={{
+                fontSize: adaptiveFonts.pageTitle,
+                fontWeight: '700',
+                marginBottom: adaptiveSpacing.sectionGap,
+                color: theme.primaryText,
+                textAlign: 'center',
+                letterSpacing: screenInfo.isVerySmallScreen ? '-0.3px' : '-0.5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: adaptiveSpacing.elementGap,
+                flexWrap: 'wrap'
               }}>
-                <LocationButton
+                <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 28 : 36} animated={true} className="header-weather-icon" />
+                Weather Forecast
+                <WeatherIcon code={1} size={screenInfo.isVerySmallScreen ? 28 : 36} animated={true} className="header-weather-icon" />
+              </h1>
+              <div style={{
+                marginBottom: adaptiveSpacing.sectionGap,
+                display: 'flex',
+                gap: adaptiveSpacing.elementGap,
+                flexDirection: screenInfo.isVerySmallScreen ? 'column' : 'row',
+                flexWrap: 'wrap'
+              }}>
+                <AutoCompleteSearch
                   theme={theme}
-                  isMobile={isMobile}
-                  onLocationReceived={handleLocationDetected}
-                  onError={(error) => {
-                    // Set error state for location failures
-                    setError(error);
-                  }}
-                  disabled={loading}
-                  variant="secondary"
-                  size="medium"
-                  showLabel={!isMobile} // Hide label on mobile for space
-                />
-                
-                <CitySelector
-                  theme={theme}
-                  isMobile={isMobile}
+                  isMobile={screenInfo.width < 768}
                   onCitySelected={getWeatherByLocation}
+                  onError={(error) => setError(error)}
                   disabled={loading}
-                  currentCity={city}
+                  placeholder="Search for a city..."
+                  initialValue={city}
                 />
-                <button
-                  onClick={() => {
-                    haptic.buttonConfirm(); // Haptic feedback for search button
-                    getWeather();
-                  }}
-                  disabled={loading}
-                  style={{
-                    background: loading ? theme.loadingBackground : theme.buttonGradient,
-                    color: theme.inverseText,
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '16px 32px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    boxShadow: loading ? 'none' : theme.buttonShadow,
-                    transition: 'all 0.3s ease',
-                    minWidth: '140px'
-                  }}
-                >
-                  {loading ? (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '16px',
-                        height: '16px',
-                        border: '2px solid rgba(255,255,255,0.3)',
-                        borderTop: '2px solid white',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite'
-                      }}></span>{' '}
-                      Loading...
-                    </span>
-                  ) : (
-                    '🔍 Search'
-                  )}
-                </button>
+                <style>{`
+                  .autocomplete-search {
+                    flex: 1;
+                    min-width: ${screenInfo.isVerySmallScreen ? '100%' : '250px'};
+                  }
+                `}</style>
+                <div style={{ 
+                  display: 'flex', 
+                  gap: adaptiveSpacing.elementGap,
+                  flexWrap: screenInfo.isVerySmallScreen ? 'wrap' : 'nowrap',
+                  width: screenInfo.isVerySmallScreen ? '100%' : 'auto'
+                }}>
+                  <LocationButton
+                    theme={theme}
+                    isMobile={screenInfo.width < 768}
+                    onLocationReceived={handleLocationDetected}
+                    onError={(error) => {
+                      // Set error state for location failures
+                      setError(error);
+                    }}
+                    disabled={loading}
+                    variant="secondary"
+                    size="medium"
+                    showLabel={!screenInfo.isVerySmallScreen} // Hide label on very small screens for space
+                  />
+                  
+                  <CitySelector
+                    theme={theme}
+                    isMobile={screenInfo.width < 768}
+                    onCitySelected={getWeatherByLocation}
+                    disabled={loading}
+                    currentCity={city}
+                  />
+                  <button
+                    onClick={() => {
+                      haptic.buttonConfirm(); // Haptic feedback for search button
+                      getWeather();
+                    }}
+                    disabled={loading}
+                    style={{
+                      background: loading ? theme.loadingBackground : theme.buttonGradient,
+                      color: theme.inverseText,
+                      border: 'none',
+                      borderRadius: adaptiveBorders.medium,
+                      padding: adaptiveSpacing.buttonPadding,
+                      fontSize: adaptiveFonts.buttonText,
+                      fontWeight: '600',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      boxShadow: loading ? 'none' : theme.buttonShadow,
+                      transition: 'all 0.3s ease',
+                      minWidth: screenInfo.isVerySmallScreen ? '120px' : '140px',
+                      minHeight: '44px'
+                    }}
+                  >
+                    {loading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: adaptiveSpacing.elementGap }}>
+                        <span style={{
+                          display: 'inline-block',
+                          width: '16px',
+                          height: '16px',
+                          border: '2px solid rgba(255,255,255,0.3)',
+                          borderTop: '2px solid white',
+                          borderRadius: '50%',
+                          animation: 'spin 1s linear infinite'
+                        }}></span>{' '}
+                        {screenInfo.isVerySmallScreen ? '...' : 'Loading...'}
+                      </span>
+                    ) : (
+                      `🔍 ${screenInfo.isVerySmallScreen ? 'Go' : 'Search'}`
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
             {error && (
               <div style={{
                 background: theme.errorBackground,
@@ -621,7 +588,7 @@ function WeatherDetailsScreen({
                 weather={weather}
                 city={city}
                 theme={theme}
-                isMobile={isMobile}
+                isMobile={screenInfo.width < 768}
                 weatherCode={weatherCode}
               />
             )}
@@ -629,7 +596,7 @@ function WeatherDetailsScreen({
               loading={loading}
               hourlyForecast={hourlyForecast}
               theme={theme}
-              isMobile={isMobile}
+              isMobile={screenInfo.width < 768}
             />
             <DailyForecastSection
               loading={loading}
@@ -667,13 +634,13 @@ function WeatherDetailsScreen({
 }
 
 // Helper components for weather display
-function WeatherMainCard({ weather, city, theme, isMobile, weatherCode }: Readonly<{
+const WeatherMainCard = React.memo(({ weather, city, theme, isMobile, weatherCode }: Readonly<{
   weather: WeatherData,
   city: string,
   theme: ThemeColors,
   isMobile: boolean,
   weatherCode: number
-}>) {
+}>) => {
   return (
     <div style={{
       background: theme.weatherCardBackground,
@@ -781,14 +748,14 @@ function WeatherMainCard({ weather, city, theme, isMobile, weatherCode }: Readon
       }}></div>
     </div>
   );
-}
+});
 
-function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Readonly<{
+const HourlyForecastSection = React.memo(({ loading, hourlyForecast, theme, isMobile }: Readonly<{
   loading: boolean,
   hourlyForecast: HourlyForecast[],
   theme: ThemeColors,
   isMobile: boolean
-}>) {
+}>) => {
   if (loading && hourlyForecast.length === 0) {
     return (
       <div style={{ marginBottom: '32px' }}>
@@ -884,13 +851,13 @@ function HourlyForecastSection({ loading, hourlyForecast, theme, isMobile }: Rea
     );
   }
   return null;
-}
+});
 
-function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
+const DailyForecastSection = React.memo(({ loading, dailyForecast, theme }: Readonly<{
   loading: boolean,
   dailyForecast: DailyForecast[],
   theme: ThemeColors
-}>) {
+}>) => {
   if (loading && dailyForecast.length === 0) {
     return (
       <div style={{ marginBottom: '16px' }}>
@@ -1012,12 +979,36 @@ function DailyForecastSection({ loading, dailyForecast, theme }: Readonly<{
     );
   }
   return null;
-}
+});
 
 const AppNavigator = () => {
-  const { theme, themeName, isMobile, isTablet, createMobileButton } = useTheme();
+  // Screen information and responsive detection
+  const [screenInfo, setScreenInfo] = useState<ScreenInfo>(() => getScreenInfo());
+  
+  // Update screen info on orientation changes
+  useEffect(() => {
+    const cleanup = handleOrientationChange(setScreenInfo);
+    return cleanup;
+  }, []);
+
+  // Get adaptive styles based on current screen
+  const adaptiveFonts = useMemo(() => getAdaptiveFontSizes(screenInfo), [screenInfo]);
+  const adaptiveSpacing = useMemo(() => getAdaptiveSpacing(screenInfo), [screenInfo]);
+  const adaptiveBorders = useMemo(() => getAdaptiveBorderRadius(screenInfo), [screenInfo]);
+
+  // Theme and mobile detection (updated to use screenInfo)
+  const { theme, themeName } = useTheme();
+  
+  // Create mobile button function using new optimization
+  const createMobileButton = useCallback((isPrimary = false, size: 'small' | 'medium' | 'large' = 'medium') => 
+    getTouchOptimizedButton(theme, screenInfo, isPrimary ? 'primary' : 'secondary', size), 
+    [theme, screenInfo]
+  );
+
   const haptic = useHaptic();
   const { addToRecent, setCurrentCity } = useCityManagement();
+  const { optimizedFetch } = useWeatherAPIOptimization();
+  const { optimizedTransform } = useWeatherDataTransform();
   
   // PWA functionality will be added here when needed
   // const pwaInstall = usePWAInstall();
@@ -1040,6 +1031,10 @@ const AppNavigator = () => {
   } | null>(null);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
+
+  // Memoized weather data processing
+  const memoizedHourlyForecast = useMemo(() => hourlyForecast, [hourlyForecast]);
+  const memoizedDailyForecast = useMemo(() => dailyForecast, [dailyForecast]);
 
   // Location detection handler - must be defined early for use in JSX
   const handleLocationDetected = useCallback((cityName: string, latitude: number, longitude: number) => {
@@ -1081,48 +1076,53 @@ const AppNavigator = () => {
     }
   };
 
-  const getResponsivePadding = () => {
-    if (isMobile) return '16px';
-    if (isTablet) return '24px';
-    return '32px';
-  };
-  
-  const getCardPadding = () => {
-    if (isMobile) return '40px 24px';
-    if (isTablet) return '50px 32px';
-    return '60px 40px';
-  };
-
-  // Common weather data fetching logic
+  // Common weather data fetching logic with optimization
   const fetchWeatherData = useCallback(async (lat: number, lon: number) => {
     const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
     const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
-    const weatherResponse = await fetch(weatherUrl);
+    
+    const cacheKey = `weather-${lat}-${lon}`;
+    const weatherResponse = await optimizedFetch(weatherUrl, {
+      headers: {
+        'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)'
+      }
+    }, cacheKey);
+    
     if (!weatherResponse.ok) throw new Error(`Weather API failed: ${weatherResponse.status}`);
     const weatherData = await weatherResponse.json();
-    const currentWeatherCode = weatherData.current_weather?.weathercode || 0;
-    setWeatherCode(currentWeatherCode);
-    const currentHour = new Date().getHours();
-    const hourlyData = weatherData.hourly;
-    const transformedData = {
-      main: {
-        temp: weatherData.current_weather?.temperature || 0,
-        feels_like: hourlyData?.apparent_temperature?.[currentHour] || weatherData.current_weather?.temperature || 0,
-        humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-        pressure: hourlyData?.surface_pressure?.[currentHour] || 1013
+    
+    // Use optimized transform for weather data processing
+    const transformedData = optimizedTransform(
+      weatherData,
+      (data) => {
+        const currentWeatherCode = data.current_weather?.weathercode || 0;
+        setWeatherCode(currentWeatherCode);
+        const currentHour = new Date().getHours();
+        const hourlyData = data.hourly;
+        
+        return {
+          main: {
+            temp: data.current_weather?.temperature || 0,
+            feels_like: hourlyData?.apparent_temperature?.[currentHour] || data.current_weather?.temperature || 0,
+            humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
+            pressure: hourlyData?.surface_pressure?.[currentHour] || 1013
+          },
+          weather: [{ description: getWeatherDescription(currentWeatherCode) }],
+          wind: {
+            speed: data.current_weather?.windspeed || 0,
+            deg: data.current_weather?.winddirection || 0
+          },
+          uv_index: hourlyData?.uv_index?.[currentHour] || 0,
+          visibility: hourlyData?.visibility?.[currentHour] || 0
+        };
       },
-      weather: [{ description: getWeatherDescription(currentWeatherCode) }],
-      wind: {
-        speed: weatherData.current_weather?.windspeed || 0,
-        deg: weatherData.current_weather?.winddirection || 0
-      },
-      uv_index: hourlyData?.uv_index?.[currentHour] || 0,
-      visibility: hourlyData?.visibility?.[currentHour] || 0
-    };
+      `transform-${lat}-${lon}-${Date.now()}`
+    );
+    
     setWeather(transformedData);
-    setHourlyForecast(processHourlyForecast(hourlyData as HourlyData));
+    setHourlyForecast(processHourlyForecast(weatherData.hourly as HourlyData));
     setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
-  }, []);
+  }, [optimizedFetch, optimizedTransform]);
 
   const getWeather = useCallback(async () => {
     if (!city.trim()) {
@@ -1136,9 +1136,9 @@ const AppNavigator = () => {
     try {
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
       const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
-      const geoResponse = await fetch(geoUrl, {
+      const geoResponse = await optimizedFetch(geoUrl, {
         headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' }
-      });
+      }, `geocoding-${city}`);
       if (!geoResponse.ok) throw new Error(`Geocoding failed: ${geoResponse.status}`);
       const geoData = await geoResponse.json();
       if (!geoData || geoData.length === 0) throw new Error('City not found. Please check the spelling and try again.');
@@ -1152,7 +1152,7 @@ const AppNavigator = () => {
     } finally {
       setLoading(false);
     }
-  }, [city, haptic, fetchWeatherData]);
+  }, [city, haptic, fetchWeatherData, optimizedFetch]);
 
   // Direct weather fetching (from autocomplete, city selector, etc.)
   const getWeatherByLocation = useCallback(async (locationCity: string, lat: number, lon: number) => {
@@ -1177,6 +1177,49 @@ const AppNavigator = () => {
     }
   }, [haptic, fetchWeatherData, setCurrentCity, addToRecent]);
 
+  // Background refresh for weather data with native app lifecycle integration
+  const refreshWeatherData = useCallback(async () => {
+    // Only refresh if we have valid weather data to refresh
+    if (weather && city.trim()) {
+      try {
+        // Extract lat/lon from current weather data or use city search
+        const { lat, lon } = await (async () => {
+          // If we have weather data, we can try to get the location from recent cities
+          // For now, we'll use the city search approach
+          const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
+          const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
+          const geoResponse = await fetch(geoUrl, {
+            headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' }
+          });
+          if (!geoResponse.ok) throw new Error(`Geocoding failed: ${geoResponse.status}`);
+          const geoData = await geoResponse.json();
+          if (!geoData || geoData.length === 0) throw new Error('Location not found for background refresh');
+          return { lat: geoData[0].lat, lon: geoData[0].lon };
+        })();
+
+        // Fetch updated weather data
+        await fetchWeatherData(lat, lon);
+        console.log('Weather data refreshed in background');
+      } catch (error) {
+        console.error('Background weather refresh failed:', error);
+        // Don't set error state for background refreshes to avoid disrupting UI
+      }
+    }
+  }, [weather, city, fetchWeatherData]);
+
+  // Initialize background refresh with weather-optimized settings
+  const backgroundRefreshConfig = useMemo(() => ({
+    foregroundInterval: 5, // 5 minutes for active usage
+    backgroundInterval: 15, // 15 minutes for background
+    forceRefreshThreshold: 30, // 30 minutes for stale data
+    enabled: true
+  }), []);
+
+  const backgroundRefresh = useWeatherBackgroundRefresh(
+    refreshWeatherData,
+    backgroundRefreshConfig.enabled
+  );
+
   // Handle verification confirmation
   const handleVerificationConfirm = useCallback((cityName: string, latitude: number, longitude: number) => {
     setShowLocationVerification(false);
@@ -1194,16 +1237,51 @@ const AppNavigator = () => {
   const handleRefresh = useCallback(async () => {
     if (city.trim() && weather) {
       haptic.weatherRefresh(); // Haptic feedback for pull-to-refresh
-      // Add a small delay for better UX feedback
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await getWeather();
+      
+      // Use background refresh for manual refresh with enhanced capabilities
+      try {
+        await backgroundRefresh.manualRefresh();
+        console.log('Manual refresh completed via background refresh service');
+      } catch (error) {
+        // Fallback to traditional refresh
+        console.log('Falling back to traditional refresh:', error);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await getWeather();
+      }
     }
-  }, [city, weather, getWeather, haptic]);
+  }, [city, weather, backgroundRefresh, haptic, getWeather]);
 
   return (
     <>
       {/* Native API Status Display - Shows native capabilities when on mobile */}
-      <NativeStatusDisplay theme={theme} isMobile={isMobile} />
+      <NativeStatusDisplay theme={theme} isMobile={screenInfo.width < 768} />
+      
+      {/* DEBUG: Location Tester - Remove this after debugging */}
+      <LocationTester />
+      
+      {/* Background Refresh Status - Development info */}
+      {backgroundRefresh.isInitialized && (
+        <div style={{
+          position: 'fixed',
+          top: screenInfo.width < 768 ? '40px' : '10px',
+          right: '10px',
+          zIndex: 1000,
+          fontSize: '10px',
+          color: theme.primaryText,
+          background: theme.cardBackground,
+          padding: '4px 8px',
+          borderRadius: '4px',
+          border: `1px solid ${theme.weatherCardBorder}`,
+          opacity: 0.7,
+        }}>
+          🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} | 
+          📊 {backgroundRefresh.stats.totalRefreshes} total | 
+          🌐 {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
+          {backgroundRefresh.stats.lastRefreshTime > 0 && (
+            <div>Last: {new Date(backgroundRefresh.stats.lastRefreshTime).toLocaleTimeString()}</div>
+          )}
+        </div>
+      )}
       
       <SwipeNavigationContainer
         currentScreen={currentScreen}
@@ -1212,18 +1290,19 @@ const AppNavigator = () => {
         canSwipeLeft={swipeConfig.canSwipeLeft}
         canSwipeRight={swipeConfig.canSwipeRight}
         theme={theme}
-        isMobile={isMobile}
+        isMobile={screenInfo.width < 768}
         swipeThreshold={80}
         enableDesktopSupport={false}
       >
         {currentScreen === 'Home' && (
           <HomeScreen
             theme={theme}
-            isMobile={isMobile}
+            screenInfo={screenInfo}
+            adaptiveFonts={adaptiveFonts}
+            adaptiveSpacing={adaptiveSpacing}
+            adaptiveBorders={adaptiveBorders}
             createMobileButton={createMobileButton}
             navigate={navigate}
-            getResponsivePadding={getResponsivePadding}
-            getCardPadding={getCardPadding}
             haptic={haptic}
           />
         )}
@@ -1231,7 +1310,10 @@ const AppNavigator = () => {
         {currentScreen === 'WeatherDetails' && (
           <WeatherDetailsScreen
             theme={theme}
-            isMobile={isMobile}
+            screenInfo={screenInfo}
+            adaptiveFonts={adaptiveFonts}
+            adaptiveSpacing={adaptiveSpacing}
+            adaptiveBorders={adaptiveBorders}
             navigate={navigate}
             createMobileButton={createMobileButton}
             city={city}
@@ -1239,8 +1321,8 @@ const AppNavigator = () => {
             error={error}
             setError={setError}
             weather={weather}
-            hourlyForecast={hourlyForecast}
-            dailyForecast={dailyForecast}
+            hourlyForecast={memoizedHourlyForecast}
+            dailyForecast={memoizedDailyForecast}
             weatherCode={weatherCode}
             getWeather={getWeather}
             getWeatherByLocation={getWeatherByLocation}
@@ -1261,9 +1343,16 @@ const AppNavigator = () => {
         isOpen={showLocationVerification}
         locationData={pendingLocationData}
         theme={theme}
-        isMobile={isMobile}
+        isMobile={screenInfo.width < 768}
         onConfirm={handleVerificationConfirm}
         onCancel={handleVerificationCancel}
+      />
+
+      {/* Performance Monitor - Development only */}
+      <PerformanceMonitor
+        theme={theme}
+        enabled={import.meta.env.DEV}
+        position="bottom-left"
       />
     </>
   );
