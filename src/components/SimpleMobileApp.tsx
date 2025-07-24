@@ -336,26 +336,26 @@ const SimpleMobileApp: React.FC = () => {
               )}
               {/* Daily Forecast */}
               {dailyForecast.length > 0 && (
-                <div className="daily-forecast-section mt-24">
+                <div className="daily-forecast-section mt-24" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
                   <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                     📅 7-Day Forecast
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                     {dailyForecast.map((day, idx) => {
                       const dayDate = new Date(day.date);
                       const isToday = idx === 0;
                       const dayName = isToday ? 'Today' : dayDate.toLocaleDateString([], { weekday: 'short' });
                       const dateStr = dayDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
                       return (
-                        <div key={day.date + idx} style={{ background: isToday ? 'var(--toggle-border)20' : 'var(--forecast-card-background)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: `1px solid ${isToday ? 'var(--toggle-border)50' : 'var(--forecast-card-border)'}`, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', padding: '8px 12px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 80 }}>
+                        <div key={day.date + idx} style={{ background: isToday ? 'var(--toggle-border)20' : 'var(--forecast-card-background)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: `1px solid ${isToday ? 'var(--toggle-border)50' : 'var(--forecast-card-border)'}`, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', padding: '8px 12px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <div style={{ fontSize: 16, fontWeight: isToday ? 700 : 600, color: isToday ? 'var(--toggle-border)' : 'var(--primary-text)' }}>{dayName}</div>
                             <div style={{ fontSize: 12, color: 'var(--secondary-text)' }}>{dateStr}</div>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <WeatherIcon code={day.weatherCode} size={36} animated={true} />
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 100, justifyContent: 'flex-end' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
                             <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary-text)' }}>{day.tempMax}°</div>
                             <div style={{ fontSize: 14, color: 'var(--secondary-text)' }}>{day.tempMin}°</div>
                           </div>
