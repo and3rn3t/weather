@@ -336,18 +336,31 @@ const SimpleMobileApp: React.FC = () => {
               )}
               {/* Daily Forecast */}
               {dailyForecast.length > 0 && (
-                <div className="daily-forecast-section mt-24" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+                <div className="daily-forecast-section mt-24">
                   <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                     📅 7-Day Forecast
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+                  <div style={{ display: 'block', width: '100%' }}>
                     {dailyForecast.map((day, idx) => {
                       const dayDate = new Date(day.date);
                       const isToday = idx === 0;
                       const dayName = isToday ? 'Today' : dayDate.toLocaleDateString([], { weekday: 'short' });
                       const dateStr = dayDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
                       return (
-                        <div key={day.date + idx} style={{ background: isToday ? 'var(--toggle-border)20' : 'var(--forecast-card-background)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: `1px solid ${isToday ? 'var(--toggle-border)50' : 'var(--forecast-card-border)'}`, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', padding: '8px 12px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+                        <div key={day.date + idx} style={{
+                          background: isToday ? 'var(--toggle-border)20' : 'var(--forecast-card-background)',
+                          border: `1px solid ${isToday ? 'var(--toggle-border)50' : 'var(--forecast-card-border)'}`,
+                          borderRadius: 12,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                          padding: '12px 12px',
+                          marginBottom: 8,
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          display: 'grid',
+                          gridTemplateColumns: '1fr auto auto auto',
+                          alignItems: 'center',
+                          gap: 8
+                        }}>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <div style={{ fontSize: 16, fontWeight: isToday ? 700 : 600, color: isToday ? 'var(--toggle-border)' : 'var(--primary-text)' }}>{dayName}</div>
                             <div style={{ fontSize: 12, color: 'var(--secondary-text)' }}>{dateStr}</div>
