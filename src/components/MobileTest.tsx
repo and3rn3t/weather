@@ -56,16 +56,11 @@ export const MobileTest: React.FC = () => {
             Test Button 1
           </button>
           <button 
-            className="mobile-button mobile-button-large custom-shadow"
-            style={{ 
-              background: 'var(--toggle-background)', 
-              color: 'var(--primary-text)',
-              border: '1px solid var(--toggle-border)'
-            }}
+            className="mobile-button-glass"
             onClick={() => alert('Button 2 pressed!')}
-            aria-label="Large Button"
+            aria-label="Glass Button"
           >
-            Large Button
+            Glass Button
           </button>
           <button 
             className="mobile-button mobile-button-small custom-shadow"

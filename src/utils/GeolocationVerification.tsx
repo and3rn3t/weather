@@ -136,43 +136,6 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
     position: 'relative'
   };
 
-  const buttonStyle = (variant: 'primary' | 'secondary' | 'danger' = 'primary'): React.CSSProperties => {
-    const baseStyle = {
-      padding: isMobile ? '12px 24px' : '14px 28px',
-      borderRadius: '12px',
-      border: 'none',
-      fontSize: isMobile ? '15px' : '16px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      minWidth: isMobile ? '80px' : '100px'
-    };
-
-    switch (variant) {
-      case 'primary':
-        return {
-          ...baseStyle,
-          background: theme.buttonGradient,
-          color: theme.inverseText,
-          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-        };
-      case 'secondary':
-        return {
-          ...baseStyle,
-          background: theme.toggleBackground,
-          color: theme.primaryText,
-          border: `1px solid ${theme.toggleBorder}`
-        };
-      case 'danger':
-        return {
-          ...baseStyle,
-          background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-          color: 'white',
-          boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
-        };
-    }
-  };
-
   return (
     <div style={overlayStyle} onClick={handleCancel}>
       <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
@@ -259,55 +222,34 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
           flexWrap: isMobile ? 'wrap' : 'nowrap'
         }}>
           <button
+            className="mobile-button-glass"
             onClick={handleCancel}
-            style={buttonStyle('secondary')}
-            onMouseEnter={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-              target.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.backgroundColor = theme.toggleBackground;
-              target.style.transform = 'translateY(0)';
-            }}
+            aria-label="Cancel"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
+            <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>❌</span>
             Cancel
           </button>
 
           {onRetry && (
             <button
+              className="mobile-button mobile-button-small"
+              style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               onClick={handleRetry}
-              style={buttonStyle('danger')}
-              onMouseEnter={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.transform = 'translateY(-1px)';
-                target.style.boxShadow = '0 6px 16px rgba(239, 68, 68, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.transform = 'translateY(0)';
-                target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
-              }}
+              aria-label="Retry"
             >
+              <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>🔄</span>
               Retry
             </button>
           )}
 
           <button
+            className="mobile-button"
             onClick={handleConfirm}
-            style={buttonStyle('primary')}
-            onMouseEnter={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = 'translateY(-1px)';
-              target.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = 'translateY(0)';
-              target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
-            }}
+            aria-label="Use This Location"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
+            <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>📍</span>
             Use This Location
           </button>
         </div>

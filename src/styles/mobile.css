@@ -144,14 +144,24 @@ body {
 
 .mobile-button-large {
   min-height: 52px;
-  padding: 16px 32px;
   font-size: 18px;
+  /* Remove extra padding to avoid oversized buttons */
 }
 
 .mobile-button-small {
   min-height: 36px;
   padding: 8px 16px;
   font-size: 14px;
+}
+
+.mobile-button-glass {
+  background: var(--toggle-background, rgba(255,255,255,0.2));
+  color: var(--primary-text, #1f2937);
+  border: 1px solid var(--toggle-border, rgba(255,255,255,0.3));
+  box-shadow: none;
+  padding: 12px 20px;
+  min-height: 44px;
+  font-size: 16px;
 }
 
 /* Mobile cards */

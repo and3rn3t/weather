@@ -59,34 +59,24 @@ export const LocationTester: React.FC = () => {
       <h3>🧪 Location Services Tester</h3>
       
       <div style={{ marginBottom: '15px' }}>
-        <button 
+        <button
+          className="mobile-button"
           onClick={runLocationTest}
           disabled={isLoading}
-          style={{
-            padding: '10px 15px',
-            marginRight: '10px',
-            backgroundColor: '#007acc',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
+          aria-label="Run Location Test"
+          style={{ marginRight: 10, display: 'inline-flex', alignItems: 'center', gap: 8 }}
         >
-          {isLoading ? '⏳ Testing...' : '🧪 Run Location Test'}
+          <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>{isLoading ? '⏳' : '��'}</span>
+          {isLoading ? 'Testing...' : 'Run Location Test'}
         </button>
-        
-        <button 
+        <button
+          className="mobile-button mobile-button-small"
           onClick={clearResults}
-          style={{
-            padding: '10px 15px',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
+          aria-label="Clear Results"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
         >
-          🧹 Clear Results
+          <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>🧹</span>
+          Clear Results
         </button>
       </div>
 
