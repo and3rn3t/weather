@@ -44,8 +44,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     if (typeof document !== 'undefined') {
       document.body.style.transition = 'background 0.6s ease';
       document.body.style.background = theme.appBackground;
+      // Toggle dark-theme class for CSS variables
+      if (themeName === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
     }
-  }, [theme.appBackground]);
+  }, [theme.appBackground, themeName]);
 
   // Memoize context value to prevent unnecessary re-renders
   const value: ThemeContextType = useMemo(() => ({

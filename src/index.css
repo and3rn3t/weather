@@ -1,5 +1,3 @@
-/* Import critical mobile fixes first */
-@import './styles/mobile-fixes.css';
 /* Import mobile-first optimizations */
 @import './styles/mobile.css';
 

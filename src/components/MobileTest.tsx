@@ -5,12 +5,10 @@
  */
 
 import React from 'react';
-import { useTheme } from '../utils/useTheme';
 import { getScreenInfo, getAdaptiveFontSizes } from '../utils/mobileScreenOptimization';
-import '../styles/mobile-fixes.css';
 
 export const MobileTest: React.FC = () => {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const screenInfo = getScreenInfo();
   const adaptiveFonts = getAdaptiveFontSizes(screenInfo);
 
@@ -21,25 +19,25 @@ export const MobileTest: React.FC = () => {
   };
 
   return (
-    <div className="mobile-container fade-in" style={{ background: theme.primaryGradient }}>
+    <div className="mobile-container fade-in" style={{ background: 'var(--primary-gradient)' }}>
       <div className="mobile-card weather-display">
-        <h1 className="mobile-title custom-font" style={{ color: theme.primaryText }}>
+        <h1 className="mobile-title custom-font">
           Mobile Test
         </h1>
-        <p className="mobile-body custom-font" style={{ color: theme.secondaryText }}>
+        <p className="mobile-body custom-font">
           This is a test of the mobile optimizations. The text should be readable and buttons should be touch-friendly.
         </p>
         
         <div className="weather-details mt-20">
-          <div className="weather-detail-item custom-font" style={{ background: theme.cardBackground, color: theme.primaryText }}>
+          <div className="weather-detail-item custom-font" style={{ background: 'var(--card-background)', color: 'var(--primary-text)' }}>
             <div>Screen</div>
             <div>{screenInfo.width} × {screenInfo.height}</div>
           </div>
-          <div className="weather-detail-item custom-font" style={{ background: theme.cardBackground, color: theme.primaryText }}>
+          <div className="weather-detail-item custom-font" style={{ background: 'var(--card-background)', color: 'var(--primary-text)' }}>
             <div>Size</div>
             <div>{getScreenSizeDescription()}</div>
           </div>
-          <div className="weather-detail-item custom-font" style={{ background: theme.cardBackground, color: theme.primaryText }}>
+          <div className="weather-detail-item custom-font" style={{ background: 'var(--card-background)', color: 'var(--primary-text)' }}>
             <div>Safe Area</div>
             <div>T:{screenInfo.safeAreaTop} B:{screenInfo.safeAreaBottom}</div>
           </div>
@@ -49,8 +47,8 @@ export const MobileTest: React.FC = () => {
           <button 
             className="mobile-button custom-shadow"
             style={{ 
-              background: theme.primaryGradient, 
-              color: theme.inverseText 
+              background: 'var(--button-gradient)', 
+              color: 'var(--inverse-text)'
             }}
             onClick={() => alert('Button 1 pressed!')}
             aria-label="Test Button 1"
@@ -60,9 +58,9 @@ export const MobileTest: React.FC = () => {
           <button 
             className="mobile-button mobile-button-large custom-shadow"
             style={{ 
-              background: 'rgba(255, 255, 255, 0.2)', 
-              color: theme.primaryText,
-              border: `1px solid ${theme.primaryText}30`
+              background: 'var(--toggle-background)', 
+              color: 'var(--primary-text)',
+              border: '1px solid var(--toggle-border)'
             }}
             onClick={() => alert('Button 2 pressed!')}
             aria-label="Large Button"
@@ -72,7 +70,7 @@ export const MobileTest: React.FC = () => {
           <button 
             className="mobile-button mobile-button-small custom-shadow"
             style={{ 
-              background: 'rgba(255, 100, 100, 0.8)', 
+              background: 'linear-gradient(135deg, #ef4444, #dc2626)', 
               color: 'white'
             }}
             onClick={() => alert('Button 3 pressed!')}
@@ -83,10 +81,10 @@ export const MobileTest: React.FC = () => {
         </div>
 
         <div className="mt-24" style={{ textAlign: 'left' }}>
-          <h3 className="custom-font" style={{ color: theme.primaryText, fontSize: adaptiveFonts.sectionTitle }}>
+          <h3 className="custom-font" style={{ fontSize: adaptiveFonts.sectionTitle }}>
             Mobile Features Test:
           </h3>
-          <ul className="custom-font" style={{ color: theme.secondaryText, fontSize: adaptiveFonts.bodyMedium }}>
+          <ul className="custom-font" style={{ fontSize: adaptiveFonts.bodyMedium }}>
             <li>✅ Touch-friendly buttons (44px minimum)</li>
             <li>✅ Responsive text sizing</li>
             <li>✅ Safe area handling</li>
