@@ -796,20 +796,20 @@ body.dark-theme {
   max-width: 420px;
   margin-left: auto;
   margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.hourly-forecast-section {
-  border-top: 1px solid var(--forecast-card-border, #e5e7eb);
-  margin-top: 24px;
-  padding-top: 16px;
-  background: none;
-}
-
+.hourly-forecast-section,
 .daily-forecast-section {
   border-top: 1px solid var(--forecast-card-border, #e5e7eb);
   margin-top: 24px;
   padding-top: 16px;
   background: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: visible;
 }
 
 .hourly-forecast-section h3,
@@ -824,6 +824,17 @@ body.dark-theme {
 .daily-forecast-section > div {
   /* forecast card containers */
   margin-bottom: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.hourly-forecast-section [style*='overflowX: auto'],
+.hourly-forecast-section .forecast-list {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto !important;
 }
 
 /* Make forecast cards more touch-friendly */
