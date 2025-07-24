@@ -759,3 +759,29 @@ body.dark-theme {
 }
 
 /* Usage example: background: var(--primary-gradient); color: var(--primary-text); */
+
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  border: 2px solid var(--toggle-border);
+  background: var(--toggle-background);
+  backdrop-filter: blur(10px);
+  color: var(--toggle-icon);
+  font-size: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  padding: 0 !important;
+}

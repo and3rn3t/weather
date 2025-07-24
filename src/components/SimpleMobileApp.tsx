@@ -23,6 +23,23 @@ type WeatherData = {
   country?: string;
 };
 
+type HourlyForecast = {
+  time: string;
+  temperature: number;
+  weatherCode: number;
+  humidity: number;
+  feelsLike: number;
+};
+
+type DailyForecast = {
+  date: string;
+  weatherCode: number;
+  tempMax: number;
+  tempMin: number;
+  precipitation: number;
+  windSpeed: number;
+};
+
 // Maps OpenMeteo weather codes to detailed descriptions
 const getWeatherDescription = (code: number): string => {
   const descriptions: { [key: number]: string } = {
@@ -65,17 +82,48 @@ const SimpleMobileApp: React.FC = () => {
   const [weatherError, setWeatherError] = useState<string>('');
   const [cityPrompt, setCityPrompt] = useState<string>('');
   const [showCityInput, setShowCityInput] = useState(false);
+  const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
+  const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
 
   // Fetch weather from OpenMeteo API
   const fetchWeather = async (lat: number, lon: number, city?: string, country?: string): Promise<void> => {
     setWeatherLoading(true);
     setWeatherError('');
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Weather API error');
       const data = await res.json();
       setWeather({ ...data.current_weather, city, country });
+      // Process hourly forecast
+      const hourly: HourlyForecast[] = [];
+      if (data.hourly && data.hourly.time) {
+        for (let i = 0; i < Math.min(24, data.hourly.time.length); i++) {
+          hourly.push({
+            time: data.hourly.time[i],
+            temperature: Math.round(data.hourly.temperature_2m[i] || 0),
+            weatherCode: data.hourly.weathercode?.[i] || 0,
+            humidity: Math.round(data.hourly.relative_humidity_2m?.[i] || 0),
+            feelsLike: Math.round(data.hourly.apparent_temperature?.[i] || 0)
+          });
+        }
+      }
+      setHourlyForecast(hourly);
+      // Process daily forecast
+      const daily: DailyForecast[] = [];
+      if (data.daily && data.daily.time) {
+        for (let i = 0; i < Math.min(7, data.daily.time.length); i++) {
+          daily.push({
+            date: data.daily.time[i],
+            weatherCode: data.daily.weathercode?.[i] || 0,
+            tempMax: Math.round(data.daily.temperature_2m_max[i] || 0),
+            tempMin: Math.round(data.daily.temperature_2m_min[i] || 0),
+            precipitation: Math.round((data.daily.precipitation_sum?.[i] || 0) * 10) / 10,
+            windSpeed: Math.round(data.daily.windspeed_10m_max?.[i] || 0)
+          });
+        }
+      }
+      setDailyForecast(daily);
     } catch (e: unknown) {
       setWeatherError(e instanceof Error ? e.message : 'Failed to fetch weather');
     } finally {
@@ -306,20 +354,84 @@ const SimpleMobileApp: React.FC = () => {
           )}
           {/* Weather display */}
           {weather && !weatherLoading && (
-            <div className="mobile-body mt-20">
-              {weather.city && (
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>
-                  📍 {weather.city}{weather.country ? `, ${weather.country}` : ''}
+            <>
+              <div className="mobile-body mt-20">
+                {weather.city && (
+                  <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>
+                    📍 {weather.city}{weather.country ? `, ${weather.country}` : ''}
+                  </div>
+                )}
+                <div style={{ fontSize: 17, color: 'var(--primary-text)', marginBottom: 8 }}>
+                  {getWeatherDescription(weather.weathercode)}
+                </div>
+                <div>🌡️ Temp: {weather.temperature}°F</div>
+                <div>💨 Wind: {weather.windspeed} mph</div>
+                <div>🌀 Code: {weather.weathercode}</div>
+                <div>🕒 Time: {weather.time}</div>
+              </div>
+              {/* Hourly Forecast */}
+              {hourlyForecast.length > 0 && (
+                <div className="hourly-forecast-section mt-24">
+                  <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    🕐 24-Hour Forecast
+                  </h3>
+                  <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'thin', WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory', scrollPadding: '16px' }}>
+                    {hourlyForecast.map((hour, idx) => {
+                      const hourDate = new Date(hour.time);
+                      const hourStr = hourDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      return (
+                        <div key={hour.time + idx} style={{ minWidth: 80, background: 'var(--card-background)', borderRadius: 12, padding: '12px 8px', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', scrollSnapAlign: 'start', flexShrink: 0 }}>
+                          <div style={{ fontSize: 12, color: 'var(--secondary-text)', fontWeight: 500, marginBottom: 6 }}>{hourStr}</div>
+                          <div style={{ marginBottom: 8 }}>
+                            <WeatherIcon code={hour.weatherCode} size={32} animated={true} />
+                          </div>
+                          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary-text)', marginBottom: 4 }}>{hour.temperature}°F</div>
+                          <div style={{ fontSize: 10, color: 'var(--secondary-text)', display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <span>💧 {hour.humidity}%</span>
+                            <span>Feels {hour.feelsLike}°</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
-              <div style={{ fontSize: 17, color: 'var(--primary-text)', marginBottom: 8 }}>
-                {getWeatherDescription(weather.weathercode)}
-              </div>
-              <div>🌡️ Temp: {weather.temperature}°F</div>
-              <div>💨 Wind: {weather.windspeed} mph</div>
-              <div>🌀 Code: {weather.weathercode}</div>
-              <div>🕒 Time: {weather.time}</div>
-            </div>
+              {/* Daily Forecast */}
+              {dailyForecast.length > 0 && (
+                <div className="daily-forecast-section mt-24">
+                  <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    📅 7-Day Forecast
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {dailyForecast.map((day, idx) => {
+                      const dayDate = new Date(day.date);
+                      const isToday = idx === 0;
+                      const dayName = isToday ? 'Today' : dayDate.toLocaleDateString([], { weekday: 'short' });
+                      const dateStr = dayDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                      return (
+                        <div key={day.date + idx} style={{ background: isToday ? 'var(--toggle-border)20' : 'var(--forecast-card-background)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: `1px solid ${isToday ? 'var(--toggle-border)50' : 'var(--forecast-card-border)'}`, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', padding: '8px 12px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 80 }}>
+                            <div style={{ fontSize: 16, fontWeight: isToday ? 700 : 600, color: isToday ? 'var(--toggle-border)' : 'var(--primary-text)' }}>{dayName}</div>
+                            <div style={{ fontSize: 12, color: 'var(--secondary-text)' }}>{dateStr}</div>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+                            <WeatherIcon code={day.weatherCode} size={36} animated={true} />
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 100, justifyContent: 'flex-end' }}>
+                            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary-text)' }}>{day.tempMax}°</div>
+                            <div style={{ fontSize: 14, color: 'var(--secondary-text)' }}>{day.tempMin}°</div>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 12, color: 'var(--secondary-text)', gap: 2 }}>
+                            {day.precipitation > 0 && <span>🌧️ {day.precipitation}mm</span>}
+                            <span>💨 {day.windSpeed}mph</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
