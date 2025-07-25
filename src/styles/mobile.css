@@ -879,15 +879,37 @@ body.dark-theme {
   gap: 16px;
 }
 
-@media (max-width: 400px) {
+.forecast-card-details {
+  grid-column: 1 / span 3;
+  text-align: right;
+  font-size: 13px;
+  color: var(--secondary-text);
+  margin-top: 6px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  white-space: normal;
+}
+
+@media (max-width: 420px) {
   .forecast-card {
-    padding: 12px 6px;
-    gap: 8px;
-    min-height: 56px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 12px 6px !important;
+    gap: 8px !important;
+    min-height: 56px !important;
   }
-  .forecast-bg {
-    padding-left: 0;
-    padding-right: 0;
+  .forecast-card-details {
+    grid-column: auto !important;
+    width: 100% !important;
+    text-align: right !important;
+    margin-top: 8px !important;
+    font-size: 12px !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
   }
 }
 .forecast-card:hover, .forecast-card:active {

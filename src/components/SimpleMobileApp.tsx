@@ -340,7 +340,7 @@ const SimpleMobileApp: React.FC = () => {
                   <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                     📅 7-Day Forecast
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18, width: '100%' }}>
                     {dailyForecast.map((day, idx) => {
                       const dayDate = new Date(day.date);
                       const isToday = idx === 0;
@@ -352,7 +352,7 @@ const SimpleMobileApp: React.FC = () => {
                           className={isToday ? 'forecast-card today-card' : 'forecast-card'}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '1.2fr 0.8fr 1fr auto',
+                            gridTemplateColumns: '1.2fr 0.8fr 1fr',
                             alignItems: 'center',
                             gap: 16,
                             width: '100%',
@@ -360,9 +360,11 @@ const SimpleMobileApp: React.FC = () => {
                             position: 'relative',
                             overflow: 'hidden',
                             padding: '16px 16px',
-                            minHeight: 64
+                            minHeight: 64,
+                            gridTemplateRows: 'auto auto'
                           }}
                         >
+                          {/* Main row: day, icon, temps */}
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
                             <div style={{ fontSize: 17, fontWeight: isToday ? 800 : 600, color: 'var(--primary-text)', marginBottom: 2 }}>{dayName}</div>
                             <div style={{ fontSize: 12, color: 'var(--secondary-text)' }}>{dateStr}</div>
@@ -374,9 +376,10 @@ const SimpleMobileApp: React.FC = () => {
                             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary-text)', textAlign: 'right' }}>{day.tempMax}°</div>
                             <div style={{ fontSize: 14, color: 'var(--secondary-text)', textAlign: 'right' }}>{day.tempMin}°</div>
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 13, color: 'var(--secondary-text)', gap: 2, minWidth: 56, overflow: 'visible', whiteSpace: 'nowrap' }}>
-                            {day.precipitation > 0 && <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right', whiteSpace: 'nowrap' }}>🌧️ <span>{day.precipitation}mm</span></span>}
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right', whiteSpace: 'nowrap' }}>💨 <span>{day.windSpeed}mph</span></span>
+                          {/* Details row: full width, right-aligned, smaller font */}
+                          <div className="forecast-card-details" style={{ gridColumn: '1 / span 3', textAlign: 'right', fontSize: 13, color: 'var(--secondary-text)', marginTop: 6, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
+                            {day.precipitation > 0 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>🌧️ <span>{day.precipitation}mm</span></span>}
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>💨 <span>{day.windSpeed}mph</span></span>
                           </div>
                         </div>
                       );
