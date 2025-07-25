@@ -871,9 +871,24 @@ body.dark-theme {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   background: var(--forecast-card-background);
   border: 1px solid var(--forecast-card-border);
-  margin-bottom: 12px;
+  margin-bottom: 0;
   position: relative;
   overflow: hidden;
+  padding: 16px 16px;
+  min-height: 64px;
+  gap: 16px;
+}
+
+@media (max-width: 400px) {
+  .forecast-card {
+    padding: 12px 6px;
+    gap: 8px;
+    min-height: 56px;
+  }
+  .forecast-bg {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 .forecast-card:hover, .forecast-card:active {
   box-shadow: 0 6px 24px rgba(99,102,241,0.13);

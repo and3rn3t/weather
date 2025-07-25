@@ -340,7 +340,7 @@ const SimpleMobileApp: React.FC = () => {
                   <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                     📅 7-Day Forecast
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
                     {dailyForecast.map((day, idx) => {
                       const dayDate = new Date(day.date);
                       const isToday = idx === 0;
@@ -352,29 +352,31 @@ const SimpleMobileApp: React.FC = () => {
                           className={isToday ? 'forecast-card today-card' : 'forecast-card'}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '1fr auto auto auto',
+                            gridTemplateColumns: '1.2fr 0.8fr 1fr 1fr',
                             alignItems: 'center',
-                            gap: 8,
+                            gap: 16,
                             width: '100%',
                             boxSizing: 'border-box',
                             position: 'relative',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            padding: '16px 16px',
+                            minHeight: 64
                           }}
                         >
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            <div style={{ fontSize: 17, fontWeight: isToday ? 800 : 600, color: 'var(--primary-text)' }}>{dayName}</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+                            <div style={{ fontSize: 17, fontWeight: isToday ? 800 : 600, color: 'var(--primary-text)', marginBottom: 2 }}>{dayName}</div>
                             <div style={{ fontSize: 12, color: 'var(--secondary-text)' }}>{dateStr}</div>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 36 }}>
                             <WeatherIcon code={day.weatherCode} size={36} animated={true} />
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary-text)' }}>{day.tempMax}°</div>
-                            <div style={{ fontSize: 14, color: 'var(--secondary-text)' }}>{day.tempMin}°</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: 2, minWidth: 48 }}>
+                            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary-text)', textAlign: 'right' }}>{day.tempMax}°</div>
+                            <div style={{ fontSize: 14, color: 'var(--secondary-text)', textAlign: 'right' }}>{day.tempMin}°</div>
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 13, color: 'var(--secondary-text)', gap: 2 }}>
-                            {day.precipitation > 0 && <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}>🌧️ <span>{day.precipitation}mm</span></span>}
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}>💨 <span>{day.windSpeed}mph</span></span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 13, color: 'var(--secondary-text)', gap: 2, minWidth: 56 }}>
+                            {day.precipitation > 0 && <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right' }}>🌧️ <span>{day.precipitation}mm</span></span>}
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right' }}>💨 <span>{day.windSpeed}mph</span></span>
                           </div>
                         </div>
                       );
