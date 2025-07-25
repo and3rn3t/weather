@@ -340,7 +340,7 @@ const SimpleMobileApp: React.FC = () => {
                   <h3 className="custom-font" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                     📅 7-Day Forecast
                   </h3>
-                  <div style={{ display: 'block', width: '100%' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
                     {dailyForecast.map((day, idx) => {
                       const dayDate = new Date(day.date);
                       const isToday = idx === 0;
@@ -352,38 +352,24 @@ const SimpleMobileApp: React.FC = () => {
                           className={isToday ? 'forecast-card today-card' : 'forecast-card'}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '8px 1fr auto auto auto',
+                            gridTemplateColumns: '1fr auto auto auto',
                             alignItems: 'center',
                             gap: 8,
-                            marginBottom: 12,
-                            background: isToday ? 'var(--today-bg, #e0e7ff)' : 'var(--forecast-card-background)',
-                            border: `1px solid ${isToday ? 'var(--today-border, #6366f1)' : 'var(--forecast-card-border)'}`,
-                            borderRadius: 16,
-                            boxShadow: isToday ? '0 4px 16px rgba(99,102,241,0.10)' : '0 2px 8px rgba(0,0,0,0.05)',
-                            padding: '14px 14px',
                             width: '100%',
                             boxSizing: 'border-box',
                             position: 'relative',
                             overflow: 'hidden'
                           }}
                         >
-                          {/* Accent bar for Today */}
-                          <div style={{
-                            width: 8,
-                            height: '100%',
-                            background: isToday ? 'linear-gradient(180deg, #6366f1 0%, #818cf8 100%)' : 'transparent',
-                            borderRadius: 8,
-                            marginRight: 8
-                          }} />
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            <div style={{ fontSize: 17, fontWeight: isToday ? 800 : 600, color: isToday ? '#3730a3' : 'var(--primary-text)' }}>{dayName}</div>
+                            <div style={{ fontSize: 17, fontWeight: isToday ? 800 : 600, color: 'var(--primary-text)' }}>{dayName}</div>
                             <div style={{ fontSize: 12, color: 'var(--secondary-text)' }}>{dateStr}</div>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <WeatherIcon code={day.weatherCode} size={36} animated={true} />
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                            <div style={{ fontSize: 18, fontWeight: 700, color: isToday ? '#3730a3' : 'var(--primary-text)' }}>{day.tempMax}°</div>
+                            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary-text)' }}>{day.tempMax}°</div>
                             <div style={{ fontSize: 14, color: 'var(--secondary-text)' }}>{day.tempMin}°</div>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 13, color: 'var(--secondary-text)', gap: 2 }}>

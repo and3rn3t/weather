@@ -858,7 +858,7 @@ body.dark-theme {
 }
 
 .forecast-bg {
-  background: linear-gradient(180deg, #f8fafc 60%, #e0e7ff 100%);
+  background: var(--forecast-card-background, #f3f4f6);
   border-radius: 18px;
   padding: 12px 0 8px 0;
   margin: 0 -8px 0 -8px;
@@ -877,11 +877,20 @@ body.dark-theme {
 }
 .forecast-card:hover, .forecast-card:active {
   box-shadow: 0 6px 24px rgba(99,102,241,0.13);
-  background: #f1f5ff;
+  background: var(--card-background, #f1f5ff);
 }
 
 .today-card {
-  background: linear-gradient(90deg, #e0e7ff 80%, #f1f5ff 100%) !important;
-  border: 1.5px solid #6366f1 !important;
+  background: var(--forecast-card-background, #e0e7ff) !important;
+  border-left: 5px solid var(--weather-card-border, #6366f1) !important;
+  border-radius: 16px !important;
   box-shadow: 0 4px 16px rgba(99,102,241,0.10) !important;
+}
+
+body.dark-theme .forecast-bg {
+  background: var(--forecast-card-background, #23244a);
+}
+body.dark-theme .today-card {
+  background: var(--forecast-card-background, #312e81) !important;
+  border-left: 5px solid var(--weather-card-border, #8b5cf6) !important;
 }
