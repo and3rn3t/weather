@@ -352,7 +352,7 @@ const SimpleMobileApp: React.FC = () => {
                           className={isToday ? 'forecast-card today-card' : 'forecast-card'}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '1.2fr 0.8fr 1fr 1fr',
+                            gridTemplateColumns: '1.2fr 0.8fr 1fr auto',
                             alignItems: 'center',
                             gap: 16,
                             width: '100%',
@@ -374,9 +374,9 @@ const SimpleMobileApp: React.FC = () => {
                             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary-text)', textAlign: 'right' }}>{day.tempMax}°</div>
                             <div style={{ fontSize: 14, color: 'var(--secondary-text)', textAlign: 'right' }}>{day.tempMin}°</div>
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 13, color: 'var(--secondary-text)', gap: 2, minWidth: 56 }}>
-                            {day.precipitation > 0 && <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right' }}>🌧️ <span>{day.precipitation}mm</span></span>}
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right' }}>💨 <span>{day.windSpeed}mph</span></span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: 13, color: 'var(--secondary-text)', gap: 2, minWidth: 56, overflow: 'visible', whiteSpace: 'nowrap' }}>
+                            {day.precipitation > 0 && <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right', whiteSpace: 'nowrap' }}>🌧️ <span>{day.precipitation}mm</span></span>}
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 2, textAlign: 'right', whiteSpace: 'nowrap' }}>💨 <span>{day.windSpeed}mph</span></span>
                           </div>
                         </div>
                       );
