@@ -293,19 +293,38 @@ const SimpleMobileApp: React.FC = () => {
           {/* Weather display */}
           {weather && !weatherLoading && (
             <>
-              <div className="mobile-body mt-20">
-                {weather.city && (
-                  <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>
-                    📍 {weather.city}{weather.country ? `, ${weather.country}` : ''}
+              <div className="forecast-card today-card" style={{
+                display: 'grid',
+                gridTemplateColumns: '1.2fr 0.8fr 1fr',
+                alignItems: 'center',
+                gap: 16,
+                width: '100%',
+                boxSizing: 'border-box',
+                position: 'relative',
+                overflow: 'hidden',
+                padding: '20px 18px',
+                minHeight: 80,
+                marginBottom: 24
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--primary-text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>Today</span> <span style={{ fontSize: 22 }}>🌤️</span>
                   </div>
-                )}
-                <div style={{ fontSize: 17, color: 'var(--primary-text)', marginBottom: 8 }}>
-                  {getWeatherDescription(weather.weathercode)}
+                  {weather.city && (
+                    <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--secondary-text)', marginBottom: 2 }}>
+                      📍 {weather.city}{weather.country ? `, ${weather.country}` : ''}
+                    </div>
+                  )}
+                  <div style={{ fontSize: 15, color: 'var(--secondary-text)' }}>{getWeatherDescription(weather.weathercode)}</div>
                 </div>
-                <div>🌡️ Temp: {weather.temperature}°F</div>
-                <div>💨 Wind: {weather.windspeed} mph</div>
-                <div>🌀 Code: {weather.weathercode}</div>
-                <div>🕒 Time: {weather.time}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 40 }}>
+                  <WeatherIcon code={weather.weathercode} size={44} animated={true} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: 2, minWidth: 56 }}>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--primary-text)', textAlign: 'right' }}>{weather.temperature}°F</div>
+                  <div style={{ fontSize: 15, color: 'var(--secondary-text)', textAlign: 'right' }}>💨 {weather.windspeed} mph</div>
+                  <div style={{ fontSize: 13, color: 'var(--secondary-text)', textAlign: 'right' }}>🕒 {weather.time}</div>
+                </div>
               </div>
               {/* Hourly Forecast */}
               {hourlyForecast.length > 0 && (
