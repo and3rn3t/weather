@@ -27,32 +27,18 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Run lint
-      run: npm run lint
+    - name: Run quality assurance pipeline
+      run: npm run qa
     
-    - name: Run type check
-      run: npx tsc --noEmit
-    
-    - name: Run tests
-      run: npm test -- --coverage --watchAll=false
-    
+    - name: Bundle size analysis with performance checks
+      run: npm run analyze:ci
+      
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage/lcov.info
         flags: unittests
         name: codecov-umbrella
-    
-    - name: Build production
-      run: npm run build
-    
-    - name: Bundle size analysis
-      run: |
-        npm run analyze > bundle-analysis.txt
-        echo "### Bundle Analysis" >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        cat bundle-analysis.txt >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
   deploy:
     needs: test
@@ -72,8 +58,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Build production
-      run: npm run build
+    - name: Build production with optimizations
+      run: npm run build:production
+    
+    - name: Verify build quality
+      run: npm run analyze:ci
     
     - name: Deploy to Cloudflare Pages
       uses: cloudflare/pages-action@v1
@@ -81,6 +70,40 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         projectName: weather-app
+        directory: dist
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        wranglerVersion: '3'
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build staging
+      run: npm run build
+    
+    - name: Verify build quality
+      run: npm run analyze:ci
+    
+    - name: Deploy to Cloudflare Pages (Staging)
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: weather-app-staging
         directory: dist
         gitHubToken: ${{ secrets.GITHUB_TOKEN }}
         wranglerVersion: '3'
@@ -100,11 +123,25 @@ jobs:
         node-version: '20.x'
         cache: 'npm'
     
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          android/.gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
     - name: Install dependencies
       run: npm ci
     
-    - name: Build web assets
-      run: npm run build
+    - name: Build optimized web assets
+      run: npm run build:production
+    
+    - name: Verify mobile build quality
+      run: npm run analyze:ci
     
     - name: Setup Java for Android
       uses: actions/setup-java@v4
@@ -118,16 +155,17 @@ jobs:
     - name: Install Capacitor CLI
       run: npm install -g @capacitor/cli
     
-    - name: Sync Capacitor
+    - name: Sync Capacitor with optimizations
       run: npx cap sync android
     
     - name: Build Android APK
       run: |
         cd android
-        ./gradlew assembleDebug
+        ./gradlew assembleDebug --parallel --build-cache
     
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
         name: android-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
