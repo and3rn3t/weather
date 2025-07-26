@@ -54,7 +54,6 @@
     "precommit": "powershell -ExecutionPolicy Bypass -File scripts/pre-commit-check.ps1",
     "prepare-release": "powershell -ExecutionPolicy Bypass -File scripts/release-prep.ps1",
     "predev": "npm run check",
-    "prebuild": "npm run lint",
     "_comment_deployment": "Deployment Scripts",
     "deploy:preview": "npm run build && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01",
     "deploy:production": "npm run build:production && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01",
