@@ -1,7 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import SimpleMobileApp from './components/SimpleMobileApp';
+import AppNavigator from './navigation/AppNavigator';
 import { ThemeProvider } from './utils/themeContext';
 import { HapticFeedbackProvider } from './utils/hapticContext';
 import ErrorBoundary from './ErrorBoundary';
@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <ThemeProvider>
         <HapticFeedbackProvider>
-          <SimpleMobileApp />
+          <AppNavigator />
         </HapticFeedbackProvider>
       </ThemeProvider>
     </ErrorBoundary>

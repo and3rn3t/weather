@@ -140,9 +140,9 @@ export class EnhancedHapticService {
   private static instance: EnhancedHapticService;
   private config: HapticConfig;
   private lastVibrationTime: number = 0;
-  private isNative: boolean;
-  private isWeb: boolean;
-  private canVibrate: boolean;
+  private readonly isNative: boolean;
+  private readonly isWeb: boolean;
+  private readonly canVibrate: boolean;
 
   private constructor(config: HapticConfig = {}) {
     this.config = {
@@ -249,7 +249,9 @@ export class EnhancedHapticService {
     }
 
     const now = Date.now();
-    if (now - this.lastVibrationTime < this.config.rateLimitMs) {
+    const lastTime = this.lastVibrationTime || 0;
+    const rateLimit = this.config.rateLimitMs || 50;
+    if (now - lastTime < rateLimit) {
       if (this.config.debugMode) {
         console.log('🔇 Haptic rate limited');
       }

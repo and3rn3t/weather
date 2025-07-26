@@ -20,7 +20,10 @@ import { useWeatherAPIOptimization, useWeatherDataTransform } from '../utils/use
 import PerformanceMonitor from '../utils/PerformanceMonitor';
 import { LocationTester } from '../utils/LocationTester';
 import MobileDebug from '../utils/MobileDebug';
-import MobileTest from '../components/MobileTest';
+import MobileNavigation, { type NavigationScreen } from '../components/MobileNavigation';
+import { ScreenContainer } from '../components/ScreenTransition';
+import SettingsScreen from '../components/SettingsScreen';
+import SearchScreen from '../components/SearchScreen';
 import { 
   getScreenInfo, 
   getAdaptiveFontSizes,
@@ -1020,7 +1023,7 @@ const AppNavigator = () => {
   // const { isOnline } = useNetworkStatus();
   // const { updateAvailable, applyUpdate } = usePWAUpdate();
   
-  const [currentScreen, setCurrentScreen] = useState('Home');
+  const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherCode, setWeatherCode] = useState(0);
@@ -1055,23 +1058,37 @@ const AppNavigator = () => {
   // Get swipe configuration for current screen
   const swipeConfig = useScreenSwipeConfig(currentScreen);
 
+  // Mobile navigation handler
+  const handleMobileNavigation = useCallback((screen: NavigationScreen) => {
+    haptic.buttonPress();
+    setCurrentScreen(screen);
+  }, [haptic]);
+
+  // Legacy navigation function for backward compatibility
   const navigate = (screenName: string) => {
-    setCurrentScreen(screenName);
+    // Map old screen names to new NavigationScreen types
+    const screenMap: Record<string, NavigationScreen> = {
+      'Home': 'Home',
+      'WeatherDetails': 'Weather',
+      'MobileTest': 'Settings', // Redirect mobile test to settings for now
+      'Settings': 'Settings',
+      'Search': 'Search'
+    };
+    
+    const mappedScreen = screenMap[screenName] || 'Home';
+    setCurrentScreen(mappedScreen);
   };
 
-  // Enhanced swipe navigation handlers with haptic feedback
+  // Enhanced swipe navigation handlers with haptic feedback  
   const handleSwipeLeft = () => {
     if (currentScreen === 'Home') {
       haptic.triggerHaptic('navigation');
-      navigate('WeatherDetails');
-    } else {
-      // Subtle error feedback for invalid swipe
-      haptic.triggerHaptic('light');
+      navigate('Weather'); // Use new screen name
     }
   };
 
   const handleSwipeRight = () => {
-    if (currentScreen === 'WeatherDetails') {
+    if (currentScreen === 'Weather') {
       haptic.triggerHaptic('navigation');
       navigate('Home');
     } else {
@@ -1293,58 +1310,128 @@ const AppNavigator = () => {
         </div>
       )}
       
-      <SwipeNavigationContainer
+      {/* Modern Mobile Navigation System */}
+      <ScreenContainer
         currentScreen={currentScreen}
-        onSwipeLeft={handleSwipeLeft}
-        onSwipeRight={handleSwipeRight}
-        canSwipeLeft={swipeConfig.canSwipeLeft}
-        canSwipeRight={swipeConfig.canSwipeRight}
+        transitionDirection="slide-left"
+        transitionDuration={300}
         theme={theme}
-        isMobile={screenInfo.width < 768}
-        swipeThreshold={80}
-        enableDesktopSupport={false}
-      >
-        {currentScreen === 'Home' && (
-          <HomeScreen
-            theme={theme}
-            screenInfo={screenInfo}
-            adaptiveFonts={adaptiveFonts}
-            adaptiveSpacing={adaptiveSpacing}
-            adaptiveBorders={adaptiveBorders}
-            navigate={navigate}
-            haptic={haptic}
-          />
-        )}
-        
-        {currentScreen === 'WeatherDetails' && (
-          <WeatherDetailsScreen
-            theme={theme}
-            screenInfo={screenInfo}
-            adaptiveFonts={adaptiveFonts}
-            adaptiveSpacing={adaptiveSpacing}
-            adaptiveBorders={adaptiveBorders}
-            navigate={navigate}
-            createMobileButton={createMobileButton}
-            city={city}
-            loading={loading}
-            error={error}
-            setError={setError}
-            weather={weather}
-            hourlyForecast={memoizedHourlyForecast}
-            dailyForecast={memoizedDailyForecast}
-            weatherCode={weatherCode}
-            getWeather={getWeather}
-            getWeatherByLocation={getWeatherByLocation}
-            onRefresh={handleRefresh}
-            haptic={haptic}
-            handleLocationDetected={handleLocationDetected}
-          />
-        )}
-        
-        {currentScreen === 'MobileTest' && (
-          <MobileTest />
-        )}
-      </SwipeNavigationContainer>
+        screens={{
+          'Home': (
+            <HomeScreen
+              theme={theme}
+              screenInfo={screenInfo}
+              adaptiveFonts={adaptiveFonts}
+              adaptiveSpacing={adaptiveSpacing}
+              adaptiveBorders={adaptiveBorders}
+              navigate={navigate}
+              haptic={haptic}
+            />
+          ),
+          'Weather': (
+            <WeatherDetailsScreen
+              theme={theme}
+              screenInfo={screenInfo}
+              adaptiveFonts={adaptiveFonts}
+              adaptiveSpacing={adaptiveSpacing}
+              adaptiveBorders={adaptiveBorders}
+              navigate={navigate}
+              createMobileButton={createMobileButton}
+              city={city}
+              loading={loading}
+              error={error}
+              setError={setError}
+              weather={weather}
+              hourlyForecast={memoizedHourlyForecast}
+              dailyForecast={memoizedDailyForecast}
+              weatherCode={weatherCode}
+              getWeather={getWeather}
+              getWeatherByLocation={getWeatherByLocation}
+              onRefresh={handleRefresh}
+              haptic={haptic}
+              handleLocationDetected={handleLocationDetected}
+            />
+          ),
+          'Search': (
+            <SearchScreen
+              theme={theme}
+              onBack={() => navigate('Home')}
+              onLocationSelect={(cityName, latitude, longitude) => {
+                getWeatherByLocation(cityName, latitude, longitude);
+                navigate('Weather');
+              }}
+            />
+          ),
+          'Settings': (
+            <SettingsScreen
+              theme={theme}
+              screenInfo={screenInfo}
+              onBack={() => navigate('Home')}
+            />
+          )
+        }}
+      />
+      
+      {/* Mobile Bottom Navigation */}
+      {screenInfo.width < 768 && (
+        <MobileNavigation
+          currentScreen={currentScreen}
+          onNavigate={handleMobileNavigation}
+        />
+      )}
+      
+      {/* Desktop/Legacy Navigation (for larger screens) */}
+      {screenInfo.width >= 768 && (
+        <SwipeNavigationContainer
+          currentScreen={currentScreen}
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+          canSwipeLeft={swipeConfig.canSwipeLeft}
+          canSwipeRight={swipeConfig.canSwipeRight}
+          theme={theme}
+          isMobile={false}
+          swipeThreshold={80}
+          enableDesktopSupport={true}
+        >
+          {/* Legacy screen rendering for desktop */}
+          {currentScreen === 'Home' && (
+            <HomeScreen
+              theme={theme}
+              screenInfo={screenInfo}
+              adaptiveFonts={adaptiveFonts}
+              adaptiveSpacing={adaptiveSpacing}
+              adaptiveBorders={adaptiveBorders}
+              navigate={navigate}
+              haptic={haptic}
+            />
+          )}
+          
+          {currentScreen === 'Weather' && (
+            <WeatherDetailsScreen
+              theme={theme}
+              screenInfo={screenInfo}
+              adaptiveFonts={adaptiveFonts}
+              adaptiveSpacing={adaptiveSpacing}
+              adaptiveBorders={adaptiveBorders}
+              navigate={navigate}
+              createMobileButton={createMobileButton}
+              city={city}
+              loading={loading}
+              error={error}
+              setError={setError}
+              weather={weather}
+              hourlyForecast={memoizedHourlyForecast}
+              dailyForecast={memoizedDailyForecast}
+              weatherCode={weatherCode}
+              getWeather={getWeather}
+              getWeatherByLocation={getWeatherByLocation}
+              onRefresh={handleRefresh}
+              haptic={haptic}
+              handleLocationDetected={handleLocationDetected}
+            />
+          )}
+        </SwipeNavigationContainer>
+      )}
       
       {/* Deployment Status Indicator - Only show in production */}
       {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
