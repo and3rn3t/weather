@@ -154,8 +154,58 @@ function analyzeBundle() {
   } else {
     console.log('\n💥 Bundle analysis failed! Some files exceed size limits.');
   }
-  
+
+  // Generate CI report
+  generateCIReport(exitCode, totalJsSize, totalCssSize, totalJsSize + totalCssSize);
+
   process.exit(exitCode);
+}
+
+// Enhanced CI reporting
+function generateCIReport(exitCode, totalJsSize, totalCssSize, totalSize) {
+  const report = {
+    timestamp: new Date().toISOString(),
+    status: exitCode === 0 ? 'PASS' : 'FAIL',
+    javascript_kb: Math.round(totalJsSize / 1024),
+    css_kb: Math.round(totalCssSize / 1024),
+    total_kb: Math.round(totalSize / 1024),
+    limits: BUNDLE_SIZE_LIMITS,
+    performance_passed: exitCode === 0,
+    recommendations: []
+  };
+
+  // Add recommendations based on sizes
+  if (totalJsSize > BUNDLE_SIZE_LIMITS.js * 0.8) {
+    report.recommendations.push('Consider code splitting for large JavaScript bundles');
+  }
+  
+  if (totalCssSize > BUNDLE_SIZE_LIMITS.css * 0.8) {
+    report.recommendations.push('Optimize CSS - consider removing unused styles');
+  }
+
+  if (totalSize > BUNDLE_SIZE_LIMITS.total * 0.9) {
+    report.recommendations.push('Bundle approaching size limit - consider optimization');
+  }
+
+  // Write CI report for automation
+  if (process.env.CI || process.env.GITHUB_ACTIONS) {
+    try {
+      fs.writeFileSync('bundle-analysis.json', JSON.stringify(report, null, 2), 'utf8');
+      console.log('\n📄 CI report written to bundle-analysis.json');
+      
+      // Output GitHub Actions summary
+      console.log('\n📊 GitHub Actions Summary:');
+      console.log(`::notice title=Bundle Analysis::JavaScript: ${report.javascript_kb}KB, CSS: ${report.css_kb}KB, Total: ${report.total_kb}KB`);
+      
+      if (report.recommendations.length > 0) {
+        console.log(`::warning title=Performance Recommendations::${report.recommendations.join('; ')}`);
+      }
+    } catch (writeError) {
+      console.warn('⚠️  Warning: Could not write CI report:', writeError.message);
+    }
+  }
+
+  return report;
 }
 
 // Run the analysis

@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-07-26T21:37:38.075Z",
+  "budgets": {
+    "javascript_max": 500,
+    "css_max": 100,
+    "total_max": 600,
+    "lighthouse_performance_min": 90,
+    "first_contentful_paint_max": 2000,
+    "largest_contentful_paint_max": 4000,
+    "dependencies_max": 50,
+    "dev_dependencies_max": 100
+  },
+  "results": {
+    "bundle_size_passed": true,
+    "dependency_count_passed": true,
+    "overall_passed": true
+  }
+}

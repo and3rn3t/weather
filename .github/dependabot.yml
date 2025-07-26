@@ -1,0 +1,66 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/" # Location of package.json
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "and3rn3t"
+    assignees:
+      - "and3rn3t"
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "chore(deps):"
+      include: "scope"
+    # Automatically merge minor and patch updates for trusted packages
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    # Group related dependencies
+    groups:
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      vite:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+      capacitor:
+        patterns:
+          - "@capacitor/*"
+      testing:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "jsdom"
+          - "@testing-library/*"
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "and3rn3t"
+    labels:
+      - "github-actions"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(ci):"
+      include: "scope"

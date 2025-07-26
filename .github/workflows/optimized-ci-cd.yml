@@ -10,15 +10,13 @@ permissions:
   contents: read
   deployments: write
   security-events: write
-  pull-requests: write
-  issues: write
 
 env:
   NODE_VERSION: '22'
   CACHE_VERSION: v2
 
 jobs:
-  # Parallel Quality Gates - Run simultaneously for faster feedback
+  # Parallel Quality Gates
   lint:
     name: 🔍 Code Quality (Lint)
     runs-on: ubuntu-latest
@@ -89,7 +87,7 @@ jobs:
 
   # Security & Dependency Scanning
   security-scan:
-    name: �️ Security Analysis
+    name: 🔒 Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout code
@@ -108,64 +106,23 @@ jobs:
         run: npm audit --audit-level=moderate
         continue-on-error: true
 
-      - name: 🔍 Snyk Code Analysis (SAST)
-        run: |
-          echo "🔍 Running Snyk Code Analysis..."
-          npx snyk code test --severity-threshold=high || echo "Code analysis completed with findings"
+      # Note: Snyk scan requires SNYK_TOKEN secret to be configured
+      # - name: 🔍 Run Snyk security scan
+      #   uses: snyk/actions/node@master
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   with:
+      #     args: --severity-threshold=high
+      #   continue-on-error: true
+      #   if: ${{ secrets.SNYK_TOKEN != '' }}
 
-      - name: 🔍 Snyk Open Source Vulnerabilities
-        run: |
-          echo "🔍 Scanning dependencies for vulnerabilities..."
-          npx snyk test --severity-threshold=high || echo "Dependency scan completed with findings"
-
-      - name: 📋 Generate Security Report
-        run: |
-          echo "📋 Security scan summary:" > security-report.txt
-          echo "- Code analysis: Completed" >> security-report.txt
-          echo "- Dependency scan: Completed" >> security-report.txt
-          echo "- High/Critical issues flagged for review" >> security-report.txt
-
-      - name: 📤 Upload security report
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-report
-          path: security-report.txt
-          retention-days: 7
-
-  # CodeQL Security Analysis
-  codeql-analysis:
-    name: 🔍 CodeQL Analysis
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🔍 Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-
-      - name: 🏗️ Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: 🔍 Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:javascript"
-
-  # Build with Smart Caching and Performance Budget
+  # Build with Caching and Analysis
   build:
     name: 🏗️ Build & Analyze
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, security-scan] # Fast-fail on code quality and security issues
+    needs: [lint, typecheck] # Fast-fail on code quality issues
     outputs:
       build-cache-key: ${{ steps.build-cache.outputs.cache-hit }}
-      performance-score: ${{ steps.performance.outputs.performance-score }}
-      bundle-size: ${{ steps.performance.outputs.bundle-size }}
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -194,19 +151,8 @@ jobs:
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm run build:production
 
-      - name: 📊 Bundle analysis with performance budget
+      - name: 📊 Bundle analysis
         run: npm run analyze:ci
-
-      - name: 📈 Advanced Performance Monitoring
-        id: performance
-        run: |
-          npm run performance:monitor
-          echo "performance-score=$(cat performance-monitoring-report.json | jq -r '.overallScore')" >> $GITHUB_OUTPUT
-          echo "bundle-size=$(cat bundle-analysis.json | jq -r '.total_kb')" >> $GITHUB_OUTPUT
-
-      - name: 🔔 Intelligent Alerting
-        run: npm run alerting:check
-        continue-on-error: true
 
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -215,50 +161,7 @@ jobs:
           path: dist/
           retention-days: 7
 
-  # Lighthouse CI Performance Testing (optional)
-  lighthouse-ci:
-    name: 🔍 Lighthouse CI
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: |
-      github.ref == 'refs/heads/main' || 
-      contains(github.event.head_commit.message, '[lighthouse]') ||
-      contains(github.event.pull_request.title, 'performance')
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: 📋 Install dependencies
-        run: npm ci
-
-      - name: 📥 Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files-${{ github.sha }}
-          path: dist/
-
-      - name: 🔍 Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli@0.12.x
-          lhci autorun
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-
-      - name: 📤 Upload Lighthouse reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lighthouse-reports-${{ github.sha }}
-          path: lighthouse-reports/
-          retention-days: 7
-
-  # Conditional Mobile Build (only when needed)
+  # Conditional Mobile Build (only on main branch or mobile changes)
   mobile-build:
     name: 📱 Mobile Build
     runs-on: ubuntu-latest

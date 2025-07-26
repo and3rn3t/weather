@@ -1,0 +1,5991 @@
+{
+  "timestamp": "2025-07-26T21:45:51.600Z",
+  "project": "premium-weather-app",
+  "version": "1.0.0",
+  "totalDependencies": 996,
+  "licenseAnalysis": {
+    "approved": [
+      {
+        "name": "node_modules/@adobe/css-tools",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ampproject/remapping",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@asamuzakjp/css-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@asamuzakjp/css-color/node_modules/lru-cache",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/code-frame",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/compat-data",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/generator",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-compilation-targets",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-globals",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-module-imports",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-module-transforms",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-plugin-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-string-parser",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-validator-identifier",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helper-validator-option",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/helpers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/parser",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-async-generators",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-bigint",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-class-properties",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-class-static-block",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-import-attributes",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-import-meta",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-json-strings",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-jsx",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-logical-assignment-operators",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-nullish-coalescing-operator",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-numeric-separator",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-object-rest-spread",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-optional-catch-binding",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-optional-chaining",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-private-property-in-object",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-top-level-await",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-syntax-typescript",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-transform-react-jsx-self",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/plugin-transform-react-jsx-source",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/runtime",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/template",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/traverse",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@babel/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@bcoe/v8-coverage",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/android",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/app",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli/node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli/node_modules/minipass",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli/node_modules/rimraf",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/cli/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/device",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/geolocation",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/haptics",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/ios",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/keyboard",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/local-notifications",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/network",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/push-notifications",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/share",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/splash-screen",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@capacitor/status-bar",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@cloudflare/kv-asset-handler",
+        "license": "MIT OR Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@cloudflare/kv-asset-handler/node_modules/mime",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@cloudflare/unenv-preset",
+        "license": "MIT OR Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@cloudflare/workerd-windows-64",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@cspotcode/source-map-support",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@cspotcode/source-map-support/node_modules/@jridgewell/trace-mapping",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@csstools/color-helpers",
+        "license": "MIT-0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@csstools/css-calc",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@csstools/css-color-parser",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@csstools/css-parser-algorithms",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@csstools/css-tokenizer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@epic-web/invariant",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@esbuild/win32-x64",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint-community/eslint-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint-community/eslint-utils/node_modules/eslint-visitor-keys",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint-community/regexpp",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/config-array",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/config-helpers",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/core",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/eslintrc",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/eslintrc/node_modules/globals",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/js",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/object-schema",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@eslint/plugin-kit",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@humanfs/core",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@humanfs/node",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@humanfs/node/node_modules/@humanwhocodes/retry",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@humanwhocodes/module-importer",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@humanwhocodes/retry",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@img/sharp-win32-x64",
+        "license": "Apache-2.0 AND LGPL-3.0-or-later",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/cli-framework-output",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-array",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-fs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-object",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-process",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-process/node_modules/@ionic/utils-terminal",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-subprocess",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-subprocess/node_modules/@ionic/utils-fs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-subprocess/node_modules/@ionic/utils-terminal",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ionic/utils-terminal",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/balanced-match",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui/node_modules/ansi-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui/node_modules/emoji-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui/node_modules/string-width",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui/node_modules/strip-ansi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@isaacs/cliui/node_modules/wrap-ansi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/argparse",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/find-up",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/js-yaml",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/locate-path",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/p-limit",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/p-locate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/load-nyc-config/node_modules/resolve-from",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@istanbuljs/schema",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/console/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/camelcase",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/jest-validate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/core/node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/diff-sequences",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/environment-jsdom-abstract/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/expect",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/expect-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/get-type",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/globals/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/pattern",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/pattern/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/reporters/node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/snapshot-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/snapshot-utils/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/snapshot-utils/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/snapshot-utils/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/source-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-result",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-result/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-result/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-result/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/test-sequencer/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jridgewell/gen-mapping",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jridgewell/resolve-uri",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jridgewell/source-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jridgewell/sourcemap-codec",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@jridgewell/trace-mapping",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@nodelib/fs.scandir",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@nodelib/fs.stat",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@nodelib/fs.walk",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@pkgjs/parseargs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@pkgr/core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@poppinss/colors",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@poppinss/dumper",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@poppinss/dumper/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@poppinss/exception",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@rolldown/pluginutils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@rollup/rollup-win32-x64-msvc",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@sindresorhus/is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@sinonjs/commons",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@speed-highlight/core",
+        "license": "CC0-1.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/dom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/dom/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/dom/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/dom/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/jest-dom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/jest-dom/node_modules/chalk",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/jest-dom/node_modules/dom-accessibility-api",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/react",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@testing-library/user-event",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/aria-query",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/axios",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/babel__core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/babel__generator",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/babel__template",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/babel__traverse",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/chai",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/deep-eql",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/estree",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/fs-extra",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/graceful-fs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/istanbul-lib-coverage",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/istanbul-lib-report",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/istanbul-reports",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jest/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jest/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jest/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jest/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jest/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/jsdom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/json-schema",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/node",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/react",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/react-dom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/slice-ansi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/stack-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/tough-cookie",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/yargs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@types/yargs-parser",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/eslint-plugin",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/eslint-plugin/node_modules/ignore",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/parser",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/project-service",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/scope-manager",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/tsconfig-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/type-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/typescript-estree",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/typescript-estree/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@typescript-eslint/visitor-keys",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@ungap/structured-clone",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@unrs/resolver-binding-win32-x64-msvc",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitejs/plugin-react",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/coverage-v8",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/coverage-v8/node_modules/@bcoe/v8-coverage",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/coverage-v8/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/coverage-v8/node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/coverage-v8/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/coverage-v8/node_modules/test-exclude",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/expect",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/mocker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/runner",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/snapshot",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/spy",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@vitest/utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/@xmldom/xmldom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/acorn",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/acorn-jsx",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/acorn-walk",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/agent-base",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ajv",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ansi-escapes",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ansi-escapes/node_modules/type-fest",
+        "license": "(MIT OR CC0-1.0)",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ansi-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/anymatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/aria-query",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/assertion-error",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ast-v8-to-istanbul",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ast-v8-to-istanbul/node_modules/js-tokens",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/astral-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/async",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/asynckit",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/at-least-node",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/axios",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/babel-jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/babel-plugin-jest-hoist",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/babel-preset-current-node-syntax",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/babel-preset-jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/balanced-match",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/base64-js",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/big-integer",
+        "license": "Unlicense",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/blake3-wasm",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/bplist-parser",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/braces",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/browserslist",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/bs-logger",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/bser",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/buffer-crc32",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/buffer-from",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cac",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/call-bind-apply-helpers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/callsites",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/camelcase",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/chai",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/chalk",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/char-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/check-error",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/chownr",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cjs-module-lexer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cliui",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/co",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/collect-v8-coverage",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/color-convert",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/color-name",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/color-string",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/combined-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/commander",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/concat-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/convert-source-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cookie",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cross-env",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cross-spawn",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/css.escape",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/cssstyle",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/csstype",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/data-urls",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/data-urls/node_modules/tr46",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/data-urls/node_modules/webidl-conversions",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/data-urls/node_modules/whatwg-url",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/debug",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/decimal.js",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/dedent",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/deep-eql",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/deep-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/deepmerge",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/define-lazy-prop",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/defu",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/delayed-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/dequal",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/detect-libc",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/detect-newline",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/dom-accessibility-api",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/dunder-proto",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/eastasianwidth",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ejs",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/electron-to-chromium",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/elementtree",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/emittery",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/emoji-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/entities",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/env-paths",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/error-ex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/error-stack-parser-es",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/es-define-property",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/es-errors",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/es-module-lexer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/es-object-atoms",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/es-set-tostringtag",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/esbuild",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/escalade",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/escape-string-regexp",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/eslint",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/eslint-plugin-react-hooks",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/eslint-plugin-react-refresh",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/eslint-scope",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/eslint-visitor-keys",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/espree",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/esprima",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/esquery",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/esrecurse",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/estraverse",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/estree-walker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/esutils",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/execa",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/exit-hook",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/exit-x",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect-type",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/expect/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/exsolve",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fast-deep-equal",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fast-glob",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fast-glob/node_modules/glob-parent",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fast-json-stable-stringify",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fast-levenshtein",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fastq",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fb-watchman",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fd-slicer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/file-entry-cache",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/filelist",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/filelist/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/filelist/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fill-range",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/find-up",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/flat-cache",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/flatted",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/follow-redirects",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/foreground-child",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/foreground-child/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/form-data",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fs-extra",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fs-minipass",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fs-minipass/node_modules/minipass",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fs-minipass/node_modules/yallist",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/fs.realpath",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/function-bind",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/gensync",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/get-caller-file",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/get-intrinsic",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/get-package-type",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/get-proto",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/get-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/glob-parent",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/glob-to-regexp",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/globals",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/gopd",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/graceful-fs",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/graphemer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/has-flag",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/has-symbols",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/has-tostringtag",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/hasown",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/html-encoding-sniffer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/html-escaper",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/http-proxy-agent",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/https-proxy-agent",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/human-signals",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/iconv-lite",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ignore",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/import-fresh",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/import-local",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/imurmurhash",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/indent-string",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/inflight",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/inherits",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ini",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-arrayish",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-docker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-extglob",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-fullwidth-code-point",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-generator-fn",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-glob",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-number",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-potential-custom-element-name",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/is-wsl",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/isexe",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/istanbul-lib-coverage",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/istanbul-lib-report",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/istanbul-lib-source-maps",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/istanbul-reports",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jake",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-changed-files/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-circus/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/camelcase",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/jest-validate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-cli/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/babel-jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/babel-plugin-jest-hoist",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/babel-preset-jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/camelcase",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-environment-node",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-validate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/parse-json",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-config/node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-diff",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-diff/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-diff/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-diff/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-diff/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-diff/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-docblock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-each/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-environment-jsdom/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-leak-detector",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-leak-detector/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-leak-detector/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-leak-detector/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-leak-detector/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-leak-detector/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-matcher-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-matcher-utils/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-matcher-utils/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-matcher-utils/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-matcher-utils/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-matcher-utils/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-pnp-resolver",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve-dependencies",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve-dependencies/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/camelcase",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/jest-validate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-resolve/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/camelcase",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-environment-node",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-validate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/source-map",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/source-map-support",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runner/node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@jest/environment",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@jest/fake-timers",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/@sinonjs/fake-timers",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/brace-expansion",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/jest-mock",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-runtime/node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/@jest/transform",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/ansi-styles",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/babel-plugin-istanbul",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/istanbul-lib-instrument",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/jest-haste-map",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/jest-message-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/jest-regex-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/pretty-format",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/react-is",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-snapshot/node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher/node_modules/ci-info",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher/node_modules/jest-util",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-watcher/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-worker",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest-worker/node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest/node_modules/@jest/schemas",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest/node_modules/@jest/types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jest/node_modules/@sinclair/typebox",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/js-tokens",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/js-yaml",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsdom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsdom/node_modules/tr46",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsdom/node_modules/webidl-conversions",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsdom/node_modules/whatwg-url",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsdom/node_modules/ws",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsesc",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/json-buffer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/json-parse-even-better-errors",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/json-schema-traverse",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/json-stable-stringify-without-jsonify",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/json5",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/jsonfile",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/keyv",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/kleur",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/leven",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/levn",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/lines-and-columns",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/locate-path",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/lodash",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/lodash.memoize",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/lodash.merge",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/loupe",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/lru-cache",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/lz-string",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/magic-string",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/magicast",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/make-dir",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/make-dir/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/make-error",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/makeerror",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/math-intrinsics",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/merge-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/merge2",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/micromatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/mime-db",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/mime-types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/mimic-fn",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/min-indent",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/miniflare",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/miniflare/node_modules/acorn",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/miniflare/node_modules/ws",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/minipass",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/minizlib",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/minizlib/node_modules/minipass",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/minizlib/node_modules/yallist",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/mkdirp",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ms",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/nanoid",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/napi-postinstall",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/native-run",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/natural-compare",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/node-int64",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/node-releases",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/normalize-path",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/npm-run-path",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/nwsapi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ohash",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/once",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/onetime",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/open",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/optionator",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/p-limit",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/p-locate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/p-try",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/parent-module",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/parse5",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/path-exists",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/path-is-absolute",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/path-key",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/path-scurry/node_modules/lru-cache",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/path-to-regexp",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pathe",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pathval",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pend",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/picocolors",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pirates",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pkg-dir",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pkg-dir/node_modules/find-up",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pkg-dir/node_modules/locate-path",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pkg-dir/node_modules/p-limit",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pkg-dir/node_modules/p-locate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/plist",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/postcss",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/prelude-ls",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/prompts",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/prompts/node_modules/kleur",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/proxy-from-env",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/punycode",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/pure-rand",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/queue-microtask",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/react",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/react-dom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/react-refresh",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/readable-stream",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/redent",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/require-directory",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/resolve-cwd",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/resolve-cwd/node_modules/resolve-from",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/resolve-from",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/reusify",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/rimraf",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/rimraf/node_modules/glob",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/rimraf/node_modules/lru-cache",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/rimraf/node_modules/minimatch",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/rollup",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/rrweb-cssom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/run-parallel",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/safe-buffer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/safer-buffer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/sax",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/saxes",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/scheduler",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/sharp",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/sharp/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/shebang-command",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/shebang-regex",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/siginfo",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/signal-exit",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/simple-swizzle",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/simple-swizzle/node_modules/is-arrayish",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/sisteransi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/slash",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/slice-ansi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/source-map-js",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/source-map-support",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/source-map-support/node_modules/source-map",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/split2",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/sprintf-js",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/stack-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/stack-utils/node_modules/escape-string-regexp",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/stackback",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/std-env",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/stoppable",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/string_decoder",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/string-length",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/string-width",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/string-width-cjs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-ansi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-ansi-cjs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-bom",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-final-newline",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-indent",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-json-comments",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-literal",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/strip-literal/node_modules/js-tokens",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/supports-color",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/symbol-tree",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/synckit",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tar",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tar/node_modules/minipass",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tar/node_modules/yallist",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/terser",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/terser/node_modules/commander",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/test-exclude",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/through2",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinybench",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinyexec",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinyglobby",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinyglobby/node_modules/fdir",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinyglobby/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinypool",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinyrainbow",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tinyspy",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tldts",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tldts-core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tmpl",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/to-regex-range",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tough-cookie",
+        "license": "BSD-3-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/tree-kill",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ts-api-utils",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ts-jest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ts-jest/node_modules/semver",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ts-jest/node_modules/type-fest",
+        "license": "(MIT OR CC0-1.0)",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/type-check",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/type-detect",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/typescript",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/typescript-eslint",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/ufo",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/undici",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/undici-types",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/unenv",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/universalify",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/unrs-resolver",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/untildify",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/update-browserslist-db",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/uri-js",
+        "license": "BSD-2-Clause",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/util-deprecate",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/v8-to-istanbul",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/vite",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/vite-node",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/vite/node_modules/fdir",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/vite/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/vitest",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/vitest/node_modules/picomatch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/w3c-xmlserializer",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/walker",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/whatwg-encoding",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/whatwg-mimetype",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/which",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/why-is-node-running",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/word-wrap",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/workerd",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/wrangler",
+        "license": "MIT OR Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/wrangler/node_modules/@esbuild/win32-x64",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/wrangler/node_modules/esbuild",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/wrap-ansi",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/wrap-ansi-cjs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/wrappy",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/write-file-atomic",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/xml-name-validator",
+        "license": "Apache-2.0",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/xml2js",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/xml2js/node_modules/xmlbuilder",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/xmlbuilder",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/xmlchars",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/y18n",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/yallist",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/yargs",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/yargs-parser",
+        "license": "ISC",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/yauzl",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/yocto-queue",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/youch",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/youch-core",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      },
+      {
+        "name": "node_modules/zod",
+        "license": "MIT",
+        "status": "approved",
+        "risk": "low"
+      }
+    ],
+    "restricted": [],
+    "prohibited": [],
+    "unknown": [
+      {
+        "name": "node_modules/argparse",
+        "license": "Python-2.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/caniuse-lite",
+        "license": "CC-BY-4.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/jackspeak",
+        "license": "BlueOak-1.0.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/package-json-from-dist",
+        "license": "BlueOak-1.0.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/path-scurry",
+        "license": "BlueOak-1.0.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/rimraf/node_modules/jackspeak",
+        "license": "BlueOak-1.0.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/rimraf/node_modules/path-scurry",
+        "license": "BlueOak-1.0.0",
+        "status": "unknown",
+        "risk": "medium"
+      },
+      {
+        "name": "node_modules/tslib",
+        "license": "0BSD",
+        "status": "unknown",
+        "risk": "medium"
+      }
+    ]
+  },
+  "riskAssessment": {
+    "low": 987,
+    "medium": 8,
+    "high": 0,
+    "critical": 0
+  },
+  "complianceStatus": "PASS"
+}
