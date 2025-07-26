@@ -9,9 +9,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Handle ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Robust bundle size limits for modern React app
 const BUNDLE_SIZE_LIMITS = {
   js: 500 * 1024, // 500KB for main JS (React + features)
   css: 100 * 1024, // 100KB for CSS
@@ -38,11 +40,17 @@ function getFileSize(filePath) {
 function analyzeBundle() {
   console.log('🔍 Bundle Analysis Starting...');
   
-  const distPath = path.join(path.dirname(__dirname), 'dist');
+  // Use more robust path resolution
+  const projectRoot = path.dirname(__dirname);
+  const distPath = path.join(projectRoot, 'dist');
+  
+  console.log(`📁 Looking for dist folder at: ${distPath}`);
   
   // Check if dist folder exists
   if (!fs.existsSync(distPath)) {
     console.error('❌ ERROR: dist folder not found');
+    console.error(`   Expected location: ${distPath}`);
+    console.error('   Make sure to run "npm run build" before bundle analysis');
     process.exit(1);
   }
   
@@ -72,7 +80,8 @@ function analyzeBundle() {
         }
       }
     } catch (err) {
-      // Ignore errors
+      // Skip directories that can't be read (permissions, etc.)
+      console.warn(`⚠️  Warning: Could not read directory ${dir}: ${err.message}`);
     }
     return files;
   }
