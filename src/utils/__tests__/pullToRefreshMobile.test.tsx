@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ThemeProvider } from '../themeContext';
 import { HapticFeedbackProvider } from '../hapticContext';
 import PullToRefresh from '../PullToRefresh';
@@ -62,10 +62,10 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 describe('Pull-to-Refresh Mobile Tests', () => {
-  let refreshCallback: jest.Mock;
+  let refreshCallback: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    refreshCallback = jest.fn().mockResolvedValue(undefined);
+    refreshCallback = vi.fn().mockResolvedValue(undefined);
     
     // Mock mobile viewport
     Object.defineProperty(window, 'innerWidth', { value: 375 });
@@ -374,7 +374,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle refresh errors gracefully', async () => {
-      const failingRefresh = jest.fn().mockRejectedValue(new Error('Network error'));
+      const failingRefresh = vi.fn().mockRejectedValue(new Error('Network error'));
       
       render(
         <TestWrapper>

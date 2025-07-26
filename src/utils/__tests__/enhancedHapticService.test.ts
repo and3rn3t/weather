@@ -48,8 +48,8 @@ describe('EnhancedHapticService', () => {
     vi.clearAllMocks();
     mockVibrate.mockReturnValue(true);
     
-    // Reset singleton instance
-    (EnhancedHapticService as unknown as { instance?: EnhancedHapticService }).instance = undefined;
+    // Reset singleton instance properly
+    EnhancedHapticService.resetInstance();
     
     // Create new instance
     hapticService = EnhancedHapticService.getInstance();

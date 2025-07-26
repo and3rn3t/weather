@@ -176,6 +176,12 @@ export class EnhancedHapticService {
     return EnhancedHapticService.instance;
   }
 
+  // Reset instance for testing purposes
+  static resetInstance(): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    EnhancedHapticService.instance = undefined as any;
+  }
+
   // ============================================================================
   // CAPABILITY DETECTION
   // ============================================================================
