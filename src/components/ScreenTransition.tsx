@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import type { ThemeColors } from '../utils/themeConfig';
+import { useSwipeGestures } from '../utils/useSwipeGestures';
 
 export type TransitionDirection = 'slide-left' | 'slide-right' | 'fade' | 'none';
 
@@ -156,6 +157,9 @@ interface ScreenContainerProps {
   transitionDuration?: number;
   theme: ThemeColors;
   className?: string;
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
+  enableSwipeGestures?: boolean;
 }
 
 /**
@@ -166,6 +170,7 @@ interface ScreenContainerProps {
  * - Automatic direction detection based on screen order
  * - Memory efficient - only renders active and transitioning screens
  * - Proper cleanup of inactive screens
+ * - Optional swipe gesture navigation for mobile
  */
 export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   currentScreen,
@@ -173,10 +178,31 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   transitionDirection = 'slide-left',
   transitionDuration = 300,
   theme,
-  className = ''
+  className = '',
+  onSwipeLeft,
+  onSwipeRight,
+  enableSwipeGestures = false
 }) => {
   const [previousScreen, setPreviousScreen] = useState<string | null>(null);
   const screenOrder = Object.keys(screens);
+  
+  // Swipe gesture integration
+  const { swipeState, createSwipeHandler } = useSwipeGestures({
+    threshold: 50,
+    maxDrag: 120,
+    resistance: 0.4,
+    enableVisualFeedback: true,
+    enableHaptic: true
+  });
+  
+  const swipeHandlers = enableSwipeGestures && (onSwipeLeft || onSwipeRight)
+    ? createSwipeHandler(
+        onSwipeLeft || (() => {}),
+        onSwipeRight || (() => {}),
+        !!onSwipeLeft,
+        !!onSwipeRight
+      )
+    : {};
 
   useEffect(() => {
     setPreviousScreen(currentScreen);
@@ -211,11 +237,24 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
     flexDirection: 'column',
     
     // Performance optimization
-    isolation: 'isolate'
+    isolation: 'isolate',
+    
+    // Swipe gesture support
+    touchAction: enableSwipeGestures ? 'pan-y' : 'auto',
+    
+    // Visual feedback during swipe
+    transform: swipeState?.isDragging && enableSwipeGestures 
+      ? `translateX(${swipeState.dragOffset * 0.1}px)` 
+      : 'translateX(0px)',
+    transition: swipeState?.isDragging ? 'none' : 'transform 0.3s ease'
   };
 
   return (
-    <div className={`screen-container ${className}`} style={containerStyle}>
+    <div 
+      className={`screen-container ${className}`} 
+      style={containerStyle}
+      {...(enableSwipeGestures ? swipeHandlers : {})}
+    >
       {Object.entries(screens).map(([screenId, screenContent]) => (
         <ScreenTransition
           key={screenId}

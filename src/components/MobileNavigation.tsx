@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
 
-export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search';
+export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search' | 'Favorites';
 
 interface MobileNavigationProps {
   currentScreen: NavigationScreen;
@@ -20,6 +20,7 @@ interface TabConfig {
 const tabs: TabConfig[] = [
   { id: 'Home', icon: '🏠', label: 'Home', activeIcon: '🏡' },
   { id: 'Weather', icon: '🌤️', label: 'Weather', activeIcon: '☀️' },
+  { id: 'Favorites', icon: '⭐', label: 'Cities', activeIcon: '🌟' },
   { id: 'Search', icon: '🔍', label: 'Search', activeIcon: '🔎' },
   { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' }
 ];

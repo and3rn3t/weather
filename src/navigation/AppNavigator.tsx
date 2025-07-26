@@ -45,6 +45,8 @@ import MobileNavigation, { type NavigationScreen } from '../components/MobileNav
 import { ScreenContainer } from '../components/ScreenTransition';
 import SettingsScreen from '../components/SettingsScreen';
 import SearchScreen from '../components/SearchScreen';
+import FavoritesScreen from '../components/FavoritesScreen';
+import LocationManager from '../components/LocationManager';
 // Modern UI Components
 import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
 import WeatherCard from '../components/modernWeatherUI/WeatherCard';
@@ -1204,6 +1206,22 @@ const AppNavigator = () => {
       {/* Native API Status Display - Shows native capabilities when on mobile */}
       <NativeStatusDisplay theme={theme} isMobile={screenInfo.width < 768} />
       
+      {/* Enhanced Auto Location Manager - Phase F-2 */}
+      <LocationManager
+        onLocationReceived={(detectedCity, lat, lon) => {
+          console.log(`📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`);
+          setCity(detectedCity);
+          getWeatherByLocation(detectedCity, lat, lon);
+          haptic.triggerHaptic('light');
+        }}
+        onError={(errorMessage) => {
+          console.warn('📍 Auto location failed:', errorMessage);
+          // Don't show error to user for automatic detection, just log it
+        }}
+        enableAutoDetection={true}
+        enableBackgroundUpdates={false} // Disabled for battery optimization
+      />
+      
       {/* DEBUG: Location Tester - Remove this after debugging */}
       <LocationTester />
       
@@ -1237,6 +1255,9 @@ const AppNavigator = () => {
         transitionDirection="slide-left"
         transitionDuration={300}
         theme={theme}
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
+        enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
         screens={{
           'Home': (
             <HomeScreen
@@ -1288,6 +1309,20 @@ const AppNavigator = () => {
               theme={theme}
               screenInfo={screenInfo}
               onBack={() => navigate('Home')}
+            />
+          ),
+          'Favorites': (
+            <FavoritesScreen
+              theme={theme}
+              onBack={() => navigate('Home')}
+              onCitySelect={(cityName, latitude, longitude) => {
+                getWeatherByLocation(cityName, latitude, longitude);
+                setCity(cityName);
+                navigate('Weather');
+                haptic.triggerHaptic('light');
+              }}
+              onAddFavorite={() => navigate('Search')}
+              currentCity={city}
             />
           )
         }}

@@ -17,6 +17,7 @@
 
 import React from 'react';
 import WeatherIcon from '../../utils/weatherIcons';
+import WeatherHapticIntegration from '../WeatherHapticIntegration';
 import type { ThemeColors } from '../../utils/themeConfig';
 
 interface WeatherCardProps {
@@ -28,6 +29,10 @@ interface WeatherCardProps {
   time: string;
   theme: ThemeColors;
   isLoading?: boolean;
+  windSpeed?: number;
+  humidity?: number;
+  pressure?: number;
+  enableHaptics?: boolean;
 }
 
 const WeatherCard: React.FC<WeatherCardProps> = ({
@@ -38,7 +43,11 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   location,
   time,
   theme,
-  isLoading = false
+  isLoading = false,
+  windSpeed = 0,
+  humidity = 50,
+  pressure = 1013,
+  enableHaptics = true
 }) => {
   const cardStyle: React.CSSProperties = {
     background: `linear-gradient(135deg, ${theme.weatherCardBackground}f0, ${theme.cardBackground}f5)`,
@@ -142,6 +151,19 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
 
   return (
     <div style={cardStyle}>
+      {/* Advanced Weather Haptic Integration */}
+      {enableHaptics && (
+        <WeatherHapticIntegration
+          temperature={temperature}
+          weatherCode={weatherCode}
+          windSpeed={windSpeed}
+          humidity={humidity}
+          pressure={pressure}
+          isLoading={isLoading}
+          enableWeatherContextHaptics={true}
+        />
+      )}
+
       {/* Weather Icon */}
       <div style={iconContainerStyle}>
         <WeatherIcon 
