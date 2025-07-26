@@ -1,11 +1,12 @@
 /**
- * Haptic Feedback Hooks
+ * Enhanced Haptic Feedback Hooks
  * 
- * Separate file for hooks to maintain Fast Refresh compatibility
+ * Integrates with the enhanced haptic service for both web and native haptics
  */
 
 import { useContext } from 'react';
 import { HapticFeedbackContext, type HapticFeedbackContextType } from './hapticContext';
+import { useEnhancedHaptics, type HapticConfig } from './enhancedHapticService';
 
 // ============================================================================
 // CONTEXT HOOK
@@ -26,27 +27,33 @@ export const useHapticContext = (): HapticFeedbackContextType => {
 // ============================================================================
 
 /**
- * Enhanced haptic feedback hook that integrates with the app context
+ * Enhanced haptic feedback hook that integrates both web and native haptics
  * Provides additional convenience methods and smart defaults
  */
-export const useHaptic = () => {
+export const useHaptic = (config?: HapticConfig) => {
   const context = useHapticContext();
   const { haptic: hapticCore, isSupported, isEnabled } = context;
+  
+  // Get enhanced haptics service
+  const enhancedHaptics = useEnhancedHaptics(config);
 
   // Enhanced convenience methods with better UX patterns
-  const buttonPress = () => hapticCore.light();
-  const buttonConfirm = () => hapticCore.medium();
-  const weatherRefresh = () => hapticCore.refresh();
-  const searchSuccess = () => hapticCore.success();
-  const searchError = () => hapticCore.error();
-  const navigationSwipe = () => hapticCore.navigation();
-  const settingsChange = () => hapticCore.selection();
-  const dataLoad = () => hapticCore.light();
-  const criticalAlert = () => hapticCore.heavy();
+  const buttonPress = () => enhancedHaptics.buttonPress();
+  const buttonConfirm = () => enhancedHaptics.buttonConfirm();
+  const weatherRefresh = () => enhancedHaptics.weatherRefresh();
+  const searchSuccess = () => enhancedHaptics.searchSuccess();
+  const searchError = () => enhancedHaptics.searchError();
+  const navigationSwipe = () => enhancedHaptics.navigation();
+  const settingsChange = () => enhancedHaptics.selection();
+  const dataLoad = () => enhancedHaptics.weatherLoad();
+  const criticalAlert = () => enhancedHaptics.heavy();
 
   return {
-    // Core haptic functions
+    // Core haptic functions (legacy support)
     ...hapticCore,
+    
+    // Enhanced haptic functions
+    ...enhancedHaptics,
     
     // App-specific convenience methods
     buttonPress,
@@ -61,9 +68,68 @@ export const useHaptic = () => {
     
     // Status information
     isSupported,
-    isEnabled
+    isEnabled,
+    
+    // Enhanced capabilities
+    capabilities: enhancedHaptics.getCapabilities()
+  };
+};
+
+// ============================================================================
+// SPECIALIZED HAPTIC HOOKS
+// ============================================================================
+
+/**
+ * Hook for weather-specific haptic feedback
+ */
+export const useWeatherHaptics = (config?: HapticConfig) => {
+  const haptics = useEnhancedHaptics(config);
+  
+  return {
+    weatherLoad: haptics.weatherLoad,
+    weatherRefresh: haptics.weatherRefresh,
+    locationFound: haptics.locationFound,
+    locationError: haptics.locationError,
+    searchSuccess: haptics.searchSuccess,
+    searchError: haptics.searchError,
+    criticalAlert: haptics.heavy,
+    dataLoad: haptics.weatherLoad
+  };
+};
+
+/**
+ * Hook for gesture-specific haptic feedback
+ */
+export const useGestureHaptics = (config?: HapticConfig) => {
+  const haptics = useEnhancedHaptics(config);
+  
+  return {
+    swipeStart: haptics.swipeStart,
+    swipeProgress: haptics.swipeProgress,
+    swipeComplete: haptics.swipeComplete,
+    pullToRefresh: haptics.pullToRefresh,
+    progressiveFeedback: haptics.progressiveFeedback,
+    longPress: haptics.longPress
+  };
+};
+
+/**
+ * Hook for UI interaction haptic feedback
+ */
+export const useUIHaptics = (config?: HapticConfig) => {
+  const haptics = useEnhancedHaptics(config);
+  
+  return {
+    buttonPress: haptics.buttonPress,
+    buttonConfirm: haptics.buttonConfirm,
+    selection: haptics.selection,
+    navigation: haptics.navigation,
+    success: haptics.success,
+    error: haptics.error,
+    warning: haptics.warning
   };
 };
 
 // Re-export for convenience
 export { useHapticFeedback } from './useHapticFeedback';
+export { useEnhancedHaptics } from './enhancedHapticService';

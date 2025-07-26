@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import { useHaptic } from './hapticHooks';
+import { useGestureHaptics } from './hapticHooks';
 
 export interface SwipeState {
   isDragging: boolean;
@@ -46,7 +46,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
     enableHaptic = true
   } = options;
 
-  const haptic = useHaptic();
+  const haptics = useGestureHaptics();
   const startPos = useRef({ x: 0, y: 0 });
   const lastHapticFeedback = useRef(0);
   const isDragging = useRef(false);
@@ -78,15 +78,15 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
     
     const now = Date.now();
     
-    // Trigger haptic at 25%, 50%, 75% progress (with rate limiting)
+    // Use progressive haptic feedback based on swipe progress
     if (progress >= 0.25 && progress < 0.5 && now - lastHapticFeedback.current > 100) {
-      haptic.settingsChange();
+      haptics.swipeProgress();
       lastHapticFeedback.current = now;
     } else if (progress >= 0.75 && now - lastHapticFeedback.current > 150) {
-      haptic.light();
+      haptics.progressiveFeedback(progress);
       lastHapticFeedback.current = now;
     }
-  }, [enableHaptic, haptic]);
+  }, [enableHaptic, haptics]);
 
   const createSwipeHandler = useCallback((
     onSwipeLeft?: () => void,
@@ -124,7 +124,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
         if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
           isDragging.current = true;
           if (enableHaptic) {
-            haptic.settingsChange();
+            haptics.swipeStart();
           }
         } else if (Math.abs(deltaY) > 10) {
           // Vertical scroll detected, cancel gesture
@@ -179,10 +179,10 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
       // Check if threshold is met and direction is allowed
       if (distance >= threshold) {
         if (direction === 'left' && canSwipeLeft && onSwipeLeft) {
-          if (enableHaptic) haptic.navigationSwipe();
+          if (enableHaptic) haptics.swipeComplete();
           onSwipeLeft();
         } else if (direction === 'right' && canSwipeRight && onSwipeRight) {
-          if (enableHaptic) haptic.navigationSwipe();
+          if (enableHaptic) haptics.swipeComplete();
           onSwipeRight();
         }
       }
@@ -244,7 +244,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
       }
     };
   }, [
-    haptic, 
+    haptics, 
     threshold, 
     enableVisualFeedback, 
     enableHaptic,
