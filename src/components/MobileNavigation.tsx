@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
+import '../styles/mobileEnhancements.css';
 
 export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search' | 'Favorites';
 

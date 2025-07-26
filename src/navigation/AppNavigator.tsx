@@ -47,9 +47,12 @@ import SettingsScreen from '../components/SettingsScreen';
 import SearchScreen from '../components/SearchScreen';
 import FavoritesScreen from '../components/FavoritesScreen';
 import LocationManager from '../components/LocationManager';
+// Enhanced Mobile Components
+import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
+import EnhancedMobileButton from '../components/EnhancedMobileButton';
+import EnhancedMobileWeatherCard from '../components/modernWeatherUI/EnhancedMobileWeatherCard';
 // Modern UI Components
 import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
-import WeatherCard from '../components/modernWeatherUI/WeatherCard';
 import ModernForecast from '../components/modernWeatherUI/ModernForecast';
 import ModernWeatherMetrics from '../components/modernWeatherUI/ModernWeatherMetrics';
 import '../styles/modernWeatherUI.css';
@@ -333,7 +336,6 @@ function WeatherDetailsScreen({
   weather,
   hourlyForecast,
   dailyForecast,
-  weatherCode,
   getWeather,
   getWeatherByLocation,
   onRefresh,
@@ -408,48 +410,21 @@ function WeatherDetailsScreen({
                 showLabel={true}
               />
               
-              <button
+              <EnhancedMobileButton
                 onClick={() => {
                   haptic.buttonConfirm();
                   getWeather();
                 }}
                 disabled={loading}
-                className="modern-button modern-hover-lift"
-                style={{
-                  background: loading ? 'rgba(255, 255, 255, 0.1)' : theme.primaryGradient,
-                  color: theme.inverseText,
-                  border: 'none',
-                  borderRadius: '16px',
-                  padding: '14px 20px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  flex: 1,
-                  minHeight: '48px',
-                  backdropFilter: 'blur(10px)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px'
-                }}
+                loading={loading}
+                variant="primary"
+                size="large"
+                fullWidth={true}
+                icon="🔍"
+                style={{ flex: 1 }}
               >
-                {loading ? (
-                  <>
-                    <div style={{
-                      width: '18px',
-                      height: '18px',
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      borderTop: '2px solid white',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
-                    }}></div>
-                    Loading...
-                  </>
-                ) : (
-                  <>🔍 Search</>
-                )}
-              </button>
+                Search
+              </EnhancedMobileButton>
             </div>
           </div>
 
@@ -473,15 +448,9 @@ function WeatherDetailsScreen({
           {/* Main Weather Card */}
           {loading && !weather && <WeatherCardSkeleton />}
           {weather && (
-            <WeatherCard
-              temperature={Math.round(weather.main.temp)}
-              feelsLike={Math.round(weather.main.feels_like)}
-              condition={weather.weather[0]?.description || 'Unknown'}
-              weatherCode={weatherCode}
-              location={city}
-              time={new Date().toLocaleString()}
-              theme={theme}
-              isLoading={loading}
+            <EnhancedMobileWeatherCard
+              weatherData={weather}
+              locationName={city}
             />
           )}
 
@@ -1196,7 +1165,12 @@ const AppNavigator = () => {
   }, [city, weather, backgroundRefresh, haptic, getWeather]);
 
   return (
-    <div 
+    <EnhancedMobileContainer
+      enablePullToRefresh={true}
+      onRefresh={handleRefresh}
+      enableSwipeGestures={screenInfo.width < 768}
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
       className="safe-area-container"
       style={{
         ...getMobileOptimizedContainer(theme, screenInfo),
@@ -1416,7 +1390,7 @@ const AppNavigator = () => {
         enabled={import.meta.env.DEV}
         position="bottom-right"
       />
-    </div>
+    </EnhancedMobileContainer>
   );
 };
 
