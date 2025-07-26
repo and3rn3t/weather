@@ -30,14 +30,29 @@ const mockPermissions = {
   query: vi.fn(),
 };
 
-// Mock global objects
+// Mock global objects - Ensure navigator is properly defined
 Object.defineProperty(global, 'navigator', {
   value: {
     geolocation: mockGeolocation,
     permissions: mockPermissions,
   },
   writable: true,
+  configurable: true,
 });
+
+// Ensure global navigator is available with proper typing
+interface MockNavigator {
+  geolocation: typeof mockGeolocation;
+  permissions: typeof mockPermissions;
+}
+
+if (!global.navigator) {
+  (global as unknown as { navigator: MockNavigator }).navigator = {} as MockNavigator;
+}
+
+const navigatorWithMocks = global.navigator as unknown as MockNavigator;
+navigatorWithMocks.geolocation = mockGeolocation;
+navigatorWithMocks.permissions = mockPermissions;
 
 // Mock fetch for reverse geocoding
 global.fetch = vi.fn();
@@ -63,20 +78,24 @@ describe('useLocationServices', () => {
     });
 
     it('should handle unsupported browsers', () => {
-      // Mock unsupported browser
-      const originalGeolocation = global.navigator.geolocation;
-      Object.defineProperty(global.navigator, 'geolocation', {
+      // Mock unsupported browser by removing geolocation entirely
+      const originalNavigator = global.navigator;
+      
+      // Set navigator to undefined to simulate unsupported browser
+      Object.defineProperty(global, 'navigator', {
         value: undefined,
         writable: true,
+        configurable: true,
       });
 
       const { result } = renderHook(() => useLocationServices(), { wrapper });
       expect(result.current.isSupported).toBe(false);
 
-      // Restore geolocation
-      Object.defineProperty(global.navigator, 'geolocation', {
-        value: originalGeolocation,
+      // Restore navigator
+      Object.defineProperty(global, 'navigator', {
+        value: originalNavigator,
         writable: true,
+        configurable: true,
       });
     });
   });
