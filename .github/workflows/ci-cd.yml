@@ -28,7 +28,7 @@ jobs:
       run: npm ci
     
     - name: Run quality assurance pipeline
-      run: npm run qa
+      run: npm run qa:fast
     
     - name: Bundle size analysis with performance checks
       run: npm run analyze:ci
