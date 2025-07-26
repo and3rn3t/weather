@@ -3,7 +3,90 @@
  * 
  * Comprehensive mobile styles for the weather app
  * Following modern mobile-first responsive design principles
+ * Enhanced with animations, micro-interactions, and modern UI patterns
  */
+
+/* ============================================================================
+   ANIMATION KEYFRAMES
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeInScale {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes weatherIconSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rainDrop {
+  0% { 
+    transform: translateY(-5px); 
+    opacity: 0; 
+  }
+  50% { 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: translateY(5px); 
+    opacity: 0; 
+  }
+}
 
 /* ============================================================================
    GLOBAL MOBILE OPTIMIZATIONS
@@ -164,19 +247,270 @@ body {
   font-size: 16px;
 }
 
-/* Mobile cards */
+/* Mobile cards with enhanced animations */
 .mobile-card {
   background: var(--card-background, rgba(255, 255, 255, 0.1));
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border, rgba(255, 255, 255, 0.2));
-  border-radius: var(--border-radius, 16px);
+  border-radius: var(--card-border-radius, 16px);
   padding: var(--card-padding, 20px);
-  margin-bottom: var(--section-gap, 16px);
-  width: 100%;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  box-shadow: var(--card-shadow, 0 20px 40px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1));
+  box-shadow: var(--card-shadow, 0 8px 32px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform-origin: center;
+  will-change: transform, box-shadow;
 }
+
+.mobile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-hover-shadow, 0 12px 40px rgba(0, 0, 0, 0.15));
+}
+
+.mobile-card.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Weather card specific styles */
+.weather-card {
+  background: linear-gradient(135deg, 
+    var(--weather-card-start, rgba(103, 58, 183, 0.1)) 0%, 
+    var(--weather-card-end, rgba(63, 81, 181, 0.1)) 100%);
+  border: 1px solid var(--weather-card-border, rgba(103, 58, 183, 0.2));
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.weather-card:hover::before {
+  left: 100%;
+}
+
+/* Forecast cards */
+.forecast-card {
+  background: var(--forecast-card-bg, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--forecast-card-border, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.forecast-card:active {
+  transform: scale(0.98);
+  background: var(--forecast-card-active, rgba(255, 255, 255, 0.12));
+}
+
+.forecast-card.today-card {
+  background: linear-gradient(135deg, 
+    var(--today-card-start, rgba(76, 175, 80, 0.15)) 0%, 
+    var(--today-card-end, rgba(139, 195, 74, 0.15)) 100%);
+  border-color: var(--today-card-border, rgba(76, 175, 80, 0.3));
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.2);
+}
+
+/* Enhanced loading states */
+.skeleton {
+  background: linear-gradient(90deg, 
+    var(--skeleton-base, #f0f0f0) 25%, 
+    var(--skeleton-highlight, #e0e0e0) 50%, 
+    var(--skeleton-base, #f0f0f0) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-text {
+  height: 16px;
+  margin: 8px 0;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin: 12px 0;
+}
+
+.skeleton-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1000;
+  animation: fadeInScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+
+.fab:active {
+  animation: buttonPress 0.15s ease;
+}
+
+/* Bottom Sheet */
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bottom-sheet-bg, rgba(255, 255, 255, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1001;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.bottom-sheet.open {
+  transform: translateY(0);
+}
+
+.bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--handle-color, rgba(0, 0, 0, 0.2));
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+/* Staggered animations for lists */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+.stagger-item:nth-child(6) { animation-delay: 0.6s; }
+.stagger-item:nth-child(7) { animation-delay: 0.7s; }
+
+/* Weather-specific animations */
+.weather-icon-animated {
+  animation: float 3s ease-in-out infinite;
+}
+
+.weather-icon-loading {
+  animation: weatherIconSpin 1s linear infinite;
+}
+
+.rain-effect::after {
+  content: '💧';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  animation: rainDrop 1s ease-in infinite;
+  pointer-events: none;
+}
+
+/* Pull to refresh indicator */
+.pull-to-refresh {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--secondary-text);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.pull-to-refresh.active {
+  top: 20px;
+}
+
+.pull-to-refresh-icon {
+  animation: weatherIconSpin 1s linear infinite;
+}
+
+/* Enhanced focus states for accessibility */
+.mobile-button:focus-visible,
+.forecast-card:focus-visible {
+  outline: 2px solid var(--focus-color, #667eea);
+  outline-offset: 2px;
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .mobile-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .skeleton {
+    background: linear-gradient(90deg, 
+      #2a2a2a 25%, 
+      #3a3a3a 50%, 
+      #2a2a2a 75%);
+  }
+  
+  .bottom-sheet {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .weather-icon-animated,
+  .fab {
+    animation: none;
+  }
+}
+
 
 @media (max-width: 375px) {
   .mobile-card {

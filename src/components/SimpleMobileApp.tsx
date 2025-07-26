@@ -9,6 +9,10 @@ import { getScreenInfo, getAdaptiveSpacing, getAdaptiveBorderRadius } from '../u
 import ThemeToggle from '../utils/ThemeToggle';
 import useLocationServices from '../utils/useLocationServices';
 import { WeatherCardSkeleton } from '../utils/LoadingSkeletons';
+import PullToRefresh from './PullToRefresh';
+import BottomSheet from './BottomSheet';
+import FloatingActionButton from './FloatingActionButton';
+import { useHapticFeedback } from '../utils/hapticFeedback';
 const WeatherIcon = React.lazy(() => import('../utils/weatherIcons'));
 
 type WeatherData = {
@@ -73,6 +77,8 @@ const SimpleMobileApp: React.FC = () => {
   const adaptiveBorders = useMemo(() => getAdaptiveBorderRadius(screenInfo), [screenInfo]);
 
   const { getCurrentLocation } = useLocationServices();
+  const { buttonPress, success, error } = useHapticFeedback();
+  
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState<string>('');
@@ -80,6 +86,28 @@ const SimpleMobileApp: React.FC = () => {
   const [showCityInput, setShowCityInput] = useState(false);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
+  
+  // Enhanced UI state
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [selectedForecastDay, setSelectedForecastDay] = useState<DailyForecast | null>(null);
+
+  // Enhanced refresh function for pull-to-refresh
+  const handleRefresh = async (): Promise<void> => {
+    if (weather) {
+      // Re-fetch current weather
+      await fetchWeather(weather.city ? 0 : 0, weather.city ? 0 : 0, weather.city, weather.country);
+    } else {
+      // Get current location and fetch weather
+      await handleCheckWeather();
+    }
+  };
+
+  // Handle forecast day selection
+  const handleForecastDayClick = async (day: DailyForecast) => {
+    await buttonPress();
+    setSelectedForecastDay(day);
+    setShowBottomSheet(true);
+  };
 
   // Fetch weather from OpenMeteo API
   const fetchWeather = async (lat: number, lon: number, city?: string, country?: string): Promise<void> => {
@@ -91,6 +119,7 @@ const SimpleMobileApp: React.FC = () => {
       if (!res.ok) throw new Error('Weather API error');
       const data = await res.json();
       setWeather({ ...data.current_weather, city, country });
+      await success(); // Haptic feedback for successful weather fetch
       // Process hourly forecast
       const hourly: HourlyForecast[] = [];
       if (data.hourly && data.hourly.time) {
@@ -177,7 +206,8 @@ const SimpleMobileApp: React.FC = () => {
     <div className="safe-area-container" style={{ background: 'var(--primary-gradient)', minHeight: '100vh' }}>
       <ThemeToggle />
       
-      <div className="mobile-container fade-in">
+      <PullToRefresh onRefresh={handleRefresh} disabled={weatherLoading}>
+        <div className="mobile-container fade-in">
         <div className="mobile-card weather-display">
           <Suspense fallback={null}>
             <div
@@ -401,18 +431,61 @@ const SimpleMobileApp: React.FC = () => {
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>💨 <span>{day.windSpeed}mph</span></span>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
         </div>
       </div>
-      
+    )}
+  </>
+)}
+</PullToRefresh>
+
+{/* Floating Action Button */}
+<FloatingActionButton 
+  onClick={handleCheckWeather}
+  icon="🔄"
+  label="Refresh weather"
+  disabled={weatherLoading}
+/>
+
+{/* Bottom Sheet for detailed forecast */}
+<BottomSheet 
+  isOpen={showBottomSheet}
+  onClose={() => setShowBottomSheet(false)}
+  title={selectedForecastDay ? `${new Date(selectedForecastDay.date).toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}` : 'Forecast Details'}
+>
+{selectedForecastDay && (
+  <div className="forecast-details" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="forecast-header" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+      <WeatherIcon code={selectedForecastDay.weatherCode} size={64} animated={true} />
+      <div>
+        <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--primary-text)' }}>
+          {selectedForecastDay.tempMax}° / {selectedForecastDay.tempMin}°
+        </div>
+        <div style={{ fontSize: 16, color: 'var(--secondary-text)' }}>
+          {getWeatherDescription(selectedForecastDay.weatherCode)}
+        </div>
+      </div>
     </div>
-  );
+    
+    <div className="forecast-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="stat-card mobile-card" style={{ padding: 16, textAlign: 'center' }}>
+        <div style={{ fontSize: 14, color: 'var(--secondary-text)', marginBottom: 4 }}>Precipitation</div>
+        <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--primary-text)' }}>
+          {selectedForecastDay.precipitation}mm
+        </div>
+      </div>
+      <div className="stat-card mobile-card" style={{ padding: 16, textAlign: 'center' }}>
+        <div style={{ fontSize: 14, color: 'var(--secondary-text)', marginBottom: 4 }}>Wind Speed</div>
+        <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--primary-text)' }}>
+          {selectedForecastDay.windSpeed}mph
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+</BottomSheet>
+
+</div>
+);
 };
 
 export default SimpleMobileApp;
