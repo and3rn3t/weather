@@ -155,33 +155,4 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   );
 };
 
-/**
- * Hook for tracking performance metrics
- */
-export const usePerformanceTracking = () => {
-  const renderCount = useRef(0);
-  const apiCallCount = useRef(0);
-  const startTime = useRef(Date.now());
-
-  useEffect(() => {
-    renderCount.current += 1;
-  });
-
-  const trackAPICall = () => {
-    apiCallCount.current += 1;
-  };
-
-  const getMetrics = () => ({
-    renderCount: renderCount.current,
-    apiCallCount: apiCallCount.current,
-    uptime: Date.now() - startTime.current
-  });
-
-  return {
-    trackAPICall,
-    getMetrics,
-    renderCount: renderCount.current
-  };
-};
-
 export default PerformanceMonitor;

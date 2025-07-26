@@ -37,7 +37,9 @@ export const getScreenInfo = (): ScreenInfo => {
   const isLandscape = width > height;
   
   // Detect notch/safe areas (iOS, Android with cutouts)
-  const hasNotch = 'CSS' in window && CSS.supports('padding-top: env(safe-area-inset-top)');
+  const hasNotch = typeof window !== 'undefined' && 'CSS' in window && 
+    window.CSS && typeof window.CSS.supports === 'function' && 
+    window.CSS.supports('padding-top: env(safe-area-inset-top)');
   
   // Estimate safe areas
   let safeAreaTop = 0;

@@ -139,7 +139,7 @@ export const useLocationDebug = () => {
 
 // Browser console debugging utility
 if (typeof window !== 'undefined') {
-  (window as any).debugLocation = {
+  (window as unknown as { debugLocation: Record<string, unknown> }).debugLocation = {
     testReverseGeocoding: async (lat: number, lon: number) => {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,

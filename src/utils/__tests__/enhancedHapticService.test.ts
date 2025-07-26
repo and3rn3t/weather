@@ -49,7 +49,7 @@ describe('EnhancedHapticService', () => {
     mockVibrate.mockReturnValue(true);
     
     // Reset singleton instance
-    (EnhancedHapticService as any).instance = undefined;
+    (EnhancedHapticService as unknown as { instance?: EnhancedHapticService }).instance = undefined;
     
     // Create new instance
     hapticService = EnhancedHapticService.getInstance();
@@ -288,20 +288,20 @@ describe('EnhancedHapticService', () => {
 describe('Native Platform Integration', () => {
   let hapticService: EnhancedHapticService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     
     // Mock native platform
-    const { Capacitor } = require('@capacitor/core');
-    Capacitor.isNativePlatform.mockReturnValue(true);
+    const { Capacitor } = await import('@capacitor/core');
+    (Capacitor.isNativePlatform as jest.Mock).mockReturnValue(true);
     
     // Mock native haptics
-    const { Haptics } = require('@capacitor/haptics');
-    Haptics.impact.mockResolvedValue(undefined);
-    Haptics.notification.mockResolvedValue(undefined);
+    const { Haptics } = await import('@capacitor/haptics');
+    (Haptics.impact as jest.Mock).mockResolvedValue(undefined);
+    (Haptics.notification as jest.Mock).mockResolvedValue(undefined);
     
     // Reset singleton
-    (EnhancedHapticService as any).instance = undefined;
+    (EnhancedHapticService as unknown as { instance?: EnhancedHapticService }).instance = undefined;
     
     hapticService = EnhancedHapticService.getInstance();
   });
@@ -314,7 +314,7 @@ describe('Native Platform Integration', () => {
   });
 
   it('should use native haptics when available', async () => {
-    const { Haptics } = require('@capacitor/haptics');
+    const { Haptics } = await import('@capacitor/haptics');
     
     await hapticService.light();
     expect(Haptics.impact).toHaveBeenCalledWith({ style: 'light' });
@@ -324,8 +324,8 @@ describe('Native Platform Integration', () => {
   });
 
   it('should fallback to web haptics if native fails', async () => {
-    const { Haptics } = require('@capacitor/haptics');
-    Haptics.impact.mockRejectedValue(new Error('Native haptics failed'));
+    const { Haptics } = await import('@capacitor/haptics');
+    (Haptics.impact as jest.Mock).mockRejectedValue(new Error('Native haptics failed'));
     
     const result = await hapticService.light();
     expect(result).toBe(true);

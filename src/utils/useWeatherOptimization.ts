@@ -97,7 +97,7 @@ export const useWeatherOptimization = <T>(
  * Hook for optimizing weather API calls
  */
 export const useWeatherAPIOptimization = () => {
-  const requestCache = useRef<Map<string, Promise<any>>>(new Map());
+  const requestCache = useRef<Map<string, Promise<Response>>>(new Map());
   const lastRequestTime = useRef<Map<string, number>>(new Map());
 
   const optimizedFetch = useCallback(async (
@@ -155,14 +155,14 @@ export const useWeatherAPIOptimization = () => {
  * Hook for weather data transformation optimization
  */
 export const useWeatherDataTransform = () => {
-  const transformCache = useRef<Map<string, any>>(new Map());
+  const transformCache = useRef<Map<string, unknown>>(new Map());
 
   const optimizedTransform = useCallback(<TInput, TOutput>(
     data: TInput,
     transformFn: (data: TInput) => TOutput,
     cacheKey: string
   ): TOutput => {
-    const cached = transformCache.current.get(cacheKey);
+    const cached = transformCache.current.get(cacheKey) as TOutput;
     if (cached) {
       return cached;
     }

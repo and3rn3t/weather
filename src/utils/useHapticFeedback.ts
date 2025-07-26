@@ -77,8 +77,8 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
   // ============================================================================
 
   const getCapabilities = useCallback((): HapticCapabilities => {
-    const hasVibrationAPI = 'vibrate' in navigator;
-    const userAgent = navigator.userAgent.toLowerCase();
+    const hasVibrationAPI = typeof navigator !== 'undefined' && 'vibrate' in navigator;
+    const userAgent = (typeof navigator !== 'undefined' && navigator.userAgent) ? navigator.userAgent.toLowerCase() : '';
     
     // Check if device likely supports haptics
     const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone/i.test(userAgent);
