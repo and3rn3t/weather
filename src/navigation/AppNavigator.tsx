@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import WeatherIcon, { weatherIconStyles } from '../utils/weatherIcons';
+import WeatherIcon from '../utils/weatherIcons';
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
 import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
 import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
 import DeploymentStatus from '../utils/DeploymentStatus';
 import LocationButton from '../utils/LocationButton';
-import CitySelector from '../utils/CitySelector';
 import AutoCompleteSearch from '../utils/AutoCompleteSearch';
 import GeolocationVerification from '../utils/GeolocationVerification';
 import { useCityManagement } from '../utils/useCityManagement';
@@ -24,6 +23,12 @@ import MobileNavigation, { type NavigationScreen } from '../components/MobileNav
 import { ScreenContainer } from '../components/ScreenTransition';
 import SettingsScreen from '../components/SettingsScreen';
 import SearchScreen from '../components/SearchScreen';
+// Modern UI Components
+import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
+import WeatherCard from '../components/modernWeatherUI/WeatherCard';
+import ModernForecast from '../components/modernWeatherUI/ModernForecast';
+import ModernWeatherMetrics from '../components/modernWeatherUI/ModernWeatherMetrics';
+import '../styles/modernWeatherUI.css';
 import { 
   getScreenInfo, 
   getAdaptiveFontSizes,
@@ -31,7 +36,6 @@ import {
   getAdaptiveBorderRadius,
   getTouchOptimizedButton,
   getMobileOptimizedContainer,
-  getMobileOptimizedCard,
   handleOrientationChange,
   type ScreenInfo
 } from '../utils/mobileScreenOptimization';
@@ -263,10 +267,6 @@ const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
 
 function HomeScreen({
   theme,
-  screenInfo,
-  adaptiveFonts,
-  adaptiveSpacing,
-  adaptiveBorders,
   navigate,
   haptic
 }: Readonly<{
@@ -278,128 +278,30 @@ function HomeScreen({
   navigate: (screenName: string) => void;
   haptic: ReturnType<typeof useHaptic>;
 }>) {
-
   return (
-    <div className="mobile-container fade-in">
-      <ThemeToggle />
-      <div className="mobile-card weather-display">
-        <div style={{
-          width: screenInfo.isVerySmallScreen ? '100px' : '120px',
-          height: screenInfo.isVerySmallScreen ? '100px' : '120px',
-          background: theme.primaryGradient,
-          borderRadius: adaptiveBorders.large,
-          margin: `0 auto ${adaptiveSpacing.sectionGap}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-          boxShadow: theme.buttonShadow
-        }}>
-          <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 48 : 64} animated={true} className="home-main-icon" />
-          <div style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
-            <WeatherIcon code={61} size={screenInfo.isVerySmallScreen ? 18 : 24} animated={true} className="home-floating-icon" />
-          </div>
-          <div style={{ position: 'absolute', bottom: '-8px', left: '-8px' }}>
-            <WeatherIcon code={3} size={screenInfo.isVerySmallScreen ? 16 : 20} animated={true} className="home-floating-icon" />
-          </div>
-        </div>
-        <h1 className="mobile-title" style={{
-          color: theme.primaryText,
-          letterSpacing: screenInfo.isVerySmallScreen ? '-0.3px' : '-0.5px',
-            transition: 'color 0.5s ease'
-        }}>
-          Weather App
-        </h1>
-        <p className="mobile-body" style={{
-          color: theme.secondaryText,
-          lineHeight: '1.6',
-          transition: 'color 0.5s ease',
-          textAlign: 'center',
-          maxWidth: screenInfo.isVerySmallScreen ? '280px' : '100%'
-        }}>
-          Get real-time weather information for any city around the world
-        </p>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: adaptiveSpacing.elementGap,
-          marginBottom: adaptiveSpacing.sectionGap,
-          flexWrap: 'wrap'
-        }}>
-          {[
-            { code: 0, label: 'Sunny' },
-            { code: 61, label: 'Rainy' },
-            { code: 71, label: 'Snow' },
-            { code: 95, label: 'Storms' }
-          ].map(({ code, label }) => (
-            <div key={label} style={{ textAlign: 'center' }}>
-              <WeatherIcon code={code} size={screenInfo.isVerySmallScreen ? 24 : 32} animated={true} />
-              <div style={{ 
-                fontSize: adaptiveFonts.bodySmall, 
-                color: theme.secondaryText, 
-                marginTop: '4px' 
-              }}>{label}</div>
-            </div>
-          ))}
-        </div>
-        <button
-          className="mobile-button mobile-button-large"
-          onClick={() => {
-            haptic.buttonPress(); // Haptic feedback for navigation button
-            navigate('WeatherDetails');
-          }}
-          style={{
-            background: theme.primaryGradient,
-            color: theme.inverseText,
-            boxShadow: theme.buttonShadow,
-            letterSpacing: '0.5px',
-            marginBottom: '12px'
-          }}
-          onMouseEnter={e => {
-            const target = e.target as HTMLButtonElement;
-            target.style.transform = 'translateY(-2px)';
-            target.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4)';
-          }}
-          onMouseLeave={e => {
-            const target = e.target as HTMLButtonElement;
-            target.style.transform = 'translateY(0)';
-            target.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
-          }}
-        >
-          Check Weather →
-        </button>
-        
-        {/* Mobile Test Button - Development only */}
-        {import.meta.env.DEV && (
-          <button
-            className="mobile-button"
-            onClick={() => {
-              haptic.buttonPress();
-              navigate('MobileTest');
-            }}
-            style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              color: theme.primaryText,
-              border: `1px solid ${theme.primaryText}30`
-            }}
-          >
-            🔧 Mobile Test
-          </button>
-        )}
-      </div>
-    </div>
+    <ModernHomeScreen
+      theme={theme}
+      onNavigate={(screen: string) => {
+        haptic.buttonPress();
+        if (screen === 'weather') {
+          navigate('Weather');
+        } else if (screen === 'search') {
+          navigate('Search');
+        } else if (screen === 'test') {
+          navigate('MobileTest');
+        }
+      }}
+      onGetCurrentLocation={() => {
+        haptic.buttonPress();
+        // Add location logic here if needed
+      }}
+    />
   );
 }
 
 // WeatherDetailsScreen component definition
 function WeatherDetailsScreen({
   theme,
-  screenInfo,
-  adaptiveFonts,
-  adaptiveSpacing,
-  adaptiveBorders,
-  navigate,
-  createMobileButton,
   city,
   loading,
   error,
@@ -435,8 +337,6 @@ function WeatherDetailsScreen({
   haptic: ReturnType<typeof useHaptic>;
   handleLocationDetected: (cityName: string, latitude: number, longitude: number) => void;
 }>) {
-  const cardStyles = getMobileOptimizedCard(theme, screenInfo);
-
   return (
     <div className="mobile-container">
       <ThemeToggle />
@@ -445,202 +345,197 @@ function WeatherDetailsScreen({
         disabled={loading}
         style={{ width: '100%' }}
       >
-        <div className="mobile-navigation">
-          <button
-            className="mobile-back-button"
-            onClick={() => {
-              haptic.buttonPress(); // Haptic feedback for back button
-              navigate('Home');
-            }}
-            style={{
-              ...createMobileButton(false, 'medium'),
-              marginBottom: adaptiveSpacing.sectionGap
-            }}
-            onMouseEnter={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-            }}
-            onMouseLeave={e => {
-              const target = e.target as HTMLButtonElement;
-              target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            }}
-          >
-            ← Back to Home
-          </button>
-        </div>
-        
-        <div style={cardStyles}>
-              <h1 style={{
-                fontSize: adaptiveFonts.pageTitle,
-                fontWeight: '700',
-                marginBottom: adaptiveSpacing.sectionGap,
-                color: theme.primaryText,
-                textAlign: 'center',
-                letterSpacing: screenInfo.isVerySmallScreen ? '-0.3px' : '-0.5px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: adaptiveSpacing.elementGap,
-                flexWrap: 'wrap'
-              }}>
-                <WeatherIcon code={0} size={screenInfo.isVerySmallScreen ? 28 : 36} animated={true} className="header-weather-icon" />
-                Weather Forecast
-                <WeatherIcon code={1} size={screenInfo.isVerySmallScreen ? 28 : 36} animated={true} className="header-weather-icon" />
-              </h1>
-              <div style={{
-                marginBottom: adaptiveSpacing.sectionGap,
-                display: 'flex',
-                gap: adaptiveSpacing.elementGap,
-                flexDirection: screenInfo.isVerySmallScreen ? 'column' : 'row',
-                flexWrap: 'wrap'
-              }}>
-                <AutoCompleteSearch
-                  theme={theme}
-                  isMobile={screenInfo.width < 768}
-                  onCitySelected={getWeatherByLocation}
-                  onError={(error) => setError(error)}
-                  disabled={loading}
-                  placeholder="Search for a city..."
-                  initialValue={city}
-                />
-                <div style={{ 
-                  display: 'flex', 
-                  gap: adaptiveSpacing.elementGap,
-                  flexWrap: screenInfo.isVerySmallScreen ? 'wrap' : 'nowrap',
-                  width: screenInfo.isVerySmallScreen ? '100%' : 'auto'
-                }}>
-                  <LocationButton
-                    theme={theme}
-                    isMobile={screenInfo.width < 768}
-                    onLocationReceived={handleLocationDetected}
-                    onError={(error) => {
-                      // Set error state for location failures
-                      setError(error);
-                    }}
-                    disabled={loading}
-                    variant="secondary"
-                    size="medium"
-                    showLabel={!screenInfo.isVerySmallScreen} // Hide label on very small screens for space
-                  />
-                  
-                  <CitySelector
-                    theme={theme}
-                    isMobile={screenInfo.width < 768}
-                    onCitySelected={getWeatherByLocation}
-                    disabled={loading}
-                    currentCity={city}
-                  />
-                  <button
-                    onClick={() => {
-                      haptic.buttonConfirm(); // Haptic feedback for search button
-                      getWeather();
-                    }}
-                    disabled={loading}
-                    style={{
-                      background: loading ? theme.loadingBackground : theme.buttonGradient,
-                      color: theme.inverseText,
-                      border: 'none',
-                      borderRadius: adaptiveBorders.medium,
-                      padding: adaptiveSpacing.buttonPadding,
-                      fontSize: adaptiveFonts.buttonText,
-                      fontWeight: '600',
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      boxShadow: loading ? 'none' : theme.buttonShadow,
-                      transition: 'all 0.3s ease',
-                      minWidth: screenInfo.isVerySmallScreen ? '120px' : '140px',
-                      minHeight: '44px'
-                    }}
-                  >
-                    {loading ? (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: adaptiveSpacing.elementGap }}>
-                        <span style={{
-                          display: 'inline-block',
-                          width: '16px',
-                          height: '16px',
-                          border: '2px solid rgba(255,255,255,0.3)',
-                          borderTop: '2px solid white',
-                          borderRadius: '50%',
-                          animation: 'spin 1s linear infinite'
-                        }}></span>{' '}
-                        {screenInfo.isVerySmallScreen ? '...' : 'Loading...'}
-                      </span>
-                    ) : (
-                      (() => {
-                        const searchText = screenInfo.isVerySmallScreen ? 'Go' : 'Search';
-                        return `🔍 ${searchText}`;
-                      })()
-                    )}
-                  </button>
-                </div>
-              </div>
-            {error && (
-              <div style={{
-                background: theme.errorBackground,
-                color: theme.errorText,
-                padding: '20px',
-                borderRadius: '16px',
-                marginBottom: '24px',
-                border: `1px solid ${theme.errorBorder}`,
-                fontSize: '16px',
-                fontWeight: '500'
-              }}>
-                ⚠️ {error}
-              </div>
-            )}
-            {loading && !weather && <WeatherCardSkeleton />}
-            {weather && (
-              <WeatherMainCard
-                weather={weather}
-                city={city}
+        <div style={{
+          padding: '20px',
+          paddingBottom: '100px', // Space for navigation
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 69, 19, 0.05) 100%)',
+        }}>
+          
+          {/* Search Section */}
+          <div style={{
+            marginBottom: '24px',
+            display: 'flex',
+            gap: '12px',
+            flexDirection: 'column'
+          }}>
+            <AutoCompleteSearch
+              theme={theme}
+              isMobile={true}
+              onCitySelected={getWeatherByLocation}
+              onError={(error) => setError(error)}
+              disabled={loading}
+              placeholder="Search for a city..."
+              initialValue={city}
+            />
+            <div style={{ 
+              display: 'flex', 
+              gap: '12px',
+              flexWrap: 'wrap'
+            }}>
+              <LocationButton
                 theme={theme}
-                isMobile={screenInfo.width < 768}
-                weatherCode={weatherCode}
+                isMobile={true}
+                onLocationReceived={handleLocationDetected}
+                onError={(error) => setError(error)}
+                disabled={loading}
+                variant="secondary"
+                size="medium"
+                showLabel={true}
               />
-            )}
-            <HourlyForecastSection
-              loading={loading}
-              hourlyForecast={hourlyForecast}
-              theme={theme}
-              isMobile={screenInfo.width < 768}
-            />
-            <DailyForecastSection
-              loading={loading}
-              dailyForecast={dailyForecast}
-              theme={theme}
-            />
+              
+              <button
+                onClick={() => {
+                  haptic.buttonConfirm();
+                  getWeather();
+                }}
+                disabled={loading}
+                className="modern-button modern-hover-lift"
+                style={{
+                  background: loading ? 'rgba(255, 255, 255, 0.1)' : theme.primaryGradient,
+                  color: theme.inverseText,
+                  border: 'none',
+                  borderRadius: '16px',
+                  padding: '14px 20px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  flex: 1,
+                  minHeight: '48px',
+                  backdropFilter: 'blur(10px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                {loading ? (
+                  <>
+                    <div style={{
+                      width: '18px',
+                      height: '18px',
+                      border: '2px solid rgba(255,255,255,0.3)',
+                      borderTop: '2px solid white',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                    Loading...
+                  </>
+                ) : (
+                  <>🔍 Search</>
+                )}
+              </button>
+            </div>
           </div>
-        
-        {/* Add styles */}
-        <style>{`
-          .autocomplete-search {
-            flex: 1;
-            min-width: ${screenInfo.isVerySmallScreen ? '100%' : '250px'};
-          }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-8px); }
-            60% { transform: translateY(-4px); }
-          }
-          ${weatherIconStyles}
-          .home-main-icon { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); }
-          .home-floating-icon { animation: float 6s ease-in-out infinite; opacity: 0.8; }
-          .home-floating-icon:hover { opacity: 1; transform: scale(1.2); }
-          .header-weather-icon { opacity: 0.8; }
-          div::-webkit-scrollbar { height: 6px; }
-          div::-webkit-scrollbar-track { background: rgba(14, 165, 233, 0.1); border-radius: 3px; }
-          div::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 3px; }
-          div::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
-        `}</style>
+
+          {/* Error Display */}
+          {error && (
+            <div className="modern-glass" style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: theme.errorText,
+              padding: '20px',
+              borderRadius: '16px',
+              marginBottom: '24px',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              fontSize: '16px',
+              fontWeight: '500',
+              backdropFilter: 'blur(10px)'
+            }}>
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* Main Weather Card */}
+          {loading && !weather && <WeatherCardSkeleton />}
+          {weather && (
+            <WeatherCard
+              temperature={Math.round(weather.main.temp)}
+              feelsLike={Math.round(weather.main.feels_like)}
+              condition={weather.weather[0]?.description || 'Unknown'}
+              weatherCode={weatherCode}
+              location={city}
+              time={new Date().toLocaleString()}
+              theme={theme}
+              isLoading={loading}
+            />
+          )}
+
+          {/* Weather Metrics */}
+          {weather && (
+            <ModernWeatherMetrics
+              theme={theme}
+              metrics={[
+                {
+                  id: 'humidity',
+                  icon: '💧',
+                  label: 'Humidity',
+                  value: `${weather.main.humidity}%`,
+                  unit: '%'
+                },
+                {
+                  id: 'pressure',
+                  icon: '🌡️',
+                  label: 'Pressure',
+                  value: `${weather.main.pressure}`,
+                  unit: 'hPa'
+                },
+                {
+                  id: 'wind',
+                  icon: '💨',
+                  label: 'Wind Speed',
+                  value: `${weather.wind.speed}`,
+                  unit: 'mph'
+                },
+                {
+                  id: 'uv',
+                  icon: '☀️',
+                  label: 'UV Index',
+                  value: `${weather.uv_index || 0}`,
+                  unit: ''
+                },
+                {
+                  id: 'visibility',
+                  icon: '👁️',
+                  label: 'Visibility',
+                  value: `${Math.round((weather.visibility || 0) / 1000)}`,
+                  unit: 'km'
+                }
+              ]}
+              isLoading={loading}
+            />
+          )}
+
+          {/* Forecast Sections */}
+          <ModernForecast
+            theme={theme}
+            hourlyData={hourlyForecast.map(hour => ({
+              time: hour.time,
+              temperature: hour.temperature,
+              weatherCode: hour.weatherCode,
+              humidity: hour.humidity,
+              feelsLike: hour.feelsLike
+            }))}
+            dailyData={dailyForecast.map(day => ({
+              date: day.date,
+              weatherCode: day.weatherCode,
+              tempMax: day.tempMax,
+              tempMin: day.tempMin,
+              precipitation: day.precipitation,
+              windSpeed: day.windSpeed
+            }))}
+            isLoading={loading}
+          />
+          
+        </div>
       </PullToRefresh>
     </div>
   );
 }
 
-// Helper components for weather display
+// Helper components for weather display (keep these for now as they might be used elsewhere)
+// @ts-expect-error - Legacy component kept for reference but unused in current implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const WeatherMainCard = React.memo(({ weather, city, theme, isMobile, weatherCode }: Readonly<{
   weather: WeatherData,
   city: string,
@@ -757,6 +652,8 @@ const WeatherMainCard = React.memo(({ weather, city, theme, isMobile, weatherCod
   );
 });
 
+// @ts-expect-error - Legacy component kept for reference but unused in current implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HourlyForecastSection = React.memo(({ loading, hourlyForecast, theme, isMobile }: Readonly<{
   loading: boolean,
   hourlyForecast: HourlyForecast[],
@@ -860,6 +757,8 @@ const HourlyForecastSection = React.memo(({ loading, hourlyForecast, theme, isMo
   return null;
 });
 
+// @ts-expect-error - Legacy component kept for reference but unused in current implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DailyForecastSection = React.memo(({ loading, dailyForecast, theme }: Readonly<{
   loading: boolean,
   dailyForecast: DailyForecast[],
