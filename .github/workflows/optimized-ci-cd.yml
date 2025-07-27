@@ -78,7 +78,7 @@ jobs:
         run: npm run test:ci || echo "⚠️ Tests failed but continuing build for CI stability"
 
       - name: 📊 Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage/lcov.info
           flags: unittests
