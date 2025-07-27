@@ -5,8 +5,7 @@
  * Covers GPS functionality, permission handling, and reverse geocoding.
  */
 
-import { renderHook, act } from '@testing-library/react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderHook, act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
