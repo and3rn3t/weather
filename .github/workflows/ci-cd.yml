@@ -33,7 +33,8 @@ jobs:
           cache: 'npm'
 
       - name: 📋 Install dependencies
-        run: npm ci
+        run: |
+          npm ci || (echo "npm ci failed, clearing cache and retrying..." && rm -rf node_modules package-lock.json && npm install)
 
       - name: 🔍 Run ESLint
         run: npm run lint
@@ -52,7 +53,8 @@ jobs:
           cache: 'npm'
 
       - name: 📋 Install dependencies
-        run: npm ci
+        run: |
+          npm ci || (echo "npm ci failed, clearing cache and retrying..." && rm -rf node_modules package-lock.json && npm install)
 
       - name: 📝 TypeScript compilation check
         run: npx tsc --noEmit
@@ -103,7 +105,8 @@ jobs:
           cache: 'npm'
 
       - name: 📋 Install dependencies
-        run: npm ci
+        run: |
+          npm ci || (echo "npm ci failed, clearing cache and retrying..." && rm -rf node_modules package-lock.json && npm install)
 
       - name: 🔒 Run npm audit
         run: npm audit --audit-level=moderate
@@ -291,7 +294,8 @@ jobs:
             gradle-${{ env.CACHE_VERSION }}-
 
       - name: 📋 Install dependencies
-        run: npm ci
+        run: |
+          npm ci || (echo "npm ci failed, clearing cache and retrying..." && rm -rf node_modules package-lock.json && npm install)
 
       - name: 📥 Download build artifacts
         uses: actions/download-artifact@v4
@@ -313,6 +317,9 @@ jobs:
 
       - name: 🔄 Sync Capacitor
         run: npx cap sync android
+
+      - name: 🔧 Fix Gradle wrapper permissions
+        run: chmod +x android/gradlew
 
       - name: 🏗️ Build Android APK
         run: |

@@ -226,6 +226,9 @@ jobs:
       - name: 🔄 Sync Capacitor
         run: npx cap sync android
 
+      - name: 🔧 Fix Gradle wrapper permissions
+        run: chmod +x android/gradlew
+
       - name: 🏗️ Build Android APK
         run: |
           cd android
