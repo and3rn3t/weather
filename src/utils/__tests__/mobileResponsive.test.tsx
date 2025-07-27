@@ -222,8 +222,9 @@ describe('Mobile Responsive Design Tests', () => {
 
       expect(screen.getByTestId('orientation')).toHaveTextContent('portrait');
 
-      // Switch to landscape
+      // Switch to landscape and trigger resize event
       mockViewport(812, 375);
+      fireEvent(window, new Event('resize'));
       
       rerender(
         <TestWrapper>
@@ -258,8 +259,9 @@ describe('Mobile Responsive Design Tests', () => {
       expect(screen.getByTestId('is-tablet')).toHaveTextContent('true');
       expect(screen.getByTestId('orientation')).toHaveTextContent('portrait');
 
-      // iPad landscape
+      // iPad landscape and trigger resize event
       mockViewport(1024, 768);
+      fireEvent(window, new Event('resize'));
       
       rerender(
         <TestWrapper>
@@ -552,6 +554,7 @@ describe('Mobile Responsive Design Tests', () => {
 
       orientations.forEach(({ width, height }) => {
         mockViewport(width, height);
+        fireEvent(window, new Event('resize')); // Trigger resize event
         rerender(
           <TestWrapper>
             <TestComponent />

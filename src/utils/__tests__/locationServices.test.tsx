@@ -15,59 +15,13 @@ import LocationButton from '../LocationButton';
 import { HapticFeedbackProvider } from '../hapticContext';
 import { ThemeProvider } from '../themeContext';
 import { lightTheme } from '../themeConfig';
+import { createNavigatorMock } from './testUtils';
 
 // ============================================================================
 // MOCK SETUP
 // ============================================================================
 
-const mockGeolocation = {
-  getCurrentPosition: vi.fn(),
-  watchPosition: vi.fn(),
-  clearWatch: vi.fn(),
-};
-
-const mockPermissions = {
-  query: vi.fn(),
-};
-
-// Mock global objects - Ensure navigator is properly defined
-Object.defineProperty(global, 'navigator', {
-  value: {
-    geolocation: mockGeolocation,
-    permissions: mockPermissions,
-    userAgent: 'test-user-agent',
-  },
-  writable: true,
-  configurable: true,
-});
-
-// Additional navigator setup for test environment
-if (!globalThis.navigator) {
-  Object.defineProperty(globalThis, 'navigator', {
-    value: {
-      geolocation: mockGeolocation,
-      permissions: mockPermissions,
-      userAgent: 'test-user-agent',
-    },
-    writable: true,
-    configurable: true,
-  });
-}
-
-// Ensure global navigator is available with proper typing
-interface MockNavigator {
-  geolocation: typeof mockGeolocation;
-  permissions: typeof mockPermissions;
-  userAgent: string;
-}
-
-if (!global.navigator) {
-  (global as unknown as { navigator: MockNavigator }).navigator = {} as MockNavigator;
-}
-
-const navigatorWithMocks = global.navigator as unknown as MockNavigator;
-navigatorWithMocks.geolocation = mockGeolocation;
-navigatorWithMocks.permissions = mockPermissions;
+const { mockGeolocation, mockPermissions } = createNavigatorMock();
 
 // Mock fetch for reverse geocoding
 global.fetch = vi.fn();

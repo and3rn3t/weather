@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ThemeProvider } from '../themeContext';
 import { HapticFeedbackProvider } from '../hapticContext';
 import PullToRefresh from '../PullToRefresh';
@@ -288,8 +288,8 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       const touchStart = createTouchEvent('touchstart', 100);
       fireEvent(container, touchStart);
 
-      // Move down 50px
-      const touchMove = createTouchEvent('touchmove', 150);
+      // Move down 100px (with resistance 0.5, this becomes 50px)
+      const touchMove = createTouchEvent('touchmove', 200);
       fireEvent(container, touchMove);
 
       expect(screen.getByTestId('pull-distance')).toHaveTextContent('50');
@@ -304,9 +304,9 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
       const container = screen.getByTestId('hook-container');
 
-      // Pull past threshold (70px)
+      // Pull past threshold (need 140px to get 70px with resistance)
       const touchStart = createTouchEvent('touchstart', 100);
-      const touchMove = createTouchEvent('touchmove', 180); // 80px pull
+      const touchMove = createTouchEvent('touchmove', 240); // 140px pull
       
       fireEvent(container, touchStart);
       fireEvent(container, touchMove);
@@ -355,9 +355,9 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       const container = screen.getByTestId('hook-container');
       const resetButton = screen.getByTestId('reset-button');
 
-      // Create some pull state
+      // Create some pull state (100px pull = 50px with resistance)
       const touchStart = createTouchEvent('touchstart', 100);
-      const touchMove = createTouchEvent('touchmove', 150);
+      const touchMove = createTouchEvent('touchmove', 200);
       
       fireEvent(container, touchStart);
       fireEvent(container, touchMove);
