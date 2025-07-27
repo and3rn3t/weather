@@ -152,6 +152,11 @@ jobs:
         run: |
           npm ci || (echo "npm ci failed, clearing cache and retrying..." && rm -rf node_modules package-lock.json && npm install)
 
+      - name: 🔧 Fix Rollup native dependency
+        run: |
+          echo "Ensuring Rollup native modules are properly installed..."
+          npm install @rollup/rollup-linux-x64-gnu@^4.20.0 --save-dev --force || true
+
       - name: 🏗️ Build application
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm run build:production
