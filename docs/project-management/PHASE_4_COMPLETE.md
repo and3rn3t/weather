@@ -30,6 +30,7 @@ From the latest bundle analysis and system status:
 ### 🔧 Available Commands
 
 #### Blue-Green Deployment
+
 ```powershell
 node scripts/blue-green-deployment.js deploy v1.0.0     # Deploy with zero downtime
 node scripts/blue-green-deployment.js dry-run v1.0.0    # Test deployment
@@ -38,6 +39,7 @@ node scripts/blue-green-deployment.js rollback          # Emergency rollback
 ```
 
 #### Canary Releases
+
 ```powershell
 node scripts/canary-release.js deploy v1.0.0           # Start canary deployment
 node scripts/canary-release.js dry-run v1.0.0          # Simulate canary
@@ -45,6 +47,7 @@ node scripts/canary-release.js status                  # Monitor progress
 ```
 
 #### Real User Monitoring
+
 ```powershell
 node scripts/rum-analytics.js start                    # Start data collection
 node scripts/rum-analytics.js report                   # Generate analytics
@@ -52,6 +55,7 @@ node scripts/rum-analytics.js status                   # Check system status
 ```
 
 #### Error Tracking
+
 ```powershell
 node scripts/error-tracking.js start                   # Start monitoring
 node scripts/error-tracking.js report                  # View error analysis
@@ -59,6 +63,7 @@ node scripts/error-tracking.js simulate                # Test error collection
 ```
 
 #### Feature Flags
+
 ```powershell
 node scripts/feature-flags.js start                    # Start flag management
 node scripts/feature-flags.js report                   # View analytics
@@ -66,6 +71,7 @@ node scripts/feature-flags.js evaluate flag user       # Test flag evaluation
 ```
 
 #### Production Dashboard
+
 ```powershell
 node scripts/production-dashboard.js start             # Live dashboard
 node scripts/production-dashboard.js report            # Static report
@@ -122,6 +128,7 @@ node scripts/phase4-demo.js
 ```
 
 This demonstrates:
+
 - Blue-green deployment simulation
 - Canary release monitoring
 - Real user monitoring analytics
