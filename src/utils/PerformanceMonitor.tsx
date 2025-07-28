@@ -126,7 +126,16 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     <div
       style={getPositionStyles()}
       onClick={() => setIsVisible(!isVisible)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setIsVisible(!isVisible);
+        }
+      }}
+      role="button"
+      tabIndex={0}
       title="Click to toggle performance details"
+      aria-label="Toggle performance monitor details"
     >
       <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '9px' }}>
         ⚡ Performance

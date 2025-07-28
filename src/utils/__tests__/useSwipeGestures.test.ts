@@ -16,6 +16,11 @@ vi.mock('../hapticHooks', () => ({
     selectionChange: vi.fn(),
     impactLight: vi.fn(),
     navigationSwipe: vi.fn()
+  }),
+  useGestureHaptics: () => ({
+    triggerSwipeHaptic: vi.fn(),
+    triggerSelectionHaptic: vi.fn(),
+    triggerNavigationHaptic: vi.fn()
   })
 }));
 

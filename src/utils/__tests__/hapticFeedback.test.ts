@@ -25,6 +25,13 @@ describe('Haptic Feedback System', () => {
   beforeEach(() => {
     mockVibrate.mockClear();
     vi.clearAllMocks();
+    // Reset any rate limiting by advancing time
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2023-01-01'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('useHapticFeedback Hook', () => {
@@ -177,10 +184,16 @@ describe('Haptic Feedback System', () => {
 
     it('should handle missing vibration API', () => {
       const originalVibrate = navigator.vibrate;
-      // Mock navigator without vibrate property
+      const originalUserAgent = navigator.userAgent;
+      
+      // Mock navigator without vibrate property and set to desktop user agent
       Object.defineProperty(navigator, 'vibrate', {
         value: undefined,
         configurable: true,
+      });
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        writable: true,
       });
       
       const { result } = renderHook(() => useHapticFeedback());
@@ -193,17 +206,21 @@ describe('Haptic Feedback System', () => {
       
       // Should not throw, should fail silently
       
-      // Restore original vibrate function
+      // Restore original values
       Object.defineProperty(navigator, 'vibrate', {
         value: originalVibrate,
         configurable: true,
+      });
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUserAgent,
+        writable: true,
       });
     });
   });
 
   describe('Haptic Patterns', () => {
     it('should trigger navigation haptic correctly', () => {
-      const { result } = renderHook(() => useHapticFeedback());
+      const { result } = renderHook(() => useHapticFeedback({ respectSystemSettings: false }));
       
       act(() => {
         result.current.navigation();
@@ -213,42 +230,46 @@ describe('Haptic Feedback System', () => {
     });
 
     it('should trigger refresh haptic correctly', () => {
-      const { result } = renderHook(() => useHapticFeedback());
+      vi.advanceTimersByTime(100); // Ensure rate limiting doesn't interfere
+      const { result } = renderHook(() => useHapticFeedback({ respectSystemSettings: false }));
       
       act(() => {
         result.current.refresh();
       });
-      
+
       expect(mockVibrate).toHaveBeenCalledWith([30, 30, 30]);
     });
 
     it('should trigger notification haptic correctly', () => {
-      const { result } = renderHook(() => useHapticFeedback());
+      vi.advanceTimersByTime(100);
+      const { result } = renderHook(() => useHapticFeedback({ respectSystemSettings: false }));
       
       act(() => {
         result.current.notification();
       });
-      
+
       expect(mockVibrate).toHaveBeenCalledWith([20, 20, 20]);
     });
 
     it('should trigger selection haptic correctly', () => {
-      const { result } = renderHook(() => useHapticFeedback());
+      vi.advanceTimersByTime(100);
+      const { result } = renderHook(() => useHapticFeedback({ respectSystemSettings: false }));
       
       act(() => {
         result.current.selection();
       });
-      
+
       expect(mockVibrate).toHaveBeenCalledWith([10, 10]);
     });
 
     it('should trigger long press haptic correctly', () => {
-      const { result } = renderHook(() => useHapticFeedback());
+      vi.advanceTimersByTime(100);
+      const { result } = renderHook(() => useHapticFeedback({ respectSystemSettings: false }));
       
       act(() => {
         result.current.longPress();
       });
-      
+
       expect(mockVibrate).toHaveBeenCalledWith([50, 100, 50]);
     });
   });

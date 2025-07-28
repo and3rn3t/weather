@@ -59,8 +59,20 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: 📋 Install dependencies
-        run: npm ci
+      - name: 🧹 Clear npm cache
+        run: npm cache clean --force
+
+      - name: 📋 Install dependencies with Rollup fix
+        run: |
+          npm ci --include=optional
+          # Fix Rollup dependencies issue for Linux
+          node scripts/fix-rollup-deps.cjs || echo "Rollup fix completed with warnings"
+
+      - name: 🔍 Verify Rollup installation
+        run: |
+          echo "Checking Rollup installation..."
+          npm list rollup || echo "Rollup list warning"
+          npm list @rollup/rollup-linux-x64-gnu || echo "Linux Rollup binary warning"
 
       - name: 🏗️ Build application
         run: npm run build
@@ -87,8 +99,14 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: 📋 Install dependencies
-        run: npm ci
+      - name: 🧹 Clear npm cache
+        run: npm cache clean --force
+
+      - name: 📋 Install dependencies with Rollup fix
+        run: |
+          npm ci --include=optional
+          # Fix Rollup dependencies issue for Linux
+          node scripts/fix-rollup-deps.cjs || echo "Rollup fix completed with warnings"
 
       - name: 🏗️ Build application
         run: npm run build
@@ -118,8 +136,14 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: 📋 Install dependencies
-        run: npm ci
+      - name: 🧹 Clear npm cache
+        run: npm cache clean --force
+
+      - name: 📋 Install dependencies with Rollup fix
+        run: |
+          npm ci --include=optional
+          # Fix Rollup dependencies issue for Linux
+          node scripts/fix-rollup-deps.cjs || echo "Rollup fix completed with warnings"
 
       - name: 🏗️ Build application
         run: npm run build

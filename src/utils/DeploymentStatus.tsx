@@ -10,33 +10,34 @@ export const DeploymentStatus: React.FC<DeploymentStatusProps> = ({ theme }) => 
   return (
     <div style={{
       position: 'fixed',
-      bottom: '20px',
-      right: '20px',
-      backgroundColor: isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(10px)',
-      border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-      borderRadius: '12px',
-      padding: '12px 16px',
-      color: isDark ? '#ffffff' : '#1e293b',
-      fontSize: '12px',
+      bottom: '10px',
+      right: '10px',
+      backgroundColor: isDark ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+      backdropFilter: 'blur(8px)',
+      border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`,
+      borderRadius: '8px',
+      padding: '6px 10px',
+      color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(30, 41, 59, 0.7)',
+      fontSize: '10px',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-      zIndex: 1000,
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+      zIndex: 100,
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      transition: 'all 0.3s ease'
+      gap: '6px',
+      transition: 'all 0.3s ease',
+      opacity: 0.6
     }}>
       <div style={{
-        width: '8px',
-        height: '8px',
+        width: '6px',
+        height: '6px',
         borderRadius: '50%',
         backgroundColor: '#10b981',
         animation: 'pulse 2s infinite'
       }} />
       
-      <span style={{ fontWeight: 500 }}>
-        Deployed on Cloudflare Pages
+      <span style={{ fontWeight: 400, fontSize: '9px' }}>
+        Live
       </span>
       
       <style dangerouslySetInnerHTML={{

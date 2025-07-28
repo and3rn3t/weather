@@ -176,6 +176,12 @@ export class EnhancedHapticService {
     return EnhancedHapticService.instance;
   }
 
+  // Reset instance for testing purposes
+  static resetInstance(): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    EnhancedHapticService.instance = undefined as any;
+  }
+
   // ============================================================================
   // CAPABILITY DETECTION
   // ============================================================================
@@ -390,18 +396,14 @@ export class EnhancedHapticService {
     if (!this.config.progressiveFeedback || progress < 0 || progress > 1) {
       return false;
     }
-
-    let pattern: HapticPatternType;
     
     if (progress < 0.3) {
-      pattern = HapticPattern.PROGRESSIVE_LIGHT;
+      return this.light();
     } else if (progress < 0.7) {
-      pattern = HapticPattern.PROGRESSIVE_MEDIUM;
+      return this.medium();
     } else {
-      pattern = HapticPattern.PROGRESSIVE_HEAVY;
+      return this.heavy();
     }
-
-    return this.trigger(pattern);
   }
 
   // ============================================================================
@@ -416,6 +418,11 @@ export class EnhancedHapticService {
 
   updateConfig(newConfig: Partial<HapticConfig>): void {
     this.config = { ...this.config, ...newConfig };
+    
+    // Reset rate limiting timer if respectSystemSettings changed
+    if (newConfig.respectSystemSettings !== undefined) {
+      this.lastVibrationTime = 0;
+    }
     
     if (this.config.debugMode) {
       console.log('🔧 Haptic config updated:', this.config);

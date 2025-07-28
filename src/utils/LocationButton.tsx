@@ -40,6 +40,14 @@ const LocationButton: React.FC<LocationButtonProps> = ({
     location
   } = useLocationServices();
 
+  // Call onError when hook error state changes
+  React.useEffect(() => {
+    if (error && onError) {
+      // Use the original error message for backwards compatibility
+      onError(error.message);
+    }
+  }, [error, onError]);
+
   // Handle location button click
   const handleLocationRequest = async () => {
     if (disabled || isLoading || !isSupported) return;
