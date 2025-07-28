@@ -8,6 +8,8 @@ import React, { useState } from 'react';
 import { ThemeProvider } from './utils/themeContext';
 import { HapticFeedbackProvider } from './utils/hapticContext';
 import { useTheme } from './utils/useTheme';
+import WeatherIcon from './utils/weatherIcons';
+import ThemeToggle from './utils/ThemeToggle';
 import ErrorBoundary from './ErrorBoundary';
 import './App.css';
 
@@ -29,9 +31,11 @@ const SimpleWeatherApp: React.FC = () => {
       speed: number;
       deg: number;
     };
+    weatherCode: number;
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const getWeather = async () => {
     if (!city.trim()) {
@@ -76,7 +80,8 @@ const SimpleWeatherApp: React.FC = () => {
         wind: {
           speed: 0,
           deg: 0
-        }
+        },
+        weatherCode: weatherData.current.weathercode
       };
 
       setWeather(currentWeather);
@@ -87,13 +92,111 @@ const SimpleWeatherApp: React.FC = () => {
     }
   };
 
+  const getCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by this browser');
+      return;
+    }
+
+    setLocationLoading(true);
+    setError('');
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+
+      // Get city name from coordinates
+      const geoResponse = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
+      );
+      const geoData = await geoResponse.json();
+      
+      const cityName = geoData.address?.city || geoData.address?.town || geoData.address?.village || 'Unknown Location';
+      setCity(cityName);
+
+      // Get weather data directly
+      const weatherResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph`
+      );
+      
+      const weatherData = await weatherResponse.json();
+      
+      // Transform data
+      const currentWeather = {
+        main: {
+          temp: Math.round(weatherData.current.temperature_2m),
+          feels_like: Math.round(weatherData.current.apparent_temperature),
+          humidity: weatherData.current.relative_humidity_2m,
+          pressure: weatherData.current.surface_pressure
+        },
+        weather: [{
+          description: getWeatherDescription(weatherData.current.weathercode)
+        }],
+        wind: {
+          speed: 0,
+          deg: 0
+        },
+        weatherCode: weatherData.current.weathercode
+      };
+
+      setWeather(currentWeather);
+    } catch (err) {
+      if (err instanceof GeolocationPositionError) {
+        switch (err.code) {
+          case err.PERMISSION_DENIED:
+            setError('Location access denied. Please enable location services.');
+            break;
+          case err.POSITION_UNAVAILABLE:
+            setError('Location information is unavailable.');
+            break;
+          case err.TIMEOUT:
+            setError('Location request timed out.');
+            break;
+          default:
+            setError('An unknown error occurred while retrieving location.');
+            break;
+        }
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to get current location');
+      }
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
   const getWeatherDescription = (code: number): string => {
     const descriptions: { [key: number]: string } = {
-      0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-      45: 'Fog', 51: 'Light drizzle', 61: 'Light rain', 71: 'Light snow',
-      80: 'Rain showers', 95: 'Thunderstorm'
+      0: 'clear sky',
+      1: 'mainly clear', 
+      2: 'partly cloudy',
+      3: 'overcast',
+      45: 'fog',
+      48: 'depositing rime fog',
+      51: 'light drizzle',
+      53: 'moderate drizzle', 
+      55: 'dense drizzle',
+      61: 'light rain',
+      63: 'moderate rain',
+      65: 'heavy rain',
+      71: 'light snow',
+      73: 'moderate snow',
+      75: 'heavy snow',
+      80: 'light rain showers',
+      81: 'moderate rain showers',
+      82: 'violent rain showers',
+      95: 'thunderstorm',
+      96: 'thunderstorm with slight hail',
+      99: 'thunderstorm with heavy hail'
     };
-    return descriptions[code] || 'Unknown';
+    return descriptions[code] || 'unknown weather';
   };
 
   return (
@@ -101,8 +204,12 @@ const SimpleWeatherApp: React.FC = () => {
       minHeight: '100vh',
       background: theme.appBackground,
       padding: '20px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      position: 'relative'
     }}>
+      {/* Theme Toggle Button */}
+      <ThemeToggle />
+      
       <div style={{
         maxWidth: '400px',
         margin: '0 auto',
@@ -146,10 +253,28 @@ const SimpleWeatherApp: React.FC = () => {
               background: loading ? '#ccc' : '#4f46e5',
               color: 'white',
               fontSize: '16px',
-              cursor: loading ? 'not-allowed' : 'pointer'
+              cursor: loading ? 'not-allowed' : 'pointer',
+              marginBottom: '10px'
             }}
           >
             {loading ? 'Loading...' : 'Get Weather'}
+          </button>
+
+          <button
+            onClick={getCurrentLocation}
+            disabled={locationLoading || loading}
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '8px',
+              border: `1px solid ${theme.secondaryText}`,
+              background: locationLoading ? '#ccc' : theme.cardBackground,
+              color: locationLoading ? '#666' : theme.primaryText,
+              fontSize: '16px',
+              cursor: (locationLoading || loading) ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
           </button>
         </div>
 
@@ -176,6 +301,17 @@ const SimpleWeatherApp: React.FC = () => {
             <h2 style={{ color: theme.primaryText, margin: '0 0 10px 0' }}>
               {city}
             </h2>
+            
+            {/* Weather Icon */}
+            <div style={{ marginBottom: '15px' }}>
+              <WeatherIcon 
+                code={weather.weatherCode} 
+                size={80} 
+                animated={true}
+                isDay={true} 
+              />
+            </div>
+            
             <div style={{ 
               fontSize: '48px', 
               fontWeight: 'bold',
@@ -187,7 +323,8 @@ const SimpleWeatherApp: React.FC = () => {
             <div style={{ 
               color: theme.secondaryText,
               fontSize: '18px',
-              marginBottom: '15px'
+              marginBottom: '15px',
+              textTransform: 'capitalize'
             }}>
               {weather.weather[0].description}
             </div>
