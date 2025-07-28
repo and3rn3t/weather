@@ -82,6 +82,9 @@ describe('EnhancedHapticService', () => {
     });
 
     it('should allow custom config', () => {
+      // Reset to allow custom configuration
+      EnhancedHapticService.resetInstance();
+      
       const customConfig: HapticConfig = {
         enabled: false,
         rateLimitMs: 100,
@@ -98,6 +101,11 @@ describe('EnhancedHapticService', () => {
   });
 
   describe('Web Haptic Patterns', () => {
+    beforeEach(() => {
+      // Disable rate limiting for pattern tests
+      hapticService.updateConfig({ respectSystemSettings: false });
+    });
+
     it('should trigger light haptic', async () => {
       const result = await hapticService.light();
       
@@ -134,26 +142,34 @@ describe('EnhancedHapticService', () => {
     });
 
     it('should trigger weather-specific patterns', async () => {
-      const weatherLoad = await hapticService.weatherLoad();
-      const weatherRefresh = await hapticService.weatherRefresh();
+      vi.clearAllMocks(); // Clear any previous calls
       
+      const weatherLoad = await hapticService.weatherLoad();
       expect(weatherLoad).toBe(true);
+      expect(mockVibrate).toHaveBeenCalledWith(15);
+      
+      vi.clearAllMocks(); // Clear before next call
+      const weatherRefresh = await hapticService.weatherRefresh();
       expect(weatherRefresh).toBe(true);
-      expect(mockVibrate).toHaveBeenCalledWith(15); // weatherLoad
-      expect(mockVibrate).toHaveBeenCalledWith([25, 25, 25]); // weatherRefresh
+      expect(mockVibrate).toHaveBeenCalledWith([25, 25, 25]);
     });
 
     it('should trigger gesture patterns', async () => {
-      const swipeStart = await hapticService.swipeStart();
-      const swipeProgress = await hapticService.swipeProgress();
-      const swipeComplete = await hapticService.swipeComplete();
+      vi.clearAllMocks(); // Clear any previous calls
       
+      const swipeStart = await hapticService.swipeStart();
       expect(swipeStart).toBe(true);
+      expect(mockVibrate).toHaveBeenCalledWith(5);
+      
+      vi.clearAllMocks();
+      const swipeProgress = await hapticService.swipeProgress();
       expect(swipeProgress).toBe(true);
+      expect(mockVibrate).toHaveBeenCalledWith(10);
+      
+      vi.clearAllMocks();
+      const swipeComplete = await hapticService.swipeComplete();
       expect(swipeComplete).toBe(true);
-      expect(mockVibrate).toHaveBeenCalledWith(5); // swipeStart
-      expect(mockVibrate).toHaveBeenCalledWith(10); // swipeProgress
-      expect(mockVibrate).toHaveBeenCalledWith(20); // swipeComplete
+      expect(mockVibrate).toHaveBeenCalledWith(20);
     });
   });
 
@@ -187,18 +203,26 @@ describe('EnhancedHapticService', () => {
   });
 
   describe('Progressive Feedback', () => {
+    beforeEach(() => {
+      // Disable rate limiting for progressive tests
+      hapticService.updateConfig({ respectSystemSettings: false });
+    });
+
     it('should provide progressive feedback based on progress', async () => {
+      vi.clearAllMocks();
+      
       const lightProgress = await hapticService.progressiveFeedback(0.2);
-      const mediumProgress = await hapticService.progressiveFeedback(0.5);
-      const heavyProgress = await hapticService.progressiveFeedback(0.8);
-      
       expect(lightProgress).toBe(true);
-      expect(mediumProgress).toBe(true);
-      expect(heavyProgress).toBe(true);
-      
-      // Should call different patterns based on progress
       expect(mockVibrate).toHaveBeenCalledWith(10); // light
+      
+      vi.clearAllMocks();
+      const mediumProgress = await hapticService.progressiveFeedback(0.5);
+      expect(mediumProgress).toBe(true);
       expect(mockVibrate).toHaveBeenCalledWith(20); // medium
+      
+      vi.clearAllMocks();
+      const heavyProgress = await hapticService.progressiveFeedback(0.8);
+      expect(heavyProgress).toBe(true);
       expect(mockVibrate).toHaveBeenCalledWith(50); // heavy
     });
 
@@ -293,17 +317,20 @@ describe('Native Platform Integration', () => {
     
     // Mock native platform
     const { Capacitor } = await import('@capacitor/core');
-    (Capacitor.isNativePlatform as jest.Mock).mockReturnValue(true);
+    vi.mocked(Capacitor.isNativePlatform).mockReturnValue(true);
     
     // Mock native haptics
     const { Haptics } = await import('@capacitor/haptics');
-    (Haptics.impact as jest.Mock).mockResolvedValue(undefined);
-    (Haptics.notification as jest.Mock).mockResolvedValue(undefined);
+    vi.mocked(Haptics.impact).mockResolvedValue(undefined);
+    vi.mocked(Haptics.notification).mockResolvedValue(undefined);
     
     // Reset singleton
-    (EnhancedHapticService as unknown as { instance?: EnhancedHapticService }).instance = undefined;
+    EnhancedHapticService.resetInstance();
     
     hapticService = EnhancedHapticService.getInstance();
+    
+    // Disable rate limiting for tests
+    hapticService.updateConfig({ respectSystemSettings: false });
   });
 
   it('should detect native platform', () => {
@@ -316,8 +343,12 @@ describe('Native Platform Integration', () => {
   it('should use native haptics when available', async () => {
     const { Haptics } = await import('@capacitor/haptics');
     
+    vi.clearAllMocks(); // Clear before the test calls
+    
     await hapticService.light();
     expect(Haptics.impact).toHaveBeenCalledWith({ style: 'light' });
+    
+    vi.clearAllMocks(); // Clear between calls
     
     await hapticService.success();
     expect(Haptics.notification).toHaveBeenCalledWith({ type: 'success' });
@@ -325,7 +356,16 @@ describe('Native Platform Integration', () => {
 
   it('should fallback to web haptics if native fails', async () => {
     const { Haptics } = await import('@capacitor/haptics');
-    (Haptics.impact as jest.Mock).mockRejectedValue(new Error('Native haptics failed'));
+    vi.mocked(Haptics.impact).mockRejectedValue(new Error('Native haptics failed'));
+    
+    // Ensure mockVibrate returns true for fallback
+    mockVibrate.mockReturnValue(true);
+    
+    // Make sure fallback to web is enabled and rate limiting is disabled
+    hapticService.updateConfig({ 
+      fallbackToWeb: true, 
+      respectSystemSettings: false 
+    });
     
     const result = await hapticService.light();
     expect(result).toBe(true);

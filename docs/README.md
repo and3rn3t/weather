@@ -36,6 +36,8 @@ Welcome to the comprehensive documentation for the Premium Weather App - a moder
 
 ### 🧪 [Testing](./testing/)
 
+- [Testing Documentation Index](./testing/README.md) - Complete testing overview and status
+- [Test Suite Fixes July 2025](./testing/TEST_FIXES_JULY_2025_clean.md) - Major test fixes and improvements
 - [Testing Strategy](./testing/TESTING_STRATEGY.md) - Testing approach and methodologies
 - [Test Implementation](./testing/TEST_IMPLEMENTATION.md) - Detailed test documentation
 - [Testing Documentation](./testing/TESTING_DOCS.md) - Complete testing reference

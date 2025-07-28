@@ -138,7 +138,15 @@ export const useLocationServices = () => {
 
   // Check if geolocation is supported
   const isSupported = useCallback(() => {
-    return 'geolocation' in navigator && 'getCurrentPosition' in navigator.geolocation;
+    try {
+      if (!navigator || !('geolocation' in navigator) || !navigator.geolocation) {
+        return false;
+      }
+      return 'getCurrentPosition' in navigator.geolocation;
+    } catch (error) {
+      console.error('Error checking geolocation support:', error);
+      return false;
+    }
   }, []);
 
   // Check current permission status
