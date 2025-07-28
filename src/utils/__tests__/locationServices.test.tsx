@@ -9,7 +9,7 @@ import { renderHook, act, render, screen, fireEvent, waitFor } from '@testing-li
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
-import { useLocationServices, type LocationData } from '../useLocationServices';
+import { useLocationServices } from '../useLocationServices';
 import LocationButton from '../LocationButton';
 import { HapticFeedbackProvider } from '../hapticContext';
 import { ThemeProvider } from '../themeContext';
