@@ -1196,8 +1196,8 @@ const AppNavigator = () => {
         enableBackgroundUpdates={false} // Disabled for battery optimization
       />
       
-      {/* DEBUG: Location Tester - Remove this after debugging */}
-      <LocationTester />
+      {/* DEBUG: Location Tester - Development only */}
+      {import.meta.env.DEV && <LocationTester />}
       
       {/* Background Refresh Status - Development info */}
       {backgroundRefresh.isInitialized && (
