@@ -84,16 +84,19 @@ describe('EnhancedHapticService', () => {
     it('should allow custom config', () => {
       // Reset to allow custom configuration
       EnhancedHapticService.resetInstance();
-      
+
       const customConfig: HapticConfig = {
         enabled: false,
+        respectSystemSettings: true,
+        fallbackToWeb: true,
+        debugMode: true,
         rateLimitMs: 100,
-        debugMode: true
+        progressiveFeedback: true
       };
-      
+
       const customService = EnhancedHapticService.getInstance(customConfig);
       const config = customService.getConfig();
-      
+
       expect(config.enabled).toBe(false);
       expect(config.rateLimitMs).toBe(100);
       expect(config.debugMode).toBe(true);
@@ -175,6 +178,7 @@ describe('EnhancedHapticService', () => {
 
   describe('Rate Limiting', () => {
     it('should respect rate limiting', async () => {
+      vi.useFakeTimers();
       // First call should work
       const result1 = await hapticService.light();
       expect(result1).toBe(true);
@@ -184,11 +188,13 @@ describe('EnhancedHapticService', () => {
       expect(result2).toBe(false);
       
       // Wait for rate limit to expire
-      await new Promise(resolve => setTimeout(resolve, 60));
+      vi.advanceTimersByTime(60);
+      vi.runAllTimers();
       
       // Third call should work again
       const result3 = await hapticService.light();
       expect(result3).toBe(true);
+      vi.useRealTimers();
     });
 
     it('should allow rate limiting to be disabled', async () => {
@@ -314,21 +320,21 @@ describe('Native Platform Integration', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    
+
+    // Reset singleton before mocking
+    EnhancedHapticService.resetInstance();
+
     // Mock native platform
     const { Capacitor } = await import('@capacitor/core');
     vi.mocked(Capacitor.isNativePlatform).mockReturnValue(true);
-    
+
     // Mock native haptics
     const { Haptics } = await import('@capacitor/haptics');
     vi.mocked(Haptics.impact).mockResolvedValue(undefined);
     vi.mocked(Haptics.notification).mockResolvedValue(undefined);
-    
-    // Reset singleton
-    EnhancedHapticService.resetInstance();
-    
+
     hapticService = EnhancedHapticService.getInstance();
-    
+
     // Disable rate limiting for tests
     hapticService.updateConfig({ respectSystemSettings: false });
   });
