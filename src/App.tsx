@@ -10,8 +10,10 @@ import { HapticFeedbackProvider } from './utils/hapticContext';
 import { useTheme } from './utils/useTheme';
 import WeatherIcon from './utils/weatherIcons';
 import ThemeToggle from './utils/ThemeToggle';
+import MobileNavigation, { type NavigationScreen } from './components/MobileNavigation';
 import ErrorBoundary from './ErrorBoundary';
 import './App.css';
+import './styles/mobileEnhancements.css';
 
 // Interfaces for type safety
 interface NominatimResult {
@@ -49,6 +51,11 @@ interface WeatherData {
 // Simple weather component for debugging
 const SimpleWeatherApp: React.FC = () => {
   const { theme } = useTheme();
+  
+  // Navigation state
+  const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
+  
+  // Weather state
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [hourlyForecast, setHourlyForecast] = useState<Array<{
@@ -508,12 +515,773 @@ const SimpleWeatherApp: React.FC = () => {
     setWeatherAlerts(alerts);
   };
 
+  // Navigation handler
+  const handleNavigate = (screen: NavigationScreen) => {
+    setCurrentScreen(screen);
+  };
+
+  // Render different screens based on navigation
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'Home':
+        return renderHomeScreen();
+      case 'Weather':
+        return renderWeatherScreen();
+      case 'Search':
+        return renderSearchScreen();
+      case 'Favorites':
+        return renderFavoritesScreen();
+      case 'Settings':
+        return renderSettingsScreen();
+      default:
+        return renderHomeScreen();
+    }
+  };
+
+  // Home Screen - Welcome/Overview
+  const renderHomeScreen = () => (
+    <div style={{
+      maxWidth: '400px',
+      margin: '0 auto',
+      padding: '20px'
+    }}>
+      <h1 style={{ 
+        color: theme.primaryText, 
+        textAlign: 'center',
+        marginBottom: '30px',
+        fontSize: '28px',
+        fontWeight: '700'
+      }}>
+        🌤️ Weather App
+      </h1>
+      
+      <div style={{
+        background: theme.weatherCardBackground,
+        padding: '30px 20px',
+        borderRadius: '16px',
+        border: `1px solid ${theme.weatherCardBorder}`,
+        textAlign: 'center',
+        marginBottom: '20px'
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>☀️</div>
+        <h2 style={{ 
+          color: theme.primaryText, 
+          margin: '0 0 12px 0',
+          fontSize: '20px',
+          fontWeight: '600'
+        }}>
+          Welcome to Weather
+        </h2>
+        <p style={{ 
+          color: theme.secondaryText,
+          margin: '0 0 20px 0',
+          fontSize: '16px',
+          lineHeight: '1.5'
+        }}>
+          Get real-time weather updates, forecasts, and alerts for any location worldwide.
+        </p>
+        
+        <button
+          onClick={() => handleNavigate('Weather')}
+          style={{
+            width: '100%',
+            padding: '14px',
+            borderRadius: '12px',
+            border: 'none',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            marginBottom: '12px',
+            transition: 'transform 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          Check Weather
+        </button>
+        
+        <button
+          onClick={getCurrentLocation}
+          disabled={locationLoading}
+          style={{
+            width: '100%',
+            padding: '14px',
+            borderRadius: '12px',
+            border: `2px solid ${theme.secondaryText}`,
+            background: 'transparent',
+            color: theme.primaryText,
+            fontSize: '16px',
+            fontWeight: '500',
+            cursor: locationLoading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
+        </button>
+      </div>
+
+      {weather && (
+        <div style={{
+          background: theme.weatherCardBackground,
+          padding: '20px',
+          borderRadius: '12px',
+          border: `1px solid ${theme.weatherCardBorder}`,
+          textAlign: 'center'
+        }}>
+          <h3 style={{ color: theme.primaryText, margin: '0 0 10px 0' }}>Current Weather</h3>
+          <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '600' }}>
+            {city}: {weather.main.temp}°F
+          </div>
+          <div style={{ fontSize: '14px', color: theme.secondaryText, textTransform: 'capitalize' }}>
+            {weather.weather[0].description}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+        // Weather Screen - Full weather functionality
+  const renderWeatherScreen = () => (
+    <div style={{
+      maxWidth: '400px',
+      margin: '0 auto',
+      padding: '20px'
+    }}>
+      <h1 style={{ 
+        color: theme.primaryText, 
+        textAlign: 'center',
+        marginBottom: '30px'
+      }}>
+        🌤️ Weather Details
+      </h1>
+      
+      <div style={{ marginBottom: '20px', position: 'relative' }}>
+        <input
+          type="text"
+          value={city}
+          onChange={(e) => handleCitySearch(e.target.value)}
+          placeholder="Enter city name..."
+          style={{
+            width: '100%',
+            padding: '12px',
+            borderRadius: '8px',
+            border: `1px solid ${theme.secondaryText}`,
+            background: theme.cardBackground,
+            color: theme.primaryText,
+            fontSize: '16px',
+            marginBottom: '10px'
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && getWeather()}
+          onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+        />
+        
+        {/* Search Suggestions */}
+        {showSuggestions && searchSuggestions.length > 0 && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            background: theme.cardBackground,
+            border: `1px solid ${theme.weatherCardBorder}`,
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            zIndex: 1000,
+            maxHeight: '200px',
+            overflowY: 'auto'
+          }}>
+            {searchSuggestions.map((suggestion, suggestionIndex) => (
+              <button
+                key={`${suggestion.lat}-${suggestion.lon}`}
+                style={{
+                  padding: '12px',
+                  borderBottom: suggestionIndex < searchSuggestions.length - 1 ? `1px solid ${theme.weatherCardBorder}` : 'none',
+                  cursor: 'pointer',
+                  color: theme.primaryText,
+                  fontSize: '14px',
+                  background: 'none',
+                  border: 'none',
+                  width: '100%',
+                  textAlign: 'left'
+                }}
+                onClick={() => {
+                  setCity(suggestion.name);
+                  setShowSuggestions(false);
+                  // Auto-fetch weather for suggestion
+                  setTimeout(() => {
+                    fetchWeatherForLocation(suggestion.lat, suggestion.lon);
+                  }, 100);
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = theme.weatherCardBackground;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <div style={{ fontWeight: '500' }}>{suggestion.name}</div>
+                <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '2px' }}>
+                  {suggestion.display_name}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+        
+        <button
+          onClick={getWeather}
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '12px',
+            borderRadius: '8px',
+            border: 'none',
+            background: loading ? '#ccc' : '#4f46e5',
+            color: 'white',
+            fontSize: '16px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            marginBottom: '10px'
+          }}
+        >
+          {loading ? 'Loading...' : 'Get Weather'}
+        </button>
+
+        <button
+          onClick={getCurrentLocation}
+          disabled={locationLoading || loading}
+          style={{
+            width: '100%',
+            padding: '12px',
+            borderRadius: '8px',
+            border: `1px solid ${theme.secondaryText}`,
+            background: locationLoading ? '#ccc' : theme.cardBackground,
+            color: locationLoading ? '#666' : theme.primaryText,
+            fontSize: '16px',
+            cursor: (locationLoading || loading) ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
+        </button>
+      </div>
+
+      {error && (
+        <div style={{
+          background: '#fee2e2',
+          color: '#dc2626',
+          padding: '12px',
+          borderRadius: '8px',
+          marginBottom: '20px'
+        }}>
+          {error}
+        </div>
+      )}
+
+      {/* Weather Alerts */}
+      {weatherAlerts.length > 0 && (
+        <div style={{ marginBottom: '20px' }}>
+          {weatherAlerts.map((alert, alertIndex) => (
+            <div
+              key={`${alert.type}-${alertIndex}`}
+              style={{
+                background: alert.severity === 'high' ? '#fef2f2' : '#fff7ed',
+                color: alert.severity === 'high' ? '#dc2626' : '#ea580c',
+                border: `1px solid ${alert.severity === 'high' ? '#fecaca' : '#fed7aa'}`,
+                padding: '12px',
+                borderRadius: '8px',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <span style={{ fontSize: '16px' }}>
+                {alert.severity === 'high' ? '⚠️' : 'ℹ️'}
+              </span>
+              <div>
+                <div style={{ fontWeight: '600', fontSize: '14px' }}>
+                  {alert.type}
+                </div>
+                <div style={{ fontSize: '13px', marginTop: '2px' }}>
+                  {alert.message}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {weather && (
+        <div style={{
+          background: theme.weatherCardBackground,
+          padding: '20px',
+          borderRadius: '12px',
+          border: `1px solid ${theme.weatherCardBorder}`,
+          textAlign: 'center',
+          marginBottom: '20px'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '10px'
+          }}>
+            <h2 style={{ color: theme.primaryText, margin: 0 }}>
+              {city}
+            </h2>
+            <button
+              onClick={() => {
+                if (isFavorite(city)) {
+                  removeFromFavorites(city);
+                } else {
+                  // Get coordinates for favorites (simplified)
+                  addToFavorites(city, 0, 0);
+                }
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '20px',
+                cursor: 'pointer',
+                padding: '4px'
+              }}
+            >
+              {isFavorite(city) ? '⭐' : '☆'}
+            </button>
+          </div>
+          
+          {/* Weather Icon */}
+          <div style={{ marginBottom: '15px' }}>
+            <WeatherIcon 
+              code={weather.weatherCode} 
+              size={80} 
+              animated={true}
+              isDay={true} 
+            />
+          </div>
+          
+          <div style={{ 
+            fontSize: '48px', 
+            fontWeight: 'bold',
+            color: theme.primaryText,
+            margin: '10px 0'
+          }}>
+            {weather.main.temp}°F
+          </div>
+          <div style={{ 
+            color: theme.secondaryText,
+            fontSize: '18px',
+            marginBottom: '15px',
+            textTransform: 'capitalize'
+          }}>
+            {weather.weather[0].description}
+          </div>
+          
+          {/* Weather Metrics Grid */}
+          <div style={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '15px',
+            marginTop: '20px'
+          }}>
+            <div style={{
+              background: theme.cardBackground,
+              padding: '12px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
+                FEELS LIKE
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
+                {weather.main.feels_like}°F
+              </div>
+            </div>
+            
+            <div style={{
+              background: theme.cardBackground,
+              padding: '12px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
+                HUMIDITY
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
+                {weather.main.humidity}%
+              </div>
+            </div>
+            
+            <div style={{
+              background: theme.cardBackground,
+              padding: '12px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
+                WIND SPEED
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
+                {weather.wind.speed} mph
+              </div>
+            </div>
+            
+            <div style={{
+              background: theme.cardBackground,
+              padding: '12px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
+                PRESSURE
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
+                {weather.main.pressure} hPa
+              </div>
+            </div>
+            
+            <div style={{
+              background: theme.cardBackground,
+              padding: '12px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
+                UV INDEX
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
+                {weather.uv_index}
+              </div>
+            </div>
+            
+            <div style={{
+              background: theme.cardBackground,
+              padding: '12px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
+                VISIBILITY
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
+                {weather.visibility} mi
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hourly Forecast */}
+      {hourlyForecast.length > 0 && (
+        <div style={{
+          background: theme.weatherCardBackground,
+          padding: '20px',
+          borderRadius: '12px',
+          border: `1px solid ${theme.weatherCardBorder}`,
+          marginBottom: '20px'
+        }}>
+          <h3 style={{ 
+            color: theme.primaryText, 
+            margin: '0 0 15px 0',
+            fontSize: '18px',
+            fontWeight: '600'
+          }}>
+            24-Hour Forecast
+          </h3>
+          <div style={{
+            display: 'flex',
+            overflowX: 'auto',
+            gap: '15px',
+            paddingBottom: '5px'
+          }}>
+            {hourlyForecast.slice(0, 12).map((hour, hourIndex) => (
+              <div key={`${hour.time}-${hour.temperature}`} style={{
+                minWidth: '60px',
+                textAlign: 'center',
+                padding: '10px 5px',
+                borderRadius: '8px',
+                background: hourIndex === 0 ? theme.cardBackground : 'transparent'
+              }}>
+                <div style={{
+                  fontSize: '12px',
+                  color: theme.secondaryText,
+                  marginBottom: '8px',
+                  fontWeight: hourIndex === 0 ? '600' : '400'
+                }}>
+                  {hourIndex === 0 ? 'Now' : hour.time}
+                </div>
+                <div style={{ marginBottom: '8px' }}>
+                  <WeatherIcon 
+                    code={hour.weatherCode} 
+                    size={30} 
+                    animated={false}
+                    isDay={true} 
+                  />
+                </div>
+                <div style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: theme.primaryText
+                }}>
+                  {hour.temperature}°
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Daily Forecast */}
+      {dailyForecast.length > 0 && (
+        <div style={{
+          background: theme.weatherCardBackground,
+          padding: '20px',
+          borderRadius: '12px',
+          border: `1px solid ${theme.weatherCardBorder}`,
+          marginBottom: '20px'
+        }}>
+          <h3 style={{ 
+            color: theme.primaryText, 
+            margin: '0 0 15px 0',
+            fontSize: '18px',
+            fontWeight: '600'
+          }}>
+            7-Day Forecast
+          </h3>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}>
+            {dailyForecast.map((day, dayIndex) => (
+              <div key={`${day.date}-${day.tempMax}-${day.tempMin}`} style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '8px 0',
+                borderBottom: dayIndex < dailyForecast.length - 1 ? `1px solid ${theme.weatherCardBorder}` : 'none'
+              }}>
+                <div style={{
+                  flex: '1',
+                  fontSize: '14px',
+                  fontWeight: dayIndex === 0 ? '600' : '400',
+                  color: theme.primaryText
+                }}>
+                  {dayIndex === 0 ? 'Today' : day.date}
+                </div>
+                <div style={{
+                  flex: '0 0 40px',
+                  display: 'flex',
+                  justifyContent: 'center'
+                }}>
+                  <WeatherIcon 
+                    code={day.weatherCode} 
+                    size={28} 
+                    animated={false}
+                    isDay={true} 
+                  />
+                </div>
+                <div style={{
+                  flex: '0 0 80px',
+                  textAlign: 'right',
+                  fontSize: '14px',
+                  color: theme.primaryText
+                }}>
+                  <span style={{ fontWeight: '600' }}>{day.tempMax}°</span>
+                  <span style={{ color: theme.secondaryText, marginLeft: '5px' }}>{day.tempMin}°</span>
+                </div>
+                {day.precipitation > 0 && (
+                  <div style={{
+                    flex: '0 0 40px',
+                    textAlign: 'right',
+                    fontSize: '12px',
+                    color: theme.secondaryText
+                  }}>
+                    {day.precipitation.toFixed(1)}mm
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // Search Screen - Placeholder
+  const renderSearchScreen = () => (
+    <div style={{
+      maxWidth: '400px',
+      margin: '0 auto',
+      padding: '20px',
+      textAlign: 'center'
+    }}>
+      <h1 style={{ color: theme.primaryText, marginBottom: '30px' }}>
+        🔍 Search
+      </h1>
+      <div style={{
+        background: theme.weatherCardBackground,
+        padding: '40px 20px',
+        borderRadius: '16px',
+        border: `1px solid ${theme.weatherCardBorder}`
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚧</div>
+        <p style={{ color: theme.secondaryText, fontSize: '16px' }}>
+          Enhanced search screen coming soon!<br/>
+          Use the Weather tab for now.
+        </p>
+      </div>
+    </div>
+  );
+
+  // Favorites Screen - Show current favorites
+  const renderFavoritesScreen = () => (
+    <div style={{
+      maxWidth: '400px',
+      margin: '0 auto',
+      padding: '20px'
+    }}>
+      <h1 style={{ color: theme.primaryText, textAlign: 'center', marginBottom: '30px' }}>
+        ⭐ Favorites
+      </h1>
+      
+      {favorites.length > 0 ? (
+        <div style={{
+          background: theme.weatherCardBackground,
+          padding: '20px',
+          borderRadius: '12px',
+          border: `1px solid ${theme.weatherCardBorder}`
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {favorites.map((favorite) => (
+              <button
+                key={`favorite-${favorite.name}`}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '15px',
+                  background: theme.cardBackground,
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                  border: 'none',
+                  width: '100%',
+                  textAlign: 'left'
+                }}
+                onClick={() => {
+                  setCity(favorite.name);
+                  handleNavigate('Weather');
+                  setTimeout(() => getWeather(), 100);
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = theme.appBackground;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = theme.cardBackground;
+                }}
+              >
+                <span style={{ 
+                  color: theme.primaryText,
+                  fontSize: '16px',
+                  fontWeight: '500'
+                }}>
+                  📍 {favorite.name}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFromFavorites(favorite.name);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: theme.secondaryText,
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    padding: '4px'
+                  }}
+                >
+                  ✕
+                </button>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div style={{
+          background: theme.weatherCardBackground,
+          padding: '40px 20px',
+          borderRadius: '16px',
+          border: `1px solid ${theme.weatherCardBorder}`,
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⭐</div>
+          <p style={{ color: theme.secondaryText, fontSize: '16px', marginBottom: '20px' }}>
+            No favorite cities yet.<br/>
+            Add some favorites from the Weather screen!
+          </p>
+          <button
+            onClick={() => handleNavigate('Weather')}
+            style={{
+              padding: '12px 24px',
+              borderRadius: '8px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            Find Weather
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // Settings Screen - Placeholder
+  const renderSettingsScreen = () => (
+    <div style={{
+      maxWidth: '400px',
+      margin: '0 auto',
+      padding: '20px',
+      textAlign: 'center'
+    }}>
+      <h1 style={{ color: theme.primaryText, marginBottom: '30px' }}>
+        ⚙️ Settings
+      </h1>
+      <div style={{
+        background: theme.weatherCardBackground,
+        padding: '40px 20px',
+        borderRadius: '16px',
+        border: `1px solid ${theme.weatherCardBorder}`
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚧</div>
+        <p style={{ color: theme.secondaryText, fontSize: '16px' }}>
+          Settings screen coming soon!<br/>
+          Theme toggle is available in the top-right corner.
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div 
       style={{
         minHeight: '100vh',
         background: theme.appBackground,
-        padding: '20px',
+        paddingBottom: '80px', // Space for navigation
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         position: 'relative'
       }}
@@ -566,547 +1334,14 @@ const SimpleWeatherApp: React.FC = () => {
       {/* Theme Toggle Button */}
       <ThemeToggle />
       
-      <div style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px'
-      }}>
-        <h1 style={{ 
-          color: theme.primaryText, 
-          textAlign: 'center',
-          marginBottom: '30px'
-        }}>
-          🌤️ Weather App
-        </h1>
-        
-        <div style={{ marginBottom: '20px', position: 'relative' }}>
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => handleCitySearch(e.target.value)}
-            placeholder="Enter city name..."
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: `1px solid ${theme.secondaryText}`,
-              background: theme.cardBackground,
-              color: theme.primaryText,
-              fontSize: '16px',
-              marginBottom: '10px'
-            }}
-            onKeyDown={(e) => e.key === 'Enter' && getWeather()}
-            onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          />
-          
-          {/* Search Suggestions */}
-          {showSuggestions && searchSuggestions.length > 0 && (
-            <div style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              right: 0,
-              background: theme.cardBackground,
-              border: `1px solid ${theme.weatherCardBorder}`,
-              borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              zIndex: 1000,
-              maxHeight: '200px',
-              overflowY: 'auto'
-            }}>
-              {searchSuggestions.map((suggestion, suggestionIndex) => (
-                <button
-                  key={`${suggestion.lat}-${suggestion.lon}`}
-                  style={{
-                    padding: '12px',
-                    borderBottom: suggestionIndex < searchSuggestions.length - 1 ? `1px solid ${theme.weatherCardBorder}` : 'none',
-                    cursor: 'pointer',
-                    color: theme.primaryText,
-                    fontSize: '14px',
-                    background: 'none',
-                    border: 'none',
-                    width: '100%',
-                    textAlign: 'left'
-                  }}
-                  onClick={() => {
-                    setCity(suggestion.name);
-                    setShowSuggestions(false);
-                    // Auto-fetch weather for suggestion
-                    setTimeout(() => {
-                      fetchWeatherForLocation(suggestion.lat, suggestion.lon);
-                    }, 100);
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = theme.weatherCardBackground;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  <div style={{ fontWeight: '500' }}>{suggestion.name}</div>
-                  <div style={{ fontSize: '12px', color: theme.secondaryText, marginTop: '2px' }}>
-                    {suggestion.display_name}
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-          
-          <button
-            onClick={getWeather}
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: 'none',
-              background: loading ? '#ccc' : '#4f46e5',
-              color: 'white',
-              fontSize: '16px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginBottom: '10px'
-            }}
-          >
-            {loading ? 'Loading...' : 'Get Weather'}
-          </button>
-
-          <button
-            onClick={getCurrentLocation}
-            disabled={locationLoading || loading}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: `1px solid ${theme.secondaryText}`,
-              background: locationLoading ? '#ccc' : theme.cardBackground,
-              color: locationLoading ? '#666' : theme.primaryText,
-              fontSize: '16px',
-              cursor: (locationLoading || loading) ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
-          </button>
-        </div>
-
-        {error && (
-          <div style={{
-            background: '#fee2e2',
-            color: '#dc2626',
-            padding: '12px',
-            borderRadius: '8px',
-            marginBottom: '20px'
-          }}>
-            {error}
-          </div>
-        )}
-
-        {/* Weather Alerts */}
-        {weatherAlerts.length > 0 && (
-          <div style={{ marginBottom: '20px' }}>
-            {weatherAlerts.map((alert, alertIndex) => (
-              <div
-                key={`${alert.type}-${alertIndex}`}
-                style={{
-                  background: alert.severity === 'high' ? '#fef2f2' : '#fff7ed',
-                  color: alert.severity === 'high' ? '#dc2626' : '#ea580c',
-                  border: `1px solid ${alert.severity === 'high' ? '#fecaca' : '#fed7aa'}`,
-                  padding: '12px',
-                  borderRadius: '8px',
-                  marginBottom: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <span style={{ fontSize: '16px' }}>
-                  {alert.severity === 'high' ? '⚠️' : 'ℹ️'}
-                </span>
-                <div>
-                  <div style={{ fontWeight: '600', fontSize: '14px' }}>
-                    {alert.type}
-                  </div>
-                  <div style={{ fontSize: '13px', marginTop: '2px' }}>
-                    {alert.message}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {weather && (
-          <div style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            textAlign: 'center',
-            marginBottom: '20px'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '10px'
-            }}>
-              <h2 style={{ color: theme.primaryText, margin: 0 }}>
-                {city}
-              </h2>
-              <button
-                onClick={() => {
-                  if (isFavorite(city)) {
-                    removeFromFavorites(city);
-                  } else {
-                    // Get coordinates for favorites (simplified)
-                    addToFavorites(city, 0, 0);
-                  }
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '20px',
-                  cursor: 'pointer',
-                  padding: '4px'
-                }}
-              >
-                {isFavorite(city) ? '⭐' : '☆'}
-              </button>
-            </div>
-            
-            {/* Weather Icon */}
-            <div style={{ marginBottom: '15px' }}>
-              <WeatherIcon 
-                code={weather.weatherCode} 
-                size={80} 
-                animated={true}
-                isDay={true} 
-              />
-            </div>
-            
-            <div style={{ 
-              fontSize: '48px', 
-              fontWeight: 'bold',
-              color: theme.primaryText,
-              margin: '10px 0'
-            }}>
-              {weather.main.temp}°F
-            </div>
-            <div style={{ 
-              color: theme.secondaryText,
-              fontSize: '18px',
-              marginBottom: '15px',
-              textTransform: 'capitalize'
-            }}>
-              {weather.weather[0].description}
-            </div>
-            
-            {/* Weather Metrics Grid */}
-            <div style={{ 
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '15px',
-              marginTop: '20px'
-            }}>
-              <div style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
-                  FEELS LIKE
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
-                  {weather.main.feels_like}°F
-                </div>
-              </div>
-              
-              <div style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
-                  HUMIDITY
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
-                  {weather.main.humidity}%
-                </div>
-              </div>
-              
-              <div style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
-                  WIND SPEED
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
-                  {weather.wind.speed} mph
-                </div>
-              </div>
-              
-              <div style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
-                  PRESSURE
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
-                  {weather.main.pressure} hPa
-                </div>
-              </div>
-              
-              <div style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
-                  UV INDEX
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
-                  {weather.uv_index}
-                </div>
-              </div>
-              
-              <div style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px' }}>
-                  VISIBILITY
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: theme.primaryText }}>
-                  {weather.visibility} mi
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Hourly Forecast */}
-        {hourlyForecast.length > 0 && (
-          <div style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            marginBottom: '20px'
-          }}>
-            <h3 style={{ 
-              color: theme.primaryText, 
-              margin: '0 0 15px 0',
-              fontSize: '18px',
-              fontWeight: '600'
-            }}>
-              24-Hour Forecast
-            </h3>
-            <div style={{
-              display: 'flex',
-              overflowX: 'auto',
-              gap: '15px',
-              paddingBottom: '5px'
-            }}>
-              {hourlyForecast.slice(0, 12).map((hour, hourIndex) => (
-                <div key={`${hour.time}-${hour.temperature}`} style={{
-                  minWidth: '60px',
-                  textAlign: 'center',
-                  padding: '10px 5px',
-                  borderRadius: '8px',
-                  background: hourIndex === 0 ? theme.cardBackground : 'transparent'
-                }}>
-                  <div style={{
-                    fontSize: '12px',
-                    color: theme.secondaryText,
-                    marginBottom: '8px',
-                    fontWeight: hourIndex === 0 ? '600' : '400'
-                  }}>
-                    {hourIndex === 0 ? 'Now' : hour.time}
-                  </div>
-                  <div style={{ marginBottom: '8px' }}>
-                    <WeatherIcon 
-                      code={hour.weatherCode} 
-                      size={30} 
-                      animated={false}
-                      isDay={true} 
-                    />
-                  </div>
-                  <div style={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: theme.primaryText
-                  }}>
-                    {hour.temperature}°
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Daily Forecast */}
-        {dailyForecast.length > 0 && (
-          <div style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`
-          }}>
-            <h3 style={{ 
-              color: theme.primaryText, 
-              margin: '0 0 15px 0',
-              fontSize: '18px',
-              fontWeight: '600'
-            }}>
-              7-Day Forecast
-            </h3>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px'
-            }}>
-              {dailyForecast.map((day, dayIndex) => (
-                <div key={`${day.date}-${day.tempMax}-${day.tempMin}`} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 0',
-                  borderBottom: dayIndex < dailyForecast.length - 1 ? `1px solid ${theme.weatherCardBorder}` : 'none'
-                }}>
-                  <div style={{
-                    flex: '1',
-                    fontSize: '14px',
-                    fontWeight: dayIndex === 0 ? '600' : '400',
-                    color: theme.primaryText
-                  }}>
-                    {dayIndex === 0 ? 'Today' : day.date}
-                  </div>
-                  <div style={{
-                    flex: '0 0 40px',
-                    display: 'flex',
-                    justifyContent: 'center'
-                  }}>
-                    <WeatherIcon 
-                      code={day.weatherCode} 
-                      size={28} 
-                      animated={false}
-                      isDay={true} 
-                    />
-                  </div>
-                  <div style={{
-                    flex: '0 0 80px',
-                    textAlign: 'right',
-                    fontSize: '14px',
-                    color: theme.primaryText
-                  }}>
-                    <span style={{ fontWeight: '600' }}>{day.tempMax}°</span>
-                    <span style={{ color: theme.secondaryText, marginLeft: '5px' }}>{day.tempMin}°</span>
-                  </div>
-                  {day.precipitation > 0 && (
-                    <div style={{
-                      flex: '0 0 40px',
-                      textAlign: 'right',
-                      fontSize: '12px',
-                      color: theme.secondaryText
-                    }}>
-                      {day.precipitation.toFixed(1)}mm
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Favorites Section */}
-        {favorites.length > 0 && (
-          <div style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            marginBottom: '20px'
-          }}>
-            <h3 style={{ 
-              color: theme.primaryText, 
-              margin: '0 0 15px 0',
-              fontSize: '18px',
-              fontWeight: '600'
-            }}>
-              📍 Favorite Locations
-            </h3>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px'
-            }}>
-              {favorites.map((favorite) => (
-                <button
-                  key={`favorite-${favorite.name}`}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '10px 12px',
-                    background: theme.cardBackground,
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s',
-                    border: 'none',
-                    width: '100%',
-                    textAlign: 'left'
-                  }}
-                  onClick={() => {
-                    setCity(favorite.name);
-                    getWeather();
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = theme.appBackground;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = theme.cardBackground;
-                  }}
-                >
-                  <span style={{ 
-                    color: theme.primaryText,
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}>
-                    {favorite.name}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFromFavorites(favorite.name);
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: theme.secondaryText,
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                      padding: '2px'
-                    }}
-                  >
-                    ✕
-                  </button>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Screen Content */}
+      {renderScreen()}
+      
+      {/* Mobile Navigation */}
+      <MobileNavigation
+        currentScreen={currentScreen}
+        onNavigate={handleNavigate}
+      />
       
       {/* Add CSS for animations */}
       <style dangerouslySetInnerHTML={{
