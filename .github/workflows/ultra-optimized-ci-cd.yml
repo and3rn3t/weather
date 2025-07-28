@@ -33,6 +33,7 @@ permissions:
   pull-requests: write
   issues: write
   actions: write
+  checks: write
 
 env:
   NODE_VERSION: '22'
@@ -303,14 +304,63 @@ jobs:
           echo "  Passed: $PASSED_TESTS"
           echo "  Failed: $FAILED_TESTS"
 
+  # PHASE 6.5: SonarCloud Code Quality Analysis (2-3 minutes)
+  sonarcloud:
+    name: 🔍 SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: [test-aggregation, optimized-build]
+    if: always() && (needs.test-aggregation.result == 'success' || needs.test-aggregation.result == 'skipped')
+    timeout-minutes: 5
+    
+    steps:
+      - name: 📥 Checkout with full history for SonarCloud
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # SonarCloud needs full history for blame information
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📋 Install dependencies
+        run: npm ci --prefer-offline --no-audit --progress=false
+
+      - name: 🧪 Generate Test Coverage for SonarCloud
+        run: |
+          npm run test:coverage
+          # Ensure coverage reports are in the expected format
+          ls -la coverage/
+
+      - name: 🔍 SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          # Additional arguments for the sonarcloud scanner
+          args: >
+            -Dsonar.projectKey=and3rn3t_weather
+            -Dsonar.organization=and3rn3t
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+      - name: 📊 SonarCloud Quality Gate Check
+        uses: sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   # PHASE 7: Smart Deployment (2-3 minutes)
   smart-deployment:
     name: 🚀 Smart Deployment
     runs-on: ubuntu-latest
-    needs: [optimized-build, performance-matrix, test-aggregation]
+    needs: [optimized-build, performance-matrix, test-aggregation, sonarcloud]
     if: |
       github.ref == 'refs/heads/main' && 
-      (needs.test-aggregation.result == 'success' || needs.test-aggregation.result == 'skipped')
+      (needs.test-aggregation.result == 'success' || needs.test-aggregation.result == 'skipped') &&
+      (needs.sonarcloud.result == 'success' || needs.sonarcloud.result == 'skipped')
     timeout-minutes: 5
     
     steps:
