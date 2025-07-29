@@ -136,7 +136,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 1000,
+    zIndex: 100,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around',

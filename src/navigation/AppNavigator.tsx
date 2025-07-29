@@ -1368,9 +1368,9 @@ const AppNavigator = () => {
         <DeploymentStatus theme={themeName} />
       )}
 
-      {/* Geolocation Verification Modal */}
+      {/* Geolocation Verification Modal - Temporarily disabled */}
       <GeolocationVerification
-        isOpen={showLocationVerification}
+        isOpen={false}
         locationData={pendingLocationData}
         theme={theme}
         isMobile={screenInfo.width < 768}
@@ -1378,16 +1378,16 @@ const AppNavigator = () => {
         onCancel={handleVerificationCancel}
       />
 
-      {/* Performance Monitor - Development only */}
+      {/* Performance Monitor - Development only - Temporarily disabled */}
       <PerformanceMonitor
         theme={theme}
-        enabled={import.meta.env.DEV}
+        enabled={false}
         position="bottom-left"
       />
 
-      {/* Mobile Debug - Development only */}
+      {/* Mobile Debug - Development only - Temporarily disabled */}
       <MobileDebug
-        enabled={import.meta.env.DEV}
+        enabled={false}
         position="bottom-right"
       />
     </EnhancedMobileContainer>
