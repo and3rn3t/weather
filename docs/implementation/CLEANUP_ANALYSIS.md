@@ -254,7 +254,7 @@ rm -rf dist/
 
 ### **After Cleanup**
 
-```
+```text
 weather/
 ├── .github/workflows/
 │   └── deploy.yml (streamlined)
@@ -281,7 +281,7 @@ weather/
 - [ ] **Test streamlined workflow** locally
 - [ ] **Verify essential functionality** preserved
 
-### **After Cleanup**
+### **After Final Cleanup**
 
 - [ ] **Test deployment** process
 - [ ] **Verify all features** still work
@@ -306,4 +306,4 @@ weather/
 
 ---
 
-**Ready to clean up? Run the automated script to remove all unused files!** 🚀 
+**Ready to clean up? Run the automated script to remove all unused files!** 🚀
