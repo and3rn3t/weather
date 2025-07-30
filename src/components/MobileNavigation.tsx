@@ -127,37 +127,50 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     bottom: 0,
     left: 0,
     right: 0,
+    top: 'auto', // Explicitly prevent top positioning
     zIndex: 100,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around',
-    // Remove problematic backdrop filter and gradients
-    background: theme.cardBackground,
-    // Remove backdrop filter that causes transparency issues
-    backdropFilter: 'none',
-    WebkitBackdropFilter: 'none',
-    borderTop: `1px solid ${theme.weatherCardBorder}`,
-    // Remove complex shadows
-    boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
-    padding: '4px 8px 0px 8px',
+    width: '100%',
+    height: '80px',
+    maxHeight: '80px',
     minHeight: '80px',
     
+    // Use theme background but ensure it's visible
+    background: theme.cardBackground,
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    borderTop: `1px solid ${theme.weatherCardBorder}`,
+    borderBottom: 'none',
+    borderLeft: 'none',
+    borderRight: 'none',
+    
+    // Clean shadow
+    boxShadow: '0 -2px 20px rgba(0, 0, 0, 0.1)',
+    padding: '8px 16px',
+    boxSizing: 'border-box',
+    
     // Safe area support for notched devices
-    paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+    paddingBottom: 'max(8px, calc(8px + env(safe-area-inset-bottom, 0)))',
     
     // Performance optimizations
     willChange: 'transform',
     backfaceVisibility: 'hidden' as const,
     
+    // CRITICAL: Prevent any transform or positioning that could move it
+    transform: 'none',
+    margin: '0',
+    float: 'none',
+    
     // Smooth animations
-    transition: 'all 0.2s ease'
+    transition: 'background-color 0.2s ease'
   };
 
   return (
-    <div 
+    <nav 
       className={`mobile-navigation ${className}`}
       style={navigationStyle}
-      role="navigation"
       aria-label="Main navigation"
     >
       {tabs.map((tab) => {
@@ -165,10 +178,9 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
         const displayIcon = isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
         
         return (
-          <div
+          <button
             key={tab.id}
-            role="button"
-            tabIndex={0}
+            type="button"
             aria-label={`Navigate to ${tab.label}`}
             aria-pressed={isActive}
             style={{
@@ -227,7 +239,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
                 }}
               />
             )}
-          </div>
+          </button>
         );
       })}
       
@@ -248,7 +260,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           zIndex: -1
         }}
       />
-    </div>
+    </nav>
   );
 };
 
