@@ -455,8 +455,10 @@ export class DeviceInfoService {
         osVersion: info.osVersion,
         isVirtual: info.isVirtual,
         memUsed: info.memUsed,
-        diskFree: info.diskFree,
-        diskTotal: info.diskTotal,
+        // Note: diskFree and diskTotal are not available in current Capacitor DeviceInfo
+        // These would require additional plugins or native implementation
+        diskFree: 0, // Placeholder - requires additional plugin
+        diskTotal: 0, // Placeholder - requires additional plugin
       };
 
       return this.deviceInfo;

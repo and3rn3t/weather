@@ -3,10 +3,7 @@
 @import './styles/mobileEnhancements.css';
 @import './styles/modernWeatherUI.css';
 @import './styles/iosComponents.css';
-@import './core-navigation-fix-clean.css';
-@import './nuclear-navigation-fix.css';
-@import './final-blue-rectangle-fix.css';
-@import './mobile-navigation-position-fix.css'; /* FINAL FIX: Ensures navigation stays at bottom */
+@import './navigation-fix-simple.css'; /* SINGLE CLEAN FIX */
 
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;

@@ -32,6 +32,9 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 
 describe('Mobile Optimization Hooks', () => {
   beforeEach(() => {
+    // Use fake timers for tests that involve timeouts
+    vi.useFakeTimers();
+    
     // Reset window dimensions
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
@@ -61,7 +64,7 @@ describe('Mobile Optimization Hooks', () => {
 
     // Mock matchMedia for different queries
     mockMatchMedia.mockImplementation((query) => ({
-      matches: query.includes('hover: hover') ? false : true,
+      matches: !query.includes('hover: hover'),
       media: query,
       onchange: null,
       addListener: vi.fn(),
@@ -74,6 +77,9 @@ describe('Mobile Optimization Hooks', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.clearAllTimers();
+    // Restore real timers
+    vi.useRealTimers();
   });
 
   describe('useBreakpoint', () => {

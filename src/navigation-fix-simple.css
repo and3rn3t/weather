@@ -1,0 +1,64 @@
+/* SIMPLE NAVIGATION FIX - REPLACES ALL OTHER FIXES */
+
+/* Override container padding that interferes with navigation */
+.mobile-app-container {
+  padding-bottom: 80px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure main content has bottom padding for navigation */
+body {
+  padding-bottom: 0 !important; /* Let container handle this */
+  box-sizing: border-box !important;
+}
+
+#root {
+  min-height: 100vh !important;
+  padding-bottom: 0 !important; /* Let container handle this */
+  box-sizing: border-box !important;
+}
+
+/* Fix navigation positioning - SIMPLE AND EFFECTIVE */
+.mobile-navigation {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important; /* Higher than other content */
+  height: 80px !important;
+  width: 100% !important;
+  
+  /* Clean styling that matches theme */
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  
+  /* Prevent blue rectangles on mobile */
+  -webkit-tap-highlight-color: transparent !important;
+  
+  /* Ensure it stays above everything */
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+}
+
+/* Ensure navigation buttons work properly */
+.mobile-navigation button {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  pointer-events: auto !important; /* Enable clicks */
+}
+
+/* Prevent content area active states (the real culprit of blue rectangles) */
+#root:active,
+.mobile-app-container:active,
+.main-content:active,
+.mobile-content-area:active,
+div:not(.mobile-navigation):active {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}

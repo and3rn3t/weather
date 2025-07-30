@@ -96,8 +96,10 @@ export const useOptimizedScroll = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     let timeoutId: NodeJS.Timeout;
-
+    
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
@@ -110,7 +112,7 @@ export const useOptimizedScroll = () => {
       
       setLastScrollY(currentScrollY);
       setIsScrolling(true);
-
+      
       // Clear existing timeout
       clearTimeout(timeoutId);
       
@@ -124,12 +126,12 @@ export const useOptimizedScroll = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', handleScroll);
+      }
       clearTimeout(timeoutId);
     };
-  }, [lastScrollY]);
-
-  return {
+  }, [lastScrollY]);  return {
     isScrolling,
     scrollDirection,
     lastScrollY
