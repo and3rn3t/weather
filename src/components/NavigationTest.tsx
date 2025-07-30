@@ -73,22 +73,22 @@ const NavigationTest: React.FC = () => {
   };
 
   const screenInfo = {
-    [currentScreen]: {
-      title: {
-        'Home': '🏠 Home Screen',
-        'Weather': '🌤️ Weather Screen', 
-        'Search': '🔍 Search Screen',
-        'Favorites': '⭐ Favorites Screen',
-        'Settings': '⚙️ Settings Screen'
-      }[currentScreen],
-      description: {
-        'Home': 'Main dashboard with overview',
-        'Weather': 'Detailed weather information',
-        'Search': 'Search for new locations',
-        'Favorites': 'Your saved locations',
-        'Settings': 'App preferences and settings'
-      }[currentScreen]
-    }
+    title: {
+      'Home': '🏠 Home Screen',
+      'Weather': '🌤️ Weather Screen', 
+      'Search': '🔍 Search Screen',
+      'Favorites': '⭐ Favorites Screen',
+      'Settings': '⚙️ Settings Screen',
+      'iOS26': '📱 iOS 26 Screen'
+    }[currentScreen],
+    description: {
+      'Home': 'Main dashboard with overview',
+      'Weather': 'Detailed weather information',
+      'Search': 'Search for new locations',
+      'Favorites': 'Your saved locations',
+      'Settings': 'App preferences and settings',
+      'iOS26': 'iOS 26 navigation test interface'
+    }[currentScreen]
   };
 
   return (
@@ -103,10 +103,10 @@ const NavigationTest: React.FC = () => {
 
         <div style={testItemStyle}>
           <h3 style={{ color: theme.primaryText, marginBottom: '8px' }}>
-            📱 Current Screen: {screenInfo[currentScreen].title}
+            📱 Current Screen: {screenInfo.title}
           </h3>
           <p style={{ color: theme.secondaryText, margin: 0 }}>
-            {screenInfo[currentScreen].description}
+            {screenInfo.description}
           </p>
         </div>
 
