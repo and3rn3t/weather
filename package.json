@@ -19,6 +19,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run build:deps && npx tsc -b && npx vite build",
+    "build:ci": "npx tsc -b && npx vite build",
     "build:deps": "npm install @rollup/rollup-linux-x64-gnu --optional --no-save || echo 'Optional dependency warning'",
     "build:fix-rollup": "node scripts/fix-rollup-deps.cjs",
     "build:fallback": "npx esbuild src/main.tsx --bundle --outdir=dist --format=esm --platform=browser --external:react --external:react-dom",
