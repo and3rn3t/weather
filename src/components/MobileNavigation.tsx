@@ -4,7 +4,7 @@ import { useHaptic } from '../utils/hapticHooks';
 import '../styles/mobileEnhancements.css';
 import '../core-navigation-fix-clean.css';
 
-export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search' | 'Favorites';
+export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search' | 'Favorites' | 'iOS26';
 
 interface MobileNavigationProps {
   currentScreen: NavigationScreen;
@@ -22,8 +22,8 @@ interface TabConfig {
 const tabs: TabConfig[] = [
   { id: 'Home', icon: '🏠', label: 'Home', activeIcon: '🏡' },
   { id: 'Weather', icon: '🌤️', label: 'Weather', activeIcon: '☀️' },
+  { id: 'iOS26', icon: '📱', label: 'iOS 26', activeIcon: '✨' },
   { id: 'Favorites', icon: '⭐', label: 'Cities', activeIcon: '🌟' },
-  { id: 'Search', icon: '🔍', label: 'Search', activeIcon: '🔎' },
   { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' }
 ];
 
@@ -87,8 +87,8 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     borderRadius: '12px',
     margin: '4px 2px',
     // Remove problematic background gradients and effects
-    background: isActive ? 'rgba(102, 126, 234, 0.1)' : 'transparent',
-    border: isActive ? '1px solid rgba(102, 126, 234, 0.2)' : '1px solid transparent',
+    background: isActive ? `${theme.primaryText}10` : 'transparent',
+    border: isActive ? `1px solid ${theme.primaryText}20` : '1px solid transparent',
     transition: 'all 0.2s ease',
     // Remove transform effects that cause movement
     transform: 'none',
@@ -102,7 +102,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     
     // Accessibility
     outline: 'none'
-  }), []);
+  }), [theme.primaryText]);
 
   const getIconStyle = useCallback((isActive: boolean) => ({
     fontSize: '24px',
@@ -138,16 +138,16 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     minHeight: '80px',
     
     // Use theme background but ensure it's visible
-    background: theme.cardBackground,
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    borderTop: `1px solid ${theme.weatherCardBorder}`,
+    background: `${theme.appBackground}F0`, // 94% opacity for better blending
+    backdropFilter: 'blur(30px)',
+    WebkitBackdropFilter: 'blur(30px)',
+    borderTop: `1px solid ${theme.primaryText}15`, // Subtle border using theme color
     borderBottom: 'none',
     borderLeft: 'none',
     borderRight: 'none',
     
-    // Clean shadow
-    boxShadow: '0 -2px 20px rgba(0, 0, 0, 0.1)',
+    // Clean shadow that adapts to theme
+    boxShadow: `0 -2px 20px ${theme.primaryText}08`,
     padding: '8px 16px',
     boxSizing: 'border-box',
     

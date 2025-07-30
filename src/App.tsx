@@ -12,6 +12,7 @@ import WeatherIcon from './utils/weatherIcons';
 import ThemeToggle from './utils/ThemeToggle';
 import MobileNavigation, { type NavigationScreen } from './components/MobileNavigation';
 import ErrorBoundary from './ErrorBoundary';
+import IOS26WeatherDemo from './components/modernWeatherUI/iOS26WeatherDemo';
 import './App.css';
 import './styles/mobileEnhancements.css';
 
@@ -527,6 +528,8 @@ const SimpleWeatherApp: React.FC = () => {
         return renderHomeScreen();
       case 'Weather':
         return renderWeatherScreen();
+      case 'iOS26':
+        return renderIOS26Screen();
       case 'Search':
         return renderSearchScreen();
       case 'Favorites':
@@ -643,6 +646,11 @@ const SimpleWeatherApp: React.FC = () => {
         </div>
       )}
     </div>
+  );
+
+  // iOS 26 Demo Screen - Latest iOS components showcase
+  const renderIOS26Screen = () => (
+    <IOS26WeatherDemo theme={theme} />
   );
 
         // Weather Screen - Full weather functionality

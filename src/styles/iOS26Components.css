@@ -1,0 +1,414 @@
+/**
+ * iOS 26 Premium Component Styles
+ * 
+ * Advanced animations and glassmorphism effects for next-generation iOS components:
+ * - Hardware-accelerated animations
+ * - Advanced spring physics
+ * - Ultra-smooth transitions
+ * - Smart accessibility features
+ */
+
+/* ============================================================================
+   GLOBAL ANIMATIONS AND KEYFRAMES
+   ============================================================================ */
+
+@keyframes iosSpinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes contextMenuAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes liveActivitySlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes widgetPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes modalSlideUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes overlayFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   CONTEXT MENU STYLES
+   ============================================================================ */
+
+.ios26-context-menu {
+  animation: contextMenuAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.ios26-context-menu button {
+  transition: background-color 0.15s ease;
+}
+
+.ios26-context-menu button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ios26-context-menu button:active {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(0.98);
+}
+
+/* ============================================================================
+   LIVE ACTIVITY STYLES
+   ============================================================================ */
+
+.ios26-live-activity {
+  animation: liveActivitySlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity, border-radius, padding;
+}
+
+.ios26-live-activity:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.ios26-live-activity:active {
+  transform: translateX(-50%) translateY(0) scale(0.98) !important;
+}
+
+/* ============================================================================
+   INTERACTIVE WIDGET STYLES
+   ============================================================================ */
+
+.ios26-interactive-widget {
+  will-change: transform, box-shadow;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios26-interactive-widget:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.ios26-interactive-widget:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.ios26-interactive-widget.loading {
+  animation: widgetPulse 2s infinite ease-in-out;
+}
+
+/* ============================================================================
+   MODAL SHEET STYLES
+   ============================================================================ */
+
+.ios26-modal-sheet {
+  animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, height;
+}
+
+.ios26-modal-overlay {
+  animation: overlayFadeIn 0.3s ease;
+}
+
+/* Handle styles for sheet */
+.ios26-modal-sheet .sheet-handle {
+  transition: background-color 0.2s ease;
+}
+
+.ios26-modal-sheet .sheet-handle:hover {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.ios26-modal-sheet .sheet-handle:active {
+  transform: scaleY(1.5);
+}
+
+/* ============================================================================
+   SWIPE ACTIONS STYLES
+   ============================================================================ */
+
+.ios26-swipe-actions {
+  overflow: hidden;
+  position: relative;
+}
+
+.ios26-swipe-actions .swipe-content {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.ios26-swipe-actions .action-button {
+  transition: all 0.2s ease;
+  will-change: transform;
+}
+
+.ios26-swipe-actions .action-button:hover {
+  filter: brightness(1.1);
+}
+
+.ios26-swipe-actions .action-button:active {
+  transform: scale(0.95);
+  filter: brightness(0.9);
+}
+
+/* ============================================================================
+   ENHANCED ACCESSIBILITY STYLES
+   ============================================================================ */
+
+/* Focus rings for keyboard navigation */
+.ios26-context-menu button:focus-visible,
+.ios26-interactive-widget:focus-visible,
+.ios26-modal-sheet .sheet-handle:focus-visible {
+  outline: 2px solid #007AFF;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ios26-context-menu,
+  .ios26-live-activity,
+  .ios26-interactive-widget,
+  .ios26-modal-sheet {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ios26-context-menu,
+  .ios26-live-activity,
+  .ios26-interactive-widget,
+  .ios26-modal-sheet,
+  .ios26-swipe-actions * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================================
+   DARK MODE ENHANCEMENTS
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .ios26-context-menu {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  }
+  
+  .ios26-live-activity {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+  
+  .ios26-interactive-widget {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  .ios26-modal-sheet {
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================ */
+
+/* GPU acceleration for smooth animations */
+.ios26-context-menu,
+.ios26-live-activity,
+.ios26-interactive-widget,
+.ios26-modal-sheet,
+.ios26-swipe-actions .swipe-content {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize repaints */
+.ios26-interactive-widget,
+.ios26-live-activity {
+  contain: layout style paint;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .ios26-context-menu {
+    min-width: 180px;
+    font-size: 16px;
+  }
+  
+  .ios26-interactive-widget {
+    min-height: 120px;
+  }
+  
+  .ios26-modal-sheet {
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .ios26-context-menu {
+    min-width: 160px;
+    font-size: 15px;
+  }
+  
+  .ios26-live-activity {
+    max-width: 280px;
+    min-width: 160px;
+  }
+  
+  .ios26-interactive-widget {
+    width: 100% !important;
+    max-width: 320px;
+  }
+}
+
+/* ============================================================================
+   HAPTIC FEEDBACK INDICATORS (Visual)
+   ============================================================================ */
+
+.ios26-haptic-light::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  background: #007AFF;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: hapticPulse 0.3s ease-out;
+}
+
+.ios26-haptic-medium::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #007AFF;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: hapticPulse 0.4s ease-out;
+}
+
+.ios26-haptic-heavy::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: #007AFF;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: hapticPulse 0.5s ease-out;
+}
+
+@keyframes hapticPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   SPRING ANIMATION UTILITIES
+   ============================================================================ */
+
+.spring-bounce {
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.spring-gentle {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.spring-wobbly {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.ios26-blur-heavy {
+  backdrop-filter: blur(30px);
+}
+
+.ios26-blur-medium {
+  backdrop-filter: blur(20px);
+}
+
+.ios26-blur-light {
+  backdrop-filter: blur(10px);
+}
+
+.ios26-shadow-elevated {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.ios26-shadow-floating {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.ios26-shadow-subtle {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
