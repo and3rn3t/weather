@@ -2,6 +2,7 @@
 @import './styles/mobile.css';
 @import './styles/mobileEnhancements.css';
 @import './styles/modernWeatherUI.css';
+@import './styles/iosComponents.css';
 @import './core-navigation-fix-clean.css';
 @import './nuclear-navigation-fix.css';
 @import './final-blue-rectangle-fix.css';

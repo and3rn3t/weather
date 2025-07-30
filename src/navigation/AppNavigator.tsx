@@ -33,7 +33,7 @@ import GeolocationVerification from '../utils/GeolocationVerification';
 import { useCityManagement } from '../utils/useCityManagement';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
-import { WeatherCardSkeleton, ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
+import { ForecastListSkeleton, HourlyForecastSkeleton } from '../utils/LoadingSkeletons';
 import PullToRefresh from '../utils/PullToRefresh';
 import NativeStatusDisplay from '../utils/NativeStatusDisplay';
 import { useWeatherBackgroundRefresh } from '../utils/useBackgroundRefresh';
@@ -49,13 +49,25 @@ import FavoritesScreen from '../components/FavoritesScreen';
 import LocationManager from '../components/LocationManager';
 // Enhanced Mobile Components
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
-import EnhancedMobileButton from '../components/EnhancedMobileButton';
 import EnhancedMobileWeatherCard from '../components/modernWeatherUI/EnhancedMobileWeatherCard';
 // Modern UI Components
 import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
 import ModernForecast from '../components/modernWeatherUI/ModernForecast';
 import ModernWeatherMetrics from '../components/modernWeatherUI/ModernWeatherMetrics';
+// iOS HIG Components
+import { 
+  SimpleSegmentedControl, 
+  SimpleActivityIndicator, 
+  SimpleStatusBadge, 
+  SimpleEnhancedButton,
+  SimpleCard
+} from '../components/modernWeatherUI/SimpleIOSComponents';
+import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
+import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
+import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
+import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShowcase';
 import '../styles/modernWeatherUI.css';
+import '../styles/iosComponents.css';
 import { 
   getScreenInfo, 
   getAdaptiveFontSizes,
@@ -340,7 +352,13 @@ function WeatherDetailsScreen({
   getWeatherByLocation,
   onRefresh,
   haptic,
-  handleLocationDetected
+  handleLocationDetected,
+  navigate,
+  selectedView,
+  setSelectedView,
+  showActionSheet,
+  setShowActionSheet,
+  themeName
 }: Readonly<{
   theme: ThemeColors;
   screenInfo: ScreenInfo;
@@ -362,9 +380,30 @@ function WeatherDetailsScreen({
   onRefresh: () => Promise<void>;
   haptic: ReturnType<typeof useHaptic>;
   handleLocationDetected: (cityName: string, latitude: number, longitude: number) => void;
+  selectedView: number;
+  setSelectedView: (index: number) => void;
+  showActionSheet: boolean;
+  setShowActionSheet: (show: boolean) => void;
+  themeName: string;
 }>) {
   return (
     <div className="mobile-container">
+      {/* iOS-Style Navigation Bar */}
+      <NavigationBar
+        title="Weather"
+        subtitle={city || "Select Location"}
+        leadingButton={{
+          icon: <NavigationIcons.Back />,
+          onPress: () => navigate('Home')
+        }}
+        trailingButton={{
+          icon: <NavigationIcons.Settings />,
+          onPress: () => setShowActionSheet(true)
+        }}
+        theme={theme}
+        isDark={themeName === 'dark'}
+      />
+      
       <ThemeToggle />
       <PullToRefresh
         onRefresh={onRefresh}
@@ -377,6 +416,16 @@ function WeatherDetailsScreen({
           minHeight: '100vh',
           background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 69, 19, 0.05) 100%)',
         }}>
+          
+          {/* View Segmented Control */}
+          <div style={{ marginBottom: '20px' }}>
+            <SimpleSegmentedControl
+              segments={['Current', 'Hourly', 'Daily']}
+              selectedIndex={selectedView}
+              onChange={setSelectedView}
+              theme={theme}
+            />
+          </div>
           
           {/* Search Section */}
           <div style={{
@@ -410,43 +459,57 @@ function WeatherDetailsScreen({
                 showLabel={true}
               />
               
-              <EnhancedMobileButton
-                onClick={() => {
+              <SimpleEnhancedButton
+                title="Search Weather"
+                onPress={() => {
                   haptic.buttonConfirm();
                   getWeather();
                 }}
                 disabled={loading}
-                loading={loading}
                 variant="primary"
-                size="large"
-                fullWidth={true}
+                theme={theme}
                 icon="🔍"
-                style={{ flex: 1 }}
-              >
-                Search
-              </EnhancedMobileButton>
+              />
             </div>
           </div>
 
           {/* Error Display */}
           {error && (
-            <div className="modern-glass" style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              color: theme.errorText,
-              padding: '20px',
-              borderRadius: '16px',
-              marginBottom: '24px',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
-              fontSize: '16px',
-              fontWeight: '500',
-              backdropFilter: 'blur(10px)'
-            }}>
-              ⚠️ {error}
+            <SimpleStatusBadge 
+              text={error}
+              variant="error"
+              theme={theme}
+            />
+          )}
+
+          {/* Weather Status Indicators */}
+          {weather && (
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+              <SimpleStatusBadge text="Live Data" variant="success" theme={theme} />
+              {weather.main.temp > 90 && (
+                <SimpleStatusBadge text="Heat Advisory" variant="warning" theme={theme} />
+              )}
+              {weather.main.temp < 32 && (
+                <SimpleStatusBadge text="Freeze Warning" variant="warning" theme={theme} />
+              )}
+              {weather.wind.speed > 25 && (
+                <SimpleStatusBadge text="Windy Conditions" variant="info" theme={theme} />
+              )}
             </div>
           )}
 
           {/* Main Weather Card */}
-          {loading && !weather && <WeatherCardSkeleton />}
+          {loading && !weather && (
+            <SimpleCard theme={theme}>
+              <div style={{ textAlign: 'center', padding: '20px' }}>
+                <SimpleActivityIndicator 
+                  size="medium" 
+                  theme={theme} 
+                  text="Loading weather data..." 
+                />
+              </div>
+            </SimpleCard>
+          )}
           {weather && (
             <EnhancedMobileWeatherCard
               weatherData={weather}
@@ -455,7 +518,7 @@ function WeatherDetailsScreen({
           )}
 
           {/* Weather Metrics */}
-          {weather && (
+          {weather && selectedView === 0 && (
             <ModernWeatherMetrics
               theme={theme}
               metrics={[
@@ -499,29 +562,75 @@ function WeatherDetailsScreen({
             />
           )}
 
-          {/* Forecast Sections */}
-          <ModernForecast
-            theme={theme}
-            hourlyData={hourlyForecast.map(hour => ({
-              time: hour.time,
-              temperature: hour.temperature,
-              weatherCode: hour.weatherCode,
-              humidity: hour.humidity,
-              feelsLike: hour.feelsLike
-            }))}
-            dailyData={dailyForecast.map(day => ({
-              date: day.date,
-              weatherCode: day.weatherCode,
-              tempMax: day.tempMax,
-              tempMin: day.tempMin,
-              precipitation: day.precipitation,
-              windSpeed: day.windSpeed
-            }))}
-            isLoading={loading}
-          />
+          {/* Forecast Sections - Show based on selected view */}
+          {selectedView === 1 || selectedView === 2 ? (
+            <ModernForecast
+              theme={theme}
+              hourlyData={selectedView === 1 ? hourlyForecast.map(hour => ({
+                time: hour.time,
+                temperature: hour.temperature,
+                weatherCode: hour.weatherCode,
+                humidity: hour.humidity,
+                feelsLike: hour.feelsLike
+              })) : []}
+              dailyData={selectedView === 2 ? dailyForecast.map(day => ({
+                date: day.date,
+                weatherCode: day.weatherCode,
+                tempMax: day.tempMax,
+                tempMin: day.tempMin,
+                precipitation: day.precipitation,
+                windSpeed: day.windSpeed
+              })) : []}
+              isLoading={loading}
+            />
+          ) : null}
           
         </div>
       </PullToRefresh>
+      
+      {/* Action Sheet for Weather Options */}
+      <ActionSheet
+        isVisible={showActionSheet}
+        onClose={() => setShowActionSheet(false)}
+        title="Weather Options"
+        message="Choose an action for this location"
+        actions={[
+          {
+            title: 'iOS Components Demo',
+            icon: <NavigationIcons.Settings />,
+            onPress: () => {
+              navigate('IOSDemo');
+              setShowActionSheet(false);
+            }
+          },
+          {
+            title: 'Share Weather',
+            icon: <NavigationIcons.Share />,
+            onPress: () => {
+              console.log('Share weather');
+              setShowActionSheet(false);
+            }
+          },
+          {
+            title: 'Add to Favorites',
+            icon: <NavigationIcons.Add />,
+            onPress: () => {
+              console.log('Add to favorites');
+              setShowActionSheet(false);
+            }
+          },
+          {
+            title: 'Refresh Data',
+            icon: <NavigationIcons.Refresh />,
+            onPress: () => {
+              onRefresh();
+              setShowActionSheet(false);
+            }
+          }
+        ]}
+        theme={theme}
+        isDark={themeName === 'dark'}
+      />
     </div>
   );
 }
@@ -921,6 +1030,12 @@ const AppNavigator = () => {
   const [weatherCode, setWeatherCode] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // iOS HIG Component States
+  const [selectedView, setSelectedView] = useState(0); // For segmented control
+  const [showActionSheet, setShowActionSheet] = useState(false);
+  const [showIOSDemo, setShowIOSDemo] = useState(false);
+  
   const [pendingLocationData, setPendingLocationData] = useState<{
     latitude: number;
     longitude: number;
@@ -960,12 +1075,21 @@ const AppNavigator = () => {
     const screenMap: Record<string, NavigationScreen> = {
       'Home': 'Home',
       'WeatherDetails': 'Weather',
+      'Weather': 'Weather',
       'MobileTest': 'Settings', // Redirect mobile test to settings for now
       'Settings': 'Settings',
-      'Search': 'Search'
+      'Search': 'Search',
+      'IOSDemo': 'Settings' // Temporarily map to settings, we'll handle this specially
     };
     
     const mappedScreen = screenMap[screenName] || 'Home';
+    
+    // Special handling for iOS Demo
+    if (screenName === 'IOSDemo') {
+      setShowIOSDemo(true);
+      return;
+    }
+    
     setCurrentScreen(mappedScreen);
   };
 
@@ -1263,6 +1387,11 @@ const AppNavigator = () => {
               onRefresh={handleRefresh}
               haptic={haptic}
               handleLocationDetected={handleLocationDetected}
+              selectedView={selectedView}
+              setSelectedView={setSelectedView}
+              showActionSheet={showActionSheet}
+              setShowActionSheet={setShowActionSheet}
+              themeName={themeName}
             />
           ),
           'Search': (
@@ -1356,6 +1485,11 @@ const AppNavigator = () => {
               onRefresh={handleRefresh}
               haptic={haptic}
               handleLocationDetected={handleLocationDetected}
+              selectedView={selectedView}
+              setSelectedView={setSelectedView}
+              showActionSheet={showActionSheet}
+              setShowActionSheet={setShowActionSheet}
+              themeName={themeName}
             />
           )}
         </SwipeNavigationContainer>
@@ -1388,6 +1522,25 @@ const AppNavigator = () => {
         enabled={false}
         position="bottom-right"
       />
+      
+      {/* iOS Component Showcase - Overlay */}
+      {showIOSDemo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 10000,
+          backgroundColor: theme.appBackground
+        }}>
+          <IOSComponentShowcase
+            theme={theme}
+            themeName={themeName}
+            onBack={() => setShowIOSDemo(false)}
+          />
+        </div>
+      )}
     </EnhancedMobileContainer>
   );
 };

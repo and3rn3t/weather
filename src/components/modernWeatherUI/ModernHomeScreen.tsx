@@ -18,6 +18,7 @@
 import React, { useState, useEffect } from 'react';
 import WeatherIcon from '../../utils/weatherIcons';
 import type { ThemeColors } from '../../utils/themeConfig';
+import { SimpleStatusBadge, SimpleEnhancedButton } from './SimpleIOSComponents';
 
 interface ModernHomeScreenProps {
   theme: ThemeColors;
@@ -128,42 +129,6 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     maxWidth: '400px'
   };
 
-  const primaryButtonStyle: React.CSSProperties = {
-    background: theme.primaryGradient,
-    color: theme.inverseText,
-    border: 'none',
-    borderRadius: '20px',
-    padding: '20px 32px',
-    fontSize: '18px',
-    fontWeight: '700',
-    cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '12px',
-    minHeight: '64px'
-  };
-
-  const secondaryButtonStyle: React.CSSProperties = {
-    background: `${theme.cardBackground}f0`,
-    color: theme.primaryText,
-    border: `1px solid ${theme.cardBorder}60`,
-    borderRadius: '16px',
-    padding: '16px 24px',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    backdropFilter: 'blur(15px)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '12px',
-    minHeight: '56px'
-  };
-
   const weatherIcons = [
     { code: 0, label: 'Clear Sky' },
     { code: 2, label: 'Partly Cloudy' },
@@ -189,6 +154,12 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
 
   return (
     <div style={containerStyle}>
+      {/* Status Indicators */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+        <SimpleStatusBadge text="Live Weather" variant="success" theme={theme} />
+        <SimpleStatusBadge text="Real-time Updates" variant="info" theme={theme} />
+      </div>
+
       {/* Hero Section */}
       <div style={heroSectionStyle}>
         <h1 style={titleStyle}>Weather</h1>
@@ -237,58 +208,22 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
 
       {/* Action Buttons */}
       <div style={actionsStyle}>
-        <button
-          style={primaryButtonStyle}
-          onClick={onGetCurrentLocation}
+        <SimpleEnhancedButton
+          title={isLocationLoading ? "Getting Location..." : "📍 Use Current Location"}
+          onPress={onGetCurrentLocation}
           disabled={isLocationLoading}
-          onMouseEnter={(e) => {
-            if (!isLocationLoading) {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.2)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-          }}
-        >
-          {isLocationLoading ? (
-            <>
-              <div style={{
-                width: '20px',
-                height: '20px',
-                border: '2px solid transparent',
-                borderTop: '2px solid currentColor',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }} />
-              Getting Location...
-            </>
-          ) : (
-            <>
-              <span style={{ fontSize: '20px' }} aria-hidden="true">📍</span>
-              {' '}Use Current Location
-            </>
-          )}
-        </button>
+          variant="primary"
+          theme={theme}
+          icon={isLocationLoading ? "⏳" : "📍"}
+        />
 
-        <button
-          style={secondaryButtonStyle}
-          onClick={() => onNavigate('Search')}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
-            e.currentTarget.style.borderColor = `${theme.weatherCardBorder}80`;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = 'none';
-            e.currentTarget.style.borderColor = `${theme.cardBorder}60`;
-          }}
-        >
-          <span style={{ fontSize: '18px' }} aria-hidden="true">🔍</span>
-          {' '}Search Location
-        </button>
+        <SimpleEnhancedButton
+          title="🔍 Search Location"
+          onPress={() => onNavigate('Search')}
+          variant="secondary"
+          theme={theme}
+          icon="🔍"
+        />
       </div>
 
       {/* Background Effects */}
