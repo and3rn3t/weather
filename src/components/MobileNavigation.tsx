@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
 import '../styles/mobileEnhancements.css';
+import '../core-navigation-fix-clean.css';
 
 export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search' | 'Favorites';
 
@@ -51,7 +52,13 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     setActiveTab(currentScreen);
   }, [currentScreen]);
 
-  const handleTabPress = useCallback((tabId: NavigationScreen) => {
+  const handleTabPress = useCallback((tabId: NavigationScreen, event?: React.MouseEvent | React.TouchEvent) => {
+    // Prevent any default browser behavior that might cause styling
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     if (tabId === activeTab) {
       // Double tap on active tab - could trigger scroll to top or refresh
       haptic.buttonPress();
@@ -79,17 +86,14 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     cursor: 'pointer',
     borderRadius: '12px',
     margin: '4px 2px',
-    background: isActive 
-      ? `linear-gradient(135deg, ${theme.primaryGradient}15, ${theme.primaryGradient}10)`
-      : 'transparent',
-    border: isActive 
-      ? `1px solid ${theme.primaryGradient}20` 
-      : '1px solid transparent',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    transform: isActive ? 'translateY(-2px)' : 'translateY(0)',
-    boxShadow: isActive 
-      ? `0 4px 12px ${theme.primaryGradient}20, inset 0 1px 0 rgba(255, 255, 255, 0.1)`
-      : '0 1px 3px rgba(0, 0, 0, 0.1)',
+    // Remove problematic background gradients and effects
+    background: isActive ? 'rgba(102, 126, 234, 0.1)' : 'transparent',
+    border: isActive ? '1px solid rgba(102, 126, 234, 0.2)' : '1px solid transparent',
+    transition: 'all 0.2s ease',
+    // Remove transform effects that cause movement
+    transform: 'none',
+    // Remove all shadows and effects
+    boxShadow: 'none',
     
     // Touch optimizations
     WebkitTapHighlightColor: 'transparent',
@@ -97,29 +101,16 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     userSelect: 'none' as const,
     
     // Accessibility
-    outline: 'none',
-    
-    // Hover effects for desktop
-    ':hover': {
-      background: isActive 
-        ? `linear-gradient(135deg, ${theme.primaryGradient}25, ${theme.primaryGradient}15)`
-        : `${theme.primaryGradient}08`,
-      transform: 'translateY(-1px)'
-    },
-    
-    // Active state for better touch feedback
-    ':active': {
-      transform: 'translateY(0)',
-      background: `${theme.primaryGradient}15`
-    }
-  }), [theme]);
+    outline: 'none'
+  }), []);
 
   const getIconStyle = useCallback((isActive: boolean) => ({
     fontSize: '24px',
     marginBottom: '4px',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     transform: isActive ? 'scale(1.1)' : 'scale(1)',
-    filter: isActive ? 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' : 'none'
+    // Remove dark drop-shadow that causes the persistent dark effect
+    filter: 'none'
   }), []);
 
   const getLabelStyle = useCallback((isActive: boolean) => ({
@@ -140,15 +131,14 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around',
-    background: `linear-gradient(180deg, ${theme.cardBackground}95, ${theme.cardBackground}98)`,
-    backdropFilter: 'blur(20px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-    borderTop: `1px solid ${theme.weatherCardBorder}40`,
-    boxShadow: `
-      0 -4px 20px rgba(0, 0, 0, 0.1),
-      0 -2px 10px rgba(0, 0, 0, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1)
-    `,
+    // Remove problematic backdrop filter and gradients
+    background: theme.cardBackground,
+    // Remove backdrop filter that causes transparency issues
+    backdropFilter: 'none',
+    WebkitBackdropFilter: 'none',
+    borderTop: `1px solid ${theme.weatherCardBorder}`,
+    // Remove complex shadows
+    boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
     padding: '4px 8px 0px 8px',
     minHeight: '80px',
     
@@ -160,13 +150,14 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     backfaceVisibility: 'hidden' as const,
     
     // Smooth animations
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    transition: 'all 0.2s ease'
   };
 
   return (
-    <nav 
+    <div 
       className={`mobile-navigation ${className}`}
       style={navigationStyle}
+      role="navigation"
       aria-label="Main navigation"
     >
       {tabs.map((tab) => {
@@ -174,14 +165,37 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
         const displayIcon = isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
         
         return (
-          <button
+          <div
             key={tab.id}
-            role="tab"
-            aria-selected={isActive}
+            role="button"
+            tabIndex={0}
             aria-label={`Navigate to ${tab.label}`}
-            tabIndex={isActive ? 0 : -1}
-            style={getTabStyle(tab, isActive)}
-            onClick={() => handleTabPress(tab.id)}
+            aria-pressed={isActive}
+            style={{
+              ...getTabStyle(tab, isActive),
+              // NUCLEAR INLINE OVERRIDE - should beat any CSS
+              background: isActive ? 'rgba(120, 97, 255, 0.15)' : 'transparent',
+              border: isActive ? '1px solid rgba(120, 97, 255, 0.2)' : 'none',
+              outline: 'none',
+              boxShadow: 'none',
+              WebkitTapHighlightColor: 'transparent',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none',
+              textDecoration: 'none',
+              transform: 'none',
+              filter: 'none',
+              opacity: 1
+            }}
+            onClick={(e) => handleTabPress(tab.id, e)}
+            onTouchStart={(e) => {
+              // Prevent touch highlighting
+              e.preventDefault();
+            }}
+            onMouseDown={(e) => {
+              // Prevent mouse down styling
+              e.preventDefault();
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -213,7 +227,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
                 }}
               />
             )}
-          </button>
+          </div>
         );
       })}
       
@@ -234,7 +248,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           zIndex: -1
         }}
       />
-    </nav>
+    </div>
   );
 };
 

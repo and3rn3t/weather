@@ -2,7 +2,9 @@
 @import './styles/mobile.css';
 @import './styles/mobileEnhancements.css';
 @import './styles/modernWeatherUI.css';
-@import './emergency-fix.css';
+@import './core-navigation-fix-clean.css';
+@import './nuclear-navigation-fix.css';
+@import './final-blue-rectangle-fix.css';
 
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -177,11 +179,6 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-button:active {
-  transform: scale(0.98);
-  opacity: 0.8;
-}
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -193,4 +190,84 @@ button:active {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* FINAL OVERRIDE: Eliminate ALL possible active states on navigation */
+nav.mobile-navigation,
+nav.mobile-navigation *,
+nav.mobile-navigation button,
+nav.mobile-navigation button[role="tab"],
+nav.mobile-navigation > *,
+nav.mobile-navigation div,
+.mobile-navigation,
+.mobile-navigation *,
+.mobile-navigation button {
+  /* Nuclear option for :active states */
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Specifically target active states with maximum specificity */
+nav.mobile-navigation:active,
+nav.mobile-navigation *:active,
+nav.mobile-navigation button:active,
+nav.mobile-navigation button[role="tab"]:active,
+nav.mobile-navigation > *:active,
+nav.mobile-navigation div:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Allow only our specific button styling */
+nav.mobile-navigation button[role="tab"]:active {
+  background: rgba(120, 97, 255, 0.1) !important;
+}
+
+/* REAL FIX: The blue rectangle was coming from content area and scrollbar! */
+/* Disable :active styling on ALL content elements */
+#root:active,
+#root *:active,
+body:active,
+html:active,
+main:active,
+div:not(.mobile-navigation):active,
+div:not(.mobile-navigation) *:active,
+.app-container:active,
+.main-content:active,
+.content-area:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Fix scrollbar active states */
+::-webkit-scrollbar:active,
+::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-track:active {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Ensure navigation still works */
+.mobile-navigation *:active {
+  /* Allow our navigation styling to work normally */
+  background: inherit;
 }

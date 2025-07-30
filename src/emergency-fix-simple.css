@@ -1,0 +1,85 @@
+/* SIMPLE TARGETED FIX FOR NAVIGATION DARK OVAL */
+
+/* HIGHEST SPECIFICITY - Override ALL possible styling */
+nav.mobile-navigation button[role="tab"][aria-selected="true"],
+nav.mobile-navigation button[role="tab"][aria-selected="false"],
+nav.mobile-navigation button[role="tab"]:active,
+nav.mobile-navigation button[role="tab"]:hover,
+nav.mobile-navigation button[role="tab"]:focus,
+nav.mobile-navigation button[role="tab"] {
+  all: unset !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 !important;
+  padding: 8px 4px 12px 4px !important;
+  min-height: 64px !important;
+  cursor: pointer !important;
+  border-radius: 12px !important;
+  margin: 4px 2px !important;
+  /* Force clean styling - ABSOLUTE OVERRIDE */
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  /* Prevent ALL browser effects */
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  /* Force no transitions during problematic states */
+  transition: none !important;
+}
+
+/* Override JavaScript-applied inline styles */
+nav.mobile-navigation button[role="tab"][style] {
+  background: transparent !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Clean active state - simple light blue */
+nav.mobile-navigation button[role="tab"]:active {
+  background: rgba(102, 126, 234, 0.1) !important;
+  opacity: 1 !important;
+}
+
+/* Remove all pseudo-elements that could create overlays */
+nav.mobile-navigation button[role="tab"]::before,
+nav.mobile-navigation button[role="tab"]::after,
+nav.mobile-navigation button[role="tab"]:active::before,
+nav.mobile-navigation button[role="tab"]:active::after,
+nav.mobile-navigation button[role="tab"]:focus::before,
+nav.mobile-navigation button[role="tab"]:focus::after,
+nav.mobile-navigation button[role="tab"]:hover::before,
+nav.mobile-navigation button[role="tab"]:hover::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix scrollbar issues */
+html, body {
+  overflow-x: hidden !important;
+  scrollbar-width: thin !important;
+}
+
+body {
+  overflow-y: auto !important;
+}
+
+#root {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}

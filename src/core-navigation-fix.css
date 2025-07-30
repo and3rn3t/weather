@@ -1,0 +1,212 @@
+/* MINIMAL FIX FOR CORE NAVIGATION ISSUES */
+
+/* Fix #1: Prevent navigation from covering main content */
+nav.mobile-navigation {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important; /* Lower z-index to not cover content */
+  height: 80px !important; /* Fixed height */
+  max-height: 80px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 8px 16px !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0)) !important;
+}
+
+/* Fix #2: Completely eliminate dark blue rectangle on button press */
+nav.mobile-navigation button[role="tab"] {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 4px !important;
+  margin: 0 2px !important;
+  min-height: 60px !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* CRITICAL: Override all button styling that causes dark rectangle */
+  opacity: 1 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  outline: none !important;
+  
+  /* Prevent browser touch effects */
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  
+  /* NO TRANSITIONS to prevent timing issues */
+  transition: none !important;
+}
+
+/* FORCE override any :active state that creates dark rectangle */
+nav.mobile-navigation button[role="tab"]:active,
+nav.mobile-navigation button[role="tab"]:focus,
+nav.mobile-navigation button[role="tab"]:hover {
+  opacity: 1 !important;
+  transform: none !important;
+  background: rgba(120, 97, 255, 0.1) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  outline: none !important;
+  border: none !important;
+  
+  /* AGGRESSIVE: Override any browser default active styles */
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -moz-appearance: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
+  -webkit-user-drag: none !important;
+  -webkit-user-modify: none !important;
+  -webkit-touch-callout: none !important;
+  
+  /* Force no visual changes */
+  color: inherit !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+  
+  /* Override any inherited button styling */
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  
+  /* Nuclear option: force specific background */
+  background-color: rgba(120, 97, 255, 0.1) !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+  background-origin: initial !important;
+  background-clip: initial !important;
+  background-size: initial !important;
+  background-repeat: initial !important;
+  background-position: initial !important;
+}
+
+/* Simple icon styling */
+nav.mobile-navigation button[role="tab"] > div:first-child {
+  font-size: 24px !important;
+  margin-bottom: 4px !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Simple label styling */
+nav.mobile-navigation button[role="tab"] > span {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: rgba(60, 60, 67, 0.8) !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Active label color */
+nav.mobile-navigation button[role="tab"][aria-selected="true"] > span {
+  color: rgb(120, 97, 255) !important;
+  font-weight: 600 !important;
+}
+
+/* Fix #3: Ensure main content is visible and scrollable */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 80px !important; /* Space for navigation */
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+#root {
+  min-height: 100vh !important;
+  padding-bottom: 80px !important; /* Space for navigation */
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}
+
+/* Remove any pseudo-elements that could create overlays */
+nav.mobile-navigation button[role="tab"]::before,
+nav.mobile-navigation button[role="tab"]::after,
+nav.mobile-navigation button[role="tab"]:active::before,
+nav.mobile-navigation button[role="tab"]:active::after,
+nav.mobile-navigation button[role="tab"]:focus::before,
+nav.mobile-navigation button[role="tab"]:focus::after,
+nav.mobile-navigation button[role="tab"]:hover::before,
+nav.mobile-navigation button[role="tab"]:hover::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* NUCLEAR OPTION: Override ALL possible button styling sources */
+nav.mobile-navigation button[role="tab"],
+nav.mobile-navigation button[role="tab"]:visited,
+nav.mobile-navigation button[role="tab"]:link {
+  /* Reset EVERYTHING */
+  all: unset !important;
+  
+  /* Restore only what we need */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 !important;
+  padding: 8px 4px !important;
+  margin: 0 2px !important;
+  min-height: 60px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  
+  /* Force clean state - NO BACKGROUND */
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  
+  /* Touch handling */
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* SEPARATE rules for states to prevent cascade issues */
+nav.mobile-navigation button[role="tab"]:hover {
+  background: rgba(120, 97, 255, 0.05) !important;
+}
+
+nav.mobile-navigation button[role="tab"]:focus {
+  background: transparent !important;
+  outline: 1px solid rgba(120, 97, 255, 0.3) !important;
+  outline-offset: 1px !important;
+}
+
+/* Only allow our specific active styling - VERY SPECIFIC */
+nav.mobile-navigation button[role="tab"]:active {
+  background: rgba(120, 97, 255, 0.1) !important;
+  transform: none !important;
+  opacity: 1 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+nav.mobile-navigation button[role="tab"][aria-selected="true"] {
+  background: rgba(120, 97, 255, 0.15) !important;
+  border: 1px solid rgba(120, 97, 255, 0.2) !important;
+}

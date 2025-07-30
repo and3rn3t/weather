@@ -1,0 +1,271 @@
+/* EMERGENCY FIX - TARGETED NAVIGATION ONLY */
+
+/* ONLY target the mobile navigation component - no global styles */
+nav.mobile-navigation {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  border-top: 1px solid #e5e7eb !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  height: auto !important;
+  min-height: 80px !important;
+  max-height: 120px !important;
+}
+
+/* ONLY target navigation buttons */
+nav.mobile-navigation button[role="tab"] {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition: background-color 0.1s ease !important;
+  position: relative !important;
+  
+  /* Prevent browser default touch feedback */
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+}
+
+/* Navigation button active state */
+nav.mobile-navigation button[role="tab"][aria-selected="true"] {
+  background: rgba(102, 126, 234, 0.1) !important;
+  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Navigation button hover state */
+nav.mobile-navigation button[role="tab"]:hover {
+  background: rgba(102, 126, 234, 0.05) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Navigation button focus state */
+nav.mobile-navigation button[role="tab"]:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.4) !important;
+  outline-offset: 2px !important;
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+/* CRITICAL: Override global button:active that causes dark oval */
+nav.mobile-navigation button[role="tab"]:active {
+  transform: none !important;
+  opacity: 1 !important;
+  background: rgba(102, 126, 234, 0.15) !important;
+  box-shadow: none !important;
+}
+
+/* Remove navigation background pattern */
+nav.mobile-navigation > div:last-child {
+  display: none !important;
+}
+
+/* Remove weather icon button issues */
+button[aria-label*="weather"] {
+  box-shadow: none !important;
+  outline: none !important;
+  position: relative !important;
+  z-index: auto !important;
+  border-radius: 20px !important;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease !important;
+}
+
+button[aria-label*="weather"]:hover {
+  box-shadow: none !important;
+}
+
+button[aria-label*="weather"]:focus {
+  box-shadow: none !important;
+  outline: 2px solid rgba(102, 126, 234, 0.4) !important;
+  outline-offset: 2px !important;
+}
+
+button[aria-label*="weather"]:active {
+  box-shadow: none !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Prevent weather icon buttons from creating dark blocks */
+button[aria-label*="weather"]::before,
+button[aria-label*="weather"]::after,
+button[aria-label*="weather"]:hover::before,
+button[aria-label*="weather"]:focus::before,
+button[aria-label*="weather"]:active::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* Fix any dark animation blocks in weather icon children */
+button[aria-label*="weather"] * {
+  box-shadow: none !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+/* COMPREHENSIVE NAVIGATION BUTTON FIXES - ALL SOURCES */
+
+/* Override mobile-nav-tab classes from mobileEnhancements.css */
+.mobile-nav-tab:active,
+button.mobile-nav-tab:active {
+  transform: none !important;
+  opacity: 1 !important;
+  background: rgba(102, 126, 234, 0.15) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Override any mobile-navigation-item classes */
+.mobile-navigation-item:active,
+button.mobile-navigation-item:active {
+  transform: none !important;
+  opacity: 1 !important;
+  background: rgba(102, 126, 234, 0.15) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Catch-all for any button with tab role */
+button[role="tab"]:active,
+*[role="tab"]:active {
+  transform: none !important;
+  opacity: 1 !important;
+  background: rgba(102, 126, 234, 0.15) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Override any icon-specific active states */
+.mobile-navigation-icon:active,
+.mobile-nav-icon:active {
+  transform: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Force remove any blue tint overlays */
+nav button:active::before,
+nav button:active::after,
+.mobile-navigation button:active::before,
+.mobile-navigation button:active::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+}
+
+/* Global button active override - most aggressive fix */
+button:active {
+  transform: none !important;
+  opacity: 1 !important;
+  /* WEBKIT-SPECIFIC FIXES FOR SAFARI/CHROME BUTTON BEHAVIOR */
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* WebKit button focus/active states */
+button:focus,
+button:focus-visible {
+  outline: none !important;
+  -webkit-focus-ring-color: transparent !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Force override for navigation buttons with WebKit prefix */
+nav.mobile-navigation button[role="tab"]:active,
+nav.mobile-navigation button[role="tab"]:focus {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  background: rgba(102, 126, 234, 0.15) !important;
+}
+
+/* SCROLLBAR FIXES TO ELIMINATE DOUBLE SCROLLBARS */
+html, body {
+  overflow-x: hidden !important;
+  /* Allow vertical scrolling - DO NOT set overflow-y: hidden */
+  -webkit-overflow-scrolling: touch !important;
+}
+
+#root {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+/* NUCLEAR OPTION - COMPLETELY OVERRIDE ALL BUTTON STYLES */
+nav.mobile-navigation button[role="tab"] {
+  all: unset !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 !important;
+  padding: 8px 4px 12px 4px !important;
+  min-height: 64px !important;
+  cursor: pointer !important;
+  border-radius: 12px !important;
+  margin: 4px 2px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  transition: background-color 0.1s ease !important;
+  position: relative !important;
+  /* Prevent ALL browser styling */
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+/* Active state for navigation buttons - COMPLETELY CUSTOM */
+nav.mobile-navigation button[role="tab"]:active {
+  background: rgba(102, 126, 234, 0.15) !important;
+  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+  /* Force override any browser defaults */
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Hover state */
+nav.mobile-navigation button[role="tab"]:hover {
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+/* Focus state */
+nav.mobile-navigation button[role="tab"]:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.4) !important;
+  outline-offset: 2px !important;
+}

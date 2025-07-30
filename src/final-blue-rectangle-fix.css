@@ -1,0 +1,73 @@
+/* FINAL SOLUTION - FIXES THE REAL CULPRIT */
+
+/* The blue rectangle was NOT from navigation buttons! 
+   It was from content area and scrollbar :active states */
+
+/* Fix #1: Disable :active on all content elements */
+#root:active,
+#root > *:active,
+body:active,
+html:active,
+main:active,
+section:active,
+article:active,
+div:not(.mobile-navigation):active,
+div:not(.mobile-navigation) > *:active,
+.app-container:active,
+.main-content:active,
+.content-area:active,
+.screen-content:active,
+.weather-screen:active,
+.home-screen:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Fix #2: Disable scrollbar :active states */
+::-webkit-scrollbar:active,
+::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-track:active,
+::-webkit-scrollbar-button:active,
+::-webkit-scrollbar-corner:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix #3: Ensure main content containers never get :active styling */
+[role="main"]:active,
+[class*="content"]:active,
+[class*="screen"]:active,
+[class*="container"]:active {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix #4: Single scrollbar only */
+html {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+#root {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}

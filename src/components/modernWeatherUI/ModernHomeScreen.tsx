@@ -204,16 +204,24 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
             style={{
               ...iconItemStyle,
               border: `1px solid ${theme.forecastCardBorder}30`,
-              background: `${theme.forecastCardBackground}80`
+              background: `${theme.forecastCardBackground}80`,
+              outline: 'none'
             }}
             onClick={() => onNavigate('weather')}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)';
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.12)';
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+              e.currentTarget.style.background = `${theme.forecastCardBackground}a0`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.background = `${theme.forecastCardBackground}80`;
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = `2px solid ${theme.primaryText}40`;
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
             }}
             aria-label={`View ${icon.label} weather details`}
           >

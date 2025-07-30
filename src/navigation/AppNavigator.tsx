@@ -921,7 +921,6 @@ const AppNavigator = () => {
   const [weatherCode, setWeatherCode] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showLocationVerification, setShowLocationVerification] = useState(false);
   const [pendingLocationData, setPendingLocationData] = useState<{
     latitude: number;
     longitude: number;
@@ -944,7 +943,6 @@ const AppNavigator = () => {
       accuracy: 0,
       address: { city: cityName, display: cityName }
     });
-    setShowLocationVerification(true);
   }, []);
 
   // Get swipe configuration for current screen
@@ -1135,14 +1133,12 @@ const AppNavigator = () => {
 
   // Handle verification confirmation
   const handleVerificationConfirm = useCallback((cityName: string, latitude: number, longitude: number) => {
-    setShowLocationVerification(false);
     setPendingLocationData(null);
     getWeatherByLocation(cityName, latitude, longitude);
   }, [getWeatherByLocation]);
 
   // Handle verification cancel
   const handleVerificationCancel = useCallback(() => {
-    setShowLocationVerification(false);
     setPendingLocationData(null);
   }, []);
 
@@ -1223,15 +1219,16 @@ const AppNavigator = () => {
         </div>
       )}
       
-      {/* Modern Mobile Navigation System */}
-      <ScreenContainer
-        currentScreen={currentScreen}
-        transitionDirection="slide-left"
-        transitionDuration={300}
-        theme={theme}
-        onSwipeLeft={handleSwipeLeft}
-        onSwipeRight={handleSwipeRight}
-        enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
+      {/* Modern Mobile Navigation System - Only for mobile devices */}
+      {screenInfo.width < 768 && (
+        <ScreenContainer
+          currentScreen={currentScreen}
+          transitionDirection="slide-left"
+          transitionDuration={300}
+          theme={theme}
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+          enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
         screens={{
           'Home': (
             <HomeScreen
@@ -1301,6 +1298,7 @@ const AppNavigator = () => {
           )
         }}
       />
+      )}
       
       {/* Mobile Bottom Navigation */}
       {screenInfo.width < 768 && (
