@@ -1,9 +1,17 @@
 /**
- * iOS 26 Premium Components - Next Generation Interface
+ * iOS 26 Cutting-Edge Components for Weather App
  * 
- * Latest iOS design patterns and interactions:
+ * Implements the latest iOS design patterns including:
+ * - Dynamic Island-style notifications
+ * - Fluid typography with adaptive scaling
+ * - Advanced glassmorphism with depth layers
+ * - Haptic-driven micro-interactions
+ * - Live Activities-style widgets
+ * - Spatial audio feedback integration
+ * - Enhanced focus states with accessibility
+ * - Contextual action bars
+ * - Smart background adaptation
  * - Context Menus with haptic feedback
- * - Dynamic Island-style live activities
  * - Interactive Widgets with real-time updates
  * - Advanced Modal Sheets with detents
  * - Swipe Actions for enhanced interactions

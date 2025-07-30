@@ -49,11 +49,18 @@ import FavoritesScreen from '../components/FavoritesScreen';
 import LocationManager from '../components/LocationManager';
 // Enhanced Mobile Components
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
-import EnhancedMobileWeatherCard from '../components/modernWeatherUI/EnhancedMobileWeatherCard';
 // Modern UI Components
 import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
 import ModernForecast from '../components/modernWeatherUI/ModernForecast';
-import ModernWeatherMetrics from '../components/modernWeatherUI/ModernWeatherMetrics';
+// iOS 26 Enhanced Components
+import { 
+  iOS26WeatherCard, 
+  QuickActionsPanel, 
+  WeatherMetricsGrid, 
+  iOS26NavigationBar,
+  type WeatherMetric 
+} from '../components/modernWeatherUI/iOS26MainScreen';
+import '../styles/iOS26.css';
 // iOS HIG Components
 import { 
   SimpleSegmentedControl, 
@@ -318,23 +325,61 @@ function HomeScreen({
   haptic: ReturnType<typeof useHaptic>;
 }>) {
   return (
-    <ModernHomeScreen
-      theme={theme}
-      onNavigate={(screen: string) => {
-        haptic.buttonPress();
-        if (screen === 'weather') {
-          navigate('Weather');
-        } else if (screen === 'search') {
+    <div style={{ padding: '0', minHeight: '100vh' }}>
+      {/* iOS 26 Navigation Bar */}
+      <iOS26NavigationBar
+        title="Weather"
+        theme={theme}
+        rightAction={{
+          icon: '⚙️',
+          label: 'Settings',
+          onPress: () => {
+            haptic.buttonPress();
+            navigate('Settings');
+          }
+        }}
+      />
+
+      {/* Quick Actions Panel */}
+      <QuickActionsPanel
+        theme={theme}
+        onLocationSearch={() => {
+          haptic.buttonPress();
           navigate('Search');
-        } else if (screen === 'test') {
-          navigate('MobileTest');
-        }
-      }}
-      onGetCurrentLocation={() => {
-        haptic.buttonPress();
-        // Add location logic here if needed
-      }}
-    />
+        }}
+        onFavorites={() => {
+          haptic.buttonPress();
+          navigate('Favorites');
+        }}
+        onSettings={() => {
+          haptic.buttonPress();
+          navigate('Settings');
+        }}
+        onRadar={() => {
+          haptic.buttonPress();
+          // Future radar implementation
+        }}
+      />
+
+      {/* Modern Home Screen Content */}
+      <ModernHomeScreen
+        theme={theme}
+        onNavigate={(screen: string) => {
+          haptic.buttonPress();
+          if (screen === 'weather') {
+            navigate('Weather');
+          } else if (screen === 'search') {
+            navigate('Search');
+          } else if (screen === 'test') {
+            navigate('MobileTest');
+          }
+        }}
+        onGetCurrentLocation={() => {
+          haptic.buttonPress();
+          // Add location logic here if needed
+        }}
+      />
+    </div>
   );
 }
 
@@ -348,6 +393,7 @@ function WeatherDetailsScreen({
   weather,
   hourlyForecast,
   dailyForecast,
+  weatherCode,
   getWeather,
   getWeatherByLocation,
   onRefresh,
@@ -510,22 +556,35 @@ function WeatherDetailsScreen({
             </SimpleCard>
           )}
           {weather && (
-            <EnhancedMobileWeatherCard
-              weatherData={weather}
-              locationName={city}
+            <iOS26WeatherCard
+              temperature={Math.round(weather.main.temp)}
+              weatherCode={weatherCode}
+              location={city}
+              description={weather.weather[0].description}
+              theme={theme}
+              isLoading={loading}
+              lastUpdated={new Date().toLocaleTimeString()}
+              onRefresh={async () => {
+                haptic.buttonPress();
+                await onRefresh();
+              }}
+              onLocationTap={() => {
+                haptic.buttonPress();
+                navigate('Search');
+              }}
             />
           )}
 
           {/* Weather Metrics */}
           {weather && selectedView === 0 && (
-            <ModernWeatherMetrics
+            <WeatherMetricsGrid
               theme={theme}
               metrics={[
                 {
                   id: 'humidity',
                   icon: '💧',
                   label: 'Humidity',
-                  value: `${weather.main.humidity}%`,
+                  value: `${weather.main.humidity}`,
                   unit: '%'
                 },
                 {
@@ -539,14 +598,14 @@ function WeatherDetailsScreen({
                   id: 'wind',
                   icon: '💨',
                   label: 'Wind Speed',
-                  value: `${weather.wind.speed}`,
+                  value: `${Math.round(weather.wind.speed)}`,
                   unit: 'mph'
                 },
                 {
                   id: 'uv',
                   icon: '☀️',
                   label: 'UV Index',
-                  value: `${weather.uv_index || 0}`,
+                  value: `${Math.round(weather.uv_index || 0)}`,
                   unit: ''
                 },
                 {
@@ -555,9 +614,15 @@ function WeatherDetailsScreen({
                   label: 'Visibility',
                   value: `${Math.round((weather.visibility || 0) / 1000)}`,
                   unit: 'km'
+                },
+                {
+                  id: 'feels-like',
+                  icon: '🌡️',
+                  label: 'Feels Like',
+                  value: `${Math.round(weather.main.feels_like)}`,
+                  unit: '°F'
                 }
               ]}
-              isLoading={loading}
             />
           )}
 

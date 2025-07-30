@@ -1,0 +1,204 @@
+/* iOS 26 Cutting-Edge Animations and Styles */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Weather Card Enhancements */
+.ios26-weather-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios26-weather-card:hover {
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.ios26-weather-card:active {
+  transform: scale(0.98);
+}
+
+/* Quick Actions Panel */
+.quick-action-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.quick-action-button:active {
+  transform: scale(0.98);
+}
+
+/* Weather Metrics Cards */
+.weather-metric-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.weather-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Bar */
+.ios26-navigation-bar {
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+}
+
+.ios26-navigation-bar button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios26-navigation-bar button:hover {
+  background-color: rgba(0, 122, 255, 0.1);
+}
+
+.ios26-navigation-bar button:active {
+  background-color: rgba(0, 122, 255, 0.2);
+  transform: scale(0.96);
+}
+
+/* Enhanced focus states for accessibility */
+.ios26-weather-card:focus-visible,
+.quick-action-button:focus-visible,
+.ios26-navigation-bar button:focus-visible {
+  outline: 3px solid #007AFF;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Context Menu Enhancements */
+.ios26-context-menu {
+  animation: contextMenuAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes contextMenuAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Live Activity Animations */
+.ios26-live-activity {
+  animation: liveActivitySlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes liveActivitySlide {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* Interactive Widget */
+.ios26-interactive-widget {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios26-interactive-widget:hover {
+  transform: scale(1.02);
+}
+
+/* Modal Sheet */
+.ios26-modal-sheet {
+  animation: modalSheetSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSheetSlide {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Swipe Actions */
+.ios26-swipe-actions {
+  overflow: hidden;
+}
+
+/* Smooth spring animations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hardware acceleration for smooth animations */
+.ios26-context-menu,
+.ios26-live-activity,
+.ios26-interactive-widget,
+.ios26-modal-sheet,
+.ios26-weather-card,
+.quick-action-button,
+.weather-metric-card {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Enhanced glassmorphism */
+.ios26-glassmorphism {
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ios26-glassmorphism-dark {
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive design for different screen sizes */
+@media (max-width: 375px) {
+  .ios26-weather-card {
+    margin: 16px;
+    padding: 24px;
+  }
+  
+  .quick-action-button {
+    padding: 16px;
+    min-height: 80px;
+  }
+}
+
+@media (min-width: 768px) {
+  .ios26-weather-card:hover {
+    transform: scale(1.03) translateY(-4px);
+  }
+}
+
+/* Dark mode specific enhancements */
+@media (prefers-color-scheme: dark) {
+  .ios26-glassmorphism {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
