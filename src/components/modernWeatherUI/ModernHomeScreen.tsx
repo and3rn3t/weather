@@ -156,8 +156,8 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     <div style={containerStyle}>
       {/* Status Indicators */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <SimpleStatusBadge text="Live Weather" variant="success" theme={theme} />
-        <SimpleStatusBadge text="Real-time Updates" variant="info" theme={theme} />
+        <SimpleStatusBadge text="Live Weather" variant="success" />
+        <SimpleStatusBadge text="Real-time Updates" variant="info" />
       </div>
 
       {/* Hero Section */}

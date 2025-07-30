@@ -200,26 +200,29 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   theme,
   size = 'medium'
 }) => {
+  // Detect dark mode from theme colors
+  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  
   const variantColors = {
     info: {
-      bg: theme.isDark ? 'rgba(0, 122, 255, 0.2)' : 'rgba(0, 122, 255, 0.1)',
-      border: theme.isDark ? 'rgba(0, 122, 255, 0.4)' : 'rgba(0, 122, 255, 0.3)',
-      text: theme.isDark ? '#64D2FF' : '#007AFF'
+      bg: isDark ? 'rgba(0, 122, 255, 0.2)' : 'rgba(0, 122, 255, 0.1)',
+      border: isDark ? 'rgba(0, 122, 255, 0.4)' : 'rgba(0, 122, 255, 0.3)',
+      text: isDark ? '#64D2FF' : '#007AFF'
     },
     warning: {
-      bg: theme.isDark ? 'rgba(255, 149, 0, 0.2)' : 'rgba(255, 149, 0, 0.1)',
-      border: theme.isDark ? 'rgba(255, 149, 0, 0.4)' : 'rgba(255, 149, 0, 0.3)',
-      text: theme.isDark ? '#FFB340' : '#FF9500'
+      bg: isDark ? 'rgba(255, 149, 0, 0.2)' : 'rgba(255, 149, 0, 0.1)',
+      border: isDark ? 'rgba(255, 149, 0, 0.4)' : 'rgba(255, 149, 0, 0.3)',
+      text: isDark ? '#FFB340' : '#FF9500'
     },
     error: {
-      bg: theme.isDark ? 'rgba(255, 59, 48, 0.2)' : 'rgba(255, 59, 48, 0.1)',
-      border: theme.isDark ? 'rgba(255, 59, 48, 0.4)' : 'rgba(255, 59, 48, 0.3)',
-      text: theme.isDark ? '#FF6B6B' : '#FF3B30'
+      bg: isDark ? 'rgba(255, 59, 48, 0.2)' : 'rgba(255, 59, 48, 0.1)',
+      border: isDark ? 'rgba(255, 59, 48, 0.4)' : 'rgba(255, 59, 48, 0.3)',
+      text: isDark ? '#FF6B6B' : '#FF3B30'
     },
     success: {
-      bg: theme.isDark ? 'rgba(52, 199, 89, 0.2)' : 'rgba(52, 199, 89, 0.1)',
-      border: theme.isDark ? 'rgba(52, 199, 89, 0.4)' : 'rgba(52, 199, 89, 0.3)',
-      text: theme.isDark ? '#5DD683' : '#34C759'
+      bg: isDark ? 'rgba(52, 199, 89, 0.2)' : 'rgba(52, 199, 89, 0.1)',
+      border: isDark ? 'rgba(52, 199, 89, 0.4)' : 'rgba(52, 199, 89, 0.3)',
+      text: isDark ? '#5DD683' : '#34C759'
     }
   };
 
@@ -272,13 +275,16 @@ export const ListItem: React.FC<ListItemProps> = ({
   disabled = false
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+  
+  // Detect dark mode from theme colors
+  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
 
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     padding: '16px',
     backgroundColor: isPressed 
-      ? (theme.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)')
+      ? (isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)')
       : 'transparent',
     borderRadius: '12px',
     cursor: onPress && !disabled ? 'pointer' : 'default',
@@ -374,6 +380,9 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   showPercentage = false,
   color
 }) => {
+  // Detect dark mode from theme colors
+  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  
   const sizeMap = {
     small: { height: 4, radius: 2 },
     medium: { height: 6, radius: 3 },
@@ -392,7 +401,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   const trackStyle: React.CSSProperties = {
     flex: 1,
     height: dimensions.height,
-    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
     borderRadius: dimensions.radius,
     overflow: 'hidden',
     position: 'relative'

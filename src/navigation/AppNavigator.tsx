@@ -478,22 +478,21 @@ function WeatherDetailsScreen({
             <SimpleStatusBadge 
               text={error}
               variant="error"
-              theme={theme}
             />
           )}
 
           {/* Weather Status Indicators */}
           {weather && (
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
-              <SimpleStatusBadge text="Live Data" variant="success" theme={theme} />
+              <SimpleStatusBadge text="Live Data" variant="success" />
               {weather.main.temp > 90 && (
-                <SimpleStatusBadge text="Heat Advisory" variant="warning" theme={theme} />
+                <SimpleStatusBadge text="Heat Advisory" variant="warning" />
               )}
               {weather.main.temp < 32 && (
-                <SimpleStatusBadge text="Freeze Warning" variant="warning" theme={theme} />
+                <SimpleStatusBadge text="Freeze Warning" variant="warning" />
               )}
               {weather.wind.speed > 25 && (
-                <SimpleStatusBadge text="Windy Conditions" variant="info" theme={theme} />
+                <SimpleStatusBadge text="Windy Conditions" variant="info" />
               )}
             </div>
           )}

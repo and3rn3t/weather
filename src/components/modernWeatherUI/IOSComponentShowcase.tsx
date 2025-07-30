@@ -100,10 +100,10 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Status Badges</h2>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <SimpleStatusBadge text="Success" variant="success" theme={theme} />
-            <SimpleStatusBadge text="Warning" variant="warning" theme={theme} />
-            <SimpleStatusBadge text="Error" variant="error" theme={theme} />
-            <SimpleStatusBadge text="Info" variant="info" theme={theme} />
+            <SimpleStatusBadge text="Success" variant="success" />
+            <SimpleStatusBadge text="Warning" variant="warning" />
+            <SimpleStatusBadge text="Error" variant="error" />
+            <SimpleStatusBadge text="Info" variant="info" />
           </div>
         </div>
 
@@ -170,8 +170,8 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
                 Partly cloudy with light winds
               </p>
               <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-                <SimpleStatusBadge text="Comfortable" variant="success" theme={theme} />
-                <SimpleStatusBadge text="UV: Low" variant="info" theme={theme} />
+                <SimpleStatusBadge text="Comfortable" variant="success" />
+                <SimpleStatusBadge text="UV: Low" variant="info" />
               </div>
             </div>
           </SimpleCard>

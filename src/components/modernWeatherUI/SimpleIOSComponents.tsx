@@ -126,13 +126,11 @@ export const SimpleActivityIndicator: React.FC<SimpleActivityIndicatorProps> = (
 interface SimpleStatusBadgeProps {
   text: string;
   variant?: 'info' | 'warning' | 'error' | 'success';
-  theme: ThemeColors;
 }
 
 export const SimpleStatusBadge: React.FC<SimpleStatusBadgeProps> = ({
   text,
-  variant = 'info',
-  theme // eslint-disable-line @typescript-eslint/no-unused-vars
+  variant = 'info'
 }) => {
   const variantColors = {
     info: { bg: 'rgba(0, 122, 255, 0.2)', text: '#007AFF' },

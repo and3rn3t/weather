@@ -142,9 +142,9 @@ export const SimpleIOSDemo: React.FC<SimpleIOSDemoProps> = ({ theme }) => {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>Weather Alerts</h2>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <SimpleStatusBadge text="Clear Skies" variant="success" theme={theme} />
-          <SimpleStatusBadge text="UV Index High" variant="warning" theme={theme} />
-          <SimpleStatusBadge text="Air Quality Good" variant="info" theme={theme} />
+          <SimpleStatusBadge text="Clear Skies" variant="success" />
+          <SimpleStatusBadge text="UV Index High" variant="warning" />
+          <SimpleStatusBadge text="Air Quality Good" variant="info" />
         </div>
       </div>
 
