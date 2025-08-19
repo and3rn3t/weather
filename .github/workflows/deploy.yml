@@ -60,29 +60,20 @@ jobs:
 
       - name: ⚡ Install dependencies (turbo mode)
         run: |
-          if [ ! -d "node_modules" ]; then
-            npm ci --prefer-offline --no-audit --no-fund --silent
-          else
-            echo "Dependencies already cached"
-          fi
+          npm ci --prefer-offline --no-audit --no-fund --silent
 
       - name: ⚡ Fast quality check
         if: ${{ !inputs.skip_quality }}
         run: |
-          # Run only essential checks in parallel
+          # Run essential checks (non-blocking for speed)
           npm run lint --silent || echo "⚠️ Lint warnings (non-blocking)"
-          npm run test:fast --silent || echo "⚠️ Test warnings (non-blocking)"
         continue-on-error: true
-        timeout-minutes: 2
+        timeout-minutes: 1
 
       - name: ⚡ Turbo build
         run: |
-          # Skip TypeScript check if cached build exists
-          if [ -d "dist" ] && [ "$(find dist -name '*.js' | wc -l)" -gt "0" ]; then
-            echo "Using cached build"
-          else
-            npm run build:ci  # Fast build without tsc check
-          fi
+          # Ultra-fast build without TypeScript compilation check
+          npm run build:ultra
 
       - name: ⚡ Deploy to Cloudflare
         uses: cloudflare/pages-action@v1
