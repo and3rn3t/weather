@@ -1,0 +1,106 @@
+name: 🧪 Development Deploy
+
+on:
+  push:
+    branches: [dev, develop, staging]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: false
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - preview
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '22'
+  NPM_CONFIG_PREFER_OFFLINE: true
+  NPM_CONFIG_NO_AUDIT: true
+  NPM_CONFIG_NO_FUND: true
+  NPM_CONFIG_PROGRESS: false
+  NPM_CONFIG_LOGLEVEL: error
+  VITE_CJS_IGNORE_WARNING: true
+  NODE_OPTIONS: '--max-old-space-size=4096'
+
+jobs:
+  dev-deploy:
+    name: 🧪 Development Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'development' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: ⚡ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: ⚡ Setup Node.js + Cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: ⚡ Install dependencies
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund --silent
+
+      - name: 🔍 Quality checks
+        run: |
+          npm run lint --silent || echo "⚠️ Lint warnings (non-blocking)"
+        continue-on-error: true
+
+      - name: 🏗️ Build for development
+        run: |
+          npm run build:ultra
+        env:
+          VITE_ENVIRONMENT: ${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'development' }}
+
+      - name: 🚀 Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=premium-weather-app --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }}
+
+      - name: 📋 Deployment Summary
+        run: |
+          echo "## 🧪 Development Deploy Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: ${{ github.event_name == 'pull_request' && 'Preview' || inputs.environment || 'Development' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.ref_name }}" = "dev" ] || [ "${{ github.ref_name }}" = "develop" ]; then
+            echo "🧪 **Development**: https://weather-dev.andernet.dev" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "🔗 **Cloudflare**: https://${{ github.ref_name }}.premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+
+      - name: 💬 PR Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚀 Preview Deployment Ready!
+
+              **Preview URL**: https://${{ github.ref_name }}.premium-weather-app.pages.dev
+              **Branch**: \`${{ github.ref_name }}\`
+              **Commit**: \`${{ github.sha }}\`
+
+              This preview will be automatically updated when you push new commits to this PR.`
+            })

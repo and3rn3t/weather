@@ -77,8 +77,15 @@ console.log('\n🔧 Required GitHub Secrets:');
 console.log('   CLOUDFLARE_API_TOKEN - Get from Cloudflare dashboard');
 console.log('   CLOUDFLARE_ACCOUNT_ID - Get from Cloudflare dashboard');
 
+console.log('\n🌐 Custom Domains:');
+console.log('   Production:  weather.andernet.dev (main branch)');
+console.log('   Development: weather-dev.andernet.dev (dev branch)');
+console.log('   Setup:       npm run deploy:domains');
+
 console.log('\n📋 Recommended Commands:');
 console.log('   npm run build:ultra  # Test build locally');
+console.log('   npm run deploy:production  # Deploy to production');
+console.log('   npm run deploy:dev  # Deploy to development');
 console.log(
   '   npx wrangler pages deploy dist --project-name=premium-weather-app  # Test deploy locally'
 );

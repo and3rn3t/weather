@@ -80,11 +80,17 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=premium-weather-app
+          command: pages deploy dist --project-name=premium-weather-app --branch=${{ github.ref_name }}
 
       - name: ⚡ Success notification
         if: success()
         run: |
           echo "## ⚡ Ultra-Fast Deploy Complete!" >> $GITHUB_STEP_SUMMARY
           echo "**⏱️ Total time: <2 minutes**" >> $GITHUB_STEP_SUMMARY
-          echo "🚀 **Live at**: https://premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "🚀 **Production**: https://weather.andernet.dev" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 **Cloudflare**: https://premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🧪 **Development**: https://weather-dev.andernet.dev" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 **Cloudflare**: https://${{ github.ref_name }}.premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+          fi
