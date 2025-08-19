@@ -20,6 +20,610 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
+    <!-- NUCLEAR FIXES FOR AUTOCOMPLETE AND BACKGROUND ISSUES -->
+    <style>
+      /* Nuclear autocomplete styling */
+      .nuclear-autocomplete {
+        position: fixed !important;
+        top: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 90% !important;
+        max-width: 400px !important;
+        z-index: 99999 !important;
+        background: rgba(255,255,255,0.95) !important;
+        padding: 10px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+      }
+      
+      .nuclear-autocomplete input {
+        width: 100% !important;
+        padding: 12px 16px !important;
+        border: 2px solid #667eea !important;
+        border-radius: 8px !important;
+        background: white !important;
+        color: #333 !important;
+        font-size: 16px !important;
+        outline: none !important;
+        box-sizing: border-box !important;
+      }
+      
+      .nuclear-autocomplete .dropdown {
+        position: absolute !important;
+        top: 100% !important;
+        left: 10px !important;
+        right: 10px !important;
+        background: white !important;
+        border: 1px solid #ddd !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        z-index: 100000 !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        display: none !important;
+        margin-top: 4px !important;
+      }
+      
+      .nuclear-autocomplete .dropdown.show {
+        display: block !important;
+      }
+      
+      .nuclear-autocomplete .suggestion {
+        padding: 12px 16px !important;
+        cursor: pointer !important;
+        border-bottom: 1px solid #eee !important;
+        font-size: 14px !important;
+        color: #333333 !important;
+        background: white !important;
+        font-weight: 500 !important;
+      }
+      
+      .nuclear-autocomplete .suggestion:hover {
+        background: #e3f2fd !important;
+        color: #1976d2 !important;
+      }
+      
+      .nuclear-autocomplete .suggestion:last-child {
+        border-bottom: none !important;
+      }
+      
+      /* MAXIMUM NUCLEAR LOCKDOWN - Zero background changes */
+      html,
+      html *,
+      body,
+      body *,
+      #root,
+      #root *,
+      .app-container,
+      .app-container *,
+      div,
+      span,
+      section,
+      main {
+        background-color: transparent !important;
+        transition: none !important;
+        transition-property: none !important;
+        transition-duration: 0s !important;
+        animation: none !important;
+      }
+      
+      /* NUCLEAR :ACTIVE STATE BLOCKING - This causes the grey blink! */
+      *:active,
+      *:focus,
+      *:hover,
+      html:active,
+      body:active,
+      div:active,
+      section:active,
+      main:active,
+      #root:active,
+      .app-container:active {
+        background: transparent !important;
+        background-color: transparent !important;
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+      }
+      
+      /* Lock body background permanently */
+      html body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background-attachment: fixed !important;
+        transition: none !important;
+      }
+      
+      html body.dark-theme {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        background-attachment: fixed !important;
+        transition: none !important;
+      }
+      
+      /* Prevent body from ever having :active state */
+      html body:active,
+      html body:focus,
+      html body:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      }
+      
+      html body.dark-theme:active,
+      html body.dark-theme:focus,
+      html body.dark-theme:hover {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+      }
+      
+      /* Only allow transition during legitimate theme changes */
+      html body.legitimate-theme-change {
+        transition: background 0.6s ease !important;
+      }
+      
+      /* Force override any React styling */
+      body[style*="background"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      }
+      
+      body.dark-theme[style*="background"] {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+      }
+      
+      .block-bg-changes * {
+        transition: none !important;
+      }
+      
+      /* Override any theme context background changes */
+      body:not(.legitimate-theme-change) {
+        background: var(--current-bg, inherit) !important;
+      }
+    </style>
+    
+    <script>
+      // Nuclear fixes applied on page load
+      let isLegitimateThemeChange = false;
+      let lastThemeChange = 0;
+      let nuclearFixesApplied = false;
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        if (nuclearFixesApplied) {
+          console.log('🔧 Nuclear fixes already applied, skipping...');
+          return;
+        }
+        
+        console.log('🔧 Nuclear fixes loading...');
+        nuclearFixesApplied = true;
+        
+        // NUCLEAR CLICK PROTECTION - Block ALL background changes except theme toggle
+        document.addEventListener('click', function(e) {
+          const target = e.target;
+          
+          // Very specific theme toggle detection
+          const isRealThemeToggle = (target.closest('.theme-toggle-btn') && 
+                                   (target.textContent?.includes('☀️') || target.textContent?.includes('🌙'))) ||
+                                  (target.getAttribute('aria-label')?.includes('Toggle theme'));
+          
+          if (isRealThemeToggle) {
+            console.log('✅ LEGITIMATE theme toggle - allowing transition');
+            document.body.classList.add('legitimate-theme-change');
+            
+            // Allow transition for theme change
+            setTimeout(() => {
+              document.body.classList.remove('legitimate-theme-change');
+              console.log('🔒 Theme transition complete - background locked again');
+            }, 1000);
+            
+            return; // Allow the theme toggle
+          }
+          
+          // For ALL other clicks - prevent background changes
+          console.log('🚫 NUCLEAR: Blocking ALL background changes from click on:', target.tagName);
+          
+          // Prevent React from doing anything
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          
+          // Force background lock
+          document.body.style.setProperty('background', 
+            document.body.classList.contains('dark-theme') 
+              ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' 
+              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+            'important'
+          );
+          
+          return false;
+        }, true);
+        
+        // Fix 2: Add working autocomplete
+        setTimeout(function() {
+          addNuclearAutocomplete();
+        }, 2000);
+        
+        console.log('✅ Nuclear fixes loaded');
+        
+        // NUCLEAR MUTATION OBSERVER - Prevent any background changes
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+              const target = mutation.target;
+              if (target === document.body && !document.body.classList.contains('legitimate-theme-change')) {
+                // React or something else tried to change body style - revert it
+                const isDark = document.body.classList.contains('dark-theme');
+                const correctBg = isDark 
+                  ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
+                  : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                
+                if (target.style.background !== correctBg) {
+                  console.log('🚫 MUTATION OBSERVER: Reverting unauthorized background change');
+                  target.style.setProperty('background', correctBg, 'important');
+                  target.style.setProperty('transition', 'none', 'important');
+                }
+              }
+            }
+          });
+        });
+        
+        observer.observe(document.body, {
+          attributes: true,
+          attributeFilter: ['style', 'class']
+        });
+        
+        console.log('🔒 NUCLEAR MUTATION OBSERVER: Background lock active');
+      });
+      
+      function addNuclearAutocomplete() {
+        // Check if already exists
+        if (document.querySelector('.nuclear-autocomplete')) {
+          return;
+        }
+        
+        console.log('🔧 Adding nuclear autocomplete...');
+        
+        const container = document.createElement('div');
+        container.className = 'nuclear-autocomplete';
+        container.innerHTML = `
+          <input type="text" placeholder="🔍 Search cities (Nuclear Fix)" id="nuclear-search" />
+          <button onclick="testSearch()" style="margin-left: 8px; padding: 8px 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Test</button>
+          <div class="dropdown" id="nuclear-dropdown"></div>
+        `;
+        
+        document.body.appendChild(container);
+        
+        const input = document.getElementById('nuclear-search');
+        const dropdown = document.getElementById('nuclear-dropdown');
+        let searchTimeout;
+        
+        input.addEventListener('input', function() {
+          const query = this.value.trim();
+          console.log('🔤 User typed:', query);
+          
+          clearTimeout(searchTimeout);
+          
+          if (query.length < 2) {
+            console.log('❌ Query too short, hiding dropdown');
+            dropdown.classList.remove('show');
+            return;
+          }
+          
+          console.log('⏱️ Setting search timeout for:', query);
+          searchTimeout = setTimeout(() => {
+            console.log('🚀 Executing search for:', query);
+            nuclearSearchCities(query, dropdown);
+          }, 200);
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!container.contains(e.target)) {
+            dropdown.classList.remove('show');
+          }
+        });
+        
+        console.log('✅ Nuclear autocomplete added');
+      }
+      
+      async function nuclearSearchCities(query, dropdown) {
+        try {
+          console.log('🔍 Fuzzy searching for:', query);
+          dropdown.innerHTML = '<div class="suggestion">Searching...</div>';
+          dropdown.classList.add('show');
+          
+          // Enhanced mock city database
+          const mockCities = [
+            { display_name: 'New York, New York, United States', lat: '40.7128', lon: '-74.0060', place_id: 1 },
+            { display_name: 'New Orleans, Louisiana, United States', lat: '29.9511', lon: '-90.0715', place_id: 11 },
+            { display_name: 'New Delhi, India', lat: '28.6139', lon: '77.2090', place_id: 12 },
+            { display_name: 'Newcastle, England, United Kingdom', lat: '54.9783', lon: '-1.6178', place_id: 13 },
+            { display_name: 'Los Angeles, California, United States', lat: '34.0522', lon: '-118.2437', place_id: 2 },
+            { display_name: 'Chicago, Illinois, United States', lat: '41.8781', lon: '-87.6298', place_id: 3 },
+            { display_name: 'London, England, United Kingdom', lat: '51.5074', lon: '-0.1278', place_id: 4 },
+            { display_name: 'Paris, France', lat: '48.8566', lon: '2.3522', place_id: 5 },
+            { display_name: 'Berlin, Germany', lat: '52.5200', lon: '13.4050', place_id: 6 },
+            { display_name: 'Tokyo, Japan', lat: '35.6762', lon: '139.6503', place_id: 7 },
+            { display_name: 'Sydney, Australia', lat: '-33.8688', lon: '151.2093', place_id: 8 },
+            { display_name: 'Miami, Florida, United States', lat: '25.7617', lon: '-80.1918', place_id: 9 },
+            { display_name: 'Seattle, Washington, United States', lat: '47.6062', lon: '-122.3321', place_id: 10 },
+            { display_name: 'San Francisco, California, United States', lat: '37.7749', lon: '-122.4194', place_id: 14 },
+            { display_name: 'Boston, Massachusetts, United States', lat: '42.3601', lon: '-71.0589', place_id: 15 },
+            { display_name: 'Toronto, Ontario, Canada', lat: '43.6532', lon: '-79.3832', place_id: 16 },
+            { display_name: 'Vancouver, British Columbia, Canada', lat: '49.2827', lon: '-123.1207', place_id: 17 },
+            { display_name: 'Mexico City, Mexico', lat: '19.4326', lon: '-99.1332', place_id: 18 },
+            { display_name: 'Madrid, Spain', lat: '40.4168', lon: '-3.7038', place_id: 19 },
+            { display_name: 'Rome, Italy', lat: '41.9028', lon: '12.4964', place_id: 20 }
+          ];
+          
+          // Fuzzy search algorithm
+          function fuzzyMatch(query, text) {
+            query = query.toLowerCase().trim();
+            text = text.toLowerCase();
+            
+            // Exact match gets highest score
+            if (text.includes(query)) {
+              return 100;
+            }
+            
+            // Calculate similarity for words
+            const words = text.split(/[\s,]+/);
+            let bestScore = 0;
+            
+            for (let word of words) {
+              if (word.length === 0) continue;
+              
+              // Starts with query
+              if (word.startsWith(query)) {
+                bestScore = Math.max(bestScore, 90);
+                continue;
+              }
+              
+              // Character-by-character similarity
+              let matches = 0;
+              for (let i = 0; i < Math.min(query.length, word.length); i++) {
+                if (query[i] === word[i]) {
+                  matches++;
+                }
+              }
+              
+              if (matches > 0) {
+                const score = (matches / Math.max(query.length, word.length)) * 70;
+                bestScore = Math.max(bestScore, score);
+              }
+              
+              // Partial substring matches
+              for (let i = 0; i < query.length - 1; i++) {
+                if (word.includes(query.substring(i, i + 2))) {
+                  bestScore = Math.max(bestScore, 50);
+                }
+              }
+            }
+            
+            return bestScore;
+          }
+          
+          console.log('🏙️ Total cities available:', mockCities.length);
+          console.log('🔤 Query:', `"${query}"`);
+          
+          // Apply fuzzy search with scoring
+          const scoredResults = mockCities.map(city => ({
+            ...city,
+            score: fuzzyMatch(query, city.display_name)
+          }));
+          
+          // Filter and sort by relevance
+          const filteredCities = scoredResults
+            .filter(city => city.score > 25) // Minimum threshold
+            .sort((a, b) => b.score - a.score) // Best matches first
+            .slice(0, 6); // Top 6 results
+          
+          console.log('✅ Fuzzy matches found:', filteredCities.length);
+          filteredCities.forEach(city => {
+            console.log(`📍 ${city.display_name} (score: ${city.score})`);
+          });
+          
+          if (filteredCities.length > 0) {
+            nuclearDisplayResults(filteredCities, dropdown);
+          } else {
+            dropdown.innerHTML = `<div class="suggestion">No cities found for "${query}". Try: New York, London, Paris, Tokyo</div>`;
+            dropdown.classList.add('show');
+          }
+          
+        } catch (error) {
+          console.error('❌ Search error:', error);
+          dropdown.innerHTML = '<div class="suggestion">Search error - check console</div>';
+          dropdown.classList.add('show');
+        }
+      }
+      
+      function nuclearDisplayResults(results, dropdown) {
+        console.log('🎯 Displaying results:', results);
+        
+        if (!results || results.length === 0) {
+          dropdown.innerHTML = '<div class="suggestion">No cities found. Try: New York, London, Paris, Tokyo</div>';
+          dropdown.classList.add('show');
+          console.log('❌ No results, showing "no cities" message');
+          return;
+        }
+        
+        const html = results.map(result => 
+          `<div class="suggestion" onclick="nuclearSelectCity('${result.display_name.replace(/'/g, "\\'")}', ${result.lat}, ${result.lon})">
+            ${result.display_name.split(',').slice(0, 3).join(', ')}
+          </div>`
+        ).join('');
+        
+        console.log('📝 Generated HTML:', html);
+        console.log('📦 Setting dropdown innerHTML...');
+        dropdown.innerHTML = html;
+        console.log('👁️ Adding "show" class to dropdown...');
+        dropdown.classList.add('show');
+        console.log('✅ Dropdown classes after adding show:', dropdown.className);
+        console.log('✅ Dropdown innerHTML length:', dropdown.innerHTML.length);
+        console.log('✅ Dropdown style display:', getComputedStyle(dropdown).display);
+        console.log('✅ Dropdown style visibility:', getComputedStyle(dropdown).visibility);
+        console.log('✅ Dropdown style opacity:', getComputedStyle(dropdown).opacity);
+      }
+      
+      async function nuclearSelectCity(name, lat, lon) {
+        const input = document.getElementById('nuclear-search');
+        const dropdown = document.getElementById('nuclear-dropdown');
+        
+        if (input) {
+          input.value = name.split(',')[0];
+        }
+        dropdown.classList.remove('show');
+        
+        console.log('✅ Selected city:', name, 'at', lat, lon);
+        console.log('🌤️ Fetching weather data...');
+        
+        try {
+          // Create weather display container
+          let weatherContainer = document.getElementById('nuclear-weather');
+          if (!weatherContainer) {
+            weatherContainer = document.createElement('div');
+            weatherContainer.id = 'nuclear-weather';
+            weatherContainer.style.cssText = `
+              position: fixed;
+              top: 120px;
+              left: 20px;
+              right: 20px;
+              background: rgba(255, 255, 255, 0.95);
+              backdrop-filter: blur(10px);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+              z-index: 10000;
+              max-height: 70vh;
+              overflow-y: auto;
+              border: 1px solid rgba(255, 255, 255, 0.3);
+            `;
+            document.body.appendChild(weatherContainer);
+          }
+          
+          weatherContainer.innerHTML = '<div style="text-align: center; padding: 20px;">🌤️ Loading weather data...</div>';
+          
+          // Fetch weather data from OpenMeteo API
+          const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=auto`;
+          
+          console.log('🌐 Weather API URL:', weatherUrl);
+          
+          const response = await fetch(weatherUrl);
+          const weatherData = await response.json();
+          
+          console.log('✅ Weather data received:', weatherData);
+          
+          // Weather code to description mapping
+          const weatherCodes = {
+            0: '☀️ Clear sky',
+            1: '🌤️ Mainly clear',
+            2: '⛅ Partly cloudy',
+            3: '☁️ Overcast',
+            45: '🌫️ Fog',
+            48: '🌫️ Depositing rime fog',
+            51: '🌦️ Light drizzle',
+            53: '🌦️ Moderate drizzle',
+            55: '🌦️ Dense drizzle',
+            61: '🌧️ Slight rain',
+            63: '🌧️ Moderate rain',
+            65: '🌧️ Heavy rain',
+            71: '🌨️ Slight snow',
+            73: '🌨️ Moderate snow',
+            75: '🌨️ Heavy snow',
+            80: '🌦️ Slight rain showers',
+            81: '🌦️ Moderate rain showers',
+            82: '🌦️ Violent rain showers',
+            95: '⛈️ Thunderstorm',
+            96: '⛈️ Thunderstorm with hail',
+            99: '⛈️ Thunderstorm with heavy hail'
+          };
+          
+          const current = weatherData.current_weather;
+          const daily = weatherData.daily;
+          const hourly = weatherData.hourly;
+          
+          const currentWeatherDesc = weatherCodes[current.weathercode] || '🌤️ Unknown';
+          
+          // Create weather display
+          weatherContainer.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h2 style="margin: 0; color: #333; font-size: 20px;">${name.split(',')[0]} Weather</h2>
+              <button onclick="document.getElementById('nuclear-weather').remove()" 
+                      style="background: #ff4757; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 36px; font-weight: bold;">${Math.round(current.temperature)}°F</div>
+                  <div style="font-size: 18px; margin-top: 5px;">${currentWeatherDesc}</div>
+                  <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
+                    Wind: ${Math.round(current.windspeed)} mph | Humidity: ${hourly.relative_humidity_2m[0]}%
+                  </div>
+                </div>
+                <div style="font-size: 60px;">${currentWeatherDesc.split(' ')[0]}</div>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <h3 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">7-Day Forecast</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+                ${daily.time.slice(0, 7).map((date, i) => {
+                  const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
+                  const weatherDesc = weatherCodes[daily.weather_code[i]] || '🌤️';
+                  return `
+                    <div style="text-align: center; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                      <div style="font-weight: bold; color: #333; margin-bottom: 5px;">${dayName}</div>
+                      <div style="font-size: 24px; margin: 5px 0;">${weatherDesc.split(' ')[0]}</div>
+                      <div style="font-size: 14px; color: #666;">
+                        ${Math.round(daily.temperature_2m_max[i])}° / ${Math.round(daily.temperature_2m_min[i])}°
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 12px; color: #666; margin-top: 15px;">
+              🌤️ Real weather data from OpenMeteo API
+            </div>
+          `;
+          
+        } catch (error) {
+          console.error('❌ Weather fetch error:', error);
+          let weatherContainer = document.getElementById('nuclear-weather');
+          if (weatherContainer) {
+            weatherContainer.innerHTML = `
+              <div style="text-align: center; padding: 20px;">
+                <h2 style="color: #333;">📍 ${name.split(',')[0]}</h2>
+                <p style="color: #666;">❌ Weather data unavailable</p>
+                <p style="font-size: 12px; color: #999;">Coordinates: ${lat}, ${lon}</p>
+                <button onclick="document.getElementById('nuclear-weather').remove()" 
+                        style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Close</button>
+              </div>
+            `;
+          }
+        }
+      }
+      
+      // Test function to verify everything is working
+      function testSearch() {
+        console.log('🧪 Testing search function...');
+        const dropdown = document.getElementById('nuclear-dropdown');
+        if (dropdown) {
+          nuclearSearchCities('New', dropdown);
+        } else {
+          console.error('❌ Dropdown not found');
+        }
+      }
+      
+      // Global error handler
+      window.addEventListener('error', function(e) {
+        console.error('💥 Global error:', e.error, e.message, e.filename, e.lineno);
+      });
+      
+      // Check if functions are available globally
+      window.nuclearSelectCity = nuclearSelectCity;
+      window.testSearch = testSearch;
+    </script>
+    
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />

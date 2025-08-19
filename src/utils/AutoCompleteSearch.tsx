@@ -60,11 +60,23 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
   
   const haptic = useHaptic();
 
-  // Debounced search function
+  // Debounced search function with caching
+  const searchCache = useRef<Map<string, CityResult[]>>(new Map());
+  
   const searchCities = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
       setSuggestions([]);
       setIsOpen(false);
+      return;
+    }
+
+    // Check cache first for instant results
+    const cacheKey = searchQuery.toLowerCase().trim();
+    if (searchCache.current.has(cacheKey)) {
+      const cachedResults = searchCache.current.get(cacheKey)!;
+      setSuggestions(cachedResults);
+      setIsOpen(cachedResults.length > 0);
+      setIsLoading(false);
       return;
     }
 
@@ -80,19 +92,28 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
       // Create new abort controller for this request
       abortControllerRef.current = new AbortController();
       
+      // Optimized query with better parameters for speed
+      const searchParams = new URLSearchParams({
+        q: searchQuery,
+        format: 'json',
+        addressdetails: '1',
+        limit: '6', // Reduced from 8 for faster response
+        countrycodes: '', // Allow all countries
+        'accept-language': 'en', // Force English for consistency
+        dedupe: '1', // Remove duplicates server-side
+        extratags: '0', // Disable extra tags for speed
+        namedetails: '0' // Disable name details for speed
+      });
+      
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?` +
-        `q=${encodeURIComponent(searchQuery)}&` +
-        `format=json&` +
-        `addressdetails=1&` +
-        `limit=8&` +
-        `countrycodes=&` + // Allow all countries
-        `featuretype=city,town,village`, // Focus on populated places
+        `https://nominatim.openstreetmap.org/search?${searchParams}`,
         {
           headers: {
             'User-Agent': 'Weather-App/1.0 (https://github.com/user/weather-app)'
           },
-          signal: abortControllerRef.current.signal
+          signal: abortControllerRef.current.signal,
+          // Add timeout for faster failure
+          cache: 'default'
         }
       );
 
@@ -102,17 +123,56 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
 
       const results: CityResult[] = await response.json();
       
-      // Filter and sort results for better relevance
+      // Optimized filtering for better performance and relevance
       const filteredResults = results
         .filter(result => {
-          // Only include populated places (cities, towns, villages)
-          const validTypes = ['city', 'town', 'village', 'administrative'];
-          return validTypes.some(type => 
-            result.type?.includes(type) || 
-            result.display_name?.toLowerCase().includes(type)
-          );
+          // Quick relevance check - prioritize exact matches
+          const searchLower = searchQuery.toLowerCase();
+          const displayLower = result.display_name.toLowerCase();
+          
+          // Boost exact city name matches
+          if (result.address?.city?.toLowerCase().includes(searchLower) ||
+              result.address?.town?.toLowerCase().includes(searchLower) ||
+              result.address?.village?.toLowerCase().includes(searchLower)) {
+            return true;
+          }
+          
+          // Include if display name starts with search term (high relevance)
+          if (displayLower.startsWith(searchLower)) {
+            return true;
+          }
+          
+          // Include if any part of display name contains search term
+          return displayLower.includes(searchLower);
         })
-        .slice(0, 6); // Limit to 6 suggestions for better UX
+        // Sort by relevance - exact matches first
+        .sort((a, b) => {
+          const searchLower = searchQuery.toLowerCase();
+          const aCity = (a.address?.city || a.address?.town || a.address?.village || '').toLowerCase();
+          const bCity = (b.address?.city || b.address?.town || b.address?.village || '').toLowerCase();
+          
+          // Exact city name matches first
+          if (aCity === searchLower && bCity !== searchLower) return -1;
+          if (bCity === searchLower && aCity !== searchLower) return 1;
+          
+          // Starts with search term next
+          if (aCity.startsWith(searchLower) && !bCity.startsWith(searchLower)) return -1;
+          if (bCity.startsWith(searchLower) && !aCity.startsWith(searchLower)) return 1;
+          
+          return 0;
+        })
+        .slice(0, 5); // Reduced to 5 for faster rendering
+
+      // Cache results for future use
+      searchCache.current.set(cacheKey, filteredResults);
+      
+      // Limit cache size to prevent memory issues
+      if (searchCache.current.size > 50) {
+        const firstKey = searchCache.current.keys().next().value;
+        if (firstKey) {
+          searchCache.current.delete(firstKey);
+        }
+      }
 
       setSuggestions(filteredResults);
       setIsOpen(filteredResults.length > 0);
@@ -129,15 +189,18 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
     }
   }, [onError]);
 
-  // Debounce search requests
+  // Faster debounce for better responsiveness  
   useEffect(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
+    // Reduce debounce time for snappier response
+    const debounceTime = query.length >= 3 ? 150 : 250; // Faster for longer queries
+    
     timeoutRef.current = setTimeout(() => {
       searchCities(query);
-    }, 300); // 300ms debounce
+    }, debounceTime);
 
     return () => {
       if (timeoutRef.current) {
@@ -149,19 +212,22 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
       if (
         dropdownRef.current && 
-        !dropdownRef.current.contains(event.target as Node) &&
+        !dropdownRef.current.contains(target) &&
         inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
+        !inputRef.current.contains(target)
       ) {
         setIsOpen(false);
         setSelectedIndex(-1);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // Use capture phase to prevent interference with other click handlers
+    document.addEventListener('mousedown', handleClickOutside, true);
+    return () => document.removeEventListener('mousedown', handleClickOutside, true);
   }, []);
 
   // Handle keyboard navigation
@@ -370,7 +436,11 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
             {suggestions.map((suggestion, index) => (
               <button
                 key={suggestion.place_id}
-                onClick={() => handleSuggestionSelect(suggestion)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSuggestionSelect(suggestion);
+                }}
                 style={{
                   width: '100%',
                   padding: '12px 16px',

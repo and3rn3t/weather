@@ -34,6 +34,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const isDark = themeName === 'dark';
 
   const toggleTheme = useCallback(() => {
+    console.log('🎨 Theme toggle triggered - legitimate theme change');
     const newTheme: ThemeName = themeName === 'light' ? 'dark' : 'light';
     setThemeName(newTheme);
     localStorage.setItem('weather-app-theme', newTheme);
@@ -42,14 +43,20 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Apply theme to document body for global effects
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.body.style.transition = 'background 0.6s ease';
-      document.body.style.background = theme.appBackground;
-      // Toggle dark-theme class for CSS variables
+      // NUCLEAR FIX: Completely disable automatic background changes
+      // Let the nuclear system in index.html handle all background changes
+      console.log('🚫 React theme context disabled - nuclear system handling background');
+      
+      // Only toggle dark-theme class for CSS variables (safe)
       if (themeName === 'dark') {
         document.body.classList.add('dark-theme');
       } else {
         document.body.classList.remove('dark-theme');
       }
+      
+      // Store theme info for nuclear system but don't apply background
+      document.body.setAttribute('data-theme', themeName);
+      document.body.setAttribute('data-theme-bg', theme.appBackground);
     }
   }, [theme.appBackground, themeName]);
 

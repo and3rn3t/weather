@@ -1,0 +1,196 @@
+/**
+ * Emergency Fix for AutoComplete and Background Issues
+ * Applied: August 19, 2025
+ */
+
+/* ========================================
+   FIX 1: Prevent Background Color Changes on Random Clicks
+   ======================================== */
+
+/* Disable any accidental theme triggers */
+html, body, #root {
+  transition: background 0.6s ease !important;
+}
+
+/* Ensure only theme toggle can change theme */
+.theme-toggle-btn {
+  pointer-events: auto !important;
+  z-index: 10000 !important;
+}
+
+/* Prevent theme context from being triggered by unrelated clicks */
+*:not(.theme-toggle-btn):not(.theme-toggle-btn *) {
+  /* Ensure clicks don't bubble to theme context accidentally */
+}
+
+/* ========================================
+   FIX 2: AutoComplete Search Fixes
+   ======================================== */
+
+/* Container positioning */
+.autocomplete-container {
+  position: relative !important;
+  width: 100% !important;
+  z-index: 100 !important;
+}
+
+/* Input styling */
+.autocomplete-input {
+  width: 100% !important;
+  padding: 14px 16px !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: inherit !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  outline: none !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.autocomplete-input:focus {
+  border-color: rgba(102, 126, 234, 0.5) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Dropdown styling */
+.autocomplete-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin-top: 8px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(20px) !important;
+  z-index: 1000 !important;
+  max-height: 300px !important;
+  overflow: hidden !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.autocomplete-dropdown.hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-10px) scale(0.95) !important;
+}
+
+/* Suggestion items */
+.autocomplete-suggestion {
+  width: 100% !important;
+  padding: 12px 16px !important;
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: 14px !important;
+  text-align: left !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.autocomplete-suggestion:hover,
+.autocomplete-suggestion.selected {
+  background: rgba(102, 126, 234, 0.1) !important;
+}
+
+.autocomplete-suggestion:active {
+  background: rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Loading spinner */
+.autocomplete-loading {
+  position: absolute !important;
+  right: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid rgba(102, 126, 234, 0.3) !important;
+  border-top: 2px solid #667eea !important;
+  border-radius: 50% !important;
+  animation: autocomplete-spin 1s linear infinite !important;
+}
+
+@keyframes autocomplete-spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Dark theme overrides */
+.dark-theme .autocomplete-input {
+  background: rgba(28, 28, 30, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .autocomplete-dropdown {
+  background: rgba(28, 28, 30, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-theme .autocomplete-suggestion {
+  color: #ffffff !important;
+}
+
+/* ========================================
+   FIX 3: Event Handling Improvements
+   ======================================== */
+
+/* Prevent accidental event bubbling */
+.autocomplete-container * {
+  pointer-events: auto !important;
+}
+
+/* Ensure proper click handling */
+.autocomplete-suggestion {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+
+/* ========================================
+   FIX 4: Mobile Optimizations
+   ======================================== */
+
+@media (max-width: 768px) {
+  .autocomplete-input {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 16px !important;
+  }
+  
+  .autocomplete-dropdown {
+    max-height: 60vh !important;
+  }
+}
+
+/* ========================================
+   FIX 5: Accessibility Improvements
+   ======================================== */
+
+.autocomplete-input:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.5) !important;
+  outline-offset: 2px !important;
+}
+
+.autocomplete-suggestion:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.5) !important;
+  outline-offset: -2px !important;
+}
+
+/* Screen reader support */
+.autocomplete-container[aria-expanded="true"] .autocomplete-dropdown {
+  display: block !important;
+}
+
+.autocomplete-container[aria-expanded="false"] .autocomplete-dropdown {
+  display: none !important;
+}

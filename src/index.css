@@ -3,7 +3,20 @@
 @import './styles/mobileEnhancements.css';
 @import './styles/modernWeatherUI.css';
 @import './styles/iosComponents.css';
+
+/* NEW: Enhanced mobile readability styles */
+@import './styles/enhancedMobileTypography.css';
+@import './styles/enhancedMobileLayout.css';
+@import './styles/enhancedWeatherDisplay.css';
+@import './styles/enhancedForecast.css';
+@import './styles/enhancedMobileNavigation.css';
+
+/* NEW: iOS 26 Design System Styles */
+@import './styles/iOS26DesignSystem.css';
+@import './styles/iOS26WeatherInterface.css';
+
 @import './navigation-fix-simple.css'; /* SINGLE CLEAN FIX */
+@import './autocomplete-emergency-fix.css'; /* AutoComplete & Background Fix */
 
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;

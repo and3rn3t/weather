@@ -29,6 +29,7 @@ import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
 import DeploymentStatus from '../utils/DeploymentStatus';
 import LocationButton from '../utils/LocationButton';
 import AutoCompleteSearch from '../utils/AutoCompleteSearch';
+import SimpleAutocomplete from '../utils/SimpleAutocomplete';
 import GeolocationVerification from '../utils/GeolocationVerification';
 import { useCityManagement } from '../utils/useCityManagement';
 import type { ThemeColors } from '../utils/themeConfig';
@@ -54,11 +55,8 @@ import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
 import ModernForecast from '../components/modernWeatherUI/ModernForecast';
 // iOS 26 Enhanced Components
 import { 
-  iOS26WeatherCard, 
   QuickActionsPanel, 
-  WeatherMetricsGrid, 
-  iOS26NavigationBar,
-  type WeatherMetric 
+  WeatherMetricsGrid
 } from '../components/modernWeatherUI/iOS26MainScreen';
 import '../styles/iOS26.css';
 // iOS HIG Components
@@ -217,24 +215,6 @@ type DailyForecast = {
 
 /** Mobile-optimized button style creator with proper touch targets */
 /** Mobile-optimized card style with responsive padding */
-const createCardStyle = (theme: ThemeColors, isWeatherCard = false) => ({
-  backgroundColor: isWeatherCard ? theme.weatherCardBackground : theme.forecastCardBackground,
-  padding: '16px', // Base mobile padding
-  borderRadius: '12px',
-  border: `1px solid ${isWeatherCard ? theme.weatherCardBorder : theme.forecastCardBorder}`,
-  transition: 'all 0.5s ease',
-  // Mobile optimizations
-  minHeight: '44px', // Ensure touch-friendly minimum size
-  boxSizing: 'border-box' as const,
-  // Responsive padding via CSS custom properties
-  '@media (min-width: 768px)': {
-    padding: '20px'
-  },
-  '@media (min-width: 1024px)': {
-    padding: '24px'
-  }
-});
-
 /** Weather detail item configuration */
 const weatherDetailItems = [
   { key: 'humidity', icon: '💧', label: 'HUMIDITY', getValue: (weather: WeatherData) => `${weather.main.humidity}%` },
@@ -325,7 +305,7 @@ function HomeScreen({
   haptic: ReturnType<typeof useHaptic>;
 }>) {
   return (
-    <div style={{ padding: '0', minHeight: '100vh' }}>
+    <div className="ios26-container ios26-p-0 ios26-h-screen">
       {/* iOS 26 Navigation Bar */}
       <iOS26NavigationBar
         title="Weather"
@@ -454,17 +434,12 @@ function WeatherDetailsScreen({
       <PullToRefresh
         onRefresh={onRefresh}
         disabled={loading}
-        style={{ width: '100%' }}
+        className="ios26-w-full"
       >
-        <div style={{
-          padding: '20px',
-          paddingBottom: '100px', // Space for navigation
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 69, 19, 0.05) 100%)',
-        }}>
+        <div className="ios26-weather-interface">
           
           {/* View Segmented Control */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="ios26-mb-4">
             <SimpleSegmentedControl
               segments={['Current', 'Hourly', 'Daily']}
               selectedIndex={selectedView}
@@ -474,26 +449,14 @@ function WeatherDetailsScreen({
           </div>
           
           {/* Search Section */}
-          <div style={{
-            marginBottom: '24px',
-            display: 'flex',
-            gap: '12px',
-            flexDirection: 'column'
-          }}>
-            <AutoCompleteSearch
+          <div className="ios26-forecast-section">
+            <SimpleAutocomplete
               theme={theme}
-              isMobile={true}
               onCitySelected={getWeatherByLocation}
-              onError={(error) => setError(error)}
               disabled={loading}
               placeholder="Search for a city..."
-              initialValue={city}
             />
-            <div style={{ 
-              display: 'flex', 
-              gap: '12px',
-              flexWrap: 'wrap'
-            }}>
+            <div className="ios26-quick-actions">
               <LocationButton
                 theme={theme}
                 isMobile={true}
@@ -529,7 +492,7 @@ function WeatherDetailsScreen({
 
           {/* Weather Status Indicators */}
           {weather && (
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+            <div className="ios26-quick-actions">
               <SimpleStatusBadge text="Live Data" variant="success" />
               {weather.main.temp > 90 && (
                 <SimpleStatusBadge text="Heat Advisory" variant="warning" />
@@ -546,7 +509,7 @@ function WeatherDetailsScreen({
           {/* Main Weather Card */}
           {loading && !weather && (
             <SimpleCard theme={theme}>
-              <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div className="ios26-text-center ios26-p-4">
                 <SimpleActivityIndicator 
                   size="medium" 
                   theme={theme} 
@@ -710,110 +673,92 @@ const WeatherMainCard = React.memo(({ weather, city, theme, isMobile, weatherCod
   weatherCode: number
 }>) => {
   return (
-    <div style={{
-      background: theme.weatherCardBackground,
-      padding: '32px',
-      borderRadius: '20px',
-      border: `2px solid ${theme.weatherCardBorder}`,
-      boxShadow: '0 10px 30px rgba(14, 165, 233, 0.1)',
-      textAlign: 'center',
-      transition: 'all 0.6s ease'
-    }}>
-      <div style={{
-        display: 'inline-block',
-        background: theme.weatherCardBadge,
-        color: theme.inverseText,
-        padding: '12px 24px',
-        borderRadius: '50px',
-        fontSize: '14px',
-        fontWeight: '600',
-        marginBottom: '24px',
-        textTransform: 'uppercase',
-        letterSpacing: '1px'
-      }}>
-        📍 {city}
+    <div className="ios26-main-weather-card">
+      <div className="ios26-weather-header">
+        <div className="ios26-weather-location">
+          <span className="ios26-text-headline ios26-text-primary ios26-text-semibold">
+            📍 {city}
+          </span>
+        </div>
       </div>
-      <div style={{
-        fontSize: isMobile ? '36px' : '48px',
-        fontWeight: '800',
-        color: theme.primaryText,
-        marginBottom: '8px',
-        letterSpacing: isMobile ? '-1px' : '-2px'
-      }}>
-        {Math.round(weather.main.temp)}°F
+      
+      <div className="ios26-temperature-section">
+        <div className="ios26-weather-icon-container">
+          <WeatherIcon 
+            code={weatherCode} 
+            size={Math.min(window.innerWidth * 0.2, 80)}
+            animate={true}
+          />
+        </div>
+        
+        <div className="ios26-temperature-display">
+          <span className="ios26-temperature-value">
+            {Math.round(weather.main.temp)}°
+          </span>
+          <span className="ios26-temperature-unit">F</span>
+        </div>
+        
+        <div className="ios26-text-subheadline ios26-text-secondary ios26-feels-like">
+          Feels like {Math.round(weather.main.feels_like)}°F
+        </div>
+        
+        <div className="ios26-text-title3 ios26-text-primary ios26-text-medium ios26-weather-condition">
+          {weather.weather[0].description}
+        </div>
       </div>
-      <div style={{
-        fontSize: '16px',
-        color: theme.secondaryText,
-        marginBottom: '8px'
-      }}>
-        Feels like {Math.round(weather.main.feels_like)}°F
-      </div>
-      <div style={{
-        fontSize: '20px',
-        color: theme.primaryText,
-        textTransform: 'capitalize',
-        fontWeight: '500',
-        marginBottom: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '12px'
-      }}>
-        <WeatherIcon code={weatherCode} size={48} animated={true} className="main-weather-icon" />
-        {weather.weather[0].description}
-      </div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-        gap: '16px',
-        marginBottom: '16px',
-        textAlign: 'left'
-      }}>
+      <div className="ios26-weather-metrics-grid">
         {weatherDetailItems.map(item => (
-          <div key={item.key} style={createCardStyle(theme)}>
-            <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
-              {item.icon} {item.label}
-            </div>
-            <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
-              {item.getValue(weather)}
-            </div>
-            {item.subValue && (
-              <div style={{ fontSize: '12px', color: theme.secondaryText }}>
-                {item.subValue(weather)}
+          <div key={item.key} className="ios26-weather-metric">
+            <div className="ios26-weather-metric-content">
+              <div className="ios26-weather-metric-icon">{item.icon}</div>
+              <div className="ios26-weather-metric-text">
+                <div className="ios26-text-title2 ios26-text-primary ios26-weather-metric-value">
+                  {item.getValue(weather)}
+                </div>
+                <div className="ios26-text-footnote ios26-text-secondary ios26-weather-metric-label">
+                  {item.label}
+                </div>
+                {item.subValue && (
+                  <div className="ios26-text-caption2 ios26-text-tertiary ios26-weather-metric-subtitle">
+                    {item.subValue(weather)}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         ))}
         {weather.uv_index > 0 && (
-          <div style={createCardStyle(theme)}>
-            <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
-              ☀️ UV INDEX
-            </div>
-            <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
-              {Math.round(weather.uv_index)}
+          <div className="ios26-weather-metric">
+            <div className="ios26-weather-metric-content">
+              <div className="ios26-weather-metric-icon">☀️</div>
+              <div className="ios26-weather-metric-text">
+                <div className="ios26-text-title2 ios26-text-primary ios26-weather-metric-value">
+                  {Math.round(weather.uv_index)}
+                </div>
+                <div className="ios26-text-footnote ios26-text-secondary ios26-weather-metric-label">
+                  UV INDEX
+                </div>
+              </div>
             </div>
           </div>
         )}
         {weather.visibility > 0 && (
-          <div style={createCardStyle(theme)}>
-            <div style={{ fontSize: '12px', color: theme.secondaryText, marginBottom: '4px', fontWeight: '600' }}>
-              👁️ VISIBILITY
-            </div>
-            <div style={{ fontSize: '18px', color: theme.primaryText, fontWeight: '700' }}>
-              {Math.round(weather.visibility / 1000)} km
+          <div className="ios26-weather-metric">
+            <div className="ios26-weather-metric-content">
+              <div className="ios26-weather-metric-icon">👁️</div>
+              <div className="ios26-weather-metric-text">
+                <div className="ios26-text-title2 ios26-text-primary ios26-weather-metric-value">
+                  {Math.round(weather.visibility / 1000)} km
+                </div>
+                <div className="ios26-text-footnote ios26-text-secondary ios26-weather-metric-label">
+                  VISIBILITY
+                </div>
+              </div>
             </div>
           </div>
         )}
       </div>
-      <div style={{
-        width: '60px',
-        height: '4px',
-        background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-        borderRadius: '2px',
-        margin: '0 auto',
-        marginBottom: '32px'
-      }}></div>
+      <div className="ios26-pull-indicator"></div>
     </div>
   );
 });
@@ -828,90 +773,44 @@ const HourlyForecastSection = React.memo(({ loading, hourlyForecast, theme, isMo
 }>) => {
   if (loading && hourlyForecast.length === 0) {
     return (
-      <div style={{ marginBottom: '32px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          fontWeight: '600',
-          color: theme.primaryText,
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
+      <div className="ios26-forecast-section">
+        <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
           🕐 24-Hour Forecast
-        </h3>
+        </div>
         <HourlyForecastSkeleton />
       </div>
     );
   }
   if (hourlyForecast.length > 0) {
     return (
-      <div style={{ marginBottom: '32px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          fontWeight: '600',
-          color: theme.primaryText,
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
+      <div className="ios26-forecast-section">
+        <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
           🕐 24-Hour Forecast
-        </h3>
-        <div style={{
-          display: 'flex',
-          gap: '12px',
-          overflowX: 'auto',
-          paddingBottom: '8px',
-          scrollbarWidth: 'thin',
-          WebkitOverflowScrolling: 'touch',
-          scrollBehavior: 'smooth',
-          scrollSnapType: isMobile ? 'x mandatory' : 'none',
-          scrollPadding: '16px'
-        }}>
+        </div>
+        <div className="ios26-forecast-scroll">
           {hourlyForecast.slice(0, 24).map((hour, index) => {
             const timeStr = formatHourTime(hour.time);
             return (
               <div
                 key={`hour-${hour.time}-${index}`}
-                style={{
-                  minWidth: '80px',
-                  ...createCardStyle(theme),
-                  padding: '12px 8px',
-                  textAlign: 'center',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                  scrollSnapAlign: isMobile ? 'start' : 'none',
-                  flexShrink: 0
-                }}
+                className="ios26-forecast-item"
               >
-                <div style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  fontWeight: '500',
-                  marginBottom: '6px'
-                }}>
+                <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time">
                   {timeStr}
                 </div>
-                <div style={{ marginBottom: '8px' }}>
+                <div className="ios26-forecast-icon">
                   <WeatherIcon code={hour.weatherCode} size={32} animated={true} />
                 </div>
-                <div style={{
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  color: theme.primaryText,
-                  marginBottom: '4px'
-                }}>
-                  {hour.temperature}°F
+                <div className="ios26-forecast-temperature">
+                  <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
+                    {hour.temperature}°F
+                  </div>
                 </div>
-                <div style={{
-                  fontSize: '10px',
-                  color: theme.secondaryText,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1px'
-                }}>
-                  <span>💧 {hour.humidity}%</span>
-                  <span>Feels {hour.feelsLike}°</span>
+                <div className="ios26-text-caption2 ios26-text-tertiary">
+                  💧 {hour.humidity}%
+                </div>
+                <div className="ios26-text-caption2 ios26-text-tertiary">
+                  Feels {hour.feelsLike}°
                 </div>
               </div>
             );
@@ -932,116 +831,57 @@ const DailyForecastSection = React.memo(({ loading, dailyForecast, theme }: Read
 }>) => {
   if (loading && dailyForecast.length === 0) {
     return (
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          fontWeight: '600',
-          color: theme.primaryText,
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
+      <div className="ios26-forecast-section">
+        <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
           📅 7-Day Forecast
-        </h3>
+        </div>
         <ForecastListSkeleton items={7} />
       </div>
     );
   }
   if (dailyForecast.length > 0) {
     return (
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          fontWeight: '600',
-          color: theme.primaryText,
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
+      <div className="ios26-forecast-section">
+        <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
           📅 7-Day Forecast
-        </h3>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }}>
+        </div>
+        <div className="ios26-forecast-scroll">
           {dailyForecast.map((day, index) => {
             const { dayName, dateStr, isToday } = formatDayInfo(day.date, index);
             return (
               <div
                 key={`day-${day.date}-${index}`}
-                style={{
-                  ...createCardStyle(theme),
-                  backgroundColor: isToday ? `${theme.weatherCardBorder}20` : theme.forecastCardBackground,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  border: `1px solid ${isToday ? theme.weatherCardBorder + '50' : theme.forecastCardBorder}`,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                }}
+                className="ios26-forecast-item"
               >
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  minWidth: '80px'
-                }}>
-                  <div style={{
-                    fontSize: '16px',
-                    fontWeight: isToday ? '700' : '600',
-                    color: isToday ? theme.weatherCardBorder : theme.primaryText
-                  }}>
+                <div className="ios26-forecast-time">
+                  <div className={`ios26-text-subheadline ${isToday ? 'ios26-text-bold ios26-text-primary' : 'ios26-text-semibold ios26-text-primary'}`}>
                     {dayName}
                   </div>
-                  <div style={{
-                    fontSize: '12px',
-                    color: theme.secondaryText
-                  }}>
+                  <div className="ios26-text-caption ios26-text-secondary">
                     {dateStr}
                   </div>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flex: '1',
-                  justifyContent: 'center'
-                }}>
+                
+                <div className="ios26-forecast-icon">
                   <WeatherIcon code={day.weatherCode} size={36} animated={true} />
                 </div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  minWidth: '100px',
-                  justifyContent: 'flex-end'
-                }}>
-                  <div style={{
-                    fontSize: '16px',
-                    fontWeight: '700',
-                    color: theme.primaryText
-                  }}>
+                
+                <div className="ios26-forecast-temp-range">
+                  <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
                     {day.tempMax}°
                   </div>
-                  <div style={{
-                    fontSize: '14px',
-                    color: theme.secondaryText
-                  }}>
+                  <div className="ios26-text-subheadline ios26-text-secondary">
                     {day.tempMin}°
                   </div>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-end',
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  gap: '2px'
-                }}>
-                  {day.precipitation > 0 && (
-                    <span>🌧️ {day.precipitation}mm</span>
-                  )}
-                  <span>💨 {day.windSpeed}mph</span>
+                
+                {day.precipitation > 0 && (
+                  <div className="ios26-text-caption2 ios26-text-tertiary">
+                    🌧️ {day.precipitation}mm
+                  </div>
+                )}
+                <div className="ios26-text-caption2 ios26-text-tertiary">
+                  💨 {day.windSpeed}mph
                 </div>
               </div>
             );
@@ -1385,19 +1225,7 @@ const AppNavigator = () => {
       
       {/* Background Refresh Status - Development info */}
       {backgroundRefresh.isInitialized && (
-        <div style={{
-          position: 'fixed',
-          top: screenInfo.width < 768 ? '40px' : '10px',
-          right: '10px',
-          zIndex: 1000,
-          fontSize: '10px',
-          color: theme.primaryText,
-          background: theme.cardBackground,
-          padding: '4px 8px',
-          borderRadius: '4px',
-          border: `1px solid ${theme.weatherCardBorder}`,
-          opacity: 0.7,
-        }}>
+        <div className="ios26-dev-status">
           🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} | 
           📊 {backgroundRefresh.stats.totalRefreshes} total | 
           🌐 {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
@@ -1589,15 +1417,7 @@ const AppNavigator = () => {
       
       {/* iOS Component Showcase - Overlay */}
       {showIOSDemo && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 10000,
-          backgroundColor: theme.appBackground
-        }}>
+        <div className="ios26-overlay">
           <IOSComponentShowcase
             theme={theme}
             themeName={themeName}
