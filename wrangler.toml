@@ -5,18 +5,18 @@ name = "premium-weather-app"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Pages configuration - Required for Pages deployment
+pages_build_output_dir = "dist"
+
 # Build configuration
 [build]
 command = "npm run build"
 cwd = "."
 watch_dir = "src"
 
-# Pages configuration - Required for Pages deployment
-pages_build_output_dir = "dist"
-
 [pages]
 build_command = "npm run build"
-destination_dir = "dist"
+build_output_dir = "dist"
 source_dir = "."
 
 # Environment variables
