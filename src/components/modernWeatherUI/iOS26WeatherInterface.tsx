@@ -16,9 +16,9 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react';
-import { useState, useCallback } from 'react';
-import WeatherIcon from '../../utils/weatherIcons';
+import { useCallback, useState } from 'react';
 import type { ThemeColors } from '../../utils/themeConfig';
+import WeatherIcon from '../../utils/weatherIcons';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -70,7 +70,7 @@ interface WeatherMetricProps {
 // iOS 26 WEATHER METRIC COMPONENT
 // ============================================================================
 
-const iOS26WeatherMetric: React.FC<WeatherMetricProps> = ({
+export const iOS26WeatherMetric: React.FC<WeatherMetricProps> = ({
   label,
   value,
   icon,
@@ -107,7 +107,7 @@ const iOS26WeatherMetric: React.FC<WeatherMetricProps> = ({
 // iOS 26 FORECAST ITEM COMPONENT
 // ============================================================================
 
-const iOS26ForecastItem: React.FC<{
+export const iOS26ForecastItem: React.FC<{
   time: string;
   temperature: number | { high: number; low: number };
   weatherCode: number;
@@ -121,7 +121,7 @@ const iOS26ForecastItem: React.FC<{
       </div>
 
       <div className="ios26-forecast-icon">
-        <WeatherIcon code={weatherCode} size={28} animate={true} />
+        <WeatherIcon code={weatherCode} size={28} animated={true} />
       </div>
 
       {precipitation !== undefined && precipitation > 0 && (
@@ -233,7 +233,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
             <WeatherIcon
               code={weatherData.weatherCode}
               size={Math.min(window.innerWidth * 0.25, 120)}
-              animate={true}
+              animated={true}
             />
           </div>
 

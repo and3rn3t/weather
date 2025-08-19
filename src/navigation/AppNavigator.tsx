@@ -20,74 +20,71 @@
  * production user interface with full accessibility compliance.
  */
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import WeatherIcon from '../utils/weatherIcons';
-import { useTheme } from '../utils/useTheme';
-import { useHaptic } from '../utils/hapticHooks';
-import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
-import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
-import DeploymentStatus from '../utils/DeploymentStatus';
-import LocationButton from '../utils/LocationButton';
-import AutoCompleteSearch from '../utils/AutoCompleteSearch';
-import SimpleAutocomplete from '../utils/SimpleAutocomplete';
-import GeolocationVerification from '../utils/GeolocationVerification';
-import { useCityManagement } from '../utils/useCityManagement';
-import type { ThemeColors } from '../utils/themeConfig';
-import ThemeToggle from '../utils/ThemeToggle';
-import {
-  ForecastListSkeleton,
-  HourlyForecastSkeleton,
-} from '../utils/LoadingSkeletons';
-import PullToRefresh from '../utils/PullToRefresh';
-import NativeStatusDisplay from '../utils/NativeStatusDisplay';
-import { useWeatherBackgroundRefresh } from '../utils/useBackgroundRefresh';
-import {
-  useWeatherAPIOptimization,
-  useWeatherDataTransform,
-} from '../utils/useWeatherOptimization';
-import PerformanceMonitor from '../utils/PerformanceMonitor';
-import { LocationTester } from '../utils/LocationTester';
-import MobileDebug from '../utils/MobileDebug';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import FavoritesScreen from '../components/FavoritesScreen';
+import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
 } from '../components/MobileNavigation';
 import { ScreenContainer } from '../components/ScreenTransition';
-import SettingsScreen from '../components/SettingsScreen';
 import SearchScreen from '../components/SearchScreen';
-import FavoritesScreen from '../components/FavoritesScreen';
-import LocationManager from '../components/LocationManager';
+import SettingsScreen from '../components/SettingsScreen';
+import DeploymentStatus from '../utils/DeploymentStatus';
+import GeolocationVerification from '../utils/GeolocationVerification';
+import { useHaptic } from '../utils/hapticHooks';
+import {
+  ForecastListSkeleton,
+  HourlyForecastSkeleton,
+} from '../utils/LoadingSkeletons';
+import LocationButton from '../utils/LocationButton';
+import { LocationTester } from '../utils/LocationTester';
+import MobileDebug from '../utils/MobileDebug';
+import NativeStatusDisplay from '../utils/NativeStatusDisplay';
+import PerformanceMonitor from '../utils/PerformanceMonitor';
+import PullToRefresh from '../utils/PullToRefresh';
+import SimpleAutocomplete from '../utils/SimpleAutocomplete';
+import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
+import type { ThemeColors } from '../utils/themeConfig';
+import ThemeToggle from '../utils/ThemeToggle';
+import { useWeatherBackgroundRefresh } from '../utils/useBackgroundRefresh';
+import { useCityManagement } from '../utils/useCityManagement';
+import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
+import { useTheme } from '../utils/useTheme';
+import {
+  useWeatherAPIOptimization,
+  useWeatherDataTransform,
+} from '../utils/useWeatherOptimization';
+import WeatherIcon from '../utils/weatherIcons';
 // Enhanced Mobile Components
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
-// Modern UI Components
-import ModernHomeScreen from '../components/modernWeatherUI/ModernHomeScreen';
-import ModernForecast from '../components/modernWeatherUI/ModernForecast';
-// iOS 26 Enhanced Components
+// iOS 26 Modern UI Components - Complete Suite
 import {
   QuickActionsPanel,
   WeatherMetricsGrid,
 } from '../components/modernWeatherUI/iOS26MainScreen';
+import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
 import '../styles/iOS26.css';
 // iOS HIG Components
-import {
-  SimpleSegmentedControl,
-  SimpleActivityIndicator,
-  SimpleStatusBadge,
-  SimpleEnhancedButton,
-  SimpleCard,
-} from '../components/modernWeatherUI/SimpleIOSComponents';
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
+import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShowcase';
 import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
 import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
-import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShowcase';
-import '../styles/modernWeatherUI.css';
-import '../styles/iosComponents.css';
 import {
-  getScreenInfo,
+  SimpleActivityIndicator,
+  SimpleCard,
+  SimpleEnhancedButton,
+  SimpleSegmentedControl,
+  SimpleStatusBadge,
+} from '../components/modernWeatherUI/SimpleIOSComponents';
+import '../styles/iosComponents.css';
+import '../styles/modernWeatherUI.css';
+import {
+  getAdaptiveBorderRadius,
   getAdaptiveFontSizes,
   getAdaptiveSpacing,
-  getAdaptiveBorderRadius,
-  getTouchOptimizedButton,
   getMobileOptimizedContainer,
+  getScreenInfo,
+  getTouchOptimizedButton,
   handleOrientationChange,
   type ScreenInfo,
 } from '../utils/mobileScreenOptimization';
@@ -372,8 +369,8 @@ function HomeScreen({
         }}
       />
 
-      {/* Modern Home Screen Content */}
-      <ModernHomeScreen
+      {/* iOS 26 Weather Demo - Simple Integration */}
+      <IOS26WeatherDemo
         theme={theme}
         onNavigate={(screen: string) => {
           haptic.buttonPress();
@@ -625,34 +622,47 @@ function WeatherDetailsScreen({
             />
           )}
 
-          {/* Forecast Sections - Show based on selected view */}
+          {/* iOS 26 Weather Interface - Enhanced Forecast */}
           {selectedView === 1 || selectedView === 2 ? (
-            <ModernForecast
+            <iOS26WeatherInterface
+              weatherData={{
+                temperature: Math.round(weather?.main?.temp || 20),
+                condition: weather?.weather?.[0]?.description || 'Clear',
+                location: city,
+                humidity: weather?.main?.humidity || 50,
+                windSpeed: weather?.wind?.speed || 0,
+                pressure: weather?.main?.pressure || 1013,
+                feelsLike: Math.round(weather?.main?.feels_like || 20),
+                weatherCode: weatherCode,
+                hourlyForecast:
+                  selectedView === 1
+                    ? hourlyForecast.map(hour => ({
+                        time: hour.time,
+                        temperature: hour.temperature,
+                        weatherCode: hour.weatherCode,
+                        precipitation: hour.humidity, // Using humidity as placeholder
+                      }))
+                    : [],
+                dailyForecast:
+                  selectedView === 2
+                    ? dailyForecast.map(day => ({
+                        day: day.date,
+                        high: day.tempMax,
+                        low: day.tempMin,
+                        weatherCode: day.weatherCode,
+                        precipitation: day.precipitation,
+                      }))
+                    : [],
+              }}
               theme={theme}
-              hourlyData={
-                selectedView === 1
-                  ? hourlyForecast.map(hour => ({
-                      time: hour.time,
-                      temperature: hour.temperature,
-                      weatherCode: hour.weatherCode,
-                      humidity: hour.humidity,
-                      feelsLike: hour.feelsLike,
-                    }))
-                  : []
-              }
-              dailyData={
-                selectedView === 2
-                  ? dailyForecast.map(day => ({
-                      date: day.date,
-                      weatherCode: day.weatherCode,
-                      tempMax: day.tempMax,
-                      tempMin: day.tempMin,
-                      precipitation: day.precipitation,
-                      windSpeed: day.windSpeed,
-                    }))
-                  : []
-              }
               isLoading={loading}
+              onRefresh={onRefresh}
+              onLocationChange={(newLocation: string) => {
+                haptic.buttonPress();
+                getWeather();
+              }}
+              showHourlyForecast={selectedView === 1}
+              showDailyForecast={selectedView === 2}
             />
           ) : null}
         </div>
@@ -925,7 +935,11 @@ const DailyForecastSection = React.memo(
                 >
                   <div className="ios26-forecast-time">
                     <div
-                      className={`ios26-text-subheadline ${isToday ? 'ios26-text-bold ios26-text-primary' : 'ios26-text-semibold ios26-text-primary'}`}
+                      className={`ios26-text-subheadline ${
+                        isToday
+                          ? 'ios26-text-bold ios26-text-primary'
+                          : 'ios26-text-semibold ios26-text-primary'
+                      }`}
                     >
                       {dayName}
                     </div>
@@ -1192,7 +1206,9 @@ const AppNavigator = () => {
     haptic.dataLoad(); // Light haptic feedback when starting search
     try {
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
-      const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
+      const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
+        city
+      )}&format=json&limit=1`;
       const geoResponse = await optimizedFetch(
         geoUrl,
         {
@@ -1259,7 +1275,9 @@ const AppNavigator = () => {
           // If we have weather data, we can try to get the location from recent cities
           // For now, we'll use the city search approach
           const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
-          const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(city)}&format=json&limit=1`;
+          const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
+            city
+          )}&format=json&limit=1`;
           const geoResponse = await fetch(geoUrl, {
             headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
           });
