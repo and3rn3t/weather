@@ -1,6 +1,6 @@
 /**
  * iOS 26 Cutting-Edge Components for Weather App
- * 
+ *
  * Implements the latest iOS design patterns including:
  * - Dynamic Island-style notifications
  * - Fluid typography with adaptive scaling
@@ -17,7 +17,7 @@
  * - Swipe Actions for enhanced interactions
  * - Enhanced Search with Scopes and Suggestions
  * - Smart Haptic Patterns
- * 
+ *
  * Features iOS 26+ design language:
  * - Ultra-smooth animations with spring physics
  * - Advanced glassmorphism and depth
@@ -52,46 +52,57 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   children,
   actions,
   theme,
-  disabled = false
+  disabled = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (disabled) return;
-    
-    if (e.key === 'Enter' || e.key === ' ') {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (disabled) return;
+
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Haptic feedback (will work when integrated with native)
+        if (navigator.vibrate) {
+          navigator.vibrate(10);
+        }
+
+        // Get element position for menu placement
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPosition({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        });
+        setIsVisible(true);
+      }
+    },
+    [disabled]
+  );
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (disabled) return;
+
       e.preventDefault();
       e.stopPropagation();
-      
+
       // Haptic feedback (will work when integrated with native)
       if (navigator.vibrate) {
         navigator.vibrate(10);
       }
-      
-      // Get element position for menu placement
-      const rect = e.currentTarget.getBoundingClientRect();
-      setPosition({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
-      setIsVisible(true);
-    }
-  }, [disabled]);
 
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    if (disabled) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Haptic feedback (will work when integrated with native)
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-    
-    setPosition({ x: e.clientX, y: e.clientY });
-    setIsVisible(true);
-  }, [disabled]);
+      setPosition({ x: e.clientX, y: e.clientY });
+      setIsVisible(true);
+    },
+    [disabled]
+  );
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -102,7 +113,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   useEffect(() => {
     if (isVisible) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isVisible, handleClickOutside]);
 
@@ -111,7 +123,9 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     top: position.y,
     left: position.x,
     zIndex: 1000,
-    backgroundColor: isDark ? 'rgba(44, 44, 46, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: isDark
+      ? 'rgba(44, 44, 46, 0.95)'
+      : 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(30px)',
     borderRadius: '14px',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
@@ -121,7 +135,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     opacity: isVisible ? 1 : 0,
     transform: `scale(${isVisible ? 1 : 0.8})`,
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-    pointerEvents: isVisible ? 'auto' : 'none'
+    pointerEvents: isVisible ? 'auto' : 'none',
   };
 
   const actionStyle = (action: ContextMenuAction): React.CSSProperties => {
@@ -149,30 +163,30 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       fontWeight: '400',
       color: textColor,
       opacity: action.disabled ? 0.5 : 1,
-      transition: 'background-color 0.15s ease'
+      transition: 'background-color 0.15s ease',
     };
   };
 
   const handleActionClick = (action: ContextMenuAction) => {
     if (action.disabled) return;
-    
+
     // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(action.destructive ? [5, 10, 5] : 5);
     }
-    
+
     action.onAction();
     setIsVisible(false);
   };
 
   return (
     <>
-      <div 
-        onContextMenu={handleContextMenu} 
+      <div
+        onContextMenu={handleContextMenu}
         style={{ display: 'inline-block' }}
         role="button"
         tabIndex={disabled ? -1 : 0}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             handleKeyDown(e);
           }
@@ -180,10 +194,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       >
         {children}
       </div>
-      
+
       {isVisible && (
         <div ref={menuRef} style={menuStyle} className="ios26-context-menu">
-          {actions.map((action) => (
+          {actions.map(action => (
             <button
               key={action.id}
               style={actionStyle(action)}
@@ -223,10 +237,12 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
   theme,
   isVisible,
   onTap,
-  duration = 4000
+  duration = 4000,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   useEffect(() => {
     if (isVisible && duration > 0) {
@@ -242,7 +258,9 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
     top: '20px',
     left: '50%',
     zIndex: 1000,
-    backgroundColor: isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: isDark
+      ? 'rgba(0, 0, 0, 0.95)'
+      : 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(30px)',
     borderRadius: isExpanded ? '24px' : '32px',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`,
@@ -254,33 +272,33 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
     opacity: isVisible ? 1 : 0,
     transform: `translateX(-50%) translateY(${isVisible ? '0' : '-100%'}) scale(${isVisible ? 1 : 0.8})`,
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-    pointerEvents: isVisible ? 'auto' : 'none'
+    pointerEvents: isVisible ? 'auto' : 'none',
   };
 
   const contentStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px'
+    gap: '12px',
   };
 
   const textContainerStyle: React.CSSProperties = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px'
+    gap: '2px',
   };
 
   const titleStyle: React.CSSProperties = {
     fontSize: '15px',
     fontWeight: '600',
     color: theme.primaryText,
-    margin: 0
+    margin: 0,
   };
 
   const subtitleStyle: React.CSSProperties = {
     fontSize: '13px',
     color: theme.secondaryText,
-    margin: 0
+    margin: 0,
   };
 
   const progressStyle: React.CSSProperties = {
@@ -289,7 +307,7 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
     borderRadius: '2px',
     overflow: 'hidden',
-    marginTop: '8px'
+    marginTop: '8px',
   };
 
   const progressFillStyle: React.CSSProperties = {
@@ -297,7 +315,7 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
     width: `${progress || 0}%`,
     backgroundColor: '#007AFF',
     borderRadius: '2px',
-    transition: 'width 0.3s ease'
+    transition: 'width 0.3s ease',
   };
 
   const ariaLabel = subtitle ? `${title}, ${subtitle}` : title;
@@ -314,8 +332,8 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
   };
 
   return (
-    <button 
-      style={containerStyle} 
+    <button
+      style={containerStyle}
       className="ios26-live-activity"
       onClick={handleClick}
       onMouseEnter={() => setIsExpanded(true)}
@@ -327,10 +345,12 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
         {icon && <div style={{ flexShrink: 0 }}>{icon}</div>}
         <div style={textContainerStyle}>
           <div style={titleStyle}>{title}</div>
-          {subtitle && isExpanded && <div style={subtitleStyle}>{subtitle}</div>}
+          {subtitle && isExpanded && (
+            <div style={subtitleStyle}>{subtitle}</div>
+          )}
         </div>
       </div>
-      
+
       {progress !== undefined && isExpanded && (
         <div style={progressStyle}>
           <div style={progressFillStyle} />
@@ -359,15 +379,17 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
   theme,
   children,
   onTap,
-  isLoading = false
+  isLoading = false,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const sizeMap = {
     small: { width: '150px', height: '150px', padding: '16px' },
     medium: { width: '320px', height: '150px', padding: '20px' },
-    large: { width: '320px', height: '320px', padding: '24px' }
+    large: { width: '320px', height: '320px', padding: '24px' },
   };
 
   const dimensions = sizeMap[size];
@@ -375,12 +397,14 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
   const containerStyle: React.CSSProperties = {
     width: dimensions.width,
     height: dimensions.height,
-    backgroundColor: isDark ? 'rgba(44, 44, 46, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: isDark
+      ? 'rgba(44, 44, 46, 0.7)'
+      : 'rgba(255, 255, 255, 0.7)',
     backdropFilter: 'blur(20px)',
     borderRadius: '20px',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-    boxShadow: isPressed 
-      ? '0 5px 15px rgba(0, 0, 0, 0.2)' 
+    boxShadow: isPressed
+      ? '0 5px 15px rgba(0, 0, 0, 0.2)'
       : '0 10px 30px rgba(0, 0, 0, 0.15)',
     padding: dimensions.padding,
     cursor: onTap ? 'pointer' : 'default',
@@ -388,7 +412,7 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
     transform: `scale(${isPressed ? 0.98 : 1})`,
     userSelect: 'none',
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -398,7 +422,7 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
     marginBottom: '12px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   };
 
   const contentStyle: React.CSSProperties = {
@@ -407,7 +431,7 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
     flexDirection: 'column',
     justifyContent: 'center',
     opacity: isLoading ? 0.6 : 1,
-    transition: 'opacity 0.3s ease'
+    transition: 'opacity 0.3s ease',
   };
 
   const loadingOverlayStyle: React.CSSProperties = {
@@ -423,7 +447,7 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
     backdropFilter: 'blur(5px)',
     opacity: isLoading ? 1 : 0,
     pointerEvents: isLoading ? 'auto' : 'none',
-    transition: 'opacity 0.3s ease'
+    transition: 'opacity 0.3s ease',
   };
 
   const handlePress = () => {
@@ -452,7 +476,11 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
         <span>{title}</span>
         {isLoading && (
           <div style={{ width: '16px', height: '16px' }}>
-            <svg viewBox="0 0 20 20" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              style={{ animation: 'spin 1s linear infinite' }}
+            >
               <circle
                 cx="10"
                 cy="10"
@@ -466,13 +494,17 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
           </div>
         )}
       </div>
-      
-      <div style={contentStyle}>
-        {children}
-      </div>
-      
+
+      <div style={contentStyle}>{children}</div>
+
       <div style={loadingOverlayStyle}>
-        <div style={{ color: theme.primaryText, fontSize: '14px', fontWeight: '500' }}>
+        <div
+          style={{
+            color: theme.primaryText,
+            fontSize: '14px',
+            fontWeight: '500',
+          }}
+        >
           Updating...
         </div>
       </div>
@@ -499,14 +531,18 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
   title,
   detents = ['medium', 'large'],
   theme,
-  children
+  children,
 }) => {
-  const [currentDetent, setCurrentDetent] = useState<'medium' | 'large'>('medium');
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const [currentDetent, setCurrentDetent] = useState<'medium' | 'large'>(
+    'medium'
+  );
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const detentHeights = {
     medium: '50vh',
-    large: '90vh'
+    large: '90vh',
   };
 
   const overlayStyle: React.CSSProperties = {
@@ -519,7 +555,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     zIndex: 1000,
     opacity: isVisible ? 1 : 0,
     pointerEvents: isVisible ? 'auto' : 'none',
-    transition: 'opacity 0.3s ease'
+    transition: 'opacity 0.3s ease',
   };
 
   const sheetStyle: React.CSSProperties = {
@@ -528,7 +564,9 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     left: 0,
     right: 0,
     height: detentHeights[currentDetent],
-    backgroundColor: isDark ? 'rgba(28, 28, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: isDark
+      ? 'rgba(28, 28, 30, 0.95)'
+      : 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(30px)',
     borderTopLeftRadius: '20px',
     borderTopRightRadius: '20px',
@@ -538,7 +576,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden'
+    overflow: 'hidden',
   };
 
   const handleStyle: React.CSSProperties = {
@@ -547,14 +585,14 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)',
     borderRadius: '3px',
     margin: '12px auto 0',
-    cursor: 'pointer'
+    cursor: 'pointer',
   };
 
   const headerStyle: React.CSSProperties = {
     padding: '20px 24px 0',
     borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
     paddingBottom: '16px',
-    marginBottom: '0'
+    marginBottom: '0',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -562,13 +600,13 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     fontWeight: '600',
     color: theme.primaryText,
     margin: 0,
-    textAlign: 'center'
+    textAlign: 'center',
   };
 
   const contentStyle: React.CSSProperties = {
     flex: 1,
     padding: '24px',
-    overflowY: 'auto'
+    overflowY: 'auto',
   };
 
   const handleDetentChange = () => {
@@ -576,7 +614,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
       const currentIndex = detents.indexOf(currentDetent);
       const nextIndex = (currentIndex + 1) % detents.length;
       setCurrentDetent(detents[nextIndex]);
-      
+
       // Haptic feedback
       if (navigator.vibrate) {
         navigator.vibrate(10);
@@ -591,14 +629,12 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
       <div style={overlayStyle} onClick={onClose} />
       <div style={sheetStyle} className="ios26-modal-sheet">
         <div style={handleStyle} onClick={handleDetentChange} />
-        
+
         <div style={headerStyle}>
           <h2 style={titleStyle}>{title}</h2>
         </div>
-        
-        <div style={contentStyle}>
-          {children}
-        </div>
+
+        <div style={contentStyle}>{children}</div>
       </div>
     </>
   );
@@ -627,7 +663,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
   children,
   leftActions = [],
   rightActions = [],
-  disabled = false
+  disabled = false,
 }) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -642,19 +678,22 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || disabled) return;
-    
+
     const touch = e.touches[0];
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return;
-    
+
     const deltaX = touch.clientX - containerRect.left - containerRect.width / 2;
-    const clampedOffset = Math.max(-maxSwipeDistance, Math.min(maxSwipeDistance, deltaX));
+    const clampedOffset = Math.max(
+      -maxSwipeDistance,
+      Math.min(maxSwipeDistance, deltaX)
+    );
     setSwipeOffset(clampedOffset);
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    
+
     // Auto-close if swipe is not significant
     if (Math.abs(swipeOffset) < 60) {
       setSwipeOffset(0);
@@ -664,14 +703,16 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
   const containerStyle: React.CSSProperties = {
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   };
 
   const contentStyle: React.CSSProperties = {
     transform: `translateX(${swipeOffset}px)`,
-    transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition: isDragging
+      ? 'none'
+      : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     position: 'relative',
-    zIndex: 2
+    zIndex: 2,
   };
 
   const actionsStyle = (side: 'left' | 'right'): React.CSSProperties => ({
@@ -683,7 +724,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     alignItems: 'center',
     opacity: Math.abs(swipeOffset) > 30 ? 1 : 0,
     transform: `translateX(${side === 'left' ? swipeOffset - maxSwipeDistance : swipeOffset + maxSwipeDistance}px)`,
-    transition: isDragging ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    transition: isDragging ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   });
 
   const actionButtonStyle = (action: SwipeAction): React.CSSProperties => ({
@@ -697,7 +738,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
   });
 
   const handleActionClick = (action: SwipeAction) => {
@@ -705,7 +746,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     if (navigator.vibrate) {
       navigator.vibrate(15);
     }
-    
+
     action.onAction();
     setSwipeOffset(0);
   };
@@ -722,7 +763,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
       {/* Left Actions */}
       {leftActions.length > 0 && (
         <div style={actionsStyle('left')}>
-          {leftActions.map((action) => (
+          {leftActions.map(action => (
             <button
               key={action.id}
               style={actionButtonStyle(action)}
@@ -736,14 +777,12 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
       )}
 
       {/* Content */}
-      <div style={contentStyle}>
-        {children}
-      </div>
+      <div style={contentStyle}>{children}</div>
 
       {/* Right Actions */}
       {rightActions.length > 0 && (
         <div style={actionsStyle('right')}>
-          {rightActions.map((action) => (
+          {rightActions.map(action => (
             <button
               key={action.id}
               style={actionButtonStyle(action)}

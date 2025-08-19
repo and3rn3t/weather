@@ -25,13 +25,13 @@
   --mobile-space-8: clamp(24px, 6vw, 40px);
   --mobile-space-9: clamp(32px, 8vw, 48px);
   --mobile-space-10: clamp(40px, 10vw, 60px);
-  
+
   /* Content spacing */
   --mobile-content-gap: var(--mobile-space-6);
   --mobile-section-gap: var(--mobile-space-8);
   --mobile-card-padding: var(--mobile-space-5);
   --mobile-page-padding: var(--mobile-space-4);
-  
+
   /* Touch target enhancements */
   --mobile-touch-min: 44px;
   --mobile-touch-comfortable: 52px;
@@ -51,13 +51,13 @@
   flex-direction: column;
   overflow-x: hidden;
   position: relative;
-  
+
   /* Safe area support with enhanced padding */
   padding-top: max(env(safe-area-inset-top), var(--mobile-space-4));
   padding-bottom: max(env(safe-area-inset-bottom), var(--mobile-space-4));
   padding-left: max(env(safe-area-inset-left), var(--mobile-space-4));
   padding-right: max(env(safe-area-inset-right), var(--mobile-space-4));
-  
+
   /* Performance optimizations */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
@@ -71,12 +71,12 @@
   box-sizing: border-box;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Enhanced content spacing */
   display: flex;
   flex-direction: column;
   gap: var(--mobile-section-gap);
-  
+
   /* Prevent content from going behind navigation */
   padding-bottom: calc(var(--mobile-touch-large) + var(--mobile-space-6) + env(safe-area-inset-bottom, 0));
 }
@@ -121,7 +121,7 @@
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Enhanced touch feedback */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -233,7 +233,7 @@
   backdrop-filter: blur(10px);
   scroll-snap-align: start;
   transition: all 0.2s ease;
-  
+
   /* Enhanced touch target */
   min-height: var(--mobile-touch-comfortable);
   display: flex;
@@ -329,7 +329,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Touch optimizations */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -375,17 +375,17 @@
     padding: var(--mobile-space-3);
     gap: var(--mobile-space-5);
   }
-  
+
   .weather-details-grid {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: var(--mobile-space-3);
   }
-  
+
   .forecast-item-enhanced {
     min-width: clamp(70px, 18vw, 85px);
     padding: var(--mobile-space-3);
   }
-  
+
   :root {
     --mobile-card-padding: var(--mobile-space-4);
   }
@@ -396,7 +396,7 @@
   .weather-details-grid {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   }
-  
+
   .mobile-grid-3 {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -408,16 +408,16 @@
     padding: var(--mobile-space-3) var(--mobile-space-4);
     gap: var(--mobile-space-4);
   }
-  
+
   .mobile-page-header {
     padding: var(--mobile-space-4) 0;
   }
-  
+
   .weather-main-card {
     padding: var(--mobile-space-5);
     margin-bottom: var(--mobile-space-4);
   }
-  
+
   .mobile-grid-3 {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -433,7 +433,7 @@
   .mobile-button-enhanced {
     transition: none;
   }
-  
+
   .weather-card-enhanced:active,
   .forecast-item-enhanced:active,
   .mobile-button-enhanced:active {
@@ -464,7 +464,7 @@
   .weather-card-enhanced {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
-  
+
   .weather-detail-card,
   .forecast-item-enhanced {
     background: rgba(255, 255, 255, 0.05);

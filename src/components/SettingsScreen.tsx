@@ -12,7 +12,7 @@ interface SettingsScreenProps {
 
 /**
  * SettingsScreen - Modern settings interface for mobile devices
- * 
+ *
  * Features:
  * - Clean, mobile-first design
  * - Grouped settings sections
@@ -23,7 +23,7 @@ interface SettingsScreenProps {
 const SettingsScreen: React.FC<SettingsScreenProps> = ({
   theme,
   screenInfo,
-  onBack
+  onBack,
 }) => {
   const { themeName, toggleTheme } = useTheme();
   const haptic = useHaptic();
@@ -33,7 +33,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
   const handleToggleChange = (id: string, value: boolean) => {
     haptic.buttonPress();
-    
+
     switch (id) {
       case 'theme':
         toggleTheme();
@@ -46,7 +46,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
   const handleSelectionChange = (id: string, value: string) => {
     haptic.buttonPress();
-    
+
     switch (id) {
       case 'units':
         setUnits(value);
@@ -67,9 +67,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           subtitle: 'Toggle between light and dark themes',
           icon: themeName === 'dark' ? '🌙' : '☀️',
           type: 'toggle' as const,
-          value: themeName === 'dark'
-        }
-      ]
+          value: themeName === 'dark',
+        },
+      ],
     },
     {
       title: 'Weather',
@@ -81,7 +81,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           icon: '🌡️',
           type: 'selection' as const,
           value: units,
-          options: ['imperial', 'metric']
+          options: ['imperial', 'metric'],
         },
         {
           id: 'refresh',
@@ -90,9 +90,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           icon: '🔄',
           type: 'selection' as const,
           value: refreshInterval,
-          options: ['1min', '5min', '15min', '30min', 'manual']
-        }
-      ]
+          options: ['1min', '5min', '15min', '30min', 'manual'],
+        },
+      ],
     },
     {
       title: 'Notifications',
@@ -103,9 +103,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           subtitle: 'Get notified about severe weather',
           icon: '🔔',
           type: 'toggle' as const,
-          value: notifications
-        }
-      ]
+          value: notifications,
+        },
+      ],
     },
     {
       title: 'About',
@@ -119,7 +119,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           action: () => {
             haptic.buttonPress();
             // Could show version details
-          }
+          },
         },
         {
           id: 'feedback',
@@ -130,10 +130,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           action: () => {
             haptic.buttonPress();
             // Could open feedback form
-          }
-        }
-      ]
-    }
+          },
+        },
+      ],
+    },
   ];
 
   const containerStyle: React.CSSProperties = {
@@ -141,7 +141,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     flexDirection: 'column',
     height: '100%',
     background: theme.appBackground,
-    overflow: 'auto'
+    overflow: 'auto',
   };
 
   const headerStyle: React.CSSProperties = {
@@ -155,7 +155,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    minHeight: '60px'
+    minHeight: '60px',
   };
 
   const backButtonStyle: React.CSSProperties = {
@@ -172,7 +172,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     minWidth: '44px',
     color: theme.primaryText,
     transition: 'all 0.2s ease',
-    WebkitTapHighlightColor: 'transparent'
+    WebkitTapHighlightColor: 'transparent',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -180,17 +180,17 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     fontWeight: '700',
     color: theme.primaryText,
     margin: 0,
-    letterSpacing: '-0.5px'
+    letterSpacing: '-0.5px',
   };
 
   const contentStyle: React.CSSProperties = {
     flex: 1,
     padding: '0 16px 100px 16px', // Bottom padding for navigation
-    paddingTop: '8px'
+    paddingTop: '8px',
   };
 
   const sectionStyle: React.CSSProperties = {
-    marginBottom: '32px'
+    marginBottom: '32px',
   };
 
   const sectionTitleStyle: React.CSSProperties = {
@@ -200,7 +200,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     marginBottom: '12px',
-    marginLeft: '4px'
+    marginLeft: '4px',
   };
 
   const itemContainerStyle: React.CSSProperties = {
@@ -208,7 +208,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     borderRadius: '16px',
     border: `1px solid ${theme.weatherCardBorder}30`,
     overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
   };
 
   const itemStyle: React.CSSProperties = {
@@ -219,7 +219,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     WebkitTapHighlightColor: 'transparent',
-    minHeight: '64px'
+    minHeight: '64px',
   };
 
   const toggleStyle: React.CSSProperties = {
@@ -228,7 +228,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     height: '30px',
     borderRadius: '15px',
     cursor: 'pointer',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
   };
 
   const renderToggle = (isOn: boolean, onChange: (value: boolean) => void) => (
@@ -236,10 +236,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
       style={{
         ...toggleStyle,
         background: isOn ? theme.primaryGradient : theme.toggleBackground,
-        border: `2px solid ${isOn ? 'transparent' : theme.toggleBorder}`
+        border: `2px solid ${isOn ? 'transparent' : theme.toggleBorder}`,
       }}
       onClick={() => onChange(!isOn)}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onChange(!isOn);
@@ -260,7 +260,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           background: 'white',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
         }}
       />
     </button>
@@ -272,10 +272,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     return option.charAt(0).toUpperCase() + option.slice(1);
   };
 
-  const renderSelection = (value: string, options: string[], onChange: (value: string) => void) => (
+  const renderSelection = (
+    value: string,
+    options: string[],
+    onChange: (value: string) => void
+  ) => (
     <select
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       style={{
         background: theme.cardBackground,
         border: `1px solid ${theme.weatherCardBorder}`,
@@ -284,10 +288,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         color: theme.primaryText,
         fontSize: '14px',
         minWidth: '100px',
-        cursor: 'pointer'
+        cursor: 'pointer',
       }}
     >
-      {options.map((option) => (
+      {options.map(option => (
         <option key={option} value={option}>
           {formatOptionText(option)}
         </option>
@@ -302,10 +306,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         <button
           style={backButtonStyle}
           onClick={onBack}
-          onMouseEnter={(e) => {
+          onMouseEnter={e => {
             e.currentTarget.style.background = `${theme.primaryGradient}15`;
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={e => {
             e.currentTarget.style.background = 'none';
           }}
           aria-label="Go back"
@@ -317,7 +321,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
       {/* Content */}
       <div style={contentStyle}>
-        {settingsSections.map((section) => (
+        {settingsSections.map(section => (
           <div key={section.title} style={sectionStyle}>
             <h2 style={sectionTitleStyle}>{section.title}</h2>
             <div style={itemContainerStyle}>
@@ -326,52 +330,59 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   key={item.id}
                   style={{
                     ...itemStyle,
-                    borderBottom: index === section.items.length - 1 ? 'none' : itemStyle.borderBottom
+                    borderBottom:
+                      index === section.items.length - 1
+                        ? 'none'
+                        : itemStyle.borderBottom,
                   }}
                 >
                   <div style={{ fontSize: '24px', marginRight: '16px' }}>
                     {item.icon}
                   </div>
-                  
+
                   <div style={{ flex: 1 }}>
-                    <div style={{
-                      fontSize: '16px',
-                      fontWeight: '500',
-                      color: theme.primaryText,
-                      marginBottom: '2px'
-                    }}>
+                    <div
+                      style={{
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        color: theme.primaryText,
+                        marginBottom: '2px',
+                      }}
+                    >
                       {item.title}
                     </div>
                     {item.subtitle && (
-                      <div style={{
-                        fontSize: '14px',
-                        color: theme.secondaryText,
-                        lineHeight: '1.3'
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '14px',
+                          color: theme.secondaryText,
+                          lineHeight: '1.3',
+                        }}
+                      >
                         {item.subtitle}
                       </div>
                     )}
                   </div>
-                  
+
                   <div style={{ marginLeft: '16px' }}>
-                    {item.type === 'toggle' && (
-                      renderToggle(
-                        item.value as boolean,
-                        (value) => handleToggleChange(item.id, value)
-                      )
-                    )}
-                    {item.type === 'selection' && item.options && (
+                    {item.type === 'toggle' &&
+                      renderToggle(item.value as boolean, value =>
+                        handleToggleChange(item.id, value)
+                      )}
+                    {item.type === 'selection' &&
+                      item.options &&
                       renderSelection(
                         item.value as string,
                         item.options,
-                        (value) => handleSelectionChange(item.id, value)
-                      )
-                    )}
+                        value => handleSelectionChange(item.id, value)
+                      )}
                     {item.type === 'action' && (
-                      <div style={{
-                        fontSize: '18px',
-                        color: theme.secondaryText
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '18px',
+                          color: theme.secondaryText,
+                        }}
+                      >
                         →
                       </div>
                     )}

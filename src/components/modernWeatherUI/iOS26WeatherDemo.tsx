@@ -1,6 +1,6 @@
 /**
  * iOS 26 Premium Components Demo
- * 
+ *
  * Showcase of all the latest iOS 26 design components with real weather integration:
  * - Context Menus with haptic feedback
  * - Dynamic Island-style live activities
@@ -11,19 +11,19 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  ContextMenu, 
-  LiveActivity, 
-  InteractiveWidget, 
+import {
+  ContextMenu,
+  LiveActivity,
+  InteractiveWidget,
   ModalSheet,
-  SwipeActions 
+  SwipeActions,
 } from './iOS26Components';
-import { 
-  SegmentedControl, 
-  ActivityIndicator, 
-  StatusBadge, 
-  ListItem, 
-  ProgressIndicator 
+import {
+  SegmentedControl,
+  ActivityIndicator,
+  StatusBadge,
+  ListItem,
+  ProgressIndicator,
 } from './IOSComponents';
 import type { ThemeColors } from '../../utils/themeConfig';
 import '../../styles/iOS26Components.css';
@@ -42,16 +42,16 @@ interface IOS26DemoProps {
   weatherData?: WeatherData;
 }
 
-export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({ 
-  theme, 
+export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
+  theme,
   weatherData = {
     temperature: 72,
-    condition: "Partly Cloudy",
+    condition: 'Partly Cloudy',
     humidity: 65,
     windSpeed: 8,
     uvIndex: 5,
-    airQuality: "Good"
-  }
+    airQuality: 'Good',
+  },
 }) => {
   const [selectedView, setSelectedView] = useState(0);
   const [showLiveActivity, setShowLiveActivity] = useState(false);
@@ -99,27 +99,27 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       onAction: () => {
         setIsUpdating(true);
         // Simulate refresh
-      }
+      },
     },
     {
       id: 'share',
       title: 'Share Location',
       icon: '📍',
-      onAction: () => console.log('Share location')
+      onAction: () => console.log('Share location'),
     },
     {
       id: 'settings',
       title: 'Weather Settings',
       icon: '⚙️',
-      onAction: () => setShowModalSheet(true)
+      onAction: () => setShowModalSheet(true),
     },
     {
       id: 'delete',
       title: 'Remove Location',
       icon: '🗑️',
       destructive: true,
-      onAction: () => console.log('Delete location')
-    }
+      onAction: () => console.log('Delete location'),
+    },
   ];
 
   const swipeLeftActions = [
@@ -128,8 +128,8 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Favorite',
       icon: '⭐',
       color: '#FF9500',
-      onAction: () => console.log('Added to favorites')
-    }
+      onAction: () => console.log('Added to favorites'),
+    },
   ];
 
   const swipeRightActions = [
@@ -138,15 +138,15 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Share',
       icon: '📤',
       color: '#007AFF',
-      onAction: () => console.log('Share weather')
+      onAction: () => console.log('Share weather'),
     },
     {
       id: 'delete',
       title: 'Delete',
       icon: '🗑️',
       color: '#FF3B30',
-      onAction: () => console.log('Delete weather data')
-    }
+      onAction: () => console.log('Delete weather data'),
+    },
   ];
 
   const containerStyle: React.CSSProperties = {
@@ -156,14 +156,14 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     display: 'flex',
     flexDirection: 'column',
     gap: '24px',
-    minHeight: '100vh'
+    minHeight: '100vh',
   };
 
   const sectionStyle: React.CSSProperties = {
     backgroundColor: theme.cardBackground,
     borderRadius: '16px',
     padding: '20px',
-    border: `1px solid ${theme.secondaryText}40`
+    border: `1px solid ${theme.secondaryText}40`,
   };
 
   const titleStyle: React.CSSProperties = {
@@ -173,23 +173,21 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     marginBottom: '16px',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
   };
 
   const gridStyle: React.CSSProperties = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     gap: '20px',
-    marginTop: '16px'
+    marginTop: '16px',
   };
 
   return (
     <div style={containerStyle}>
       {/* Header with Segmented Control */}
       <div style={sectionStyle}>
-        <h1 style={titleStyle}>
-          🌤️ iOS 26 Weather Experience
-        </h1>
+        <h1 style={titleStyle}>🌤️ iOS 26 Weather Experience</h1>
         <SegmentedControl
           segments={['Today', 'Weekly', 'Radar', 'Settings']}
           selectedIndex={selectedView}
@@ -214,9 +212,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Interactive Widgets Grid */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>
-          📱 Interactive Widgets
-        </h2>
+        <h2 style={titleStyle}>📱 Interactive Widgets</h2>
         <div style={gridStyle}>
           {/* Current Weather Widget */}
           <InteractiveWidget
@@ -228,7 +224,13 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
           >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '48px', marginBottom: '8px' }}>🌤️</div>
-              <div style={{ fontSize: '32px', fontWeight: '600', color: theme.primaryText }}>
+              <div
+                style={{
+                  fontSize: '32px',
+                  fontWeight: '600',
+                  color: theme.primaryText,
+                }}
+              >
                 {weatherData.temperature}°F
               </div>
               <div style={{ fontSize: '16px', color: theme.secondaryText }}>
@@ -244,9 +246,21 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             theme={theme}
             onTap={() => console.log('View air quality details')}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <div>
-                <div style={{ fontSize: '24px', fontWeight: '600', color: theme.primaryText }}>
+                <div
+                  style={{
+                    fontSize: '24px',
+                    fontWeight: '600',
+                    color: theme.primaryText,
+                  }}
+                >
                   {weatherData.airQuality}
                 </div>
                 <div style={{ fontSize: '14px', color: theme.secondaryText }}>
@@ -258,13 +272,15 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
           </InteractiveWidget>
 
           {/* UV Index Widget */}
-          <InteractiveWidget
-            title="UV Index"
-            size="small"
-            theme={theme}
-          >
+          <InteractiveWidget title="UV Index" size="small" theme={theme}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '28px', fontWeight: '600', color: '#FF9500' }}>
+              <div
+                style={{
+                  fontSize: '28px',
+                  fontWeight: '600',
+                  color: '#FF9500',
+                }}
+              >
                 {weatherData.uvIndex}
               </div>
               <div style={{ fontSize: '12px', color: theme.secondaryText }}>
@@ -299,11 +315,10 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Context Menu Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>
-          📝 Context Menu & Swipe Actions
-        </h2>
+        <h2 style={titleStyle}>📝 Context Menu & Swipe Actions</h2>
         <p style={{ color: theme.secondaryText, marginBottom: '16px' }}>
-          Right-click or tap and hold for context menu. Swipe left/right for quick actions.
+          Right-click or tap and hold for context menu. Swipe left/right for
+          quick actions.
         </p>
 
         <SwipeActions
@@ -345,14 +360,19 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Loading States Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>
-          ⏳ Loading States & Indicators
-        </h2>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <h2 style={titleStyle}>⏳ Loading States & Indicators</h2>
+        <div
+          style={{
+            display: 'flex',
+            gap: '20px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           <ActivityIndicator size="small" theme={theme} />
           <ActivityIndicator size="medium" theme={theme} text="Updating..." />
           <ActivityIndicator size="large" theme={theme} color="#FF9500" />
-          
+
           <div style={{ flex: 1, minWidth: '200px' }}>
             <ProgressIndicator
               progress={75}
@@ -366,11 +386,13 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Status Badges Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>
-          🏷️ Status Badges
-        </h2>
+        <h2 style={titleStyle}>🏷️ Status Badges</h2>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <StatusBadge text="Good Air Quality" variant="success" theme={theme} />
+          <StatusBadge
+            text="Good Air Quality"
+            variant="success"
+            theme={theme}
+          />
           <StatusBadge text="UV Warning" variant="warning" theme={theme} />
           <StatusBadge text="Severe Weather" variant="error" theme={theme} />
           <StatusBadge text="Weather Alert" variant="info" theme={theme} />
@@ -391,15 +413,15 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             fontWeight: '600',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
-            boxShadow: '0 4px 12px rgba(0, 122, 255, 0.3)'
+            boxShadow: '0 4px 12px rgba(0, 122, 255, 0.3)',
           }}
-          onMouseDown={(e) => {
+          onMouseDown={e => {
             e.currentTarget.style.transform = 'scale(0.98)';
           }}
-          onMouseUp={(e) => {
+          onMouseUp={e => {
             e.currentTarget.style.transform = 'scale(1)';
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={e => {
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
@@ -445,7 +467,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             theme={theme}
             onPress={() => console.log('Refresh settings')}
           />
-          
+
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <button
               onClick={() => {
@@ -460,7 +482,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
                 borderRadius: '8px',
                 fontSize: '16px',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
               }}
             >
               Refresh All Data

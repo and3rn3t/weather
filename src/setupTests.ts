@@ -11,24 +11,25 @@ Object.defineProperty(window, 'CSS', {
       if (property.includes('webkit-backdrop-filter')) return true;
       if (property.includes('backdrop-filter')) return true;
       return false;
-    }
+    },
   },
   writable: true,
-  configurable: true
+  configurable: true,
 });
 
 // Mock navigator.vibrate for haptic feedback tests
 Object.defineProperty(navigator, 'vibrate', {
   value: vi.fn(() => true),
   writable: true,
-  configurable: true
+  configurable: true,
 });
 
 // Mock navigator.userAgent for device detection
 Object.defineProperty(navigator, 'userAgent', {
-  value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15',
+  value:
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15',
   writable: true,
-  configurable: true
+  configurable: true,
 });
 
 // Mock window.matchMedia for responsive design tests
@@ -53,7 +54,7 @@ Object.defineProperty(window, 'matchMedia', {
   disconnect: vi.fn(),
 }));
 
-// Mock IntersectionObserver  
+// Mock IntersectionObserver
 (global as any).IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),

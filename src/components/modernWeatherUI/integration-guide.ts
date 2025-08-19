@@ -1,6 +1,6 @@
 /**
  * Quick Integration Guide for iOS HIG Components
- * 
+ *
  * Add these components to your existing AppNavigator.tsx
  * for immediate iOS-style enhancements
  */

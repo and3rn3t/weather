@@ -1,8 +1,8 @@
 /**
  * iOS 26 Enhanced Weather Interface - August 2025
- * 
+ *
  * Modern iOS 26 weather interface based on the Figma iOS 26 UI kit reference.
- * 
+ *
  * Features:
  * - Fluid Island-style weather cards
  * - Advanced glassmorphism with depth layers
@@ -75,7 +75,7 @@ const iOS26WeatherMetric: React.FC<WeatherMetricProps> = ({
   value,
   icon,
   color,
-  subtitle
+  subtitle,
 }) => {
   return (
     <div className="ios26-weather-metric">
@@ -119,21 +119,17 @@ const iOS26ForecastItem: React.FC<{
       <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time">
         {time}
       </div>
-      
+
       <div className="ios26-forecast-icon">
-        <WeatherIcon 
-          code={weatherCode} 
-          size={28}
-          animate={true}
-        />
+        <WeatherIcon code={weatherCode} size={28} animate={true} />
       </div>
-      
+
       {precipitation !== undefined && precipitation > 0 && (
         <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-precipitation">
           {Math.round(precipitation)}%
         </div>
       )}
-      
+
       <div className="ios26-forecast-temperature">
         {typeof temperature === 'number' ? (
           <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
@@ -165,7 +161,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   onRefresh,
   onLocationTap,
   isLoading = false,
-  lastUpdated
+  lastUpdated,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -202,7 +198,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   return (
     <div className={`ios26-weather-interface ${className}`}>
       {/* Main Weather Card */}
-      <div 
+      <div
         className={`ios26-main-weather-card ${isPressed ? 'pressed' : ''}`}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -212,7 +208,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
       >
         {/* Header with Location */}
         <div className="ios26-weather-header">
-          <div 
+          <div
             className="ios26-weather-location"
             onClick={onLocationTap}
             role={onLocationTap ? 'button' : undefined}
@@ -223,7 +219,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
             </span>
             <span className="ios26-location-icon">📍</span>
           </div>
-          
+
           {lastUpdated && (
             <div className="ios26-text-caption2 ios26-text-tertiary ios26-last-updated">
               Updated {lastUpdated}
@@ -234,24 +230,24 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
         {/* Main Temperature Display */}
         <div className="ios26-temperature-section">
           <div className="ios26-weather-icon-container">
-            <WeatherIcon 
-              code={weatherData.weatherCode} 
+            <WeatherIcon
+              code={weatherData.weatherCode}
               size={Math.min(window.innerWidth * 0.25, 120)}
               animate={true}
             />
           </div>
-          
+
           <div className="ios26-temperature-display">
             <span className="ios26-temperature-value">
               {Math.round(weatherData.temperature)}°
             </span>
             <span className="ios26-temperature-unit">F</span>
           </div>
-          
+
           <div className="ios26-text-title3 ios26-text-primary ios26-text-medium ios26-weather-condition">
             {weatherData.condition}
           </div>
-          
+
           <div className="ios26-text-subheadline ios26-text-secondary ios26-feels-like">
             Feels like {Math.round(weatherData.feelsLike)}°F
           </div>
@@ -273,14 +269,14 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
           icon="💧"
           color="var(--ios26-color-primary)"
         />
-        
+
         <iOS26WeatherMetric
           label="Wind"
           value={formatWindSpeed(weatherData.windSpeed)}
           icon="💨"
           color="var(--ios26-color-secondary)"
         />
-        
+
         <iOS26WeatherMetric
           label="Pressure"
           value={formatPressure(weatherData.pressure)}
@@ -288,7 +284,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
           color="var(--ios26-color-success)"
           subtitle="hPa"
         />
-        
+
         {weatherData.uvIndex !== undefined && (
           <iOS26WeatherMetric
             label="UV Index"
@@ -298,7 +294,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
             subtitle={getUVIndexLevel(weatherData.uvIndex)}
           />
         )}
-        
+
         {weatherData.visibility !== undefined && (
           <iOS26WeatherMetric
             label="Visibility"
@@ -315,7 +311,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
           <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
             24-Hour Forecast
           </div>
-          
+
           <div className="ios26-forecast-scroll">
             {weatherData.hourlyForecast.map((hour, index) => (
               <iOS26ForecastItem
@@ -337,7 +333,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
           <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
             7-Day Forecast
           </div>
-          
+
           <div className="ios26-forecast-scroll">
             {weatherData.dailyForecast.map((day, index) => (
               <iOS26ForecastItem
@@ -356,24 +352,28 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
       {/* Quick Actions */}
       <div className="ios26-quick-actions">
         {onRefresh && (
-          <button 
+          <button
             className="ios26-button ios26-button-secondary ios26-quick-action"
             onClick={onRefresh}
             disabled={isLoading}
           >
             <span className="ios26-quick-action-icon">🔄</span>
-            <span className="ios26-text-footnote ios26-text-semibold">Refresh</span>
+            <span className="ios26-text-footnote ios26-text-semibold">
+              Refresh
+            </span>
           </button>
         )}
-        
+
         <button className="ios26-button ios26-button-ghost ios26-quick-action">
           <span className="ios26-quick-action-icon">🗺️</span>
           <span className="ios26-text-footnote ios26-text-semibold">Map</span>
         </button>
-        
+
         <button className="ios26-button ios26-button-ghost ios26-quick-action">
           <span className="ios26-quick-action-icon">📊</span>
-          <span className="ios26-text-footnote ios26-text-semibold">Details</span>
+          <span className="ios26-text-footnote ios26-text-semibold">
+            Details
+          </span>
         </button>
       </div>
     </div>

@@ -25,51 +25,57 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [canRefresh, setCanRefresh] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
   const currentY = useRef(0);
   const { pullToRefresh, success } = useHapticFeedback();
 
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (disabled || isRefreshing) return;
-    
-    const container = containerRef.current;
-    if (!container || container.scrollTop > 0) return;
-    
-    startY.current = e.touches[0].clientY;
-    setIsPulling(true);
-  }, [disabled, isRefreshing]);
+  const handleTouchStart = useCallback(
+    (e: TouchEvent) => {
+      if (disabled || isRefreshing) return;
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!isPulling || disabled || isRefreshing) return;
-    
-    const container = containerRef.current;
-    if (!container || container.scrollTop > 0) return;
-    
-    currentY.current = e.touches[0].clientY;
-    const distance = Math.max(0, currentY.current - startY.current);
-    
-    if (distance > 0) {
-      e.preventDefault();
-      const dampedDistance = Math.min(distance * 0.6, threshold * 1.5);
-      setPullDistance(dampedDistance);
-      
-      const newCanRefresh = dampedDistance >= threshold;
-      if (newCanRefresh !== canRefresh) {
-        setCanRefresh(newCanRefresh);
-        if (newCanRefresh) {
-          pullToRefresh();
+      const container = containerRef.current;
+      if (!container || container.scrollTop > 0) return;
+
+      startY.current = e.touches[0].clientY;
+      setIsPulling(true);
+    },
+    [disabled, isRefreshing]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!isPulling || disabled || isRefreshing) return;
+
+      const container = containerRef.current;
+      if (!container || container.scrollTop > 0) return;
+
+      currentY.current = e.touches[0].clientY;
+      const distance = Math.max(0, currentY.current - startY.current);
+
+      if (distance > 0) {
+        e.preventDefault();
+        const dampedDistance = Math.min(distance * 0.6, threshold * 1.5);
+        setPullDistance(dampedDistance);
+
+        const newCanRefresh = dampedDistance >= threshold;
+        if (newCanRefresh !== canRefresh) {
+          setCanRefresh(newCanRefresh);
+          if (newCanRefresh) {
+            pullToRefresh();
+          }
         }
       }
-    }
-  }, [isPulling, disabled, isRefreshing, threshold, canRefresh, pullToRefresh]);
+    },
+    [isPulling, disabled, isRefreshing, threshold, canRefresh, pullToRefresh]
+  );
 
   const handleTouchEnd = useCallback(async () => {
     if (!isPulling || disabled) return;
-    
+
     setIsPulling(false);
-    
+
     if (canRefresh && !isRefreshing) {
       setIsRefreshing(true);
       try {
@@ -81,7 +87,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         setIsRefreshing(false);
       }
     }
-    
+
     setPullDistance(0);
     setCanRefresh(false);
   }, [isPulling, disabled, canRefresh, isRefreshing, onRefresh, success]);
@@ -90,8 +96,12 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: false });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
+    container.addEventListener('touchmove', handleTouchMove, {
+      passive: false,
+    });
     container.addEventListener('touchend', handleTouchEnd);
 
     return () => {
@@ -104,16 +114,20 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
   const refreshIndicatorStyle: React.CSSProperties = {
     transform: `translateY(${Math.min(pullDistance - 60, 20)}px)`,
     opacity: pullDistance > 20 ? Math.min(pullDistance / threshold, 1) : 0,
-    transition: isPulling ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transition: isPulling
+      ? 'none'
+      : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   };
 
   const containerStyle: React.CSSProperties = {
     transform: `translateY(${isPulling ? Math.min(pullDistance * 0.3, 30) : 0}px)`,
-    transition: isPulling ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transition: isPulling
+      ? 'none'
+      : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`pull-to-refresh-container ${className}`}
       style={{
@@ -124,7 +138,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
       }}
     >
       {/* Pull to refresh indicator */}
-      <div 
+      <div
         className="pull-to-refresh-indicator"
         style={{
           position: 'absolute',
@@ -140,7 +154,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
           ...refreshIndicatorStyle,
         }}
       >
-        <div 
+        <div
           className={`refresh-icon ${isRefreshing ? 'spinning' : canRefresh ? 'ready' : ''}`}
           style={{
             width: 24,
@@ -148,13 +162,16 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             borderRadius: '50%',
             border: '2px solid var(--primary-color, #667eea)',
             borderTopColor: 'transparent',
-            animation: isRefreshing ? 'spin 1s linear infinite' : 
-                      canRefresh ? 'pulse 0.5s ease-in-out' : 'none',
+            animation: isRefreshing
+              ? 'spin 1s linear infinite'
+              : canRefresh
+                ? 'pulse 0.5s ease-in-out'
+                : 'none',
             transform: canRefresh && !isRefreshing ? 'rotate(180deg)' : 'none',
             transition: 'transform 0.3s ease',
           }}
         />
-        <span 
+        <span
           style={{
             fontSize: 12,
             color: 'var(--secondary-text)',
@@ -162,16 +179,16 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             textAlign: 'center',
           }}
         >
-          {isRefreshing ? 'Refreshing...' : 
-           canRefresh ? 'Release to refresh' : 
-           'Pull to refresh'}
+          {isRefreshing
+            ? 'Refreshing...'
+            : canRefresh
+              ? 'Release to refresh'
+              : 'Pull to refresh'}
         </span>
       </div>
 
       {/* Content */}
-      <div style={containerStyle}>
-        {children}
-      </div>
+      <div style={containerStyle}>{children}</div>
 
       <style>{`
         @keyframes spin {

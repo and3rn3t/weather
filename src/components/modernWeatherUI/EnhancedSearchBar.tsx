@@ -1,6 +1,6 @@
 /**
  * iOS Enhanced Search Bar Component
- * 
+ *
  * A premium search component following iOS Human Interface Guidelines:
  * - Smooth focus/blur animations
  * - Search and cancel button states
@@ -50,7 +50,7 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
   recentSearches = [],
   suggestions = [],
   onRecentSearchSelect,
-  disabled = false
+  disabled = false,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -59,14 +59,14 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   };
 
   const searchContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
   };
 
   const searchInputContainerStyle: React.CSSProperties = {
@@ -74,16 +74,18 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
+    backgroundColor: isDark
+      ? 'rgba(255, 255, 255, 0.1)'
+      : 'rgba(0, 0, 0, 0.06)',
     borderRadius: '12px',
     border: `2px solid ${isFocused ? '#007AFF' : 'transparent'}`,
     transition: 'all 0.3s ease',
     transform: isFocused ? 'scale(1.02)' : 'scale(1)',
-    boxShadow: isFocused 
-      ? '0 0 0 4px rgba(0, 122, 255, 0.1)' 
+    boxShadow: isFocused
+      ? '0 0 0 4px rgba(0, 122, 255, 0.1)'
       : '0 2px 8px rgba(0, 0, 0, 0.05)',
     opacity: disabled ? 0.6 : 1,
-    pointerEvents: disabled ? 'none' : 'auto'
+    pointerEvents: disabled ? 'none' : 'auto',
   };
 
   const searchIconStyle: React.CSSProperties = {
@@ -91,7 +93,7 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     width: '20px',
     height: '20px',
     color: theme.secondaryText,
-    transition: 'color 0.3s ease'
+    transition: 'color 0.3s ease',
   };
 
   const inputStyle: React.CSSProperties = {
@@ -102,7 +104,8 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     outline: 'none',
     fontSize: '17px',
     color: theme.primaryText,
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   };
 
   const clearButtonStyle: React.CSSProperties = {
@@ -115,7 +118,7 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     display: value && isFocused ? 'flex' : 'none',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
   };
 
   const cancelButtonStyle: React.CSSProperties = {
@@ -128,9 +131,10 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     color: '#007AFF',
     cursor: 'pointer',
     opacity: isFocused && showsCancelButton ? 1 : 0,
-    transform: isFocused && showsCancelButton ? 'translateX(0)' : 'translateX(20px)',
+    transform:
+      isFocused && showsCancelButton ? 'translateX(0)' : 'translateX(20px)',
     transition: 'all 0.3s ease',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
   };
 
   const scopeBarStyle: React.CSSProperties = {
@@ -140,24 +144,25 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     opacity: scopeButtonTitles && scopeButtonTitles.length > 0 ? 1 : 0,
     maxHeight: scopeButtonTitles && scopeButtonTitles.length > 0 ? '50px' : '0',
     overflow: 'hidden',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
   };
 
   const scopeButtonStyle = (index: number): React.CSSProperties => ({
     padding: '8px 16px',
-    backgroundColor: selectedScopeButtonIndex === index 
-      ? '#007AFF' 
-      : (isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)'),
+    backgroundColor:
+      selectedScopeButtonIndex === index
+        ? '#007AFF'
+        : isDark
+          ? 'rgba(255, 255, 255, 0.1)'
+          : 'rgba(0, 0, 0, 0.06)',
     border: 'none',
     borderRadius: '20px',
     fontSize: '15px',
     fontWeight: '500',
-    color: selectedScopeButtonIndex === index 
-      ? '#FFFFFF' 
-      : theme.secondaryText,
+    color: selectedScopeButtonIndex === index ? '#FFFFFF' : theme.secondaryText,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
   });
 
   const suggestionsStyle: React.CSSProperties = {
@@ -172,8 +177,11 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     maxHeight: '300px',
     overflowY: 'auto',
     zIndex: 1000,
-    display: showSuggestions && (suggestions.length > 0 || recentSearches.length > 0) ? 'block' : 'none',
-    marginTop: '8px'
+    display:
+      showSuggestions && (suggestions.length > 0 || recentSearches.length > 0)
+        ? 'block'
+        : 'none',
+    marginTop: '8px',
   };
 
   const suggestionItemStyle: React.CSSProperties = {
@@ -185,7 +193,7 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
     transition: 'background-color 0.2s ease',
     display: 'flex',
     alignItems: 'center',
-    gap: '12px'
+    gap: '12px',
   };
 
   const handleFocus = () => {
@@ -235,22 +243,26 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
   // Search Icon SVG
   const SearchIcon = () => (
     <svg style={searchIconStyle} fill="currentColor" viewBox="0 0 20 20">
-      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+      <path
+        fillRule="evenodd"
+        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 
   // Clear Button Icon
   const ClearIcon = () => (
     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
     </svg>
   );
 
   // History Icon for recent searches
   const HistoryIcon = () => (
     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+      <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
     </svg>
   );
 
@@ -266,7 +278,7 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
               type="text"
               placeholder={placeholder}
               value={value}
-              onChange={(e) => onChangeText(e.target.value)}
+              onChange={e => onChangeText(e.target.value)}
               onFocus={handleFocus}
               onBlur={handleBlur}
               disabled={disabled}
@@ -290,12 +302,14 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
                       key={`recent-${search}-${index}`}
                       style={suggestionItemStyle}
                       onClick={() => handleRecentSearchClick(search)}
-                      onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = 
-                          isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+                      onMouseEnter={e => {
+                        (e.target as HTMLElement).style.backgroundColor = isDark
+                          ? 'rgba(255, 255, 255, 0.1)'
+                          : 'rgba(0, 0, 0, 0.05)';
                       }}
-                      onMouseLeave={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = 'transparent';
+                      onMouseLeave={e => {
+                        (e.target as HTMLElement).style.backgroundColor =
+                          'transparent';
                       }}
                     >
                       <HistoryIcon />
@@ -303,22 +317,32 @@ export const EnhancedSearchBar: React.FC<SearchBarProps> = ({
                     </div>
                   ))}
                   {suggestions.length > 0 && (
-                    <div style={{ height: '1px', backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)', margin: '8px 0' }} />
+                    <div
+                      style={{
+                        height: '1px',
+                        backgroundColor: isDark
+                          ? 'rgba(255, 255, 255, 0.1)'
+                          : 'rgba(0, 0, 0, 0.1)',
+                        margin: '8px 0',
+                      }}
+                    />
                   )}
                 </>
               )}
-              
+
               {suggestions.map((suggestion, index) => (
                 <div
                   key={`suggestion-${suggestion}-${index}`}
                   style={suggestionItemStyle}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.backgroundColor = 
-                      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+                  onMouseEnter={e => {
+                    (e.target as HTMLElement).style.backgroundColor = isDark
+                      ? 'rgba(255, 255, 255, 0.1)'
+                      : 'rgba(0, 0, 0, 0.05)';
                   }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLElement).style.backgroundColor = 'transparent';
+                  onMouseLeave={e => {
+                    (e.target as HTMLElement).style.backgroundColor =
+                      'transparent';
                   }}
                 >
                   <SearchIcon />

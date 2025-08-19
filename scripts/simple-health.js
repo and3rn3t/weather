@@ -53,7 +53,7 @@ function checkPackageJson() {
     console.log('❌ package.json not found');
     return false;
   }
-  
+
   try {
     const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
     console.log(`✅ package.json: ${packageJson.name} v${packageJson.version}`);
@@ -67,13 +67,18 @@ function checkPackageJson() {
 // Test 4: Check weather APIs
 async function checkWeatherAPIs() {
   console.log('🌐 Testing weather APIs...');
-  
+
   try {
     // Test OpenMeteo API
-    const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current_weather=true');
+    const response = await fetch(
+      'https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current_weather=true'
+    );
     if (response.ok) {
       const data = await response.json();
-      if (data.current_weather && typeof data.current_weather.temperature === 'number') {
+      if (
+        data.current_weather &&
+        typeof data.current_weather.temperature === 'number'
+      ) {
         console.log(`✅ OpenMeteo API: ${data.current_weather.temperature}°F`);
         return true;
       }
@@ -91,19 +96,21 @@ async function runHealthCheck() {
     await checkNodeVersion(),
     await checkNpm(),
     checkPackageJson(),
-    await checkWeatherAPIs()
+    await checkWeatherAPIs(),
   ];
-  
+
   const passed = checks.filter(Boolean).length;
   const total = checks.length;
-  
+
   console.log(`\n📊 Health Check Results: ${passed}/${total} passed`);
-  
+
   if (passed === total) {
     console.log('🎉 All systems healthy!\n');
     process.exit(0);
   } else {
-    console.log('⚠️ Some issues detected. Run npm run doctor for detailed diagnosis.\n');
+    console.log(
+      '⚠️ Some issues detected. Run npm run doctor for detailed diagnosis.\n'
+    );
     process.exit(1);
   }
 }

@@ -1,22 +1,23 @@
 /**
  * Background Refresh Hook
- * 
+ *
  * React hook wrapper for the BackgroundRefreshService
  * Provides easy integration with React components and proper cleanup
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { 
-  BackgroundRefreshService, 
+import {
+  BackgroundRefreshService,
   createBackgroundRefreshService,
   type BackgroundRefreshConfig,
-  type RefreshStats 
+  type RefreshStats,
 } from './backgroundRefreshService';
 
 /**
  * Hook options for background refresh
  */
-export interface UseBackgroundRefreshOptions extends Partial<BackgroundRefreshConfig> {
+export interface UseBackgroundRefreshOptions
+  extends Partial<BackgroundRefreshConfig> {
   enabled?: boolean; // Enable/disable the service
   onRefreshStart?: () => void; // Callback when refresh starts
   onRefreshComplete?: (success: boolean) => void; // Callback when refresh completes
@@ -30,21 +31,21 @@ export interface BackgroundRefreshHook {
   // Actions
   manualRefresh: () => Promise<void>;
   updateConfig: (config: Partial<BackgroundRefreshConfig>) => void;
-  
+
   // Status
   isInitialized: boolean;
   isAppActive: boolean;
   isOnline: boolean;
   hasActiveRefresh: boolean;
-  
+
   // Statistics
   stats: RefreshStats;
-  
+
   // Time information
   timeInBackground: number;
   lastRefreshAge: number;
   backgroundRefreshCount: number;
-  
+
   // Configuration
   currentConfig: BackgroundRefreshConfig;
 }
@@ -99,14 +100,17 @@ export const useBackgroundRefresh = (
         if (!serviceRef.current) {
           serviceRef.current = createBackgroundRefreshService(configOptions);
         }
-        
+
         await serviceRef.current.initialize(wrappedRefreshCallback);
         isInitialized = true;
         statusRef.current.isInitialized = true;
-        
+
         console.log('Background refresh service initialized via hook');
       } catch (error) {
-        console.error('Failed to initialize background refresh service:', error);
+        console.error(
+          'Failed to initialize background refresh service:',
+          error
+        );
         onRefreshError?.(error as Error);
       }
     };
@@ -131,11 +135,14 @@ export const useBackgroundRefresh = (
   }, []);
 
   // Update configuration function
-  const updateConfig = useCallback((newConfig: Partial<BackgroundRefreshConfig>) => {
-    if (serviceRef.current) {
-      serviceRef.current.updateConfig(newConfig);
-    }
-  }, []);
+  const updateConfig = useCallback(
+    (newConfig: Partial<BackgroundRefreshConfig>) => {
+      if (serviceRef.current) {
+        serviceRef.current.updateConfig(newConfig);
+      }
+    },
+    []
+  );
 
   // Get current status and stats
   const getCurrentStatus = useCallback(() => {
@@ -164,23 +171,24 @@ export const useBackgroundRefresh = (
     // Actions
     manualRefresh,
     updateConfig,
-    
+
     // Status
     isInitialized: currentStatus.isInitialized,
     isAppActive: currentStatus.status.isAppActive || false,
     isOnline: currentStatus.status.isOnline || false,
     hasActiveRefresh: currentStatus.status.hasActiveRefresh || false,
-    
+
     // Statistics
     stats: currentStatus.stats,
-    
+
     // Time information
     timeInBackground: currentStatus.status.timeInBackground || 0,
     lastRefreshAge: currentStatus.status.lastRefreshAge || 0,
     backgroundRefreshCount: currentStatus.status.backgroundRefreshCount || 0,
-    
+
     // Configuration
-    currentConfig: currentStatus.status.config || {} as BackgroundRefreshConfig,
+    currentConfig:
+      currentStatus.status.config || ({} as BackgroundRefreshConfig),
   };
 };
 
@@ -237,11 +245,11 @@ export const useAdvancedBackgroundRefresh = (
     enableNetworkOptimization: true,
     maxBackgroundRefreshes: 4,
     ...customConfig,
-    onRefreshComplete: (success) => {
+    onRefreshComplete: success => {
       console.log(`Background refresh ${success ? 'succeeded' : 'failed'}`);
       onStatusChange?.({ lastRefresh: Date.now(), success });
     },
-    onRefreshError: (error) => {
+    onRefreshError: error => {
       console.error('Background refresh error:', error);
       onStatusChange?.({ error: error.message });
     },
@@ -250,20 +258,23 @@ export const useAdvancedBackgroundRefresh = (
   // Enhanced return with additional utilities
   return {
     ...refreshHook,
-    
+
     // Additional utilities
     isRefreshNeeded: refreshHook.lastRefreshAge > 5 * 60 * 1000, // 5 minutes
     isBackgroundActive: !refreshHook.isAppActive && refreshHook.isOnline,
-    refreshRate: refreshHook.stats.totalRefreshes > 0 
-      ? refreshHook.stats.averageRefreshDuration 
-      : 0,
-    
+    refreshRate:
+      refreshHook.stats.totalRefreshes > 0
+        ? refreshHook.stats.averageRefreshDuration
+        : 0,
+
     // Quick status check
     getQuickStatus: () => ({
       online: refreshHook.isOnline,
       active: refreshHook.isAppActive,
       refreshing: refreshHook.hasActiveRefresh,
-      lastRefresh: new Date(Date.now() - refreshHook.lastRefreshAge).toLocaleTimeString(),
+      lastRefresh: new Date(
+        Date.now() - refreshHook.lastRefreshAge
+      ).toLocaleTimeString(),
       totalRefreshes: refreshHook.stats.totalRefreshes,
     }),
   };
@@ -287,7 +298,7 @@ export const useWeatherBackgroundRefresh = (
       enableBatteryOptimization: true,
       enableNetworkOptimization: true,
     },
-    onStatusChange: (status) => {
+    onStatusChange: status => {
       if (status.success) {
         console.log('Weather data refreshed in background');
       } else if (status.error) {

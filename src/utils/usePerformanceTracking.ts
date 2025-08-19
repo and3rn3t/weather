@@ -1,6 +1,6 @@
 /**
  * Performance Tracking Hook
- * 
+ *
  * Custom hook for tracking performance metrics separately from the component
  * to comply with React Fast Refresh requirements.
  */
@@ -26,7 +26,7 @@ export const usePerformanceTracking = () => {
   const getMetrics = () => ({
     renders: renderCount.current,
     apiCalls: apiCallCount.current,
-    uptime: Date.now() - startTime.current
+    uptime: Date.now() - startTime.current,
   });
 
   const resetMetrics = () => {
@@ -38,6 +38,6 @@ export const usePerformanceTracking = () => {
   return {
     trackAPICall,
     getMetrics,
-    resetMetrics
+    resetMetrics,
   };
 };

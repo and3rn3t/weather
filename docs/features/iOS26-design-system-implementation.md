@@ -2,7 +2,9 @@
 
 ## 🎯 Overview
 
-Successfully implemented a comprehensive iOS 26 design system based on the Figma iOS 26 UI kit reference. This enhancement transforms the weather app with modern iOS design patterns including fluid islands, advanced glassmorphism, and spatial UI elements.
+Successfully implemented a comprehensive iOS 26 design system based on the Figma iOS 26 UI kit
+reference. This enhancement transforms the weather app with modern iOS design patterns including
+fluid islands, advanced glassmorphism, and spatial UI elements.
 
 ## 📱 Key Features Implemented
 
@@ -63,7 +65,7 @@ src/
   background: var(--ios26-material-thick);
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--ios26-border-translucent);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.08),
     0 1px 0 rgba(255, 255, 255, 0.2) inset,
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;

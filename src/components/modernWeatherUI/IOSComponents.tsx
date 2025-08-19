@@ -1,6 +1,6 @@
 /**
  * iOS Human Interface Guidelines Components
- * 
+ *
  * Premium iOS-style UI components based on Apple's HIG:
  * - Segmented Controls for view switching
  * - Activity Indicators with enhanced animations
@@ -8,7 +8,7 @@
  * - Progress Indicators with smooth animations
  * - Status Badges for weather alerts
  * - Enhanced Lists with disclosure indicators
- * 
+ *
  * All components follow iOS design principles:
  * - Smooth 60fps animations
  * - Haptic feedback integration
@@ -38,18 +38,20 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   onChange,
   theme,
   disabled = false,
-  isDark = false
+  isDark = false,
 }) => {
   const containerStyle: React.CSSProperties = {
     display: 'flex',
-    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
+    backgroundColor: isDark
+      ? 'rgba(255, 255, 255, 0.1)'
+      : 'rgba(0, 0, 0, 0.06)',
     borderRadius: '12px',
     padding: '2px',
     position: 'relative',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`,
     backdropFilter: 'blur(20px)',
     opacity: disabled ? 0.6 : 1,
-    pointerEvents: disabled ? 'none' : 'auto'
+    pointerEvents: disabled ? 'none' : 'auto',
   };
 
   const getSegmentTextColor = (index: number) => {
@@ -80,9 +82,8 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
     position: 'relative',
     zIndex: selectedIndex === index ? 2 : 1,
     backgroundColor: getSegmentBackgroundColor(index),
-    boxShadow: selectedIndex === index 
-      ? '0 2px 8px rgba(0, 0, 0, 0.15)' 
-      : 'none'
+    boxShadow:
+      selectedIndex === index ? '0 2px 8px rgba(0, 0, 0, 0.15)' : 'none',
   });
 
   return (
@@ -117,12 +118,12 @@ export const ActivityIndicator: React.FC<ActivityIndicatorProps> = ({
   size = 'medium',
   theme,
   color,
-  text
+  text,
 }) => {
   const sizeMap = {
     small: 20,
     medium: 32,
-    large: 48
+    large: 48,
   };
 
   const indicatorSize = sizeMap[size];
@@ -132,19 +133,19 @@ export const ActivityIndicator: React.FC<ActivityIndicatorProps> = ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '12px'
+    gap: '12px',
   };
 
   const spinnerStyle: React.CSSProperties = {
     width: indicatorSize,
     height: indicatorSize,
-    animation: 'iosSpinner 1s linear infinite'
+    animation: 'iosSpinner 1s linear infinite',
   };
 
   const textStyle: React.CSSProperties = {
     fontSize: size === 'small' ? '14px' : '16px',
     color: theme.secondaryText,
-    fontWeight: '500'
+    fontWeight: '500',
   };
 
   return (
@@ -198,32 +199,34 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   text,
   variant = 'info',
   theme,
-  size = 'medium'
+  size = 'medium',
 }) => {
   // Detect dark mode from theme colors
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
-  
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
+
   const variantColors = {
     info: {
       bg: isDark ? 'rgba(0, 122, 255, 0.2)' : 'rgba(0, 122, 255, 0.1)',
       border: isDark ? 'rgba(0, 122, 255, 0.4)' : 'rgba(0, 122, 255, 0.3)',
-      text: isDark ? '#64D2FF' : '#007AFF'
+      text: isDark ? '#64D2FF' : '#007AFF',
     },
     warning: {
       bg: isDark ? 'rgba(255, 149, 0, 0.2)' : 'rgba(255, 149, 0, 0.1)',
       border: isDark ? 'rgba(255, 149, 0, 0.4)' : 'rgba(255, 149, 0, 0.3)',
-      text: isDark ? '#FFB340' : '#FF9500'
+      text: isDark ? '#FFB340' : '#FF9500',
     },
     error: {
       bg: isDark ? 'rgba(255, 59, 48, 0.2)' : 'rgba(255, 59, 48, 0.1)',
       border: isDark ? 'rgba(255, 59, 48, 0.4)' : 'rgba(255, 59, 48, 0.3)',
-      text: isDark ? '#FF6B6B' : '#FF3B30'
+      text: isDark ? '#FF6B6B' : '#FF3B30',
     },
     success: {
       bg: isDark ? 'rgba(52, 199, 89, 0.2)' : 'rgba(52, 199, 89, 0.1)',
       border: isDark ? 'rgba(52, 199, 89, 0.4)' : 'rgba(52, 199, 89, 0.3)',
-      text: isDark ? '#5DD683' : '#34C759'
-    }
+      text: isDark ? '#5DD683' : '#34C759',
+    },
   };
 
   const colors = variantColors[variant];
@@ -239,7 +242,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     fontWeight: '600',
     color: colors.text,
     backdropFilter: 'blur(10px)',
-    userSelect: 'none'
+    userSelect: 'none',
   };
 
   return (
@@ -272,46 +275,50 @@ export const ListItem: React.FC<ListItemProps> = ({
   badge,
   onPress,
   theme,
-  disabled = false
+  disabled = false,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  
+
   // Detect dark mode from theme colors
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     padding: '16px',
-    backgroundColor: isPressed 
-      ? (isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)')
+    backgroundColor: isPressed
+      ? isDark
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'rgba(0, 0, 0, 0.05)'
       : 'transparent',
     borderRadius: '12px',
     cursor: onPress && !disabled ? 'pointer' : 'default',
     transition: 'background-color 0.2s ease',
     opacity: disabled ? 0.6 : 1,
     userSelect: 'none',
-    gap: '12px'
+    gap: '12px',
   };
 
   const contentStyle: React.CSSProperties = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px'
+    gap: '2px',
   };
 
   const titleStyle: React.CSSProperties = {
     fontSize: '17px',
     fontWeight: '400',
     color: theme.primaryText,
-    margin: 0
+    margin: 0,
   };
 
   const subtitleStyle: React.CSSProperties = {
     fontSize: '15px',
     color: theme.secondaryText,
-    margin: 0
+    margin: 0,
   };
 
   const disclosureStyle: React.CSSProperties = {
@@ -320,7 +327,7 @@ export const ListItem: React.FC<ListItemProps> = ({
     borderRight: `2px solid ${theme.secondaryText}`,
     borderTop: `2px solid ${theme.secondaryText}`,
     transform: 'rotate(45deg)',
-    opacity: 0.6
+    opacity: 0.6,
   };
 
   const handlePress = () => {
@@ -337,24 +344,18 @@ export const ListItem: React.FC<ListItemProps> = ({
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
-      role={onPress ? "button" : "listitem"}
+      role={onPress ? 'button' : 'listitem'}
       tabIndex={onPress && !disabled ? 0 : -1}
       aria-label={`${title}${subtitle ? `, ${subtitle}` : ''}`}
     >
-      {icon && (
-        <div style={{ flexShrink: 0 }}>
-          {icon}
-        </div>
-      )}
-      
+      {icon && <div style={{ flexShrink: 0 }}>{icon}</div>}
+
       <div style={contentStyle}>
         <div style={titleStyle}>{title}</div>
         {subtitle && <div style={subtitleStyle}>{subtitle}</div>}
       </div>
 
-      {badge && (
-        <StatusBadge text={badge} theme={theme} size="small" />
-      )}
+      {badge && <StatusBadge text={badge} theme={theme} size="small" />}
 
       {disclosure && <div style={disclosureStyle} />}
     </div>
@@ -378,15 +379,17 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   theme,
   size = 'medium',
   showPercentage = false,
-  color
+  color,
 }) => {
   // Detect dark mode from theme colors
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
-  
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
+
   const sizeMap = {
     small: { height: 4, radius: 2 },
     medium: { height: 6, radius: 3 },
-    large: { height: 8, radius: 4 }
+    large: { height: 8, radius: 4 },
   };
 
   const dimensions = sizeMap[size];
@@ -395,7 +398,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    width: '100%'
+    width: '100%',
   };
 
   const trackStyle: React.CSSProperties = {
@@ -404,7 +407,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
     borderRadius: dimensions.radius,
     overflow: 'hidden',
-    position: 'relative'
+    position: 'relative',
   };
 
   const fillStyle: React.CSSProperties = {
@@ -413,7 +416,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     backgroundColor: color || '#007AFF',
     borderRadius: dimensions.radius,
     transition: 'width 0.3s ease',
-    position: 'relative'
+    position: 'relative',
   };
 
   const percentageStyle: React.CSSProperties = {
@@ -421,7 +424,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     fontWeight: '500',
     color: theme.secondaryText,
     minWidth: '40px',
-    textAlign: 'right'
+    textAlign: 'right',
   };
 
   return (

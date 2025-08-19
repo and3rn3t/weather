@@ -1,6 +1,6 @@
 /**
  * Test Configuration
- * 
+ *
  * Shared configuration and utilities for testing haptic and other mobile features
  */
 
@@ -32,7 +32,8 @@ export const setupGlobalMocks = () => {
 
   // Mock user agent for mobile detection
   Object.defineProperty(navigator, 'userAgent', {
-    value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15',
+    value:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15',
     writable: true,
     configurable: true,
   });
@@ -53,12 +54,15 @@ export const setupGlobalMocks = () => {
   global.fetch = vi.fn();
 
   // Mock capacitor haptics
-  const globalWithCapacitor = global as unknown as { Capacitor: unknown; Haptics: unknown };
+  const globalWithCapacitor = global as unknown as {
+    Capacitor: unknown;
+    Haptics: unknown;
+  };
   globalWithCapacitor.Capacitor = {
     isNativePlatform: () => false,
-    getPlatform: () => 'web'
+    getPlatform: () => 'web',
   };
-  
+
   // Mock capacitor plugins
   globalWithCapacitor.Haptics = {
     selectionStart: vi.fn().mockResolvedValue(undefined),
@@ -77,13 +81,15 @@ export const resetMocks = () => {
   mockGeolocation.watchPosition.mockClear();
   mockGeolocation.clearWatch.mockClear();
   mockPermissions.query.mockClear();
-  
+
   const globalFetch = global.fetch as unknown as { mockClear?: () => void };
   if (globalFetch?.mockClear) {
     globalFetch.mockClear();
   }
-  
-  const globalHaptics = (global as unknown as { Haptics?: Record<string, unknown> }).Haptics;
+
+  const globalHaptics = (
+    global as unknown as { Haptics?: Record<string, unknown> }
+  ).Haptics;
   if (globalHaptics) {
     Object.values(globalHaptics).forEach(fn => {
       const mockFn = fn as { mockClear?: () => void };
@@ -92,7 +98,7 @@ export const resetMocks = () => {
       }
     });
   }
-  
+
   vi.clearAllMocks();
 };
 

@@ -29,7 +29,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragCurrentY, setDragCurrentY] = useState(0);
-  
+
   const sheetRef = useRef<HTMLDivElement>(null);
   const { selection, buttonPress } = useHapticFeedback();
 
@@ -37,37 +37,48 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     return `${snapPoint * 100}vh`;
   }, []);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    setIsDragging(true);
-    setDragStartY(e.touches[0].clientY);
-    setDragCurrentY(e.touches[0].clientY);
-    selection();
-  }, [selection]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      setIsDragging(true);
+      setDragStartY(e.touches[0].clientY);
+      setDragCurrentY(e.touches[0].clientY);
+      selection();
+    },
+    [selection]
+  );
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging) return;
-    
-    setDragCurrentY(e.touches[0].clientY);
-    
-    const deltaY = e.touches[0].clientY - dragStartY;
-    const viewportHeight = window.innerHeight;
-    const deltaSnapPoint = deltaY / viewportHeight;
-    
-    const newSnapPoint = Math.max(0, Math.min(1, currentSnapPoint - deltaSnapPoint));
-    setCurrentSnapPoint(newSnapPoint);
-  }, [isDragging, dragStartY, currentSnapPoint]);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isDragging) return;
+
+      setDragCurrentY(e.touches[0].clientY);
+
+      const deltaY = e.touches[0].clientY - dragStartY;
+      const viewportHeight = window.innerHeight;
+      const deltaSnapPoint = deltaY / viewportHeight;
+
+      const newSnapPoint = Math.max(
+        0,
+        Math.min(1, currentSnapPoint - deltaSnapPoint)
+      );
+      setCurrentSnapPoint(newSnapPoint);
+    },
+    [isDragging, dragStartY, currentSnapPoint]
+  );
 
   const handleTouchEnd = useCallback(() => {
     if (!isDragging) return;
-    
+
     setIsDragging(false);
-    
+
     const deltaY = dragCurrentY - dragStartY;
     const threshold = 50;
-    
+
     if (deltaY > threshold) {
       // Dragged down - find closest lower snap point or close
-      const lowerSnapPoints = snapPoints.filter(point => point < currentSnapPoint);
+      const lowerSnapPoints = snapPoints.filter(
+        point => point < currentSnapPoint
+      );
       if (lowerSnapPoints.length > 0) {
         const closestSnapPoint = Math.max(...lowerSnapPoints);
         setCurrentSnapPoint(closestSnapPoint);
@@ -77,7 +88,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       }
     } else if (deltaY < -threshold) {
       // Dragged up - find closest higher snap point
-      const higherSnapPoints = snapPoints.filter(point => point > currentSnapPoint);
+      const higherSnapPoints = snapPoints.filter(
+        point => point > currentSnapPoint
+      );
       if (higherSnapPoints.length > 0) {
         const closestSnapPoint = Math.min(...higherSnapPoints);
         setCurrentSnapPoint(closestSnapPoint);
@@ -85,12 +98,22 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       }
     } else {
       // Snap to closest point
-      const closest = snapPoints.reduce((prev, curr) => 
-        Math.abs(curr - currentSnapPoint) < Math.abs(prev - currentSnapPoint) ? curr : prev
+      const closest = snapPoints.reduce((prev, curr) =>
+        Math.abs(curr - currentSnapPoint) < Math.abs(prev - currentSnapPoint)
+          ? curr
+          : prev
       );
       setCurrentSnapPoint(closest);
     }
-  }, [isDragging, dragCurrentY, dragStartY, currentSnapPoint, snapPoints, onClose, buttonPress]);
+  }, [
+    isDragging,
+    dragCurrentY,
+    dragStartY,
+    currentSnapPoint,
+    snapPoints,
+    onClose,
+    buttonPress,
+  ]);
 
   const handleBackdropClick = useCallback(() => {
     onClose();
@@ -103,7 +126,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     } else {
       document.body.style.overflow = '';
     }
-    
+
     return () => {
       document.body.style.overflow = '';
     };
@@ -114,7 +137,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   const sheetStyle: React.CSSProperties = {
     height: getSheetHeight(currentSnapPoint),
     transform: isDragging ? 'none' : undefined,
-    transition: isDragging ? 'none' : 'height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transition: isDragging
+      ? 'none'
+      : 'height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   };
 
   return (
@@ -135,7 +160,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
           transition: 'opacity 0.3s ease',
         }}
       />
-      
+
       {/* Bottom Sheet */}
       <div
         ref={sheetRef}
@@ -171,7 +196,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
             touchAction: 'none',
           }}
         />
-        
+
         {/* Header */}
         {title && (
           <div
@@ -195,7 +220,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
             </h3>
           </div>
         )}
-        
+
         {/* Content */}
         <div
           className="bottom-sheet-content"

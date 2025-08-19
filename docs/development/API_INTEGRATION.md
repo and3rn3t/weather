@@ -29,22 +29,22 @@ const getWeather = async (city: string) => {
   // Step 1: Convert city name to coordinates
   const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`;
   const geoResponse = await fetch(geoUrl, {
-    headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' }
+    headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
   });
   const geoData = await geoResponse.json();
-  
+
   if (!geoData || geoData.length === 0) {
     throw new Error('City not found. Please check the spelling and try again.');
   }
-  
+
   const { lat, lon } = geoData[0];
-  
+
   // Step 2: Get weather data using coordinates
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
-  
+
   const weatherResponse = await fetch(weatherUrl);
   const weatherData = await weatherResponse.json();
-  
+
   // Step 3: Transform data for our UI
   return transformWeatherData(weatherData);
 };
@@ -88,20 +88,20 @@ interface OpenMeteoResponse {
 ```typescript
 interface WeatherData {
   main: {
-    temp: number;           // Current temperature in Fahrenheit
-    feels_like: number;     // Apparent temperature
-    humidity: number;       // Relative humidity percentage
-    pressure: number;       // Atmospheric pressure in hPa
+    temp: number; // Current temperature in Fahrenheit
+    feels_like: number; // Apparent temperature
+    humidity: number; // Relative humidity percentage
+    pressure: number; // Atmospheric pressure in hPa
   };
   weather: {
-    description: string;    // Human-readable condition
+    description: string; // Human-readable condition
   }[];
   wind: {
-    speed: number;          // Wind speed in mph
-    deg: number;            // Wind direction in degrees
+    speed: number; // Wind speed in mph
+    deg: number; // Wind direction in degrees
   };
-  uv_index: number;         // UV index (0-11+ scale)
-  visibility: number;       // Visibility in meters
+  uv_index: number; // UV index (0-11+ scale)
+  visibility: number; // Visibility in meters
 }
 ```
 
@@ -111,13 +111,13 @@ interface WeatherData {
 const getWeatherDescription = (code: number): string => {
   const descriptions: { [key: number]: string } = {
     0: 'clear sky',
-    1: 'mainly clear', 
+    1: 'mainly clear',
     2: 'partly cloudy',
     3: 'overcast',
     45: 'fog',
     48: 'depositing rime fog',
     51: 'light drizzle',
-    53: 'moderate drizzle', 
+    53: 'moderate drizzle',
     55: 'dense drizzle',
     61: 'light rain',
     63: 'moderate rain',
@@ -130,7 +130,7 @@ const getWeatherDescription = (code: number): string => {
     82: 'violent rain showers',
     95: 'thunderstorm',
     96: 'thunderstorm with slight hail',
-    99: 'thunderstorm with heavy hail'
+    99: 'thunderstorm with heavy hail',
   };
   return descriptions[code] || 'unknown';
 };
@@ -147,26 +147,23 @@ const getWeather = async (city: string) => {
     if (!geoResponse.ok) {
       throw new Error(`Geocoding failed: ${geoResponse.status}`);
     }
-    
+
     if (!geoData || geoData.length === 0) {
       throw new Error('City not found. Please check the spelling and try again.');
     }
-    
+
     // Weather API errors
     if (!weatherResponse.ok) {
       throw new Error(`Weather API failed: ${weatherResponse.status}`);
     }
-    
+
     // Data validation
     if (!weatherData.current_weather) {
       throw new Error('Invalid weather data received');
     }
-    
   } catch (error) {
     // User-friendly error messages
-    const errorMessage = error instanceof Error 
-      ? error.message 
-      : 'Unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     setError(`Failed to fetch weather data: ${errorMessage}`);
   }
 };
@@ -185,10 +182,7 @@ const getWeather = async (city: string) => {
 
 ```typescript
 // Debounced search to prevent excessive API calls
-const debouncedSearch = useMemo(
-  () => debounce((city: string) => getWeather(city), 300),
-  []
-);
+const debouncedSearch = useMemo(() => debounce((city: string) => getWeather(city), 300), []);
 
 // Request deduplication
 const requestCache = new Map<string, Promise<WeatherData>>();
@@ -197,13 +191,13 @@ const getCachedWeather = (city: string) => {
   if (requestCache.has(city)) {
     return requestCache.get(city)!;
   }
-  
+
   const request = getWeather(city);
   requestCache.set(city, request);
-  
+
   // Clear cache after 5 minutes
   setTimeout(() => requestCache.delete(city), 5 * 60 * 1000);
-  
+
   return request;
 };
 ```
@@ -212,26 +206,29 @@ const getCachedWeather = (city: string) => {
 
 ```typescript
 // Simple in-memory cache
-const weatherCache = new Map<string, {
-  data: WeatherData;
-  timestamp: number;
-  expires: number;
-}>();
+const weatherCache = new Map<
+  string,
+  {
+    data: WeatherData;
+    timestamp: number;
+    expires: number;
+  }
+>();
 
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 const getCachedWeatherData = (city: string): WeatherData | null => {
   const cached = weatherCache.get(city);
-  
+
   if (cached && Date.now() < cached.expires) {
     return cached.data;
   }
-  
+
   // Remove expired cache
   if (cached) {
     weatherCache.delete(city);
   }
-  
+
   return null;
 };
 ```
@@ -250,8 +247,8 @@ try {
     signal: controller.signal,
     headers: {
       'Cache-Control': 'no-cache',
-      'User-Agent': 'WeatherApp/1.0 Mobile'
-    }
+      'User-Agent': 'WeatherApp/1.0 Mobile',
+    },
   });
 } catch (error) {
   if (error.name === 'AbortError') {
@@ -304,15 +301,19 @@ if (!isOnline) {
 
 - **Main Site**: [https://open-meteo.com/](https://open-meteo.com/)
 - **API Docs**: [https://open-meteo.com/en/docs](https://open-meteo.com/en/docs)
-- **Weather Codes**: [https://open-meteo.com/en/docs#weathervariables](https://open-meteo.com/en/docs#weathervariables)
+- **Weather Codes**:
+  [https://open-meteo.com/en/docs#weathervariables](https://open-meteo.com/en/docs#weathervariables)
 - **Examples**: [https://open-meteo.com/en/docs#examples](https://open-meteo.com/en/docs#examples)
 
 ### Nominatim Documentation
 
 - **Main Site**: [https://nominatim.org/](https://nominatim.org/)
-- **API Docs**: [https://nominatim.org/release-docs/develop/api/Search/](https://nominatim.org/release-docs/develop/api/Search/)
-- **Usage Policy**: [https://operations.osmfoundation.org/policies/nominatim/](https://operations.osmfoundation.org/policies/nominatim/)
-- **Examples**: [https://nominatim.org/release-docs/develop/api/Examples/](https://nominatim.org/release-docs/develop/api/Examples/)
+- **API Docs**:
+  [https://nominatim.org/release-docs/develop/api/Search/](https://nominatim.org/release-docs/develop/api/Search/)
+- **Usage Policy**:
+  [https://operations.osmfoundation.org/policies/nominatim/](https://operations.osmfoundation.org/policies/nominatim/)
+- **Examples**:
+  [https://nominatim.org/release-docs/develop/api/Examples/](https://nominatim.org/release-docs/develop/api/Examples/)
 
 ## 🛠️ Development Tools
 
@@ -346,9 +347,10 @@ const trackAPICall = (success: boolean) => {
   } else {
     apiErrorCount++;
   }
-  
+
   const errorRate = apiErrorCount / (apiErrorCount + apiSuccessCount);
-  if (errorRate > 0.1) { // 10% error rate threshold
+  if (errorRate > 0.1) {
+    // 10% error rate threshold
     console.warn(`High API error rate: ${(errorRate * 100).toFixed(1)}%`);
   }
 };

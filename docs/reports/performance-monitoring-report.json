@@ -63,9 +63,7 @@
       "treeshakingEfficiency": 0.8
     }
   },
-  "recommendations": [
-    "🎉 Excellent performance metrics - maintain current practices"
-  ],
+  "recommendations": ["🎉 Excellent performance metrics - maintain current practices"],
   "overallScore": 100,
   "alerts": []
 }

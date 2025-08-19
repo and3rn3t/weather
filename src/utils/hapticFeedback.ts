@@ -5,7 +5,14 @@
 
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
-export type HapticType = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error' | 'selection';
+export type HapticType =
+  | 'light'
+  | 'medium'
+  | 'heavy'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'selection';
 
 class HapticFeedbackManager {
   private isAvailable = false;
@@ -82,7 +89,7 @@ class HapticFeedbackManager {
         error: [50, 100, 50, 100, 50],
         selection: 5,
       };
-      
+
       navigator.vibrate(patterns[type]);
     }
   }

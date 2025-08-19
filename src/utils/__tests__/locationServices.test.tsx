@@ -1,11 +1,18 @@
 /**
  * Location Services Tests
- * 
+ *
  * Tests for the useLocationServices hook and LocationButton component.
  * Covers GPS functionality, permission handling, and reverse geocoding.
  */
 
-import { renderHook, act, render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  renderHook,
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -56,7 +63,11 @@ global.fetch = vi.fn();
 
 // Mock GeolocationPositionError in test environment
 if (typeof global.GeolocationPositionError === 'undefined') {
-  (global as typeof global & { GeolocationPositionError: typeof GeolocationPositionError }).GeolocationPositionError = {
+  (
+    global as typeof global & {
+      GeolocationPositionError: typeof GeolocationPositionError;
+    }
+  ).GeolocationPositionError = {
     PERMISSION_DENIED: 1,
     POSITION_UNAVAILABLE: 2,
     TIMEOUT: 3,
@@ -66,16 +77,14 @@ if (typeof global.GeolocationPositionError === 'undefined') {
 // Test wrapper with providers
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <HapticFeedbackProvider>
-    <ThemeProvider>
-      {children}
-    </ThemeProvider>
+    <ThemeProvider>{children}</ThemeProvider>
   </HapticFeedbackProvider>
 );
 
 describe('useLocationServices', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Ensure navigator.geolocation exists and is properly mocked
     Object.defineProperty(global, 'navigator', {
       value: {
@@ -96,42 +105,43 @@ describe('useLocationServices', () => {
         configurable: true,
       });
     }
-    
+
     // Reset geolocation mock functions
     mockGeolocation.getCurrentPosition.mockReset();
     mockGeolocation.watchPosition.mockReset();
     mockGeolocation.clearWatch.mockReset();
-    
+
     // Set up default successful getCurrentPosition mock
-    mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+    mockGeolocation.getCurrentPosition.mockImplementation(success => {
       const position = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
       setTimeout(() => success(position), 10);
     });
-    
+
     mockGeolocation.watchPosition.mockReturnValue(123);
     mockGeolocation.clearWatch.mockImplementation(() => {});
-    
+
     // Reset permissions mock
     mockPermissions.query.mockReset();
     mockPermissions.query.mockResolvedValue({ state: 'granted' });
-    
+
     // Reset fetch mock for reverse geocoding
     vi.mocked(global.fetch).mockReset();
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        address: {
-          city: 'New York',
-          country: 'USA'
-        }
-      })
+      json: () =>
+        Promise.resolve({
+          address: {
+            city: 'New York',
+            country: 'USA',
+          },
+        }),
     } as Response);
   });
 
@@ -139,9 +149,15 @@ describe('useLocationServices', () => {
     it('should detect geolocation support', () => {
       // Verify that navigator.geolocation exists
       console.log('navigator.geolocation:', global.navigator.geolocation);
-      console.log('getCurrentPosition exists:', 'getCurrentPosition' in global.navigator.geolocation);
-      console.log('geolocation in navigator:', 'geolocation' in global.navigator);
-      
+      console.log(
+        'getCurrentPosition exists:',
+        'getCurrentPosition' in global.navigator.geolocation
+      );
+      console.log(
+        'geolocation in navigator:',
+        'geolocation' in global.navigator
+      );
+
       const { result } = renderHook(() => useLocationServices(), { wrapper });
       expect(result.current.isSupported).toBe(true);
     });
@@ -149,7 +165,7 @@ describe('useLocationServices', () => {
     it('should handle unsupported browsers', () => {
       // Temporarily remove geolocation by redefining navigator
       const originalNavigator = global.navigator;
-      
+
       Object.defineProperty(global, 'navigator', {
         value: {
           ...originalNavigator,
@@ -183,7 +199,9 @@ describe('useLocationServices', () => {
       });
 
       expect(status).toBe('granted');
-      expect(mockPermissions.query).toHaveBeenCalledWith({ name: 'geolocation' });
+      expect(mockPermissions.query).toHaveBeenCalledWith({
+        name: 'geolocation',
+      });
     });
 
     it('should handle permission check failures', async () => {
@@ -204,14 +222,15 @@ describe('useLocationServices', () => {
     beforeEach(() => {
       vi.mocked(global.fetch).mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({
-          display_name: 'New York, NY, USA',
-          address: {
-            city: 'New York',
-            state: 'New York',
-            country: 'United States',
-          },
-        }),
+        json: () =>
+          Promise.resolve({
+            display_name: 'New York, NY, USA',
+            address: {
+              city: 'New York',
+              state: 'New York',
+              country: 'United States',
+            },
+          }),
       } as Response);
     });
 
@@ -219,13 +238,13 @@ describe('useLocationServices', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
         },
         timestamp: Date.now(),
       };
 
-      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+      mockGeolocation.getCurrentPosition.mockImplementation(success => {
         success(mockPosition);
       });
 
@@ -238,7 +257,7 @@ describe('useLocationServices', () => {
 
       expect(locationData).toEqual({
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         accuracy: 10,
         timestamp: mockPosition.timestamp,
         city: 'New York',
@@ -249,8 +268,8 @@ describe('useLocationServices', () => {
         expect.stringContaining('nominatim.openstreetmap.org'),
         expect.objectContaining({
           headers: expect.objectContaining({
-            'User-Agent': expect.stringContaining('WeatherApp')
-          })
+            'User-Agent': expect.stringContaining('WeatherApp'),
+          }),
         })
       );
     });
@@ -272,7 +291,8 @@ describe('useLocationServices', () => {
       expect(result.current.error).toEqual({
         code: 1,
         message: 'Location access denied by user',
-        userFriendlyMessage: 'Location access was denied. Please enable location services in your browser settings.',
+        userFriendlyMessage:
+          'Location access was denied. Please enable location services in your browser settings.',
       });
     });
 
@@ -280,13 +300,13 @@ describe('useLocationServices', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
         },
         timestamp: Date.now(),
       };
 
-      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+      mockGeolocation.getCurrentPosition.mockImplementation(success => {
         success(mockPosition);
       });
 
@@ -301,7 +321,7 @@ describe('useLocationServices', () => {
 
       expect(locationData).toEqual({
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         accuracy: 10,
         timestamp: mockPosition.timestamp,
       });
@@ -313,13 +333,13 @@ describe('useLocationServices', () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
-          longitude: -74.0060,
+          longitude: -74.006,
           accuracy: 10,
         },
         timestamp: Date.now(),
       };
 
-      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+      mockGeolocation.getCurrentPosition.mockImplementation(success => {
         success(mockPosition);
       });
 
@@ -327,12 +347,14 @@ describe('useLocationServices', () => {
 
       let locationData: unknown = null;
       await act(async () => {
-        locationData = await result.current.getCurrentLocation({ includeAddress: false });
+        locationData = await result.current.getCurrentLocation({
+          includeAddress: false,
+        });
       });
 
       expect(locationData).toEqual({
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         accuracy: 10,
         timestamp: mockPosition.timestamp,
       });
@@ -375,7 +397,7 @@ describe('useLocationServices', () => {
 
       const mockLocation = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         accuracy: 10,
         timestamp: Date.now(),
         city: 'New York',
@@ -383,7 +405,9 @@ describe('useLocationServices', () => {
       };
 
       act(() => {
-        expect(result.current.formatLocationDisplay(mockLocation)).toBe('New York, NY, USA');
+        expect(result.current.formatLocationDisplay(mockLocation)).toBe(
+          'New York, NY, USA'
+        );
       });
     });
 
@@ -392,13 +416,15 @@ describe('useLocationServices', () => {
 
       const mockLocation = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         accuracy: 10,
         timestamp: Date.now(),
       };
 
       act(() => {
-        expect(result.current.formatLocationDisplay(mockLocation)).toBe('40.7128, -74.0060');
+        expect(result.current.formatLocationDisplay(mockLocation)).toBe(
+          '40.7128, -74.0060'
+        );
       });
     });
 
@@ -430,9 +456,10 @@ describe('LocationButton', () => {
     vi.clearAllMocks();
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        address: { city: 'New York', country: 'United States' },
-      }),
+      json: () =>
+        Promise.resolve({
+          address: { city: 'New York', country: 'United States' },
+        }),
     } as Response);
   });
 
@@ -444,7 +471,7 @@ describe('LocationButton', () => {
         </ThemeProvider>
       </HapticFeedbackProvider>
     );
-    
+
     expect(screen.getByRole('button')).toBeInTheDocument();
     expect(screen.getByText('Use My Location')).toBeInTheDocument();
   });
@@ -453,13 +480,13 @@ describe('LocationButton', () => {
     const mockPosition = {
       coords: {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         accuracy: 10,
       },
       timestamp: Date.now(),
     };
 
-    mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+    mockGeolocation.getCurrentPosition.mockImplementation(success => {
       success(mockPosition);
     });
 
@@ -477,8 +504,8 @@ describe('LocationButton', () => {
     await waitFor(() => {
       expect(defaultProps.onLocationReceived).toHaveBeenCalledWith(
         expect.any(String), // city
-        40.7128, // latitude  
-        -74.0060 // longitude
+        40.7128, // latitude
+        -74.006 // longitude
       );
     });
   });

@@ -1,6 +1,6 @@
 /**
  * Enhanced Pull-to-Refresh Hook with Haptic Feedback
- * 
+ *
  * Extends the basic pull-to-refresh functionality with haptic feedback integration.
  * Provides tactile feedback at key interaction points for better UX.
  */
@@ -21,10 +21,7 @@ export const useEnhancedPullToRefresh = (
   onRefresh: () => Promise<void>,
   options: EnhancedPullToRefreshOptions = {}
 ) => {
-  const {
-    enableHaptics = true,
-    ...pullOptions
-  } = options;
+  const { enableHaptics = true, ...pullOptions } = options;
 
   const haptic = useHaptic();
 
@@ -33,10 +30,10 @@ export const useEnhancedPullToRefresh = (
     if (enableHaptics && haptic.isSupported) {
       haptic.weatherRefresh(); // Trigger haptic feedback when refresh starts
     }
-    
+
     try {
       await onRefresh();
-      
+
       if (enableHaptics && haptic.isSupported) {
         haptic.success(); // Success haptic feedback when refresh completes
       }
@@ -53,6 +50,6 @@ export const useEnhancedPullToRefresh = (
 
   return {
     ...pullToRefreshProps,
-    hapticEnabled: enableHaptics && haptic.isSupported
+    hapticEnabled: enableHaptics && haptic.isSupported,
   };
 };

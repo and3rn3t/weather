@@ -1,6 +1,6 @@
 /**
  * iOS Action Sheet Component
- * 
+ *
  * A modal component that presents a list of actions in a bottom sheet
  * following iOS Human Interface Guidelines:
  * - Smooth slide-up animation from bottom
@@ -40,7 +40,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
   actions,
   theme,
   cancelText = 'Cancel',
-  isDark = false
+  isDark = false,
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +88,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     alignItems: 'flex-end',
     justifyContent: 'center',
     padding: '16px',
-    animation: 'iosModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    animation: 'iosModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   };
 
   const sheetStyle: React.CSSProperties = {
@@ -100,13 +100,15 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     overflow: 'hidden',
     boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
     transform: 'translateY(0)',
-    animation: 'iosModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    animation: 'iosModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   };
 
-  const headerBorderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const headerBorderColor = isDark
+    ? 'rgba(255, 255, 255, 0.1)'
+    : 'rgba(0, 0, 0, 0.1)';
   const headerStyle: React.CSSProperties = {
     padding: '20px 16px 8px',
-    borderBottom: title || message ? `1px solid ${headerBorderColor}` : 'none'
+    borderBottom: title || message ? `1px solid ${headerBorderColor}` : 'none',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -116,7 +118,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     textAlign: 'center',
     margin: '0 0 4px 0',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px'
+    letterSpacing: '0.5px',
   };
 
   const messageStyle: React.CSSProperties = {
@@ -125,13 +127,13 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     color: theme.primaryText,
     textAlign: 'center',
     margin: 0,
-    lineHeight: '22px'
+    lineHeight: '22px',
   };
 
   const actionsContainerStyle: React.CSSProperties = {
     padding: '8px',
     maxHeight: '60vh',
-    overflowY: 'auto'
+    overflowY: 'auto',
   };
 
   const getActionColor = (action: ActionSheetAction) => {
@@ -155,7 +157,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     cursor: action.disabled ? 'not-allowed' : 'pointer',
     opacity: action.disabled ? 0.5 : 1,
     transition: 'background-color 0.2s ease',
-    textAlign: 'left'
+    textAlign: 'left',
   });
 
   const cancelButtonStyle: React.CSSProperties = {
@@ -169,7 +171,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     color: '#007AFF',
     cursor: 'pointer',
     transition: 'background-color 0.2s ease',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
   };
 
   const handleActionPress = (action: ActionSheetAction) => {
@@ -180,10 +182,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
   };
 
   return (
-    <div 
-      style={backdropStyle} 
-      className="ios-action-sheet-backdrop"
-    >
+    <div style={backdropStyle} className="ios-action-sheet-backdrop">
       <div ref={sheetRef} style={sheetStyle} className="ios-action-sheet">
         {(title || message) && (
           <div style={headerStyle}>
@@ -191,7 +190,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
             {message && <p style={messageStyle}>{message}</p>}
           </div>
         )}
-        
+
         <div style={actionsContainerStyle}>
           {actions.map((action, index) => (
             <button
@@ -200,13 +199,14 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
               onClick={() => handleActionPress(action)}
               disabled={action.disabled}
               className="ios-action-button"
-              onMouseEnter={(e) => {
+              onMouseEnter={e => {
                 if (!action.disabled) {
-                  (e.target as HTMLElement).style.backgroundColor = 
-                    isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+                  (e.target as HTMLElement).style.backgroundColor = isDark
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(0, 0, 0, 0.05)';
                 }
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={e => {
                 (e.target as HTMLElement).style.backgroundColor = 'transparent';
               }}
               aria-label={action.title}
@@ -221,13 +221,15 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
           style={cancelButtonStyle}
           onClick={onClose}
           className="ios-cancel-button"
-          onMouseEnter={(e) => {
-            (e.target as HTMLElement).style.backgroundColor = 
-              isDark ? '#3A3A3C' : '#F0F0F0';
+          onMouseEnter={e => {
+            (e.target as HTMLElement).style.backgroundColor = isDark
+              ? '#3A3A3C'
+              : '#F0F0F0';
           }}
-          onMouseLeave={(e) => {
-            (e.target as HTMLElement).style.backgroundColor = 
-              isDark ? '#2C2C2E' : '#FFFFFF';
+          onMouseLeave={e => {
+            (e.target as HTMLElement).style.backgroundColor = isDark
+              ? '#2C2C2E'
+              : '#FFFFFF';
           }}
           aria-label={cancelText}
         >

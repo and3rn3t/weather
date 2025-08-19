@@ -1,6 +1,6 @@
 /**
  * Test Utilities and Configuration
- * 
+ *
  * Centralized test setup and utilities for consistent test behavior
  */
 
@@ -52,19 +52,23 @@ export const createNavigatorMock = () => {
 };
 
 // Viewport Mock with Resize Events
-export const mockViewport = (width: number, height: number, userAgent?: string) => {
+export const mockViewport = (
+  width: number,
+  height: number,
+  userAgent?: string
+) => {
   Object.defineProperty(window, 'innerWidth', {
     writable: true,
     configurable: true,
     value: width,
   });
-  
+
   Object.defineProperty(window, 'innerHeight', {
     writable: true,
     configurable: true,
     value: height,
   });
-  
+
   if (userAgent) {
     Object.defineProperty(navigator, 'userAgent', {
       writable: true,
@@ -72,7 +76,7 @@ export const mockViewport = (width: number, height: number, userAgent?: string) 
       value: userAgent,
     });
   }
-  
+
   // Return a function to trigger resize event
   return () => {
     window.dispatchEvent(new Event('resize'));
@@ -81,11 +85,14 @@ export const mockViewport = (width: number, height: number, userAgent?: string) 
 
 // Touch Event Creator with Better Defaults
 export const createTouchEvent = (
-  type: string, 
-  touches: Array<{ clientX?: number; clientY?: number }> | { clientX?: number; clientY?: number } | number
+  type: string,
+  touches:
+    | Array<{ clientX?: number; clientY?: number }>
+    | { clientX?: number; clientY?: number }
+    | number
 ) => {
   let touchArray;
-  
+
   if (typeof touches === 'number') {
     // Legacy support: single number for clientY
     touchArray = [{ clientX: 0, clientY: touches }];
@@ -175,7 +182,7 @@ export const USER_AGENTS = {
 export const setupMobileTest = (userAgent: string = USER_AGENTS.IPHONE) => {
   createNavigatorMock();
   mockViewport(375, 812, userAgent);
-  
+
   // Mock ResizeObserver
   global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -202,7 +209,7 @@ export const waitForElement = async (
 ) => {
   return new Promise<void>((resolve, reject) => {
     const startTime = Date.now();
-    
+
     const check = () => {
       try {
         callback();
@@ -215,7 +222,7 @@ export const waitForElement = async (
         }
       }
     };
-    
+
     check();
   });
 };

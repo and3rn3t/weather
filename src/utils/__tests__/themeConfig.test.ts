@@ -26,7 +26,7 @@ describe('Theme Configuration', () => {
         'errorBackground',
         'errorText',
         'errorBorder',
-        'loadingBackground'
+        'loadingBackground',
       ];
 
       requiredProperties.forEach(property => {
@@ -77,7 +77,7 @@ describe('Theme Configuration', () => {
         'errorBackground',
         'errorText',
         'errorBorder',
-        'loadingBackground'
+        'loadingBackground',
       ];
 
       requiredProperties.forEach(property => {
@@ -97,7 +97,7 @@ describe('Theme Configuration', () => {
     it('should maintain consistent structure with light theme', () => {
       const lightKeys = Object.keys(lightTheme).sort();
       const darkKeys = Object.keys(darkTheme).sort();
-      
+
       expect(darkKeys).toEqual(lightKeys);
     });
   });
@@ -107,7 +107,7 @@ describe('Theme Configuration', () => {
       // Light theme should have dark text on light background
       expect(lightTheme.primaryText).toMatch(/^#[0-3]/); // Should start with darker hex values
       expect(lightTheme.appBackground).toContain('linear-gradient'); // Should be light gradient
-      
+
       // Dark theme should have light text on dark background
       expect(darkTheme.primaryText).toMatch(/^#[c-f]/i); // Should start with lighter hex values
       expect(darkTheme.appBackground).toContain('linear-gradient'); // Should be dark gradient

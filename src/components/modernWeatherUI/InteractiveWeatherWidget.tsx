@@ -1,6 +1,6 @@
 /**
  * Interactive Weather Widget - iOS 18+ Style
- * 
+ *
  * Features:
  * - Live Activity-style updates
  * - Dynamic Island inspired compact mode
@@ -30,12 +30,14 @@ interface InteractiveWeatherWidgetProps {
   onRefresh?: () => void;
 }
 
-export const InteractiveWeatherWidget: React.FC<InteractiveWeatherWidgetProps> = ({
+export const InteractiveWeatherWidget: React.FC<
+  InteractiveWeatherWidgetProps
+> = ({
   weatherData,
   isDark = false,
   isCompact = false,
   onExpand,
-  onRefresh
+  onRefresh,
 }) => {
   const [isExpanded, setIsExpanded] = useState(!isCompact);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -46,7 +48,7 @@ export const InteractiveWeatherWidget: React.FC<InteractiveWeatherWidgetProps> =
       onExpand();
     }
     setIsExpanded(!isExpanded);
-    
+
     // Haptic feedback
     if ('vibrate' in navigator) {
       navigator.vibrate(10);
@@ -59,12 +61,12 @@ export const InteractiveWeatherWidget: React.FC<InteractiveWeatherWidgetProps> =
       await onRefresh();
     }
     setLastUpdate(new Date());
-    
+
     // Simulate minimum refresh time for smooth animation
     setTimeout(() => {
       setIsRefreshing(false);
     }, 1500);
-    
+
     // Haptic feedback
     if ('vibrate' in navigator) {
       navigator.vibrate([10, 50, 10]);
@@ -72,14 +74,14 @@ export const InteractiveWeatherWidget: React.FC<InteractiveWeatherWidgetProps> =
   };
 
   const widgetStyle: React.CSSProperties = {
-    background: isDark 
+    background: isDark
       ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)'
       : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%)',
     backdropFilter: 'blur(20px)',
     borderRadius: isCompact ? '24px' : '20px',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`,
     padding: isCompact ? '12px 16px' : '20px',
-    boxShadow: isDark 
+    boxShadow: isDark
       ? '0 8px 32px rgba(0, 0, 0, 0.3)'
       : '0 8px 32px rgba(0, 0, 0, 0.1)',
     cursor: isCompact ? 'pointer' : 'default',
@@ -92,12 +94,12 @@ export const InteractiveWeatherWidget: React.FC<InteractiveWeatherWidgetProps> =
   };
 
   return isCompact ? (
-    <button 
-      style={widgetStyle} 
+    <button
+      style={widgetStyle}
       onClick={handleExpand}
       aria-label={`Expand weather widget for ${weatherData.location}`}
     >
-      <WidgetContent 
+      <WidgetContent
         weatherData={weatherData}
         isDark={isDark}
         isCompact={isCompact}
@@ -109,7 +111,7 @@ export const InteractiveWeatherWidget: React.FC<InteractiveWeatherWidgetProps> =
     </button>
   ) : (
     <div style={widgetStyle}>
-      <WidgetContent 
+      <WidgetContent
         weatherData={weatherData}
         isDark={isDark}
         isCompact={isCompact}
@@ -134,7 +136,11 @@ interface WidgetContentProps {
 }
 
 // Helper function to create base styles
-const createBaseStyles = (isDark: boolean, isCompact: boolean, isExpanded: boolean) => ({
+const createBaseStyles = (
+  isDark: boolean,
+  isCompact: boolean,
+  isExpanded: boolean
+) => ({
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -143,14 +149,14 @@ const createBaseStyles = (isDark: boolean, isCompact: boolean, isExpanded: boole
     opacity: isExpanded ? 1 : 0.8,
     transition: 'opacity 0.3s ease',
   } as React.CSSProperties,
-  
+
   title: {
     fontSize: isCompact ? '16px' : '18px',
     fontWeight: '600',
     color: isDark ? '#FFFFFF' : '#1A1A1A',
     margin: 0,
   } as React.CSSProperties,
-  
+
   mainContent: {
     display: 'flex',
     alignItems: 'center',
@@ -159,18 +165,23 @@ const createBaseStyles = (isDark: boolean, isCompact: boolean, isExpanded: boole
     transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
     transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
   } as React.CSSProperties,
-  
+
   temperature: {
     fontSize: isCompact ? '24px' : '48px',
     fontWeight: '300',
     color: isDark ? '#FFFFFF' : '#1A1A1A',
     lineHeight: 1,
-    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
   } as React.CSSProperties,
 });
 
 // Helper function for detail styles
-const createDetailStyles = (isDark: boolean, isCompact: boolean, isExpanded: boolean) => ({
+const createDetailStyles = (
+  isDark: boolean,
+  isCompact: boolean,
+  isExpanded: boolean
+) => ({
   grid: {
     display: isCompact ? 'none' : 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
@@ -180,11 +191,13 @@ const createDetailStyles = (isDark: boolean, isCompact: boolean, isExpanded: boo
     transform: isExpanded ? 'translateY(0)' : 'translateY(10px)',
     transition: 'all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s',
   } as React.CSSProperties,
-  
+
   item: {
     textAlign: 'center',
     padding: '12px',
-    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+    backgroundColor: isDark
+      ? 'rgba(255, 255, 255, 0.05)'
+      : 'rgba(0, 0, 0, 0.03)',
     borderRadius: '12px',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'}`,
   } as React.CSSProperties,
@@ -197,7 +210,7 @@ const WidgetContent: React.FC<WidgetContentProps> = ({
   isExpanded,
   isRefreshing,
   onRefresh,
-  lastUpdate
+  lastUpdate,
 }) => {
   const baseStyles = createBaseStyles(isDark, isCompact, isExpanded);
   const detailStyles = createDetailStyles(isDark, isCompact, isExpanded);
@@ -233,10 +246,12 @@ const WidgetContent: React.FC<WidgetContentProps> = ({
     <>
       <div style={baseStyles.header}>
         <h3 style={baseStyles.title}>
-          {isCompact ? weatherData.location : `Weather in ${weatherData.location}`}
+          {isCompact
+            ? weatherData.location
+            : `Weather in ${weatherData.location}`}
         </h3>
         {!isCompact && (
-          <button 
+          <button
             style={refreshButtonStyle}
             onClick={onRefresh}
             disabled={isRefreshing}
@@ -255,9 +270,7 @@ const WidgetContent: React.FC<WidgetContentProps> = ({
           <div style={baseStyles.temperature}>
             {Math.round(weatherData.temperature)}°
           </div>
-          <div style={conditionStyle}>
-            {weatherData.condition}
-          </div>
+          <div style={conditionStyle}>{weatherData.condition}</div>
         </div>
       </div>
 
@@ -267,7 +280,7 @@ const WidgetContent: React.FC<WidgetContentProps> = ({
         <span>{weatherData.condition}</span>
       </div>
 
-      <WeatherDetails 
+      <WeatherDetails
         weatherData={weatherData}
         isDark={isDark}
         detailStyles={detailStyles}
@@ -292,7 +305,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
   isDark,
   detailStyles,
   lastUpdate,
-  isCompact
+  isCompact,
 }) => {
   const detailLabelStyle: React.CSSProperties = {
     fontSize: '12px',
@@ -321,7 +334,9 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
       <div style={detailStyles.grid}>
         <div style={detailStyles.item}>
           <div style={detailLabelStyle}>Feels Like</div>
-          <div style={detailValueStyle}>{Math.round(weatherData.feelsLike)}°</div>
+          <div style={detailValueStyle}>
+            {Math.round(weatherData.feelsLike)}°
+          </div>
         </div>
         <div style={detailStyles.item}>
           <div style={detailLabelStyle}>Humidity</div>
@@ -329,12 +344,18 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
         </div>
         <div style={detailStyles.item}>
           <div style={detailLabelStyle}>Wind</div>
-          <div style={detailValueStyle}>{Math.round(weatherData.windSpeed)} mph</div>
+          <div style={detailValueStyle}>
+            {Math.round(weatherData.windSpeed)} mph
+          </div>
         </div>
       </div>
 
       <div style={lastUpdateStyle}>
-        Last updated: {lastUpdate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        Last updated:{' '}
+        {lastUpdate.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
       </div>
     </>
   );

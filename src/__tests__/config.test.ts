@@ -1,6 +1,6 @@
 /**
  * Simple Test Suite - Configuration Verification
- * 
+ *
  * Basic tests to verify Jest and testing infrastructure is working correctly
  */
 

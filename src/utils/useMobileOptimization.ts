@@ -1,16 +1,16 @@
 /**
  * Mobile Optimization Hook
- * 
+ *
  * Custom React hook for managing mobile-responsive behavior,
  * including breakpoint detection, touch support, and performance optimization.
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  getCurrentBreakpoint, 
+import {
+  getCurrentBreakpoint,
   createResizeHandler,
   supportsHover,
-  prefersReducedMotion 
+  prefersReducedMotion,
 } from './responsiveUtils';
 
 // ============================================================================
@@ -21,10 +21,12 @@ import {
  * Hook for responsive breakpoint detection
  */
 export const useBreakpoint = () => {
-  const [currentBreakpoint, setCurrentBreakpoint] = useState(() => getCurrentBreakpoint());
+  const [currentBreakpoint, setCurrentBreakpoint] = useState(() =>
+    getCurrentBreakpoint()
+  );
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
   });
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export const useBreakpoint = () => {
       setCurrentBreakpoint(newBreakpoint);
       setWindowSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
     }, 100);
 
@@ -48,10 +50,11 @@ export const useBreakpoint = () => {
     isMobileLarge: currentBreakpoint === 'mobileLarge',
     isTablet: currentBreakpoint === 'tablet',
     isTabletLarge: currentBreakpoint === 'tabletLarge',
-    isDesktop: currentBreakpoint === 'desktop' || currentBreakpoint === 'desktopLarge',
+    isDesktop:
+      currentBreakpoint === 'desktop' || currentBreakpoint === 'desktopLarge',
     isSmallScreen: ['mobile', 'mobileLarge'].includes(currentBreakpoint),
     isMediumScreen: ['tablet', 'tabletLarge'].includes(currentBreakpoint),
-    isLargeScreen: ['desktop', 'desktopLarge'].includes(currentBreakpoint)
+    isLargeScreen: ['desktop', 'desktopLarge'].includes(currentBreakpoint),
   };
 };
 
@@ -63,7 +66,7 @@ export const useInteractionCapabilities = () => {
     hasHover: supportsHover(),
     hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
     reducedMotion: prefersReducedMotion(),
-    isRetina: window.devicePixelRatio > 1.5
+    isRetina: window.devicePixelRatio > 1.5,
   });
 
   useEffect(() => {
@@ -72,13 +75,13 @@ export const useInteractionCapabilities = () => {
         hasHover: supportsHover(),
         hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
         reducedMotion: prefersReducedMotion(),
-        isRetina: window.devicePixelRatio > 1.5
+        isRetina: window.devicePixelRatio > 1.5,
       });
     };
 
     // Listen for orientation changes that might affect capabilities
     window.addEventListener('orientationchange', updateCapabilities);
-    
+
     return () => {
       window.removeEventListener('orientationchange', updateCapabilities);
     };
@@ -92,30 +95,32 @@ export const useInteractionCapabilities = () => {
  */
 export const useOptimizedScroll = () => {
   const [isScrolling, setIsScrolling] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(
+    null
+  );
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     let timeoutId: NodeJS.Timeout;
-    
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Determine scroll direction
       if (currentScrollY > lastScrollY) {
         setScrollDirection('down');
       } else if (currentScrollY < lastScrollY) {
         setScrollDirection('up');
       }
-      
+
       setLastScrollY(currentScrollY);
       setIsScrolling(true);
-      
+
       // Clear existing timeout
       clearTimeout(timeoutId);
-      
+
       // Set scrolling to false after scroll ends
       timeoutId = setTimeout(() => {
         setIsScrolling(false);
@@ -124,17 +129,18 @@ export const useOptimizedScroll = () => {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('scroll', handleScroll);
       }
       clearTimeout(timeoutId);
     };
-  }, [lastScrollY]);  return {
+  }, [lastScrollY]);
+  return {
     isScrolling,
     scrollDirection,
-    lastScrollY
+    lastScrollY,
   };
 };
 
@@ -145,7 +151,7 @@ export const useNetworkAwareLoading = () => {
   const [networkInfo, setNetworkInfo] = useState({
     effectiveType: '4g',
     downlink: 10,
-    saveData: false
+    saveData: false,
   });
 
   useEffect(() => {
@@ -157,22 +163,23 @@ export const useNetworkAwareLoading = () => {
       addEventListener: (type: string, listener: () => void) => void;
       removeEventListener: (type: string, listener: () => void) => void;
     }
-    
+
     interface NavigatorWithConnection extends Navigator {
       connection?: NavigatorConnection;
       mozConnection?: NavigatorConnection;
       webkitConnection?: NavigatorConnection;
     }
-    
+
     const nav = navigator as NavigatorWithConnection;
-    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
-    
+    const connection =
+      nav.connection || nav.mozConnection || nav.webkitConnection;
+
     if (connection) {
       const updateNetworkInfo = () => {
         setNetworkInfo({
           effectiveType: connection.effectiveType || '4g',
           downlink: connection.downlink || 10,
-          saveData: connection.saveData || false
+          saveData: connection.saveData || false,
         });
       };
 
@@ -187,9 +194,15 @@ export const useNetworkAwareLoading = () => {
 
   return {
     ...networkInfo,
-    isSlowConnection: networkInfo.effectiveType === 'slow-2g' || networkInfo.effectiveType === '2g',
-    isFastConnection: networkInfo.effectiveType === '4g' || networkInfo.downlink > 1.5,
-    shouldOptimizeImages: networkInfo.saveData || networkInfo.effectiveType === 'slow-2g' || networkInfo.effectiveType === '2g'
+    isSlowConnection:
+      networkInfo.effectiveType === 'slow-2g' ||
+      networkInfo.effectiveType === '2g',
+    isFastConnection:
+      networkInfo.effectiveType === '4g' || networkInfo.downlink > 1.5,
+    shouldOptimizeImages:
+      networkInfo.saveData ||
+      networkInfo.effectiveType === 'slow-2g' ||
+      networkInfo.effectiveType === '2g',
   };
 };
 
@@ -204,21 +217,21 @@ export const useMobilePerformance = () => {
   const performanceSettings = {
     // Reduce animations on slow devices or when user prefers reduced motion
     enableAnimations: !reducedMotion && !isSlowConnection,
-    
+
     // Use smaller images on mobile and slow connections
     imageQuality: shouldOptimizeImages || isSmallScreen ? 'low' : 'high',
-    
+
     // Lazy load non-critical content on mobile
     enableLazyLoading: isSmallScreen || isSlowConnection,
-    
+
     // Reduce API polling frequency on slow connections
     apiPollingInterval: isSlowConnection ? 60000 : 30000, // ms
-    
+
     // Enable touch optimizations
     enableTouchOptimizations: hasTouch,
-    
+
     // Preload critical resources
-    enablePreloading: !isSlowConnection && !shouldOptimizeImages
+    enablePreloading: !isSlowConnection && !shouldOptimizeImages,
   };
 
   return performanceSettings;
@@ -230,13 +243,13 @@ export const useMobilePerformance = () => {
 export const useContainerSize = (ref: React.RefObject<HTMLElement>) => {
   const [containerSize, setContainerSize] = useState({
     width: 0,
-    height: 0
+    height: 0,
   });
 
   useEffect(() => {
     if (!ref.current) return;
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         setContainerSize({ width, height });
@@ -254,7 +267,7 @@ export const useContainerSize = (ref: React.RefObject<HTMLElement>) => {
     ...containerSize,
     isNarrow: containerSize.width < 400,
     isMedium: containerSize.width >= 400 && containerSize.width < 768,
-    isWide: containerSize.width >= 768
+    isWide: containerSize.width >= 768,
   };
 };
 
@@ -265,49 +278,54 @@ export const useMobileOptimizedAPI = () => {
   const { isSlowConnection } = useNetworkAwareLoading();
   const { enablePreloading } = useMobilePerformance();
 
-  const optimizedFetch = useCallback(async (url: string, options: RequestInit = {}) => {
-    // Add request optimizations for mobile
-    const optimizedOptions: RequestInit = {
-      ...options,
-      // Add timeout for slow connections
-      signal: AbortSignal.timeout(isSlowConnection ? 15000 : 8000),
-      headers: {
-        ...options.headers,
-        // Request compressed responses
-        'Accept-Encoding': 'gzip, deflate, br',
-        // Indicate mobile client
-        'User-Agent': 'WeatherApp/1.0 Mobile',
-        // Request lightweight responses when possible
-        ...(isSlowConnection && { 'X-Requested-With': 'mobile-optimized' })
-      }
-    };
+  const optimizedFetch = useCallback(
+    async (url: string, options: RequestInit = {}) => {
+      // Add request optimizations for mobile
+      const optimizedOptions: RequestInit = {
+        ...options,
+        // Add timeout for slow connections
+        signal: AbortSignal.timeout(isSlowConnection ? 15000 : 8000),
+        headers: {
+          ...options.headers,
+          // Request compressed responses
+          'Accept-Encoding': 'gzip, deflate, br',
+          // Indicate mobile client
+          'User-Agent': 'WeatherApp/1.0 Mobile',
+          // Request lightweight responses when possible
+          ...(isSlowConnection && { 'X-Requested-With': 'mobile-optimized' }),
+        },
+      };
 
-    try {
-      const response = await fetch(url, optimizedOptions);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      return response;
-    } catch (error) {
-      // Enhanced error handling for mobile scenarios
-      if (error instanceof Error) {
-        if (error.name === 'TimeoutError') {
-          throw new Error('Request timeout - please check your connection');
+      try {
+        const response = await fetch(url, optimizedOptions);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-          throw new Error('Network error - please check your internet connection');
+
+        return response;
+      } catch (error) {
+        // Enhanced error handling for mobile scenarios
+        if (error instanceof Error) {
+          if (error.name === 'TimeoutError') {
+            throw new Error('Request timeout - please check your connection');
+          }
+          if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            throw new Error(
+              'Network error - please check your internet connection'
+            );
+          }
         }
+        throw error;
       }
-      throw error;
-    }
-  }, [isSlowConnection]);
+    },
+    [isSlowConnection]
+  );
 
   return {
     optimizedFetch,
     enablePreloading,
-    isSlowConnection
+    isSlowConnection,
   };
 };
 
@@ -318,14 +336,14 @@ export const useTouchGestures = () => {
   const [touchState, setTouchState] = useState({
     isTouching: false,
     touchCount: 0,
-    lastTap: 0
+    lastTap: 0,
   });
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
     setTouchState({
       isTouching: true,
       touchCount: e.touches.length,
-      lastTap: Date.now()
+      lastTap: Date.now(),
     });
   }, []);
 
@@ -333,28 +351,33 @@ export const useTouchGestures = () => {
     setTouchState(prev => ({
       ...prev,
       isTouching: false,
-      touchCount: 0
+      touchCount: 0,
     }));
   }, []);
 
-  const handleDoubleTap = useCallback((callback: () => void) => {
-    return () => {
-      const now = Date.now();
-      const timeSinceLastTap = now - touchState.lastTap;
-      
-      if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
-        callback();
-      }
-      
-      setTouchState(prev => ({
-        ...prev,
-        lastTap: now
-      }));
-    };
-  }, [touchState.lastTap]);
+  const handleDoubleTap = useCallback(
+    (callback: () => void) => {
+      return () => {
+        const now = Date.now();
+        const timeSinceLastTap = now - touchState.lastTap;
+
+        if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
+          callback();
+        }
+
+        setTouchState(prev => ({
+          ...prev,
+          lastTap: now,
+        }));
+      };
+    },
+    [touchState.lastTap]
+  );
 
   useEffect(() => {
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchstart', handleTouchStart, {
+      passive: true,
+    });
     document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
@@ -366,7 +389,10 @@ export const useTouchGestures = () => {
   return {
     ...touchState,
     handleDoubleTap,
-    createSwipeHandler: (onSwipeLeft?: () => void, onSwipeRight?: () => void) => {
+    createSwipeHandler: (
+      onSwipeLeft?: () => void,
+      onSwipeRight?: () => void
+    ) => {
       let startX = 0;
       let startY = 0;
 
@@ -380,10 +406,10 @@ export const useTouchGestures = () => {
 
           const endX = e.changedTouches[0].clientX;
           const endY = e.changedTouches[0].clientY;
-          
+
           const deltaX = endX - startX;
           const deltaY = endY - startY;
-          
+
           // Only trigger swipe if horizontal movement is greater than vertical
           if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
             if (deltaX > 0 && onSwipeRight) {
@@ -392,12 +418,12 @@ export const useTouchGestures = () => {
               onSwipeLeft();
             }
           }
-          
+
           startX = 0;
           startY = 0;
-        }
+        },
       };
-    }
+    },
   };
 };
 
@@ -409,5 +435,5 @@ export default {
   useMobilePerformance,
   useContainerSize,
   useMobileOptimizedAPI,
-  useTouchGestures
+  useTouchGestures,
 };

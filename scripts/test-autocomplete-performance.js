@@ -6,21 +6,49 @@
 
 const AUTOCOMPLETE_TESTS = [
   // Common city searches that should be fast
-  { query: "New", expectedResults: ["New York", "New Delhi", "Newark"], description: "Short prefix test" },
-  { query: "New York", expectedResults: ["New York"], description: "Exact city match test" },
-  { query: "London", expectedResults: ["London"], description: "European city test" },
-  { query: "Los", expectedResults: ["Los Angeles"], description: "West Coast city test" },
-  { query: "Chi", expectedResults: ["Chicago"], description: "Midwest city test" },
-  
+  {
+    query: 'New',
+    expectedResults: ['New York', 'New Delhi', 'Newark'],
+    description: 'Short prefix test',
+  },
+  {
+    query: 'New York',
+    expectedResults: ['New York'],
+    description: 'Exact city match test',
+  },
+  {
+    query: 'London',
+    expectedResults: ['London'],
+    description: 'European city test',
+  },
+  {
+    query: 'Los',
+    expectedResults: ['Los Angeles'],
+    description: 'West Coast city test',
+  },
+  {
+    query: 'Chi',
+    expectedResults: ['Chicago'],
+    description: 'Midwest city test',
+  },
+
   // Repeat tests to verify caching
-  { query: "New", expectedResults: ["New York", "New Delhi", "Newark"], description: "Cache hit test - New" },
-  { query: "London", expectedResults: ["London"], description: "Cache hit test - London" },
+  {
+    query: 'New',
+    expectedResults: ['New York', 'New Delhi', 'Newark'],
+    description: 'Cache hit test - New',
+  },
+  {
+    query: 'London',
+    expectedResults: ['London'],
+    description: 'Cache hit test - London',
+  },
 ];
 
 const PERFORMANCE_THRESHOLDS = {
   FIRST_SEARCH_MAX: 400, // ms - First search should be under 400ms
   CACHED_SEARCH_MAX: 100, // ms - Cached searches should be under 100ms
-  DEBOUNCE_TARGET: 150,   // ms - Target debounce time for 3+ characters
+  DEBOUNCE_TARGET: 150, // ms - Target debounce time for 3+ characters
 };
 
 console.log('🚀 AutoComplete Performance Test Suite');
@@ -29,7 +57,9 @@ console.log('=====================================\n');
 console.log('📊 Performance Expectations:');
 console.log(`• First search: < ${PERFORMANCE_THRESHOLDS.FIRST_SEARCH_MAX}ms`);
 console.log(`• Cached search: < ${PERFORMANCE_THRESHOLDS.CACHED_SEARCH_MAX}ms`);
-console.log(`• Debounce delay: ${PERFORMANCE_THRESHOLDS.DEBOUNCE_TARGET}ms (3+ chars)\n`);
+console.log(
+  `• Debounce delay: ${PERFORMANCE_THRESHOLDS.DEBOUNCE_TARGET}ms (3+ chars)\n`
+);
 
 console.log('🔧 Optimizations Applied:');
 console.log('• ✅ In-memory search cache (Map-based)');
@@ -85,5 +115,9 @@ console.log('5. Test with different search terms');
 
 console.log('\n✅ Test Complete - Ready for User Testing!');
 console.log('=========================================');
-console.log('The autocomplete should now feel significantly faster and more responsive.');
-console.log('Cache hits should be nearly instantaneous, and API calls should be optimized.\n');
+console.log(
+  'The autocomplete should now feel significantly faster and more responsive.'
+);
+console.log(
+  'Cache hits should be nearly instantaneous, and API calls should be optimized.\n'
+);

@@ -1,13 +1,18 @@
 /**
  * Haptic Feedback Context
- * 
+ *
  * Provides global haptic feedback configuration and access throughout the app.
  * Integrates with theme system and user preferences.
  */
 
 import React, { createContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { useHapticFeedback, type HapticConfig, HapticPattern, type HapticPatternType } from './useHapticFeedback';
+import {
+  useHapticFeedback,
+  type HapticConfig,
+  HapticPattern,
+  type HapticPatternType,
+} from './useHapticFeedback';
 
 // ============================================================================
 // HAPTIC FEEDBACK CONTEXT
@@ -20,7 +25,9 @@ interface HapticFeedbackContextType {
   isEnabled: boolean;
 }
 
-const HapticFeedbackContext = createContext<HapticFeedbackContextType | undefined>(undefined);
+const HapticFeedbackContext = createContext<
+  HapticFeedbackContextType | undefined
+>(undefined);
 
 // ============================================================================
 // HAPTIC FEEDBACK PROVIDER
@@ -33,24 +40,30 @@ interface HapticFeedbackProviderProps {
 
 export const HapticFeedbackProvider: React.FC<HapticFeedbackProviderProps> = ({
   children,
-  config = {}
+  config = {},
 }) => {
-  const defaultConfig: HapticConfig = useMemo(() => ({
-    enabled: true,
-    respectSystemSettings: true,
-    fallbackToAudio: false,
-    debugMode: process.env.NODE_ENV === 'development',
-    ...config
-  }), [config]);
+  const defaultConfig: HapticConfig = useMemo(
+    () => ({
+      enabled: true,
+      respectSystemSettings: true,
+      fallbackToAudio: false,
+      debugMode: process.env.NODE_ENV === 'development',
+      ...config,
+    }),
+    [config]
+  );
 
   const haptic = useHapticFeedback(defaultConfig);
 
-  const contextValue = useMemo(() => ({
-    haptic,
-    config: defaultConfig,
-    isSupported: haptic.isSupported,
-    isEnabled: haptic.isEnabled
-  }), [haptic, defaultConfig]);
+  const contextValue = useMemo(
+    () => ({
+      haptic,
+      config: defaultConfig,
+      isSupported: haptic.isSupported,
+      isEnabled: haptic.isEnabled,
+    }),
+    [haptic, defaultConfig]
+  );
 
   return (
     <HapticFeedbackContext.Provider value={contextValue}>
@@ -81,7 +94,7 @@ export const HapticWrapper: React.FC<HapticWrapperProps> = ({
   hapticPattern = HapticPattern.LIGHT,
   disabled = false,
   className,
-  style
+  style,
 }) => {
   // This will be used via hook in the actual implementation
   const handlePress = () => {

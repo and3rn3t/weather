@@ -26,7 +26,8 @@ The user reports **both issues are still occurring**:
 ### **Possible Issues:**
 
 1. **Browser Cache** - Old JavaScript/CSS still cached
-2. **TypeScript Compilation Errors** - React 19 JSX compatibility issues preventing proper compilation
+2. **TypeScript Compilation Errors** - React 19 JSX compatibility issues preventing proper
+   compilation
 3. **CSS Import Order** - Fix files not loading in correct sequence
 4. **Hot Module Replacement** - Changes not hot-reloading properly
 5. **Theme Context Re-rendering** - Still triggering on unrelated clicks

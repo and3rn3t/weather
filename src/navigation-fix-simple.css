@@ -27,14 +27,14 @@ body {
   z-index: 1000 !important; /* Higher than other content */
   height: 80px !important;
   width: 100% !important;
-  
+
   /* Clean styling that matches theme */
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  
+
   /* Prevent blue rectangles on mobile */
   -webkit-tap-highlight-color: transparent !important;
-  
+
   /* Ensure it stays above everything */
   transform: translateZ(0) !important;
   will-change: transform !important;

@@ -1,6 +1,6 @@
 /**
  * Enhanced Haptic Feedback Service
- * 
+ *
  * Integrates both web Vibration API and Capacitor native haptics
  * with smart fallbacks, advanced patterns, and progressive feedback.
  */
@@ -15,14 +15,14 @@ import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 export const HapticPattern = {
   // Basic patterns
   LIGHT: 'light',
-  MEDIUM: 'medium', 
+  MEDIUM: 'medium',
   HEAVY: 'heavy',
-  
+
   // Success/Error patterns
   SUCCESS: 'success',
   ERROR: 'error',
   WARNING: 'warning',
-  
+
   // Interactive patterns
   BUTTON_PRESS: 'buttonPress',
   BUTTON_CONFIRM: 'buttonConfirm',
@@ -30,7 +30,7 @@ export const HapticPattern = {
   REFRESH: 'refresh',
   NAVIGATION: 'navigation',
   LONG_PRESS: 'longPress',
-  
+
   // Weather-specific patterns
   WEATHER_LOAD: 'weatherLoad',
   WEATHER_REFRESH: 'weatherRefresh',
@@ -38,20 +38,21 @@ export const HapticPattern = {
   SEARCH_ERROR: 'searchError',
   LOCATION_FOUND: 'locationFound',
   LOCATION_ERROR: 'locationError',
-  
+
   // Gesture patterns
   SWIPE_START: 'swipeStart',
   SWIPE_PROGRESS: 'swipeProgress',
   SWIPE_COMPLETE: 'swipeComplete',
   PULL_TO_REFRESH: 'pullToRefresh',
-  
+
   // Progressive patterns
   PROGRESSIVE_LIGHT: 'progressiveLight',
   PROGRESSIVE_MEDIUM: 'progressiveMedium',
-  PROGRESSIVE_HEAVY: 'progressiveHeavy'
+  PROGRESSIVE_HEAVY: 'progressiveHeavy',
 } as const;
 
-export type HapticPatternType = typeof HapticPattern[keyof typeof HapticPattern];
+export type HapticPatternType =
+  (typeof HapticPattern)[keyof typeof HapticPattern];
 
 // Web Vibration API patterns (fallback)
 const WEB_VIBRATION_PATTERNS: Record<HapticPatternType, number | number[]> = {
@@ -79,11 +80,14 @@ const WEB_VIBRATION_PATTERNS: Record<HapticPatternType, number | number[]> = {
   [HapticPattern.PULL_TO_REFRESH]: [20, 20, 20],
   [HapticPattern.PROGRESSIVE_LIGHT]: 10,
   [HapticPattern.PROGRESSIVE_MEDIUM]: 20,
-  [HapticPattern.PROGRESSIVE_HEAVY]: 50
+  [HapticPattern.PROGRESSIVE_HEAVY]: 50,
 };
 
 // Capacitor native patterns
-const NATIVE_PATTERNS: Record<HapticPatternType, { impact?: ImpactStyle; notification?: NotificationType }> = {
+const NATIVE_PATTERNS: Record<
+  HapticPatternType,
+  { impact?: ImpactStyle; notification?: NotificationType }
+> = {
   [HapticPattern.LIGHT]: { impact: ImpactStyle.Light },
   [HapticPattern.MEDIUM]: { impact: ImpactStyle.Medium },
   [HapticPattern.HEAVY]: { impact: ImpactStyle.Heavy },
@@ -108,7 +112,7 @@ const NATIVE_PATTERNS: Record<HapticPatternType, { impact?: ImpactStyle; notific
   [HapticPattern.PULL_TO_REFRESH]: { impact: ImpactStyle.Medium },
   [HapticPattern.PROGRESSIVE_LIGHT]: { impact: ImpactStyle.Light },
   [HapticPattern.PROGRESSIVE_MEDIUM]: { impact: ImpactStyle.Medium },
-  [HapticPattern.PROGRESSIVE_HEAVY]: { impact: ImpactStyle.Heavy }
+  [HapticPattern.PROGRESSIVE_HEAVY]: { impact: ImpactStyle.Heavy },
 };
 
 // ============================================================================
@@ -152,7 +156,7 @@ export class EnhancedHapticService {
       debugMode: process.env.NODE_ENV === 'development',
       rateLimitMs: 50,
       progressiveFeedback: true,
-      ...config
+      ...config,
     };
 
     this.isNative = Capacitor.isNativePlatform();
@@ -164,7 +168,7 @@ export class EnhancedHapticService {
         isNative: this.isNative,
         isWeb: this.isWeb,
         canVibrate: this.canVibrate,
-        config: this.config
+        config: this.config,
       });
     }
   }
@@ -192,7 +196,7 @@ export class EnhancedHapticService {
       isNative: this.isNative,
       isWeb: this.isWeb,
       platform: this.isNative ? 'native' : 'web',
-      canVibrate: this.canVibrate
+      canVibrate: this.canVibrate,
     };
   }
 
@@ -200,14 +204,16 @@ export class EnhancedHapticService {
   // CORE HAPTIC EXECUTION
   // ============================================================================
 
-  private async executeNativeHaptic(pattern: HapticPatternType): Promise<boolean> {
+  private async executeNativeHaptic(
+    pattern: HapticPatternType
+  ): Promise<boolean> {
     if (!this.isNative || !this.config.enabled) {
       return false;
     }
 
     try {
       const nativePattern = NATIVE_PATTERNS[pattern];
-      
+
       if (nativePattern.impact) {
         await Haptics.impact({ style: nativePattern.impact });
       } else if (nativePattern.notification) {
@@ -396,7 +402,7 @@ export class EnhancedHapticService {
     if (!this.config.progressiveFeedback || progress < 0 || progress > 1) {
       return false;
     }
-    
+
     if (progress < 0.3) {
       return this.light();
     } else if (progress < 0.7) {
@@ -418,12 +424,12 @@ export class EnhancedHapticService {
 
   updateConfig(newConfig: Partial<HapticConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Reset rate limiting timer if respectSystemSettings changed
     if (newConfig.respectSystemSettings !== undefined) {
       this.lastVibrationTime = 0;
     }
-    
+
     if (this.config.debugMode) {
       console.log('🔧 Haptic config updated:', this.config);
     }
@@ -467,7 +473,7 @@ export const useEnhancedHaptics = (config?: HapticConfig) => {
     // Core methods
     trigger,
     progressiveFeedback,
-    
+
     // Convenience methods
     light: () => hapticRef.current.light(),
     medium: () => hapticRef.current.medium(),
@@ -475,7 +481,7 @@ export const useEnhancedHaptics = (config?: HapticConfig) => {
     success: () => hapticRef.current.success(),
     error: () => hapticRef.current.error(),
     warning: () => hapticRef.current.warning(),
-    
+
     // Interactive methods
     buttonPress: () => hapticRef.current.buttonPress(),
     buttonConfirm: () => hapticRef.current.buttonConfirm(),
@@ -483,7 +489,7 @@ export const useEnhancedHaptics = (config?: HapticConfig) => {
     refresh: () => hapticRef.current.refresh(),
     navigation: () => hapticRef.current.navigation(),
     longPress: () => hapticRef.current.longPress(),
-    
+
     // Weather methods
     weatherLoad: () => hapticRef.current.weatherLoad(),
     weatherRefresh: () => hapticRef.current.weatherRefresh(),
@@ -491,20 +497,21 @@ export const useEnhancedHaptics = (config?: HapticConfig) => {
     searchError: () => hapticRef.current.searchError(),
     locationFound: () => hapticRef.current.locationFound(),
     locationError: () => hapticRef.current.locationError(),
-    
+
     // Gesture methods
     swipeStart: () => hapticRef.current.swipeStart(),
     swipeProgress: () => hapticRef.current.swipeProgress(),
     swipeComplete: () => hapticRef.current.swipeComplete(),
     pullToRefresh: () => hapticRef.current.pullToRefresh(),
-    
+
     // Utility methods
     stopAllVibrations: () => hapticRef.current.stopAllVibrations(),
     getCapabilities: () => hapticRef.current.getCapabilities(),
     getConfig: () => hapticRef.current.getConfig(),
-    updateConfig: (newConfig: Partial<HapticConfig>) => hapticRef.current.updateConfig(newConfig)
+    updateConfig: (newConfig: Partial<HapticConfig>) =>
+      hapticRef.current.updateConfig(newConfig),
   };
 };
 
 // Export patterns for external use
-export { HapticPattern as default }; 
+export { HapticPattern as default };

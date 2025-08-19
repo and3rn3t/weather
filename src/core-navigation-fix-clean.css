@@ -15,7 +15,7 @@ nav.mobile-navigation {
   border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
   padding: 8px 16px !important;
   padding-bottom: calc(8px + env(safe-area-inset-bottom, 0)) !important;
-  
+
   /* CRITICAL: Disable pointer events on container to prevent blue rectangle */
   pointer-events: none !important;
 }
@@ -45,10 +45,10 @@ nav.mobile-navigation *:hover {
 }
 
 /* Fix #2: NUCLEAR BUTTON RESET - no blue rectangles */
-nav.mobile-navigation button[role="tab"] {
+nav.mobile-navigation button[role='tab'] {
   /* Reset everything that could cause browser styling */
   all: unset !important;
-  
+
   /* Restore only what we need */
   display: flex !important;
   flex-direction: column !important;
@@ -60,49 +60,49 @@ nav.mobile-navigation button[role="tab"] {
   min-height: 60px !important;
   border-radius: 8px !important;
   cursor: pointer !important;
-  
+
   /* Ensure clean state */
   background: transparent !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  
+
   /* Touch handling */
   -webkit-tap-highlight-color: transparent !important;
   touch-action: manipulation !important;
-  
+
   /* RE-ENABLE pointer events on buttons only */
   pointer-events: auto !important;
 }
 
 /* Button states - ONLY our custom styling */
-nav.mobile-navigation button[role="tab"]:hover {
+nav.mobile-navigation button[role='tab']:hover {
   background: rgba(120, 97, 255, 0.05) !important;
 }
 
-nav.mobile-navigation button[role="tab"]:active {
+nav.mobile-navigation button[role='tab']:active {
   background: rgba(120, 97, 255, 0.1) !important;
 }
 
-nav.mobile-navigation button[role="tab"][aria-selected="true"] {
+nav.mobile-navigation button[role='tab'][aria-selected='true'] {
   background: rgba(120, 97, 255, 0.15) !important;
   border: 1px solid rgba(120, 97, 255, 0.2) !important;
 }
 
 /* Icon styling */
-nav.mobile-navigation button[role="tab"] > div:first-child {
+nav.mobile-navigation button[role='tab'] > div:first-child {
   font-size: 24px !important;
   margin-bottom: 4px !important;
 }
 
 /* Label styling */
-nav.mobile-navigation button[role="tab"] > span {
+nav.mobile-navigation button[role='tab'] > span {
   font-size: 11px !important;
   font-weight: 500 !important;
   color: rgba(60, 60, 67, 0.8) !important;
 }
 
-nav.mobile-navigation button[role="tab"][aria-selected="true"] > span {
+nav.mobile-navigation button[role='tab'][aria-selected='true'] > span {
   color: rgb(120, 97, 255) !important;
   font-weight: 600 !important;
 }
@@ -117,8 +117,8 @@ body {
 }
 
 /* Remove any pseudo-elements that could interfere */
-nav.mobile-navigation button[role="tab"]::before,
-nav.mobile-navigation button[role="tab"]::after {
+nav.mobile-navigation button[role='tab']::before,
+nav.mobile-navigation button[role='tab']::after {
   display: none !important;
   content: none !important;
 }

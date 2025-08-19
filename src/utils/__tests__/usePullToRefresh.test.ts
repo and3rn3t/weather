@@ -9,12 +9,12 @@ import { usePullToRefresh } from '../usePullToRefresh';
 // Mock global objects for testing environment
 beforeEach(() => {
   vi.clearAllMocks();
-  
+
   // Mock scrollY
   Object.defineProperty(window, 'scrollY', {
     writable: true,
     configurable: true,
-    value: 0
+    value: 0,
   });
 });
 
@@ -37,14 +37,20 @@ describe('usePullToRefresh', () => {
     expect(result.current.pullToRefreshHandlers).toHaveProperty('onTouchStart');
     expect(result.current.pullToRefreshHandlers).toHaveProperty('onTouchMove');
     expect(result.current.pullToRefreshHandlers).toHaveProperty('onTouchEnd');
-    expect(typeof result.current.pullToRefreshHandlers.onTouchStart).toBe('function');
-    expect(typeof result.current.pullToRefreshHandlers.onTouchMove).toBe('function');
-    expect(typeof result.current.pullToRefreshHandlers.onTouchEnd).toBe('function');
+    expect(typeof result.current.pullToRefreshHandlers.onTouchStart).toBe(
+      'function'
+    );
+    expect(typeof result.current.pullToRefreshHandlers.onTouchMove).toBe(
+      'function'
+    );
+    expect(typeof result.current.pullToRefreshHandlers.onTouchEnd).toBe(
+      'function'
+    );
   });
 
   it('should calculate pull progress correctly', () => {
     const mockRefresh = vi.fn().mockResolvedValue(undefined);
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       usePullToRefresh(mockRefresh, { refreshThreshold: 60 })
     );
 
@@ -59,12 +65,12 @@ describe('usePullToRefresh', () => {
 
     expect(typeof result.current.getPullIndicatorStyle).toBe('function');
     expect(typeof result.current.getRefreshIconRotation).toBe('function');
-    
+
     const style = result.current.getPullIndicatorStyle();
     expect(style).toHaveProperty('transform');
     expect(style).toHaveProperty('opacity');
     expect(style).toHaveProperty('textAlign');
-    
+
     const rotation = result.current.getRefreshIconRotation();
     expect(typeof rotation).toBe('string');
     expect(rotation).toMatch(/rotate\(\d+deg\)/);
@@ -72,7 +78,7 @@ describe('usePullToRefresh', () => {
 
   it('should handle disabled state', () => {
     const mockRefresh = vi.fn().mockResolvedValue(undefined);
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       usePullToRefresh(mockRefresh, { disabled: true })
     );
 
@@ -100,7 +106,7 @@ describe('usePullToRefresh', () => {
     const { result } = renderHook(() => usePullToRefresh(mockRefresh));
 
     const mockElement = document.createElement('div');
-    
+
     act(() => {
       result.current.registerScrollElement(mockElement);
     });
@@ -113,14 +119,14 @@ describe('usePullToRefresh', () => {
 describe('Pull-to-Refresh Integration', () => {
   it('should work with different options', () => {
     const mockRefresh = vi.fn().mockResolvedValue(undefined);
-    
+
     const options = {
       maxPullDistance: 150,
       triggerDistance: 80,
       refreshThreshold: 70,
-      disabled: false
+      disabled: false,
     };
-    
+
     const { result } = renderHook(() => usePullToRefresh(mockRefresh, options));
 
     expect(result.current.isPulling).toBe(false);
@@ -129,7 +135,7 @@ describe('Pull-to-Refresh Integration', () => {
 
   it('should handle refresh callback', async () => {
     const mockRefresh = vi.fn().mockResolvedValue(undefined);
-    
+
     const { result } = renderHook(() => usePullToRefresh(mockRefresh));
 
     // Verify refresh function is available for use
@@ -147,7 +153,7 @@ describe('Pull-to-Refresh Integration', () => {
     expect(style.margin).toBe('10px'); // Should merge with base styles
     expect(style).toHaveProperty('transform'); // Should have hook styles
     expect(style).toHaveProperty('opacity'); // Should have hook styles
-    
+
     const rotation = result.current.getRefreshIconRotation();
     expect(rotation).toContain('rotate');
     expect(rotation).toContain('deg');

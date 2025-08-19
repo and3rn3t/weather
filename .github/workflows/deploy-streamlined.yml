@@ -2,9 +2,9 @@ name: 🚀 Streamlined Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -13,8 +13,8 @@ on:
         default: 'preview'
         type: choice
         options:
-        - preview
-        - production
+          - preview
+          - production
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
   deploy:
     name: 🚀 Build, Test & Deploy
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -110,7 +110,7 @@ jobs:
           script: |
             const deploymentUrl = `https://premium-weather-app.pages.dev`;
             const comment = `🚀 **Preview Ready!** ${deploymentUrl}`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -130,4 +130,4 @@ jobs:
           echo "- Bundle analyzed" >> $GITHUB_STEP_SUMMARY
           echo "- Deployment completed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Total time: ~2-3 minutes**" >> $GITHUB_STEP_SUMMARY 
+          echo "**Total time: ~2-3 minutes**" >> $GITHUB_STEP_SUMMARY

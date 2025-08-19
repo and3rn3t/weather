@@ -20,11 +20,11 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
       onClick={handleThemeToggle}
       className={`theme-toggle-btn${className ? ' ' + className : ''}`}
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      onMouseEnter={(e) => {
+      onMouseEnter={e => {
         e.currentTarget.style.transform = 'scale(1.1)';
         e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.25)';
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={e => {
         e.currentTarget.style.transform = 'scale(1)';
         e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
       }}

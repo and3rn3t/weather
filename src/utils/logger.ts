@@ -1,6 +1,6 @@
 /**
  * Production Logger Utility
- * 
+ *
  * Provides conditional logging that can be disabled in production builds
  * while maintaining useful debug information during development.
  */
@@ -24,7 +24,7 @@ export const LOG_LEVELS: LogLevel = {
   INFO: 2,
   WARN: 3,
   ERROR: 4,
-  SILENT: 5
+  SILENT: 5,
 } as const;
 
 // Production log level (only warnings and errors)
@@ -32,7 +32,10 @@ const PRODUCTION_LOG_LEVEL = LOG_LEVELS.WARN;
 // Development log level (all logs)
 const DEVELOPMENT_LOG_LEVEL = LOG_LEVELS.TRACE;
 
-const currentLogLevel = (isDevelopment || isViteDevServer) ? DEVELOPMENT_LOG_LEVEL : PRODUCTION_LOG_LEVEL;
+const currentLogLevel =
+  isDevelopment || isViteDevServer
+    ? DEVELOPMENT_LOG_LEVEL
+    : PRODUCTION_LOG_LEVEL;
 
 /**
  * Logger class with conditional output based on environment
@@ -42,7 +45,11 @@ class Logger {
     return level >= currentLogLevel;
   }
 
-  private formatMessage(category: string, message: string, ...args: unknown[]): [string, ...unknown[]] {
+  private formatMessage(
+    category: string,
+    message: string,
+    ...args: unknown[]
+  ): [string, ...unknown[]] {
     const timestamp = new Date().toLocaleTimeString();
     return [`[${timestamp}] ${category} ${message}`, ...args];
   }
@@ -139,7 +146,12 @@ class Logger {
       const start = performance.now();
       fn();
       const end = performance.now();
-      console.log(...this.formatMessage('⚡', `${label} took ${(end - start).toFixed(2)}ms`));
+      console.log(
+        ...this.formatMessage(
+          '⚡',
+          `${label} took ${(end - start).toFixed(2)}ms`
+        )
+      );
     } else {
       fn();
     }

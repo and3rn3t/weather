@@ -1,6 +1,6 @@
 /**
  * Mobile Optimization Hooks
- * 
+ *
  * Custom hooks for mobile-specific functionality including:
  * - Device detection and capabilities
  * - Touch gesture handling
@@ -40,14 +40,14 @@ export const useDeviceDetection = (): DeviceInfo => {
         hasNotch: false,
         screenSize: 'large',
         orientation: 'landscape',
-        pixelRatio: 1
+        pixelRatio: 1,
       };
     }
 
     const width = window.innerWidth;
     const height = window.innerHeight;
     const userAgent = navigator.userAgent.toLowerCase();
-    
+
     return {
       isMobile: width <= 768,
       isTablet: width > 768 && width <= 1024,
@@ -56,9 +56,16 @@ export const useDeviceDetection = (): DeviceInfo => {
       isIOS: /iphone|ipad|ipod/.test(userAgent),
       isAndroid: /android/.test(userAgent),
       hasNotch: CSS.supports('padding-top: env(safe-area-inset-top)'),
-      screenSize: width <= 375 ? 'small' : width <= 768 ? 'medium' : width <= 1024 ? 'large' : 'xlarge',
+      screenSize:
+        width <= 375
+          ? 'small'
+          : width <= 768
+            ? 'medium'
+            : width <= 1024
+              ? 'large'
+              : 'xlarge',
       orientation: height > width ? 'portrait' : 'landscape',
-      pixelRatio: window.devicePixelRatio || 1
+      pixelRatio: window.devicePixelRatio || 1,
     };
   });
 
@@ -67,7 +74,7 @@ export const useDeviceDetection = (): DeviceInfo => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       const userAgent = navigator.userAgent.toLowerCase();
-      
+
       setDeviceInfo({
         isMobile: width <= 768,
         isTablet: width > 768 && width <= 1024,
@@ -76,9 +83,16 @@ export const useDeviceDetection = (): DeviceInfo => {
         isIOS: /iphone|ipad|ipod/.test(userAgent),
         isAndroid: /android/.test(userAgent),
         hasNotch: CSS.supports('padding-top: env(safe-area-inset-top)'),
-        screenSize: width <= 375 ? 'small' : width <= 768 ? 'medium' : width <= 1024 ? 'large' : 'xlarge',
+        screenSize:
+          width <= 375
+            ? 'small'
+            : width <= 768
+              ? 'medium'
+              : width <= 1024
+                ? 'large'
+                : 'xlarge',
         orientation: height > width ? 'portrait' : 'landscape',
-        pixelRatio: window.devicePixelRatio || 1
+        pixelRatio: window.devicePixelRatio || 1,
       });
     };
 
@@ -110,7 +124,7 @@ export const useViewport = (): ViewportInfo => {
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
     height: typeof window !== 'undefined' ? window.innerHeight : 0,
     scrollY: typeof window !== 'undefined' ? window.scrollY : 0,
-    isScrolling: false
+    isScrolling: false,
   }));
 
   useEffect(() => {
@@ -122,7 +136,7 @@ export const useViewport = (): ViewportInfo => {
         width: window.innerWidth,
         height: window.innerHeight,
         scrollY: window.scrollY,
-        isScrolling: true
+        isScrolling: true,
       }));
 
       clearTimeout(scrollTimeout);
@@ -173,7 +187,7 @@ export const useTouchGestures = (
     onTap,
     onDoubleTap,
     swipeThreshold = 50,
-    pinchThreshold = 0.1
+    pinchThreshold = 0.1,
   } = config;
 
   useEffect(() => {
@@ -189,7 +203,7 @@ export const useTouchGestures = (
       touchStart = {
         x: touch.clientX,
         y: touch.clientY,
-        time: Date.now()
+        time: Date.now(),
       };
 
       if (e.touches.length === 2) {
@@ -197,7 +211,7 @@ export const useTouchGestures = (
         const touch2 = e.touches[1];
         initialDistance = Math.sqrt(
           Math.pow(touch2.clientX - touch1.clientX, 2) +
-          Math.pow(touch2.clientY - touch1.clientY, 2)
+            Math.pow(touch2.clientY - touch1.clientY, 2)
         );
       }
     };
@@ -208,10 +222,10 @@ export const useTouchGestures = (
         const touch2 = e.touches[1];
         const currentDistance = Math.sqrt(
           Math.pow(touch2.clientX - touch1.clientX, 2) +
-          Math.pow(touch2.clientY - touch1.clientY, 2)
+            Math.pow(touch2.clientY - touch1.clientY, 2)
         );
         const scale = currentDistance / initialDistance;
-        
+
         if (Math.abs(scale - 1) > pinchThreshold) {
           onPinch(scale);
         }
@@ -227,7 +241,10 @@ export const useTouchGestures = (
       const deltaTime = Date.now() - touchStart.time;
 
       // Check for swipe gestures
-      if (Math.abs(deltaX) > swipeThreshold || Math.abs(deltaY) > swipeThreshold) {
+      if (
+        Math.abs(deltaX) > swipeThreshold ||
+        Math.abs(deltaY) > swipeThreshold
+      ) {
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
           // Horizontal swipe
           if (deltaX > 0 && onSwipeRight) {
@@ -243,7 +260,11 @@ export const useTouchGestures = (
             onSwipeUp();
           }
         }
-      } else if (deltaTime < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+      } else if (
+        deltaTime < 300 &&
+        Math.abs(deltaX) < 10 &&
+        Math.abs(deltaY) < 10
+      ) {
         // Tap gesture
         const now = Date.now();
         if (now - lastTap < 300 && onDoubleTap) {
@@ -277,7 +298,7 @@ export const useTouchGestures = (
     onTap,
     onDoubleTap,
     swipeThreshold,
-    pinchThreshold
+    pinchThreshold,
   ]);
 };
 
@@ -287,41 +308,50 @@ export const useTouchGestures = (
 
 export const useMobilePerformance = () => {
   const deviceInfo = useDeviceDetection();
-  
-  const optimizedSettings = useMemo(() => ({
-    // Reduce animations on low-end devices
-    reduceAnimations: deviceInfo.isMobile && deviceInfo.pixelRatio < 2,
-    
-    // Optimize images for mobile
-    imageQuality: deviceInfo.isMobile ? 
-      (deviceInfo.screenSize === 'small' ? 'low' : 'medium') : 'high',
-    
-    // Lazy loading threshold
-    lazyLoadThreshold: deviceInfo.isMobile ? '100px' : '200px',
-    
-    // Touch delay optimization
-    touchDelay: deviceInfo.isTouchDevice ? 0 : 300,
-    
-    // Memory optimization
-    maxCachedItems: deviceInfo.isMobile ? 5 : 20
-  }), [deviceInfo]);
 
-  const optimizeForMobile = useCallback((element: HTMLElement) => {
-    if (deviceInfo.isMobile) {
-      // Optimize touch handling
-      element.style.touchAction = 'manipulation';
-      element.style.setProperty('-webkit-tap-highlight-color', 'transparent');
-      
-      // Optimize scrolling
-      element.style.setProperty('-webkit-overflow-scrolling', 'touch');
-      element.style.overscrollBehavior = 'contain';
-    }
-  }, [deviceInfo.isMobile]);
+  const optimizedSettings = useMemo(
+    () => ({
+      // Reduce animations on low-end devices
+      reduceAnimations: deviceInfo.isMobile && deviceInfo.pixelRatio < 2,
+
+      // Optimize images for mobile
+      imageQuality: deviceInfo.isMobile
+        ? deviceInfo.screenSize === 'small'
+          ? 'low'
+          : 'medium'
+        : 'high',
+
+      // Lazy loading threshold
+      lazyLoadThreshold: deviceInfo.isMobile ? '100px' : '200px',
+
+      // Touch delay optimization
+      touchDelay: deviceInfo.isTouchDevice ? 0 : 300,
+
+      // Memory optimization
+      maxCachedItems: deviceInfo.isMobile ? 5 : 20,
+    }),
+    [deviceInfo]
+  );
+
+  const optimizeForMobile = useCallback(
+    (element: HTMLElement) => {
+      if (deviceInfo.isMobile) {
+        // Optimize touch handling
+        element.style.touchAction = 'manipulation';
+        element.style.setProperty('-webkit-tap-highlight-color', 'transparent');
+
+        // Optimize scrolling
+        element.style.setProperty('-webkit-overflow-scrolling', 'touch');
+        element.style.overscrollBehavior = 'contain';
+      }
+    },
+    [deviceInfo.isMobile]
+  );
 
   return {
     deviceInfo,
     optimizedSettings,
-    optimizeForMobile
+    optimizeForMobile,
   };
 };
 
@@ -331,31 +361,34 @@ export const useMobilePerformance = () => {
 
 export const useMobileBreakpoints = () => {
   const viewport = useViewport();
-  
-  return useMemo(() => ({
-    isXSmall: viewport.width < 375,
-    isSmall: viewport.width >= 375 && viewport.width < 768,
-    isMedium: viewport.width >= 768 && viewport.width < 1024,
-    isLarge: viewport.width >= 1024,
-    
-    // Helper functions
-    isMobileSize: viewport.width < 768,
-    isTabletSize: viewport.width >= 768 && viewport.width < 1024,
-    isDesktopSize: viewport.width >= 1024,
-    
-    // Responsive values
-    getResponsiveValue: <T>(values: {
-      mobile: T;
-      tablet?: T;
-      desktop?: T;
-    }): T => {
-      if (viewport.width >= 1024 && values.desktop !== undefined) {
-        return values.desktop;
-      }
-      if (viewport.width >= 768 && values.tablet !== undefined) {
-        return values.tablet;
-      }
-      return values.mobile;
-    }
-  }), [viewport.width]);
+
+  return useMemo(
+    () => ({
+      isXSmall: viewport.width < 375,
+      isSmall: viewport.width >= 375 && viewport.width < 768,
+      isMedium: viewport.width >= 768 && viewport.width < 1024,
+      isLarge: viewport.width >= 1024,
+
+      // Helper functions
+      isMobileSize: viewport.width < 768,
+      isTabletSize: viewport.width >= 768 && viewport.width < 1024,
+      isDesktopSize: viewport.width >= 1024,
+
+      // Responsive values
+      getResponsiveValue: <T>(values: {
+        mobile: T;
+        tablet?: T;
+        desktop?: T;
+      }): T => {
+        if (viewport.width >= 1024 && values.desktop !== undefined) {
+          return values.desktop;
+        }
+        if (viewport.width >= 768 && values.tablet !== undefined) {
+          return values.tablet;
+        }
+        return values.mobile;
+      },
+    }),
+    [viewport.width]
+  );
 };

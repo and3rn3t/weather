@@ -25,7 +25,7 @@ const rollupBindings = {
   'darwin-arm64': '@rollup/rollup-darwin-arm64',
   'win32-x64': '@rollup/rollup-win32-x64-msvc',
   'win32-ia32': '@rollup/rollup-win32-ia32-msvc',
-  'win32-arm64': '@rollup/rollup-win32-arm64-msvc'
+  'win32-arm64': '@rollup/rollup-win32-arm64-msvc',
 };
 
 const platformKey = `${platform}-${arch}`;
@@ -34,37 +34,45 @@ const requiredBinding = rollupBindings[platformKey];
 if (!requiredBinding) {
   console.log(`⚠️  Unknown platform: ${platformKey}`);
   console.log('🔄 Installing all common Rollup bindings...');
-  
+
   // Install all common bindings as fallback
   const commonBindings = [
     '@rollup/rollup-linux-x64-gnu',
     '@rollup/rollup-darwin-x64',
     '@rollup/rollup-darwin-arm64',
-    '@rollup/rollup-win32-x64-msvc'
+    '@rollup/rollup-win32-x64-msvc',
   ];
-  
+
   for (const binding of commonBindings) {
     try {
       console.log(`📦 Installing ${binding}...`);
-      execSync(`npm install ${binding} --optional --no-save`, { stdio: 'inherit' });
+      execSync(`npm install ${binding} --optional --no-save`, {
+        stdio: 'inherit',
+      });
     } catch (error) {
       console.log(`⚠️  Failed to install ${binding}: ${error.message}`);
     }
   }
 } else {
   console.log(`📦 Installing required binding: ${requiredBinding}`);
-  
+
   try {
-    execSync(`npm install ${requiredBinding} --optional --no-save`, { stdio: 'inherit' });
+    execSync(`npm install ${requiredBinding} --optional --no-save`, {
+      stdio: 'inherit',
+    });
     console.log(`✅ Successfully installed ${requiredBinding}`);
   } catch (error) {
     console.log(`❌ Failed to install ${requiredBinding}: ${error.message}`);
-    
+
     // Try installing without optional flag
     try {
       console.log('🔄 Retrying without optional flag...');
-      execSync(`npm install ${requiredBinding} --no-save`, { stdio: 'inherit' });
-      console.log(`✅ Successfully installed ${requiredBinding} (without optional flag)`);
+      execSync(`npm install ${requiredBinding} --no-save`, {
+        stdio: 'inherit',
+      });
+      console.log(
+        `✅ Successfully installed ${requiredBinding} (without optional flag)`
+      );
     } catch (retryError) {
       console.log(`❌ Retry failed: ${retryError.message}`);
     }
@@ -77,7 +85,7 @@ try {
   console.log('✅ Rollup can be loaded successfully');
 } catch (error) {
   console.log('❌ Rollup still cannot be loaded:', error.message);
-  
+
   // Last resort: clean install
   console.log('🧹 Attempting clean install...');
   try {

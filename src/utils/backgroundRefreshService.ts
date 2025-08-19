@@ -1,6 +1,6 @@
 /**
  * Background Refresh Service
- * 
+ *
  * Comprehensive background task management for weather data updates:
  * - Native app lifecycle integration with Capacitor
  * - Intelligent refresh scheduling based on app state
@@ -64,19 +64,19 @@ export interface RefreshContext {
  */
 export class BackgroundRefreshService {
   private static instance: BackgroundRefreshService;
-  
+
   private config: BackgroundRefreshConfig;
   private refreshCallback: (() => Promise<void>) | null = null;
   private stats: RefreshStats;
   private isInitialized: boolean = false;
-  
+
   // State tracking
   private isAppActive: boolean = true;
   private isOnline: boolean = true;
   private backgroundStartTime: number = 0;
   private backgroundRefreshCount: number = 0;
   private lastRefreshTimes: number[] = [];
-  
+
   // Timers and intervals
   private foregroundInterval: NodeJS.Timeout | null = null;
   private backgroundTimeout: NodeJS.Timeout | null = null;
@@ -89,7 +89,9 @@ export class BackgroundRefreshService {
     this.log('BackgroundRefreshService initialized with config:', this.config);
   }
 
-  static getInstance(config?: Partial<BackgroundRefreshConfig>): BackgroundRefreshService {
+  static getInstance(
+    config?: Partial<BackgroundRefreshConfig>
+  ): BackgroundRefreshService {
     if (!BackgroundRefreshService.instance) {
       BackgroundRefreshService.instance = new BackgroundRefreshService(config);
     }
@@ -117,7 +119,7 @@ export class BackgroundRefreshService {
 
       // Get initial network status
       await this.updateNetworkStatus();
-      
+
       // Start foreground refresh if app is active
       if (this.isAppActive && this.isOnline) {
         this.startForegroundRefresh();
@@ -125,7 +127,7 @@ export class BackgroundRefreshService {
 
       this.isInitialized = true;
       this.log('Background refresh service initialized successfully');
-      
+
       // Perform initial refresh
       await this.performRefresh({
         type: 'forced',
@@ -134,7 +136,6 @@ export class BackgroundRefreshService {
         timeInBackground: 0,
         lastRefreshAge: 0,
       });
-
     } catch (error) {
       console.error('Failed to initialize background refresh service:', error);
       throw error;
@@ -146,14 +147,20 @@ export class BackgroundRefreshService {
    */
   private async initializeNativeMonitoring(): Promise<void> {
     // App state monitoring
-    this.appStateListener = App.addListener('appStateChange', ({ isActive }) => {
-      this.handleAppStateChange(isActive);
-    });
+    this.appStateListener = App.addListener(
+      'appStateChange',
+      ({ isActive }) => {
+        this.handleAppStateChange(isActive);
+      }
+    );
 
     // Network status monitoring
-    this.networkStatusListener = Network.addListener('networkStatusChange', (status) => {
-      this.handleNetworkChange(status.connected);
-    });
+    this.networkStatusListener = Network.addListener(
+      'networkStatusChange',
+      status => {
+        this.handleNetworkChange(status.connected);
+      }
+    );
 
     this.log('Native monitoring initialized');
   }
@@ -185,18 +192,22 @@ export class BackgroundRefreshService {
 
     if (isActive && !wasActive) {
       // App came to foreground
-      const timeInBackground = this.backgroundStartTime > 0 
-        ? Date.now() - this.backgroundStartTime 
-        : 0;
+      const timeInBackground =
+        this.backgroundStartTime > 0
+          ? Date.now() - this.backgroundStartTime
+          : 0;
 
       this.backgroundStartTime = 0;
       this.backgroundRefreshCount = 0;
 
       // Check if force refresh is needed
-      const shouldForceRefresh = timeInBackground > (this.config.forceRefreshThreshold * 60 * 1000);
-      
+      const shouldForceRefresh =
+        timeInBackground > this.config.forceRefreshThreshold * 60 * 1000;
+
       if (shouldForceRefresh && this.isOnline) {
-        this.log(`Force refresh triggered after ${Math.round(timeInBackground / 60000)} minutes in background`);
+        this.log(
+          `Force refresh triggered after ${Math.round(timeInBackground / 60000)} minutes in background`
+        );
         this.performRefresh({
           type: 'forced',
           isOnline: this.isOnline,
@@ -209,12 +220,11 @@ export class BackgroundRefreshService {
       // Start foreground refresh
       this.startForegroundRefresh();
       this.stopBackgroundRefresh();
-
     } else if (!isActive && wasActive) {
       // App went to background
       this.backgroundStartTime = Date.now();
       this.stopForegroundRefresh();
-      
+
       if (this.isOnline) {
         this.startBackgroundRefresh();
       }
@@ -278,21 +288,20 @@ export class BackgroundRefreshService {
     }
 
     const startTime = Date.now();
-    
+
     try {
       this.log(`Starting ${context.type} refresh`);
-      
+
       await this.refreshCallback();
-      
+
       const duration = Date.now() - startTime;
       this.updateStats(context.type, duration, true);
-      
+
       this.log(`${context.type} refresh completed in ${duration}ms`);
-      
     } catch (error) {
       const duration = Date.now() - startTime;
       this.updateStats(context.type, duration, false);
-      
+
       console.error(`${context.type} refresh failed:`, error);
     }
   }
@@ -302,11 +311,11 @@ export class BackgroundRefreshService {
    */
   private startForegroundRefresh(): void {
     this.stopForegroundRefresh();
-    
+
     if (!this.isOnline) return;
 
     const intervalMs = this.config.foregroundInterval * 60 * 1000;
-    
+
     this.foregroundInterval = setInterval(async () => {
       await this.performRefresh({
         type: 'foreground',
@@ -317,7 +326,9 @@ export class BackgroundRefreshService {
       });
     }, intervalMs);
 
-    this.log(`Foreground refresh started (${this.config.foregroundInterval} minute interval)`);
+    this.log(
+      `Foreground refresh started (${this.config.foregroundInterval} minute interval)`
+    );
   }
 
   /**
@@ -325,17 +336,20 @@ export class BackgroundRefreshService {
    */
   private startBackgroundRefresh(): void {
     this.stopBackgroundRefresh();
-    
-    if (!this.isOnline || this.backgroundRefreshCount >= this.config.maxBackgroundRefreshes) {
+
+    if (
+      !this.isOnline ||
+      this.backgroundRefreshCount >= this.config.maxBackgroundRefreshes
+    ) {
       return;
     }
 
     const intervalMs = this.getOptimizedBackgroundInterval();
-    
+
     this.backgroundTimeout = setTimeout(async () => {
       if (!this.isAppActive && this.isOnline) {
         this.backgroundRefreshCount++;
-        
+
         await this.performRefresh({
           type: 'background',
           isOnline: this.isOnline,
@@ -349,7 +363,9 @@ export class BackgroundRefreshService {
       }
     }, intervalMs);
 
-    this.log(`Background refresh scheduled in ${Math.round(intervalMs / 60000)} minutes`);
+    this.log(
+      `Background refresh scheduled in ${Math.round(intervalMs / 60000)} minutes`
+    );
   }
 
   /**
@@ -370,7 +386,7 @@ export class BackgroundRefreshService {
     }
 
     // Progressive increase - longer intervals for subsequent background refreshes
-    const progressiveMultiplier = 1 + (this.backgroundRefreshCount * 0.2);
+    const progressiveMultiplier = 1 + this.backgroundRefreshCount * 0.2;
     intervalMs *= progressiveMultiplier;
 
     return Math.min(intervalMs, 30 * 60 * 1000); // Cap at 30 minutes
@@ -424,33 +440,42 @@ export class BackgroundRefreshService {
    * Get time spent in background
    */
   private getTimeInBackground(): number {
-    return this.backgroundStartTime > 0 ? Date.now() - this.backgroundStartTime : 0;
+    return this.backgroundStartTime > 0
+      ? Date.now() - this.backgroundStartTime
+      : 0;
   }
 
   /**
    * Get age of last refresh
    */
   private getLastRefreshAge(): number {
-    return this.stats.lastRefreshTime > 0 ? Date.now() - this.stats.lastRefreshTime : 0;
+    return this.stats.lastRefreshTime > 0
+      ? Date.now() - this.stats.lastRefreshTime
+      : 0;
   }
 
   /**
    * Update refresh statistics
    */
-  private updateStats(type: RefreshContext['type'], duration: number, success: boolean): void {
+  private updateStats(
+    type: RefreshContext['type'],
+    duration: number,
+    success: boolean
+  ): void {
     this.stats.totalRefreshes++;
-    
+
     if (success) {
       this.stats.lastRefreshTime = Date.now();
       this.lastRefreshTimes.push(duration);
-      
+
       // Keep only last 10 refresh times for average calculation
       if (this.lastRefreshTimes.length > 10) {
         this.lastRefreshTimes.shift();
       }
-      
-      this.stats.averageRefreshDuration = 
-        this.lastRefreshTimes.reduce((a, b) => a + b, 0) / this.lastRefreshTimes.length;
+
+      this.stats.averageRefreshDuration =
+        this.lastRefreshTimes.reduce((a, b) => a + b, 0) /
+        this.lastRefreshTimes.length;
 
       switch (type) {
         case 'foreground':
@@ -504,7 +529,8 @@ export class BackgroundRefreshService {
       timeInBackground: this.getTimeInBackground(),
       lastRefreshAge: this.getLastRefreshAge(),
       backgroundRefreshCount: this.backgroundRefreshCount,
-      hasActiveRefresh: this.foregroundInterval !== null || this.backgroundTimeout !== null,
+      hasActiveRefresh:
+        this.foregroundInterval !== null || this.backgroundTimeout !== null,
       config: this.config,
       stats: this.stats,
     };
@@ -516,7 +542,7 @@ export class BackgroundRefreshService {
   updateConfig(newConfig: Partial<BackgroundRefreshConfig>): void {
     this.config = { ...this.config, ...newConfig };
     this.log('Configuration updated:', newConfig);
-    
+
     // Restart refresh with new config if active
     if (this.isAppActive && this.isOnline) {
       this.startForegroundRefresh();
@@ -530,7 +556,7 @@ export class BackgroundRefreshService {
    */
   destroy(): void {
     this.stopAllRefresh();
-    
+
     // Remove native listeners
     if (this.appStateListener) {
       this.appStateListener.then(listener => listener.remove());
@@ -561,16 +587,22 @@ export class BackgroundRefreshService {
 }
 
 // Export singleton instance creator
-export const createBackgroundRefreshService = (config?: Partial<BackgroundRefreshConfig>) => {
+export const createBackgroundRefreshService = (
+  config?: Partial<BackgroundRefreshConfig>
+) => {
   return BackgroundRefreshService.getInstance(config);
 };
 
 // Export utility functions
-export const getDefaultConfig = (): BackgroundRefreshConfig => ({ ...DEFAULT_CONFIG });
+export const getDefaultConfig = (): BackgroundRefreshConfig => ({
+  ...DEFAULT_CONFIG,
+});
 
-export const createOptimizedConfig = (platform: 'mobile' | 'web' = 'mobile'): BackgroundRefreshConfig => {
+export const createOptimizedConfig = (
+  platform: 'mobile' | 'web' = 'mobile'
+): BackgroundRefreshConfig => {
   const baseConfig = getDefaultConfig();
-  
+
   if (platform === 'web') {
     return {
       ...baseConfig,
@@ -579,6 +611,6 @@ export const createOptimizedConfig = (platform: 'mobile' | 'web' = 'mobile'): Ba
       enableBatteryOptimization: false, // Not applicable to web
     };
   }
-  
+
   return baseConfig; // Mobile-optimized defaults
 };

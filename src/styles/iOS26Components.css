@@ -53,7 +53,8 @@
 }
 
 @keyframes widgetPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -205,7 +206,7 @@
 .ios26-context-menu button:focus-visible,
 .ios26-interactive-widget:focus-visible,
 .ios26-modal-sheet .sheet-handle:focus-visible {
-  outline: 2px solid #007AFF;
+  outline: 2px solid #007aff;
   outline-offset: 2px;
 }
 
@@ -240,15 +241,15 @@
   .ios26-context-menu {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
   }
-  
+
   .ios26-live-activity {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   }
-  
+
   .ios26-interactive-widget {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
-  
+
   .ios26-modal-sheet {
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
   }
@@ -284,11 +285,11 @@
     min-width: 180px;
     font-size: 16px;
   }
-  
+
   .ios26-interactive-widget {
     min-height: 120px;
   }
-  
+
   .ios26-modal-sheet {
     border-radius: 16px 16px 0 0;
   }
@@ -299,12 +300,12 @@
     min-width: 160px;
     font-size: 15px;
   }
-  
+
   .ios26-live-activity {
     max-width: 280px;
     min-width: 160px;
   }
-  
+
   .ios26-interactive-widget {
     width: 100% !important;
     max-width: 320px;
@@ -322,7 +323,7 @@
   left: 50%;
   width: 2px;
   height: 2px;
-  background: #007AFF;
+  background: #007aff;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   animation: hapticPulse 0.3s ease-out;
@@ -335,7 +336,7 @@
   left: 50%;
   width: 4px;
   height: 4px;
-  background: #007AFF;
+  background: #007aff;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   animation: hapticPulse 0.4s ease-out;
@@ -348,7 +349,7 @@
   left: 50%;
   width: 6px;
   height: 6px;
-  background: #007AFF;
+  background: #007aff;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   animation: hapticPulse 0.5s ease-out;

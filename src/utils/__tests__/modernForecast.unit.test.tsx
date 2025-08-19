@@ -64,9 +64,7 @@ const mockDailyData = [
 
 // Test wrapper with theme provider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider>
-    {children}
-  </ThemeProvider>
+  <ThemeProvider>{children}</ThemeProvider>
 );
 
 describe('ModernForecast Component', () => {
@@ -74,11 +72,7 @@ describe('ModernForecast Component', () => {
     test('renders without crashing', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
-            theme={lightTheme}
-            hourlyData={[]}
-            dailyData={[]}
-          />
+          <ModernForecast theme={lightTheme} hourlyData={[]} dailyData={[]} />
         </TestWrapper>
       );
 
@@ -89,7 +83,7 @@ describe('ModernForecast Component', () => {
     test('renders with loading state', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
+          <ModernForecast
             theme={lightTheme}
             hourlyData={[]}
             dailyData={[]}
@@ -107,7 +101,7 @@ describe('ModernForecast Component', () => {
     test('renders hourly forecast with data', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
+          <ModernForecast
             theme={lightTheme}
             hourlyData={mockHourlyData}
             dailyData={[]}
@@ -122,11 +116,7 @@ describe('ModernForecast Component', () => {
     test('handles empty hourly data', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
-            theme={lightTheme}
-            hourlyData={[]}
-            dailyData={[]}
-          />
+          <ModernForecast theme={lightTheme} hourlyData={[]} dailyData={[]} />
         </TestWrapper>
       );
 
@@ -139,7 +129,7 @@ describe('ModernForecast Component', () => {
     test('renders daily forecast with data', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
+          <ModernForecast
             theme={lightTheme}
             hourlyData={[]}
             dailyData={mockDailyData}
@@ -154,11 +144,7 @@ describe('ModernForecast Component', () => {
     test('handles empty daily data', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
-            theme={lightTheme}
-            hourlyData={[]}
-            dailyData={[]}
-          />
+          <ModernForecast theme={lightTheme} hourlyData={[]} dailyData={[]} />
         </TestWrapper>
       );
 
@@ -171,7 +157,7 @@ describe('ModernForecast Component', () => {
     test('uses semantic HTML structure', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
+          <ModernForecast
             theme={lightTheme}
             hourlyData={mockHourlyData}
             dailyData={mockDailyData}
@@ -187,7 +173,7 @@ describe('ModernForecast Component', () => {
     test('renders weather icons', () => {
       render(
         <TestWrapper>
-          <ModernForecast 
+          <ModernForecast
             theme={lightTheme}
             hourlyData={mockHourlyData}
             dailyData={mockDailyData}
@@ -223,7 +209,7 @@ describe('ModernForecast Component', () => {
       expect(() => {
         render(
           <TestWrapper>
-            <ModernForecast 
+            <ModernForecast
               theme={lightTheme}
               hourlyData={largeHourlyData}
               dailyData={largeDailyData}
@@ -247,7 +233,7 @@ describe('ModernForecast Component', () => {
       expect(() => {
         render(
           <TestWrapper>
-            <ModernForecast 
+            <ModernForecast
               theme={lightTheme}
               hourlyData={dataWithMissingTemps}
               dailyData={[]}
@@ -271,7 +257,7 @@ describe('ModernForecast Component', () => {
       expect(() => {
         render(
           <TestWrapper>
-            <ModernForecast 
+            <ModernForecast
               theme={lightTheme}
               hourlyData={dataWithInvalidCodes}
               dailyData={[]}

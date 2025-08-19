@@ -43,12 +43,12 @@ Please include the following in your report:
 
 ### 🚨 Severity Levels
 
-| Severity | Response Time | Examples |
-|----------|---------------|----------|
-| **Critical** | 24-48 hours | Remote code execution, data breach |
-| **High** | 1 week | XSS, authentication bypass |
-| **Medium** | 2 weeks | CSRF, information disclosure |
-| **Low** | 1 month | Minor information leaks |
+| Severity     | Response Time | Examples                           |
+| ------------ | ------------- | ---------------------------------- |
+| **Critical** | 24-48 hours   | Remote code execution, data breach |
+| **High**     | 1 week        | XSS, authentication bypass         |
+| **Medium**   | 2 weeks       | CSRF, information disclosure       |
+| **Low**      | 1 month       | Minor information leaks            |
 
 ## 🛡️ Security Measures
 

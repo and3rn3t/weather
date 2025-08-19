@@ -19,11 +19,11 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { 
-      hasError: true, 
+    return {
+      hasError: true,
       error,
       errorInfo: error.stack || 'No stack trace available',
-      retryCount: 0
+      retryCount: 0,
     };
   }
 
@@ -34,37 +34,43 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          padding: '40px',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          minHeight: '100vh',
-          color: 'white',
-          fontFamily: 'Arial, sans-serif',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <div
+          style={{
+            padding: '40px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            minHeight: '100vh',
+            color: 'white',
+            fontFamily: 'Arial, sans-serif',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <h1>⚠️ Something went wrong!</h1>
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            padding: '20px',
-            borderRadius: '12px',
-            marginTop: '20px',
-            maxWidth: '600px'
-          }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              padding: '20px',
+              borderRadius: '12px',
+              marginTop: '20px',
+              maxWidth: '600px',
+            }}
+          >
             <h2>Error Details:</h2>
-            <pre style={{ 
-              color: '#ffcccc', 
-              fontSize: '14px',
-              overflowX: 'auto',
-              background: 'rgba(0,0,0,0.2)',
-              padding: '10px',
-              borderRadius: '6px'
-            }}>
+            <pre
+              style={{
+                color: '#ffcccc',
+                fontSize: '14px',
+                overflowX: 'auto',
+                background: 'rgba(0,0,0,0.2)',
+                padding: '10px',
+                borderRadius: '6px',
+              }}
+            >
               {this.state.error?.toString()}
             </pre>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               style={{
                 background: 'rgba(255, 255, 255, 0.2)',
@@ -73,7 +79,7 @@ class ErrorBoundary extends Component<Props, State> {
                 padding: '10px 20px',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                marginTop: '16px'
+                marginTop: '16px',
               }}
             >
               🔄 Reload Page

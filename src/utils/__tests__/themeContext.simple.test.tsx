@@ -28,7 +28,7 @@ Object.defineProperty(window, 'localStorage', {
 // Test component to test the theme hook
 const TestComponent = () => {
   const { theme, isDark, toggleTheme } = useTheme();
-  
+
   return (
     <div>
       <div data-testid="theme-mode">{isDark ? 'dark' : 'light'}</div>
@@ -88,9 +88,12 @@ describe('Theme Context and Hook - Simple Tests', () => {
 
     // Toggle to dark theme
     fireEvent.click(screen.getByTestId('toggle-theme'));
-    
+
     // Check that localStorage was called
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('weather-app-theme', 'dark');
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      'weather-app-theme',
+      'dark'
+    );
   });
 
   test('loads theme preference from localStorage', () => {
@@ -109,7 +112,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
 
   test('theme provides all necessary properties', () => {
     let capturedTheme: ThemeColors | null = null;
-    
+
     const ThemeCapture = () => {
       const { theme } = useTheme();
       capturedTheme = theme;

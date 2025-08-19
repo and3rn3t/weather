@@ -44,9 +44,12 @@ export const usePWAInstall = (): PWAInstallPrompt => {
 
   // Check if app is already installed
   const isInstalled = (): boolean => {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.matchMedia('(display-mode: fullscreen)').matches ||
-           ('standalone' in window.navigator && (window.navigator as { standalone?: boolean }).standalone === true);
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      ('standalone' in window.navigator &&
+        (window.navigator as { standalone?: boolean }).standalone === true)
+    );
   };
 
   // Listen for beforeinstallprompt event
@@ -73,10 +76,10 @@ export const usePWAInstall = (): PWAInstallPrompt => {
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       console.log('PWA: Install prompt outcome:', outcome);
       deferredPrompt = null;
-      
+
       return outcome === 'accepted';
     } catch (error) {
       console.error('PWA: Install prompt failed', error);
@@ -94,7 +97,7 @@ export const usePWAInstall = (): PWAInstallPrompt => {
     isInstalled: isInstalled(),
     canInstall: !!deferredPrompt,
     promptInstall,
-    checkInstallStatus: isInstalled
+    checkInstallStatus: isInstalled,
   };
 };
 
@@ -118,17 +121,20 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
 
     try {
       registration = await navigator.serviceWorker.register('/sw.js');
-      
+
       console.log('Service Worker: Registered successfully', registration);
 
       // Listen for updates
       registration.addEventListener('updatefound', () => {
         console.log('Service Worker: Update found');
-        
+
         const newWorker = registration!.installing;
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            if (
+              newWorker.state === 'installed' &&
+              navigator.serviceWorker.controller
+            ) {
               console.log('Service Worker: Update available');
               // Notify app about update
               window.dispatchEvent(new CustomEvent('sw-update-available'));
@@ -138,14 +144,13 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
       });
 
       // Listen for messages from service worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
+      navigator.serviceWorker.addEventListener('message', event => {
         console.log('Service Worker: Message received', event.data);
-        
+
         if (event.data.type === 'CONNECTIVITY_RESTORED') {
           window.dispatchEvent(new CustomEvent('connectivity-restored'));
         }
       });
-
     } catch (error) {
       console.error('Service Worker: Registration failed', error);
     }
@@ -182,7 +187,7 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
     isControlling: !!navigator.serviceWorker?.controller,
     updateAvailable: false, // This would be updated via event listeners
     checkForUpdates,
-    skipWaiting
+    skipWaiting,
   };
 };
 
@@ -210,12 +215,18 @@ export const useNetworkStatus = () => {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    window.addEventListener('connectivity-restored', handleConnectivityRestored);
+    window.addEventListener(
+      'connectivity-restored',
+      handleConnectivityRestored
+    );
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('connectivity-restored', handleConnectivityRestored);
+      window.removeEventListener(
+        'connectivity-restored',
+        handleConnectivityRestored
+      );
     };
   }, []);
 
@@ -248,6 +259,6 @@ export const usePWAUpdate = () => {
 
   return {
     updateAvailable,
-    applyUpdate
+    applyUpdate,
   };
 };

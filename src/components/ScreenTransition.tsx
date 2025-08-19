@@ -2,7 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import type { ThemeColors } from '../utils/themeConfig';
 import { useSwipeGestures } from '../utils/useSwipeGestures';
 
-export type TransitionDirection = 'slide-left' | 'slide-right' | 'fade' | 'none';
+export type TransitionDirection =
+  | 'slide-left'
+  | 'slide-right'
+  | 'fade'
+  | 'none';
 
 interface ScreenTransitionProps {
   children: React.ReactNode;
@@ -15,7 +19,7 @@ interface ScreenTransitionProps {
 
 /**
  * ScreenTransition - Smooth animated transitions between app screens
- * 
+ *
  * Features:
  * - Multiple transition types (slide, fade)
  * - Hardware-accelerated CSS transforms
@@ -29,12 +33,12 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
   direction = 'slide-left',
   duration = 300,
   className = '',
-  theme
+  theme,
 }) => {
   const [shouldRender, setShouldRender] = useState(isActive);
-  const [animationState, setAnimationState] = useState<'entering' | 'entered' | 'exiting' | 'exited'>(
-    isActive ? 'entered' : 'exited'
-  );
+  const [animationState, setAnimationState] = useState<
+    'entering' | 'entered' | 'exiting' | 'exited'
+  >(isActive ? 'entered' : 'exited');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -42,7 +46,7 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
       // Screen is becoming active
       setShouldRender(true);
       setAnimationState('entering');
-      
+
       // Trigger enter animation
       requestAnimationFrame(() => {
         setAnimationState('entered');
@@ -50,7 +54,7 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
     } else if (!isActive && shouldRender) {
       // Screen is becoming inactive
       setAnimationState('exiting');
-      
+
       // Wait for animation to complete before unmounting
       timeoutRef.current = setTimeout(() => {
         setShouldRender(false);
@@ -72,16 +76,16 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
         if (animationState === 'entered') return 'translateX(0)';
         if (animationState === 'exiting') return 'translateX(-100%)';
         return 'translateX(100%)';
-        
+
       case 'slide-right':
         if (animationState === 'entering') return 'translateX(-100%)';
         if (animationState === 'entered') return 'translateX(0)';
         if (animationState === 'exiting') return 'translateX(100%)';
         return 'translateX(-100%)';
-        
+
       case 'fade':
         return 'translateX(0)';
-        
+
       default:
         return 'translateX(0)';
     }
@@ -94,7 +98,7 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
       if (animationState === 'exiting') return 0;
       return 0;
     }
-    
+
     // For slide transitions, maintain opacity except during transitions
     if (animationState === 'entering') return 0.9;
     if (animationState === 'entered') return 1;
@@ -117,29 +121,29 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
     transform: getTransformValue(),
     opacity: getOpacity(),
     transition: `all ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
-    
+
     // Performance optimizations
     willChange: 'transform, opacity',
     backfaceVisibility: 'hidden',
     WebkitBackfaceVisibility: 'hidden',
     transformStyle: 'preserve-3d',
     WebkitTransformStyle: 'preserve-3d',
-    
+
     // Ensure content doesn't overflow during transitions
     overflow: 'hidden',
-    
+
     // Z-index management
     zIndex: isActive ? 10 : 1,
-    
+
     // Background for smooth transitions
     background: theme.appBackground,
-    
+
     // Prevent interaction during transitions
-    pointerEvents: animationState === 'entered' ? 'auto' : 'none'
+    pointerEvents: animationState === 'entered' ? 'auto' : 'none',
   };
 
   return (
-    <div 
+    <div
       className={`screen-transition ${className}`}
       style={containerStyle}
       data-transition-state={animationState}
@@ -164,7 +168,7 @@ interface ScreenContainerProps {
 
 /**
  * ScreenContainer - Container for managing multiple screens with transitions
- * 
+ *
  * Features:
  * - Manages multiple screens with smooth transitions
  * - Automatic direction detection based on screen order
@@ -181,34 +185,38 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   className = '',
   onSwipeLeft,
   onSwipeRight,
-  enableSwipeGestures = false
+  enableSwipeGestures = false,
 }) => {
   const [previousScreen, setPreviousScreen] = useState<string | null>(null);
   const screenOrder = Object.keys(screens);
-  
+
   // Swipe gesture integration
   const { swipeState, createSwipeHandler } = useSwipeGestures({
     threshold: 50,
     maxDrag: 120,
     resistance: 0.4,
     enableVisualFeedback: true,
-    enableHaptic: true
+    enableHaptic: true,
   });
-  
-  const swipeHandlers = enableSwipeGestures && (onSwipeLeft || onSwipeRight)
-    ? createSwipeHandler(
-        onSwipeLeft || (() => {}),
-        onSwipeRight || (() => {}),
-        !!onSwipeLeft,
-        !!onSwipeRight
-      )
-    : {};
+
+  const swipeHandlers =
+    enableSwipeGestures && (onSwipeLeft || onSwipeRight)
+      ? createSwipeHandler(
+          onSwipeLeft || (() => {}),
+          onSwipeRight || (() => {}),
+          !!onSwipeLeft,
+          !!onSwipeRight
+        )
+      : {};
 
   useEffect(() => {
     setPreviousScreen(currentScreen);
   }, [currentScreen]);
 
-  const getDirection = (from: string | null, to: string): TransitionDirection => {
+  const getDirection = (
+    from: string | null,
+    to: string
+  ): TransitionDirection => {
     if (!from || transitionDirection !== 'slide-left') {
       return transitionDirection;
     }
@@ -230,28 +238,29 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
     width: '100%',
     height: '100%',
     overflow: 'hidden',
-    
+
     // Ensure container takes full space
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    
+
     // Performance optimization
     isolation: 'isolate',
-    
+
     // Swipe gesture support
     touchAction: enableSwipeGestures ? 'pan-y' : 'auto',
-    
+
     // Visual feedback during swipe
-    transform: swipeState?.isDragging && enableSwipeGestures 
-      ? `translateX(${swipeState.dragOffset * 0.1}px)` 
-      : 'translateX(0px)',
-    transition: swipeState?.isDragging ? 'none' : 'transform 0.3s ease'
+    transform:
+      swipeState?.isDragging && enableSwipeGestures
+        ? `translateX(${swipeState.dragOffset * 0.1}px)`
+        : 'translateX(0px)',
+    transition: swipeState?.isDragging ? 'none' : 'transform 0.3s ease',
   };
 
   return (
-    <div 
-      className={`screen-container ${className}`} 
+    <div
+      className={`screen-container ${className}`}
       style={containerStyle}
       {...(enableSwipeGestures ? swipeHandlers : {})}
     >

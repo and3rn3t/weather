@@ -46,10 +46,10 @@ div:not(.mobile-navigation) > *:active,
 }
 
 /* Fix #3: Ensure main content containers never get :active styling */
-[role="main"]:active,
-[class*="content"]:active,
-[class*="screen"]:active,
-[class*="container"]:active {
+[role='main']:active,
+[class*='content']:active,
+[class*='screen']:active,
+[class*='container']:active {
   background: transparent !important;
   border: none !important;
   outline: none !important;

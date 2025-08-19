@@ -1,6 +1,6 @@
 /**
  * Progressive Image Loading Component
- * 
+ *
  * Provides smooth loading experience for weather icons and images
  * with blur-to-clear transitions and fallback handling.
  */
@@ -35,7 +35,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   height,
   priority = false,
   onLoad,
-  onError
+  onError,
 }) => {
   const { theme, isMobile } = useTheme();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -45,26 +45,26 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   // Preload image
   useEffect(() => {
     const img = new Image();
-    
+
     img.onload = () => {
       setImageLoaded(true);
       setShowPlaceholder(false);
       onLoad?.();
     };
-    
+
     img.onerror = () => {
       setImageError(true);
       setShowPlaceholder(false);
       onError?.();
     };
-    
+
     // Set priority loading for above-the-fold images
     if (priority) {
       img.loading = 'eager';
     }
-    
+
     img.src = src;
-    
+
     return () => {
       img.onload = null;
       img.onerror = null;
@@ -76,7 +76,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
     transition: 'all 0.3s ease',
     width: width || 'auto',
     height: height || 'auto',
-    ...style
+    ...style,
   };
 
   // Placeholder styles with shimmer effect
@@ -91,7 +91,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     color: theme.secondaryText,
-    fontSize: isMobile ? '12px' : '14px'
+    fontSize: isMobile ? '12px' : '14px',
   };
 
   // Error state styles
@@ -104,7 +104,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     color: theme.secondaryText,
-    fontSize: isMobile ? '20px' : '24px'
+    fontSize: isMobile ? '20px' : '24px',
   };
 
   // Show error state
@@ -134,7 +134,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
       style={{
         ...imageStyles,
         opacity: imageLoaded ? 1 : 0,
-        filter: imageLoaded ? 'none' : 'blur(4px)'
+        filter: imageLoaded ? 'none' : 'blur(4px)',
       }}
       loading={priority ? 'eager' : 'lazy'}
     />
@@ -156,9 +156,8 @@ export const ProgressiveWeatherIcon: React.FC<ProgressiveWeatherIconProps> = ({
   code,
   size = 32,
   animated = false,
-  className = ''
+  className = '',
 }) => {
-  
   // Weather icon mapping (simplified for demo)
   const getWeatherIcon = (code: number) => {
     const iconMap: Record<number, string> = {
@@ -179,14 +178,14 @@ export const ProgressiveWeatherIcon: React.FC<ProgressiveWeatherIconProps> = ({
       75: '🌨️', // Heavy snow
       95: '⛈️', // Thunderstorm
       96: '⛈️', // Thunderstorm with hail
-      99: '⛈️'  // Heavy thunderstorm with hail
+      99: '⛈️', // Heavy thunderstorm with hail
     };
-    
+
     return iconMap[code] || '🌐';
   };
 
   const icon = getWeatherIcon(code);
-  
+
   // For emoji icons, we don't need progressive loading, just animate if needed
   return (
     <span
@@ -195,7 +194,7 @@ export const ProgressiveWeatherIcon: React.FC<ProgressiveWeatherIconProps> = ({
         fontSize: `${size}px`,
         display: 'inline-block',
         transition: 'transform 0.3s ease',
-        animation: animated ? 'gentle-bounce 2s ease-in-out infinite' : 'none'
+        animation: animated ? 'gentle-bounce 2s ease-in-out infinite' : 'none',
       }}
     >
       {icon}
@@ -220,10 +219,10 @@ interface ImageGalleryProps {
 export const OptimizedImageGallery: React.FC<ImageGalleryProps> = ({
   images,
   columns = 3,
-  gap = 16
+  gap = 16,
 }) => {
   const { isMobile, isTablet } = useTheme();
-  
+
   // Responsive columns
   const getColumns = () => {
     if (isMobile) return Math.min(columns, 2);
@@ -232,12 +231,14 @@ export const OptimizedImageGallery: React.FC<ImageGalleryProps> = ({
   };
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
-      gap: `${gap}px`,
-      width: '100%'
-    }}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
+        gap: `${gap}px`,
+        width: '100%',
+      }}
+    >
       {images.map((image, index) => (
         <ProgressiveImage
           key={`gallery-img-${image.src.split('/').pop()}-${index}`}
@@ -249,7 +250,7 @@ export const OptimizedImageGallery: React.FC<ImageGalleryProps> = ({
             width: '100%',
             height: 'auto',
             borderRadius: '8px',
-            objectFit: 'cover'
+            objectFit: 'cover',
           }}
         />
       ))}
@@ -260,5 +261,5 @@ export const OptimizedImageGallery: React.FC<ImageGalleryProps> = ({
 export default {
   ProgressiveImage,
   ProgressiveWeatherIcon,
-  OptimizedImageGallery
+  OptimizedImageGallery,
 };

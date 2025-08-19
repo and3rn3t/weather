@@ -18,7 +18,7 @@ nav.mobile-navigation {
 }
 
 /* Fix #2: Completely eliminate dark blue rectangle on button press */
-nav.mobile-navigation button[role="tab"] {
+nav.mobile-navigation button[role='tab'] {
   background: transparent !important;
   border: none !important;
   border-radius: 8px !important;
@@ -30,14 +30,14 @@ nav.mobile-navigation button[role="tab"] {
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  
+
   /* CRITICAL: Override all button styling that causes dark rectangle */
   opacity: 1 !important;
   transform: none !important;
   box-shadow: none !important;
   filter: none !important;
   outline: none !important;
-  
+
   /* Prevent browser touch effects */
   -webkit-tap-highlight-color: transparent !important;
   -webkit-touch-callout: none !important;
@@ -46,15 +46,15 @@ nav.mobile-navigation button[role="tab"] {
   touch-action: manipulation !important;
   -webkit-appearance: none !important;
   appearance: none !important;
-  
+
   /* NO TRANSITIONS to prevent timing issues */
   transition: none !important;
 }
 
 /* FORCE override any :active state that creates dark rectangle */
-nav.mobile-navigation button[role="tab"]:active,
-nav.mobile-navigation button[role="tab"]:focus,
-nav.mobile-navigation button[role="tab"]:hover {
+nav.mobile-navigation button[role='tab']:active,
+nav.mobile-navigation button[role='tab']:focus,
+nav.mobile-navigation button[role='tab']:hover {
   opacity: 1 !important;
   transform: none !important;
   background: rgba(120, 97, 255, 0.1) !important;
@@ -62,7 +62,7 @@ nav.mobile-navigation button[role="tab"]:hover {
   filter: none !important;
   outline: none !important;
   border: none !important;
-  
+
   /* AGGRESSIVE: Override any browser default active styles */
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -72,17 +72,17 @@ nav.mobile-navigation button[role="tab"]:hover {
   -webkit-user-drag: none !important;
   -webkit-user-modify: none !important;
   -webkit-touch-callout: none !important;
-  
+
   /* Force no visual changes */
   color: inherit !important;
   text-decoration: none !important;
   text-shadow: none !important;
-  
+
   /* Override any inherited button styling */
   font-family: inherit !important;
   font-size: inherit !important;
   line-height: inherit !important;
-  
+
   /* Nuclear option: force specific background */
   background-color: rgba(120, 97, 255, 0.1) !important;
   background-image: none !important;
@@ -95,7 +95,7 @@ nav.mobile-navigation button[role="tab"]:hover {
 }
 
 /* Simple icon styling */
-nav.mobile-navigation button[role="tab"] > div:first-child {
+nav.mobile-navigation button[role='tab'] > div:first-child {
   font-size: 24px !important;
   margin-bottom: 4px !important;
   opacity: 1 !important;
@@ -104,7 +104,7 @@ nav.mobile-navigation button[role="tab"] > div:first-child {
 }
 
 /* Simple label styling */
-nav.mobile-navigation button[role="tab"] > span {
+nav.mobile-navigation button[role='tab'] > span {
   font-size: 11px !important;
   font-weight: 500 !important;
   color: rgba(60, 60, 67, 0.8) !important;
@@ -113,7 +113,7 @@ nav.mobile-navigation button[role="tab"] > span {
 }
 
 /* Active label color */
-nav.mobile-navigation button[role="tab"][aria-selected="true"] > span {
+nav.mobile-navigation button[role='tab'][aria-selected='true'] > span {
   color: rgb(120, 97, 255) !important;
   font-weight: 600 !important;
 }
@@ -135,14 +135,14 @@ body {
 }
 
 /* Remove any pseudo-elements that could create overlays */
-nav.mobile-navigation button[role="tab"]::before,
-nav.mobile-navigation button[role="tab"]::after,
-nav.mobile-navigation button[role="tab"]:active::before,
-nav.mobile-navigation button[role="tab"]:active::after,
-nav.mobile-navigation button[role="tab"]:focus::before,
-nav.mobile-navigation button[role="tab"]:focus::after,
-nav.mobile-navigation button[role="tab"]:hover::before,
-nav.mobile-navigation button[role="tab"]:hover::after {
+nav.mobile-navigation button[role='tab']::before,
+nav.mobile-navigation button[role='tab']::after,
+nav.mobile-navigation button[role='tab']:active::before,
+nav.mobile-navigation button[role='tab']:active::after,
+nav.mobile-navigation button[role='tab']:focus::before,
+nav.mobile-navigation button[role='tab']:focus::after,
+nav.mobile-navigation button[role='tab']:hover::before,
+nav.mobile-navigation button[role='tab']:hover::after {
   display: none !important;
   content: none !important;
   background: none !important;
@@ -151,12 +151,12 @@ nav.mobile-navigation button[role="tab"]:hover::after {
 }
 
 /* NUCLEAR OPTION: Override ALL possible button styling sources */
-nav.mobile-navigation button[role="tab"],
-nav.mobile-navigation button[role="tab"]:visited,
-nav.mobile-navigation button[role="tab"]:link {
+nav.mobile-navigation button[role='tab'],
+nav.mobile-navigation button[role='tab']:visited,
+nav.mobile-navigation button[role='tab']:link {
   /* Reset EVERYTHING */
   all: unset !important;
-  
+
   /* Restore only what we need */
   display: flex !important;
   flex-direction: column !important;
@@ -168,7 +168,7 @@ nav.mobile-navigation button[role="tab"]:link {
   min-height: 60px !important;
   border-radius: 8px !important;
   cursor: pointer !important;
-  
+
   /* Force clean state - NO BACKGROUND */
   background: transparent !important;
   border: none !important;
@@ -177,7 +177,7 @@ nav.mobile-navigation button[role="tab"]:link {
   filter: none !important;
   transform: none !important;
   opacity: 1 !important;
-  
+
   /* Touch handling */
   -webkit-tap-highlight-color: transparent !important;
   touch-action: manipulation !important;
@@ -186,18 +186,18 @@ nav.mobile-navigation button[role="tab"]:link {
 }
 
 /* SEPARATE rules for states to prevent cascade issues */
-nav.mobile-navigation button[role="tab"]:hover {
+nav.mobile-navigation button[role='tab']:hover {
   background: rgba(120, 97, 255, 0.05) !important;
 }
 
-nav.mobile-navigation button[role="tab"]:focus {
+nav.mobile-navigation button[role='tab']:focus {
   background: transparent !important;
   outline: 1px solid rgba(120, 97, 255, 0.3) !important;
   outline-offset: 1px !important;
 }
 
 /* Only allow our specific active styling - VERY SPECIFIC */
-nav.mobile-navigation button[role="tab"]:active {
+nav.mobile-navigation button[role='tab']:active {
   background: rgba(120, 97, 255, 0.1) !important;
   transform: none !important;
   opacity: 1 !important;
@@ -206,7 +206,7 @@ nav.mobile-navigation button[role="tab"]:active {
   box-shadow: none !important;
 }
 
-nav.mobile-navigation button[role="tab"][aria-selected="true"] {
+nav.mobile-navigation button[role='tab'][aria-selected='true'] {
   background: rgba(120, 97, 255, 0.15) !important;
   border: 1px solid rgba(120, 97, 255, 0.2) !important;
 }

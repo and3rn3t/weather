@@ -6,10 +6,10 @@ describe('WeatherIcon Component', () => {
   describe('Basic Rendering', () => {
     it('should render with default props', () => {
       render(<WeatherIcon code={0} />);
-      
+
       const container = document.querySelector('.weather-icon');
       expect(container).toBeInTheDocument();
-      
+
       const svgElement = container?.querySelector('svg');
       expect(svgElement).toBeInTheDocument();
       expect(svgElement).toHaveAttribute('width', '64');
@@ -18,7 +18,7 @@ describe('WeatherIcon Component', () => {
 
     it('should apply custom size', () => {
       render(<WeatherIcon code={0} size={100} />);
-      
+
       const container = document.querySelector('.weather-icon');
       const svgElement = container?.querySelector('svg');
       expect(svgElement).toHaveAttribute('width', '100');
@@ -27,14 +27,14 @@ describe('WeatherIcon Component', () => {
 
     it('should apply custom className', () => {
       render(<WeatherIcon code={0} className="custom-class" />);
-      
+
       const container = document.querySelector('.weather-icon');
       expect(container).toHaveClass('custom-class');
     });
 
     it('should include animation class when animated=true', () => {
       render(<WeatherIcon code={0} animated={true} />);
-      
+
       const container = document.querySelector('.weather-icon');
       const svgElement = container?.querySelector('svg');
       expect(svgElement).toHaveClass('weather-icon-animated');
@@ -42,7 +42,7 @@ describe('WeatherIcon Component', () => {
 
     it('should not include animation class when animated=false', () => {
       render(<WeatherIcon code={0} animated={false} />);
-      
+
       const container = document.querySelector('.weather-icon');
       const svgElement = container?.querySelector('svg');
       expect(svgElement).not.toHaveClass('weather-icon-animated');
@@ -107,7 +107,7 @@ describe('WeatherIcon Component', () => {
   describe('Animation Features', () => {
     it('should have sun rays for clear weather', () => {
       render(<WeatherIcon code={0} animated={true} />);
-      
+
       const container = document.querySelector('.weather-icon');
       const sunRays = container?.querySelector('.sun-rays');
       expect(sunRays).toBeInTheDocument();
@@ -115,7 +115,7 @@ describe('WeatherIcon Component', () => {
 
     it('should have rain drops for rainy weather', () => {
       render(<WeatherIcon code={61} animated={true} />);
-      
+
       const container = document.querySelector('.weather-icon');
       const rainDrops = container?.querySelector('.rain-drops');
       expect(rainDrops).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe('WeatherIcon Component', () => {
 
     it('should have lightning for stormy weather', () => {
       render(<WeatherIcon code={95} animated={true} />);
-      
+
       const container = document.querySelector('.weather-icon');
       const lightning = container?.querySelector('.lightning');
       expect(lightning).toBeInTheDocument();

@@ -38,13 +38,13 @@
 
 ### 📊 **Expected Performance Gains**
 
-| Metric | Before | After | Improvement |
-|--------|--------|--------|-------------|
-| **First Search** | 300-500ms | 200-350ms | ~30% faster |
-| **Repeated Search** | 300-500ms | 0-50ms | ~90% faster |
-| **Typing Responsiveness** | 300ms delay | 150ms delay | 50% faster |
-| **Result Relevance** | Basic | Intelligent | Much better |
-| **Memory Usage** | Unbounded | Capped at 50 entries | Stable |
+| Metric                    | Before      | After                | Improvement |
+| ------------------------- | ----------- | -------------------- | ----------- |
+| **First Search**          | 300-500ms   | 200-350ms            | ~30% faster |
+| **Repeated Search**       | 300-500ms   | 0-50ms               | ~90% faster |
+| **Typing Responsiveness** | 300ms delay | 150ms delay          | 50% faster  |
+| **Result Relevance**      | Basic       | Intelligent          | Much better |
+| **Memory Usage**          | Unbounded   | Capped at 50 entries | Stable      |
 
 ### 🔧 **Technical Details**
 
@@ -68,18 +68,18 @@ const debounceTime = query.length >= 3 ? 150 : 250;
 const searchParams = new URLSearchParams({
   q: searchQuery,
   format: 'json',
-  limit: '5',           // Reduced from 8
-  dedupe: '1',          // Server-side deduplication  
+  limit: '5', // Reduced from 8
+  dedupe: '1', // Server-side deduplication
   'accept-language': 'en', // Consistent language
-  extratags: '0',       // Disabled for speed
-  namedetails: '0'      // Disabled for speed
+  extratags: '0', // Disabled for speed
+  namedetails: '0', // Disabled for speed
 });
 ```
 
 ### 🎯 **User Experience Impact**
 
 1. **Faster Typing Response**: Search triggers 50% faster
-2. **Instant Repeated Searches**: Previously searched cities appear instantly  
+2. **Instant Repeated Searches**: Previously searched cities appear instantly
 3. **Better Results**: More relevant cities appear at the top
 4. **Smoother UX**: Less waiting, more fluid interaction
 5. **Memory Efficient**: No memory leaks from unbounded caching

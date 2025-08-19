@@ -1,6 +1,6 @@
 /**
  * Pull-to-Refresh Component
- * 
+ *
  * A reusable component that wraps content with pull-to-refresh functionality.
  * Provides visual feedback and smooth animations for mobile users.
  */
@@ -25,7 +25,7 @@ export const PullToRefreshIndicator: React.FC<{
   rotation: string;
 }> = ({ pullProgress, isRefreshing, canRefresh, style, rotation }) => {
   const { theme } = useTheme();
-  
+
   const getIndicatorText = () => {
     if (isRefreshing) return 'Refreshing...';
     if (canRefresh) return 'Release to refresh';
@@ -43,12 +43,12 @@ export const PullToRefreshIndicator: React.FC<{
             borderTop: `2px solid ${theme.primaryText}`,
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
-            marginBottom: '4px'
+            marginBottom: '4px',
           }}
         />
       );
     }
-    
+
     return (
       <div
         style={{
@@ -56,7 +56,7 @@ export const PullToRefreshIndicator: React.FC<{
           transform: rotation,
           transition: 'transform 0.2s ease',
           marginBottom: '4px',
-          color: canRefresh ? '#10b981' : theme.secondaryText
+          color: canRefresh ? '#10b981' : theme.secondaryText,
         }}
       >
         ↓
@@ -67,14 +67,16 @@ export const PullToRefreshIndicator: React.FC<{
   return (
     <div style={style}>
       {getIndicatorIcon()}
-      <div style={{ 
-        color: canRefresh ? '#10b981' : theme.secondaryText,
-        fontSize: '12px',
-        fontWeight: '500'
-      }}>
+      <div
+        style={{
+          color: canRefresh ? '#10b981' : theme.secondaryText,
+          fontSize: '12px',
+          fontWeight: '500',
+        }}
+      >
         {getIndicatorText()}
       </div>
-      
+
       {/* Progress bar */}
       <div
         style={{
@@ -83,7 +85,7 @@ export const PullToRefreshIndicator: React.FC<{
           backgroundColor: `${theme.secondaryText}30`,
           borderRadius: '1px',
           marginTop: '8px',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
       >
         <div
@@ -92,7 +94,7 @@ export const PullToRefreshIndicator: React.FC<{
             height: '100%',
             backgroundColor: canRefresh ? '#10b981' : theme.primaryText,
             transition: 'width 0.1s ease, background-color 0.2s ease',
-            borderRadius: '1px'
+            borderRadius: '1px',
           }}
         />
       </div>
@@ -105,7 +107,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
   disabled = false,
   children,
   className,
-  style
+  style,
 }) => {
   const {
     isPulling,
@@ -115,7 +117,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
     pullToRefreshHandlers,
     registerScrollElement,
     getPullIndicatorStyle,
-    getRefreshIconRotation
+    getRefreshIconRotation,
   } = usePullToRefresh(onRefresh, { disabled });
 
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -133,7 +135,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         height: '100%',
         overflow: 'auto',
         WebkitOverflowScrolling: 'touch',
-        ...style
+        ...style,
       }}
       {...pullToRefreshHandlers}
     >
@@ -146,8 +148,8 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
             left: '50%',
             zIndex: 1000,
             ...getPullIndicatorStyle({
-              transform: 'translateX(-50%)'
-            })
+              transform: 'translateX(-50%)',
+            }),
           }}
         >
           <PullToRefreshIndicator
@@ -163,24 +165,24 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(10px)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
+              border: '1px solid rgba(255, 255, 255, 0.2)',
             }}
             rotation={getRefreshIconRotation()}
           />
         </div>
       )}
-      
+
       {/* Content with padding to account for pull indicator */}
       <div
         style={{
           paddingTop: isRefreshing ? '60px' : '0',
           transition: 'padding-top 0.3s ease',
-          minHeight: '100%'
+          minHeight: '100%',
         }}
       >
         {children}
       </div>
-      
+
       {/* Add spin animation */}
       <style>{`
         @keyframes spin {

@@ -1,6 +1,6 @@
 /**
  * Navigation Test - Simple test to verify iOS-style navigation positioning
- * 
+ *
  * This component demonstrates:
  * - Navigation stays at bottom of screen (iOS guidelines)
  * - Content respects navigation space
@@ -15,7 +15,8 @@ import { useTheme } from '../utils/useTheme';
 
 const NavigationTest: React.FC = () => {
   const { theme } = useTheme();
-  const [currentScreen, setCurrentScreen] = React.useState<NavigationScreen>('Home');
+  const [currentScreen, setCurrentScreen] =
+    React.useState<NavigationScreen>('Home');
 
   // Mock weather data for the widget
   const mockWeatherData = {
@@ -26,7 +27,7 @@ const NavigationTest: React.FC = () => {
     humidity: 65,
     windSpeed: 8,
     pressure: 1013,
-    feelsLike: 75
+    feelsLike: 75,
   };
 
   const containerStyle: React.CSSProperties = {
@@ -36,14 +37,14 @@ const NavigationTest: React.FC = () => {
     position: 'relative',
     padding: '20px',
     paddingBottom: '100px', // Extra space for navigation
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   };
 
   const contentStyle: React.CSSProperties = {
     maxWidth: '400px',
     margin: '0 auto',
     textAlign: 'center',
-    paddingTop: '40px'
+    paddingTop: '40px',
   };
 
   const headerStyle: React.CSSProperties = {
@@ -53,14 +54,14 @@ const NavigationTest: React.FC = () => {
     background: theme.primaryGradient,
     WebkitBackgroundClip: 'text',
     backgroundClip: 'text',
-    color: 'transparent'
+    color: 'transparent',
   };
 
   const subheaderStyle: React.CSSProperties = {
     fontSize: '16px',
     color: theme.secondaryText,
     marginBottom: '40px',
-    lineHeight: 1.4
+    lineHeight: 1.4,
   };
 
   const testItemStyle: React.CSSProperties = {
@@ -69,34 +70,32 @@ const NavigationTest: React.FC = () => {
     borderRadius: '12px',
     padding: '16px',
     marginBottom: '16px',
-    textAlign: 'left'
+    textAlign: 'left',
   };
 
   const screenInfo = {
     title: {
-      'Home': '🏠 Home Screen',
-      'Weather': '🌤️ Weather Screen', 
-      'Search': '🔍 Search Screen',
-      'Favorites': '⭐ Favorites Screen',
-      'Settings': '⚙️ Settings Screen',
-      'iOS26': '📱 iOS 26 Screen'
+      Home: '🏠 Home Screen',
+      Weather: '🌤️ Weather Screen',
+      Search: '🔍 Search Screen',
+      Favorites: '⭐ Favorites Screen',
+      Settings: '⚙️ Settings Screen',
+      iOS26: '📱 iOS 26 Screen',
     }[currentScreen],
     description: {
-      'Home': 'Main dashboard with overview',
-      'Weather': 'Detailed weather information',
-      'Search': 'Search for new locations',
-      'Favorites': 'Your saved locations',
-      'Settings': 'App preferences and settings',
-      'iOS26': 'iOS 26 navigation test interface'
-    }[currentScreen]
+      Home: 'Main dashboard with overview',
+      Weather: 'Detailed weather information',
+      Search: 'Search for new locations',
+      Favorites: 'Your saved locations',
+      Settings: 'App preferences and settings',
+      iOS26: 'iOS 26 navigation test interface',
+    }[currentScreen],
   };
 
   return (
     <div style={containerStyle}>
       <div style={contentStyle}>
-        <h1 style={headerStyle}>
-          Navigation Test
-        </h1>
+        <h1 style={headerStyle}>Navigation Test</h1>
         <p style={subheaderStyle}>
           Testing iOS-style bottom navigation positioning and content layout
         </p>
@@ -114,7 +113,13 @@ const NavigationTest: React.FC = () => {
           <h3 style={{ color: theme.primaryText, marginBottom: '8px' }}>
             ✅ Navigation Position Test
           </h3>
-          <ul style={{ color: theme.secondaryText, margin: 0, paddingLeft: '20px' }}>
+          <ul
+            style={{
+              color: theme.secondaryText,
+              margin: 0,
+              paddingLeft: '20px',
+            }}
+          >
             <li>Navigation is fixed at bottom of screen</li>
             <li>Content has proper spacing above navigation</li>
             <li>No blue rectangles or transparency issues</li>
@@ -136,7 +141,13 @@ const NavigationTest: React.FC = () => {
           <h3 style={{ color: theme.primaryText, marginBottom: '8px' }}>
             🎯 Test Instructions
           </h3>
-          <ol style={{ color: theme.secondaryText, margin: 0, paddingLeft: '20px' }}>
+          <ol
+            style={{
+              color: theme.secondaryText,
+              margin: 0,
+              paddingLeft: '20px',
+            }}
+          >
             <li>Navigation should be visible at the bottom of the screen</li>
             <li>Tapping navigation buttons should change the current screen</li>
             <li>Content should scroll without going behind navigation</li>
@@ -146,7 +157,14 @@ const NavigationTest: React.FC = () => {
         </div>
 
         {/* Spacer to ensure scrolling works properly */}
-        <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          style={{
+            height: '200px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <p style={{ color: theme.secondaryText, fontStyle: 'italic' }}>
             Scroll to test navigation visibility
           </p>

@@ -1,6 +1,6 @@
 /**
  * Enhanced Mobile Container Component
- * 
+ *
  * Provides better mobile UX patterns including:
  * - Improved touch targets
  * - Better responsive layout
@@ -32,15 +32,17 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
   onRefresh,
   enableSwipeGestures = false,
   onSwipeLeft,
-  onSwipeRight
+  onSwipeRight,
 }) => {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullProgress, setPullProgress] = useState(0);
-  
+
   // Touch state for gestures
-  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
+    null
+  );
   const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
 
   // Pull to refresh logic
@@ -61,14 +63,14 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!isPulling) return;
-      
+
       currentY = e.touches[0].clientY;
       const pullDistance = Math.max(0, currentY - startY);
       const maxPull = 120;
       const progress = Math.min(pullDistance / maxPull, 1);
-      
+
       setPullProgress(progress);
-      
+
       if (pullDistance > 0) {
         e.preventDefault();
         container.style.transform = `translateY(${Math.min(pullDistance * 0.5, 60)}px)`;
@@ -77,10 +79,10 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
 
     const handleTouchEnd = async () => {
       if (!isPulling) return;
-      
+
       isPulling = false;
       container.style.transform = '';
-      
+
       if (pullProgress >= 0.6 && onRefresh && !isRefreshing) {
         setIsRefreshing(true);
         try {
@@ -89,12 +91,16 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           setIsRefreshing(false);
         }
       }
-      
+
       setPullProgress(0);
     };
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: false });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
+    container.addEventListener('touchmove', handleTouchMove, {
+      passive: false,
+    });
     container.addEventListener('touchend', handleTouchEnd);
 
     return () => {
@@ -115,17 +121,17 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       touchStartRef.current = {
         x: touch.clientX,
         y: touch.clientY,
-        time: Date.now()
+        time: Date.now(),
       };
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!touchStartRef.current) return;
-      
+
       const touch = e.touches[0];
       lastTouchRef.current = {
         x: touch.clientX,
-        y: touch.clientY
+        y: touch.clientY,
       };
     };
 
@@ -157,7 +163,9 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       lastTouchRef.current = null;
     };
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: true,
+    });
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
     container.addEventListener('touchend', handleTouchEnd, { passive: true });
 
@@ -173,11 +181,11 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
     color: theme.primaryText,
     transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     position: 'relative',
-    ...style
+    ...style,
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`mobile-app-container ${className}`}
       style={containerStyle}
@@ -195,7 +203,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
             flexDirection: 'column',
             alignItems: 'center',
             opacity: pullProgress,
-            transition: 'opacity 0.1s ease'
+            transition: 'opacity 0.1s ease',
           }}
         >
           <div
@@ -207,14 +215,14 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
               borderTop: `2px solid ${theme.primaryText}`,
               animation: isRefreshing ? 'spin 1s linear infinite' : 'none',
               transform: `rotate(${pullProgress * 360}deg)`,
-              marginBottom: '8px'
+              marginBottom: '8px',
             }}
           />
           <span
             style={{
               fontSize: '12px',
               color: theme.secondaryText,
-              fontWeight: '500'
+              fontWeight: '500',
             }}
           >
             {(() => {
@@ -225,10 +233,8 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           </span>
         </div>
       )}
-      
-      <div className="mobile-content-area">
-        {children}
-      </div>
+
+      <div className="mobile-content-area">{children}</div>
     </div>
   );
 };

@@ -27,9 +27,7 @@
     "medium": [],
     "low": []
   },
-  "recommendations": [
-    "🎉 EXCELLENT: No security issues detected - maintain current practices"
-  ],
+  "recommendations": ["🎉 EXCELLENT: No security issues detected - maintain current practices"],
   "metrics": {
     "totalVulnerabilities": 0,
     "severityCounts": {

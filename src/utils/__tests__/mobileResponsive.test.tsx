@@ -1,6 +1,6 @@
 /**
  * Mobile Responsive Design Tests
- * 
+ *
  * Tests for responsive design behavior across different mobile devices,
  * screen sizes, and orientations.
  */
@@ -24,7 +24,7 @@ const mockViewport = (width: number, height: number, userAgent?: string) => {
     configurable: true,
     value: height,
   });
-  
+
   if (userAgent) {
     Object.defineProperty(navigator, 'userAgent', {
       writable: true,
@@ -32,16 +32,14 @@ const mockViewport = (width: number, height: number, userAgent?: string) => {
       value: userAgent,
     });
   }
-  
+
   // Trigger resize event
   fireEvent(window, new Event('resize'));
 };
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <HapticFeedbackProvider>
-    <ThemeProvider>
-      {children}
-    </ThemeProvider>
+    <ThemeProvider>{children}</ThemeProvider>
   </HapticFeedbackProvider>
 );
 
@@ -53,8 +51,12 @@ describe('Mobile Responsive Design Tests', () => {
 
   describe('Device Detection', () => {
     it('should detect iPhone correctly', () => {
-      mockViewport(375, 812, 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15');
-      
+      mockViewport(
+        375,
+        812,
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15'
+      );
+
       const TestComponent = () => {
         const { isMobile, currentBreakpoint } = useBreakpoint();
         return (
@@ -77,8 +79,12 @@ describe('Mobile Responsive Design Tests', () => {
     });
 
     it('should detect Android correctly', () => {
-      mockViewport(360, 640, 'Mozilla/5.0 (Linux; Android 11; SM-G975F) AppleWebKit/537.36');
-      
+      mockViewport(
+        360,
+        640,
+        'Mozilla/5.0 (Linux; Android 11; SM-G975F) AppleWebKit/537.36'
+      );
+
       const TestComponent = () => {
         const { isMobile, currentBreakpoint } = useBreakpoint();
         return (
@@ -100,8 +106,12 @@ describe('Mobile Responsive Design Tests', () => {
     });
 
     it('should detect iPad correctly', () => {
-      mockViewport(768, 1024, 'Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/605.1.15');
-      
+      mockViewport(
+        768,
+        1024,
+        'Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/605.1.15'
+      );
+
       const TestComponent = () => {
         const { isTablet, currentBreakpoint } = useBreakpoint();
         return (
@@ -126,7 +136,7 @@ describe('Mobile Responsive Design Tests', () => {
   describe('Screen Size Breakpoints', () => {
     it('should handle mobile breakpoint (320-767px)', () => {
       mockViewport(375, 667); // iPhone SE
-      
+
       const TestComponent = () => {
         const { isMobile, windowSize } = useBreakpoint();
         return (
@@ -151,7 +161,7 @@ describe('Mobile Responsive Design Tests', () => {
 
     it('should handle tablet breakpoint (768-1023px)', () => {
       mockViewport(768, 1024); // iPad
-      
+
       const TestComponent = () => {
         const { isTablet, isMobile } = useBreakpoint();
         return (
@@ -174,7 +184,7 @@ describe('Mobile Responsive Design Tests', () => {
 
     it('should handle desktop breakpoint (1024px+)', () => {
       mockViewport(1200, 800); // Desktop
-      
+
       const TestComponent = () => {
         const { isTablet, isMobile, currentBreakpoint } = useBreakpoint();
         return (
@@ -202,13 +212,15 @@ describe('Mobile Responsive Design Tests', () => {
     it('should handle portrait to landscape transition', async () => {
       // Start in portrait
       mockViewport(375, 812);
-      
+
       const TestComponent = () => {
         const { windowSize } = useBreakpoint();
         const isPortrait = windowSize.height > windowSize.width;
         return (
           <div>
-            <div data-testid="orientation">{isPortrait ? 'portrait' : 'landscape'}</div>
+            <div data-testid="orientation">
+              {isPortrait ? 'portrait' : 'landscape'}
+            </div>
             <div data-testid="width">{windowSize.width}</div>
             <div data-testid="height">{windowSize.height}</div>
           </div>
@@ -225,26 +237,34 @@ describe('Mobile Responsive Design Tests', () => {
 
       // Switch to landscape and trigger resize event
       mockViewport(812, 375);
-      
+
       // Wait for the debounced resize handler to update the state
-      await waitFor(() => {
-        expect(screen.getByTestId('orientation')).toHaveTextContent('landscape');
-      }, { timeout: 200 });
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('orientation')).toHaveTextContent(
+            'landscape'
+          );
+        },
+        { timeout: 200 }
+      );
     });
 
     it('should handle tablet orientation changes', async () => {
       // iPad portrait
       mockViewport(768, 1024);
-      
+
       const TestComponent = () => {
-        const { windowSize, isTablet, isTabletLarge, currentBreakpoint } = useBreakpoint();
+        const { windowSize, isTablet, isTabletLarge, currentBreakpoint } =
+          useBreakpoint();
         const isPortrait = windowSize.height > windowSize.width;
         return (
           <div>
             <div data-testid="is-tablet">{isTablet.toString()}</div>
             <div data-testid="is-tablet-large">{isTabletLarge.toString()}</div>
             <div data-testid="breakpoint">{currentBreakpoint}</div>
-            <div data-testid="orientation">{isPortrait ? 'portrait' : 'landscape'}</div>
+            <div data-testid="orientation">
+              {isPortrait ? 'portrait' : 'landscape'}
+            </div>
           </div>
         );
       };
@@ -261,12 +281,17 @@ describe('Mobile Responsive Design Tests', () => {
 
       // iPad landscape and trigger resize event
       mockViewport(1024, 768);
-      
+
       // Wait for the debounced resize handler to update the state
-      await waitFor(() => {
-        expect(screen.getByTestId('orientation')).toHaveTextContent('landscape');
-      }, { timeout: 200 });
-      
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('orientation')).toHaveTextContent(
+            'landscape'
+          );
+        },
+        { timeout: 200 }
+      );
+
       // In landscape, iPad becomes tabletLarge (1024px width)
       expect(screen.getByTestId('is-tablet')).toHaveTextContent('false');
       expect(screen.getByTestId('is-tablet-large')).toHaveTextContent('true');
@@ -277,7 +302,7 @@ describe('Mobile Responsive Design Tests', () => {
   describe('CSS Media Query Simulation', () => {
     it('should apply mobile styles correctly', () => {
       mockViewport(375, 667);
-      
+
       const MobileCard = () => (
         <div
           data-testid="mobile-card"
@@ -299,7 +324,7 @@ describe('Mobile Responsive Design Tests', () => {
 
       const card = screen.getByTestId('mobile-card');
       const styles = window.getComputedStyle(card);
-      
+
       expect(styles.padding).toBe('16px');
       expect(styles.fontSize).toBe('14px');
       expect(styles.margin).toBe('8px');
@@ -307,7 +332,7 @@ describe('Mobile Responsive Design Tests', () => {
 
     it('should apply tablet styles correctly', () => {
       mockViewport(768, 1024);
-      
+
       const TabletCard = () => (
         <div
           data-testid="tablet-card"
@@ -329,7 +354,7 @@ describe('Mobile Responsive Design Tests', () => {
 
       const card = screen.getByTestId('tablet-card');
       const styles = window.getComputedStyle(card);
-      
+
       expect(styles.padding).toBe('16px'); // Should still use mobile styles at exactly 768px
       expect(styles.fontSize).toBe('14px');
       expect(styles.maxWidth).toBe('100%');
@@ -372,7 +397,9 @@ describe('Mobile Responsive Design Tests', () => {
           </TestWrapper>
         );
 
-        const button = screen.getByTestId(`button-${device.name.replace(/\s+/g, '-').toLowerCase()}`);
+        const button = screen.getByTestId(
+          `button-${device.name.replace(/\s+/g, '-').toLowerCase()}`
+        );
         const styles = window.getComputedStyle(button);
 
         expect(parseInt(styles.minHeight)).toBeGreaterThanOrEqual(44);
@@ -382,7 +409,7 @@ describe('Mobile Responsive Design Tests', () => {
 
     it('should provide adequate spacing between touch targets', () => {
       mockViewport(375, 667);
-      
+
       const TouchTargetGroup = () => (
         <div data-testid="touch-group" style={{ display: 'flex', gap: '8px' }}>
           <button
@@ -414,7 +441,7 @@ describe('Mobile Responsive Design Tests', () => {
 
       const group = screen.getByTestId('touch-group');
       const styles = window.getComputedStyle(group);
-      
+
       expect(styles.gap).toBe('8px'); // Minimum 8px spacing between touch targets
     });
   });
@@ -422,7 +449,7 @@ describe('Mobile Responsive Design Tests', () => {
   describe('Performance Optimizations', () => {
     it('should use hardware acceleration for animations on mobile', () => {
       mockViewport(375, 667);
-      
+
       const AnimatedElement = () => (
         <div
           data-testid="animated-element"
@@ -444,14 +471,14 @@ describe('Mobile Responsive Design Tests', () => {
 
       const element = screen.getByTestId('animated-element');
       const styles = window.getComputedStyle(element);
-      
+
       expect(styles.transform).toContain('translateZ');
       expect(styles.willChange).toBe('transform');
     });
 
     it('should optimize scroll performance on mobile', () => {
       mockViewport(375, 667);
-      
+
       const ScrollContainer = () => (
         <div
           data-testid="scroll-container"
@@ -474,7 +501,7 @@ describe('Mobile Responsive Design Tests', () => {
 
       const container = screen.getByTestId('scroll-container');
       const styles = window.getComputedStyle(container);
-      
+
       expect(styles.overflowY).toBe('auto');
       expect(styles.scrollBehavior).toBe('smooth');
     });
@@ -483,7 +510,7 @@ describe('Mobile Responsive Design Tests', () => {
   describe('Edge Cases', () => {
     it('should handle very small screens (< 320px)', () => {
       mockViewport(280, 500); // Very small screen
-      
+
       const TestComponent = () => {
         const { isMobile, windowSize } = useBreakpoint();
         return (
@@ -507,7 +534,7 @@ describe('Mobile Responsive Design Tests', () => {
 
     it('should handle very large screens (> 2000px)', () => {
       mockViewport(2560, 1440); // 4K screen
-      
+
       const TestComponent = () => {
         const { isMobile, isTablet, currentBreakpoint } = useBreakpoint();
         return (
@@ -535,7 +562,9 @@ describe('Mobile Responsive Design Tests', () => {
         const { windowSize } = useBreakpoint();
         return (
           <div>
-            <div data-testid="dimensions">{windowSize.width}x{windowSize.height}</div>
+            <div data-testid="dimensions">
+              {windowSize.width}x{windowSize.height}
+            </div>
           </div>
         );
       };
@@ -548,10 +577,13 @@ describe('Mobile Responsive Design Tests', () => {
 
       // Set final orientation and wait for it
       mockViewport(375, 812);
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('dimensions')).toHaveTextContent('375x812');
-      }, { timeout: 200 });
+
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('dimensions')).toHaveTextContent('375x812');
+        },
+        { timeout: 200 }
+      );
     });
   });
 });

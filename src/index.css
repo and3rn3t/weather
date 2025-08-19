@@ -19,7 +19,9 @@
 @import './autocomplete-emergency-fix.css'; /* AutoComplete & Background Fix */
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -31,11 +33,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   /* Mobile touch optimizations */
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  
+
   /* Safe area support for notched devices */
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
@@ -44,20 +46,26 @@
 }
 
 /* Ensure all interactive elements are touch-friendly */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 /* Mobile touch optimizations - allow normal scrolling by default */
-button, input, select, textarea, a {
+button,
+input,
+select,
+textarea,
+a {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
 /* Allow text selection in text inputs and content areas */
-input[type="text"], 
-input[type="search"], 
+input[type='text'],
+input[type='search'],
 textarea,
 [contenteditable] {
   user-select: text;
@@ -66,7 +74,12 @@ textarea,
 }
 
 /* Allow normal touch behavior for scrollable content */
-body, #root, main, section, article, div {
+body,
+#root,
+main,
+section,
+article,
+div {
   touch-action: auto;
   /* Prevent overscroll bounce on iOS Safari */
   overscroll-behavior: none;
@@ -143,7 +156,7 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
-  
+
   /* Enhanced mobile touch support */
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -151,7 +164,7 @@ button {
   min-width: 44px;
   position: relative;
   z-index: 1;
-  
+
   /* Ensure buttons are accessible */
   display: inline-flex;
   align-items: center;
@@ -160,7 +173,7 @@ button {
   text-decoration: none;
   outline: none;
   user-select: none;
-  
+
   /* Improve button appearance on mobile */
 }
 
@@ -208,7 +221,7 @@ button:focus-visible {
 nav.mobile-navigation,
 nav.mobile-navigation *,
 nav.mobile-navigation button,
-nav.mobile-navigation button[role="tab"],
+nav.mobile-navigation button[role='tab'],
 nav.mobile-navigation > *,
 nav.mobile-navigation div,
 .mobile-navigation,
@@ -225,7 +238,7 @@ nav.mobile-navigation div,
 nav.mobile-navigation:active,
 nav.mobile-navigation *:active,
 nav.mobile-navigation button:active,
-nav.mobile-navigation button[role="tab"]:active,
+nav.mobile-navigation button[role='tab']:active,
 nav.mobile-navigation > *:active,
 nav.mobile-navigation div:active {
   background: transparent !important;
@@ -241,7 +254,7 @@ nav.mobile-navigation div:active {
 }
 
 /* Allow only our specific button styling */
-nav.mobile-navigation button[role="tab"]:active {
+nav.mobile-navigation button[role='tab']:active {
   background: rgba(120, 97, 255, 0.1) !important;
 }
 

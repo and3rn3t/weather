@@ -44,11 +44,7 @@
       "sound": "beep.wav"
     },
     "PushNotifications": {
-      "presentationOptions": [
-        "badge",
-        "sound",
-        "alert"
-      ]
+      "presentationOptions": ["badge", "sound", "alert"]
     },
     "App": {
       "launchUrl": "https://premium-weather.app"
@@ -82,9 +78,7 @@
     "buildOptions": {
       "developmentTeam": "",
       "packageType": "development",
-      "buildFlag": [
-        "-quiet"
-      ]
+      "buildFlag": ["-quiet"]
     },
     "preferredContentMode": "mobile",
     "allowsLinkPreview": false,

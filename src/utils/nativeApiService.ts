@@ -1,6 +1,6 @@
 /**
  * Native API Service - Capacitor Integration
- * 
+ *
  * Provides native device capabilities for enhanced mobile experience:
  * - GPS-based geolocation with high accuracy
  * - Native haptic feedback patterns
@@ -12,7 +12,10 @@
 import { Capacitor } from '@capacitor/core';
 import { Geolocation, type Position } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
-import { LocalNotifications, type LocalNotificationSchema } from '@capacitor/local-notifications';
+import {
+  LocalNotifications,
+  type LocalNotificationSchema,
+} from '@capacitor/local-notifications';
 import { Device, type DeviceInfo } from '@capacitor/device';
 import { Network, type ConnectionStatus } from '@capacitor/network';
 import { App } from '@capacitor/app';
@@ -87,7 +90,10 @@ export class NativeGeolocationService {
         timestamp: position.timestamp,
       };
     } catch (error) {
-      console.warn('Native geolocation failed, falling back to web API:', error);
+      console.warn(
+        'Native geolocation failed, falling back to web API:',
+        error
+      );
       return this.getWebLocation();
     }
   }
@@ -103,7 +109,7 @@ export class NativeGeolocationService {
       }
 
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -111,7 +117,7 @@ export class NativeGeolocationService {
             timestamp: position.timestamp,
           });
         },
-        (error) => reject(error),
+        error => reject(error),
         {
           enableHighAccuracy: true,
           timeout: 15000,
@@ -124,7 +130,9 @@ export class NativeGeolocationService {
   /**
    * Watch position changes for real-time updates
    */
-  async startWatching(callback: (location: LocationResult) => void): Promise<void> {
+  async startWatching(
+    callback: (location: LocationResult) => void
+  ): Promise<void> {
     try {
       if (!Capacitor.isNativePlatform()) {
         return; // Skip watching on web platform
@@ -136,7 +144,7 @@ export class NativeGeolocationService {
           timeout: 30000,
           maximumAge: 120000, // Update every 2 minutes max
         },
-        (position) => {
+        position => {
           if (position) {
             callback({
               latitude: position.coords.latitude,
@@ -191,7 +199,7 @@ export class NativeHapticService {
    */
   async light(): Promise<void> {
     if (!this.isAvailable) return;
-    
+
     try {
       await Haptics.impact({ style: ImpactStyle.Light });
     } catch (error) {
@@ -204,7 +212,7 @@ export class NativeHapticService {
    */
   async medium(): Promise<void> {
     if (!this.isAvailable) return;
-    
+
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (error) {
@@ -217,7 +225,7 @@ export class NativeHapticService {
    */
   async heavy(): Promise<void> {
     if (!this.isAvailable) return;
-    
+
     try {
       await Haptics.impact({ style: ImpactStyle.Heavy });
     } catch (error) {
@@ -230,7 +238,7 @@ export class NativeHapticService {
    */
   async success(): Promise<void> {
     if (!this.isAvailable) return;
-    
+
     try {
       await Haptics.notification({ type: NotificationType.Success });
     } catch (error) {
@@ -243,7 +251,7 @@ export class NativeHapticService {
    */
   async warning(): Promise<void> {
     if (!this.isAvailable) return;
-    
+
     try {
       await Haptics.notification({ type: NotificationType.Warning });
     } catch (error) {
@@ -256,7 +264,7 @@ export class NativeHapticService {
    */
   async error(): Promise<void> {
     if (!this.isAvailable) return;
-    
+
     try {
       await Haptics.notification({ type: NotificationType.Error });
     } catch (error) {
@@ -372,7 +380,11 @@ export class WeatherNotificationService {
   /**
    * Send immediate weather update notification
    */
-  async sendWeatherUpdate(temperature: number, condition: string, city: string): Promise<void> {
+  async sendWeatherUpdate(
+    temperature: number,
+    condition: string,
+    city: string
+  ): Promise<void> {
     const alert: WeatherAlert = {
       id: `weather-update-${Date.now()}`,
       title: `${city} Weather Update`,
@@ -386,7 +398,11 @@ export class WeatherNotificationService {
   /**
    * Send severe weather alert
    */
-  async sendSevereWeatherAlert(alertType: string, description: string, city: string): Promise<void> {
+  async sendSevereWeatherAlert(
+    alertType: string,
+    description: string,
+    city: string
+  ): Promise<void> {
     const alert: WeatherAlert = {
       id: `severe-alert-${Date.now()}`,
       title: `⚠️ ${alertType} Alert - ${city}`,
@@ -448,7 +464,7 @@ export class DeviceInfoService {
       }
 
       const info: DeviceInfo = await Device.getInfo();
-      
+
       this.deviceInfo = {
         platform: info.platform,
         model: info.model,
@@ -478,7 +494,7 @@ export class DeviceInfoService {
    */
   async canHandleAdvancedFeatures(): Promise<boolean> {
     const info = await this.getDeviceInfo();
-    
+
     // Basic resource checks
     if (info.memUsed && info.memUsed > 0.8) {
       console.warn('High memory usage detected, limiting advanced features');
@@ -519,7 +535,7 @@ export class NetworkStatusService {
         const status: ConnectionStatus = await Network.getStatus();
         this.isOnline = status.connected;
 
-        Network.addListener('networkStatusChange', (status) => {
+        Network.addListener('networkStatusChange', status => {
           this.isOnline = status.connected;
           this.notifyListeners(status.connected);
         });
@@ -653,18 +669,18 @@ export const isNativePlatform = (): boolean => Capacitor.isNativePlatform();
 export const initializeNativeServices = async (): Promise<void> => {
   try {
     console.log('Initializing native services...');
-    
+
     // Request necessary permissions
     await weatherNotifications.requestPermissions();
-    
+
     // Get device info for optimization
     const info = await deviceInfo.getDeviceInfo();
     console.log('Device info:', info);
-    
+
     // Check network status
     const online = networkStatus.getNetworkStatus();
     console.log('Network status:', online ? 'Online' : 'Offline');
-    
+
     console.log('Native services initialized successfully');
   } catch (error) {
     console.error('Failed to initialize native services:', error);

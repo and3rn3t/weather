@@ -4,7 +4,13 @@ import { useHaptic } from '../utils/hapticHooks';
 import '../styles/mobileEnhancements.css';
 import '../core-navigation-fix-clean.css';
 
-export type NavigationScreen = 'Home' | 'Weather' | 'Settings' | 'Search' | 'Favorites' | 'iOS26';
+export type NavigationScreen =
+  | 'Home'
+  | 'Weather'
+  | 'Settings'
+  | 'Search'
+  | 'Favorites'
+  | 'iOS26';
 
 interface MobileNavigationProps {
   currentScreen: NavigationScreen;
@@ -24,12 +30,12 @@ const tabs: TabConfig[] = [
   { id: 'Weather', icon: '🌤️', label: 'Weather', activeIcon: '☀️' },
   { id: 'iOS26', icon: '📱', label: 'iOS 26', activeIcon: '✨' },
   { id: 'Favorites', icon: '⭐', label: 'Cities', activeIcon: '🌟' },
-  { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' }
+  { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' },
 ];
 
 /**
  * MobileNavigation - Modern bottom tab navigation for mobile devices
- * 
+ *
  * Features:
  * - iOS-style bottom tab navigation
  * - Smooth animations and transitions
@@ -41,7 +47,7 @@ const tabs: TabConfig[] = [
 const MobileNavigation: React.FC<MobileNavigationProps> = ({
   currentScreen,
   onNavigate,
-  className = ''
+  className = '',
 }) => {
   const { theme } = useTheme();
   const haptic = useHaptic();
@@ -52,75 +58,89 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     setActiveTab(currentScreen);
   }, [currentScreen]);
 
-  const handleTabPress = useCallback((tabId: NavigationScreen, event?: React.MouseEvent | React.TouchEvent) => {
-    // Prevent any default browser behavior that might cause styling
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    
-    if (tabId === activeTab) {
-      // Double tap on active tab - could trigger scroll to top or refresh
+  const handleTabPress = useCallback(
+    (tabId: NavigationScreen, event?: React.MouseEvent | React.TouchEvent) => {
+      // Prevent any default browser behavior that might cause styling
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      if (tabId === activeTab) {
+        // Double tap on active tab - could trigger scroll to top or refresh
+        haptic.buttonPress();
+        return;
+      }
+
+      // Haptic feedback for navigation
       haptic.buttonPress();
-      return;
-    }
 
-    // Haptic feedback for navigation
-    haptic.buttonPress();
-    
-    // Update active state immediately for visual feedback
-    setActiveTab(tabId);
-    
-    // Navigate to new screen
-    onNavigate(tabId);
-  }, [activeTab, onNavigate, haptic]);
+      // Update active state immediately for visual feedback
+      setActiveTab(tabId);
 
-  const getTabStyle = useCallback((_tab: TabConfig, isActive: boolean) => ({
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '8px 4px 12px 4px',
-    minHeight: '64px',
-    cursor: 'pointer',
-    borderRadius: '12px',
-    margin: '4px 2px',
-    // Remove problematic background gradients and effects
-    background: isActive ? `${theme.primaryText}10` : 'transparent',
-    border: isActive ? `1px solid ${theme.primaryText}20` : '1px solid transparent',
-    transition: 'all 0.2s ease',
-    // Remove transform effects that cause movement
-    transform: 'none',
-    // Remove all shadows and effects
-    boxShadow: 'none',
-    
-    // Touch optimizations
-    WebkitTapHighlightColor: 'transparent',
-    touchAction: 'manipulation',
-    userSelect: 'none' as const,
-    
-    // Accessibility
-    outline: 'none'
-  }), [theme.primaryText]);
+      // Navigate to new screen
+      onNavigate(tabId);
+    },
+    [activeTab, onNavigate, haptic]
+  );
 
-  const getIconStyle = useCallback((isActive: boolean) => ({
-    fontSize: '24px',
-    marginBottom: '4px',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    transform: isActive ? 'scale(1.1)' : 'scale(1)',
-    // Remove dark drop-shadow that causes the persistent dark effect
-    filter: 'none'
-  }), []);
+  const getTabStyle = useCallback(
+    (_tab: TabConfig, isActive: boolean) => ({
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column' as const,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '8px 4px 12px 4px',
+      minHeight: '64px',
+      cursor: 'pointer',
+      borderRadius: '12px',
+      margin: '4px 2px',
+      // Remove problematic background gradients and effects
+      background: isActive ? `${theme.primaryText}10` : 'transparent',
+      border: isActive
+        ? `1px solid ${theme.primaryText}20`
+        : '1px solid transparent',
+      transition: 'all 0.2s ease',
+      // Remove transform effects that cause movement
+      transform: 'none',
+      // Remove all shadows and effects
+      boxShadow: 'none',
 
-  const getLabelStyle = useCallback((isActive: boolean) => ({
-    fontSize: '11px',
-    fontWeight: isActive ? '600' : '500',
-    color: isActive ? theme.primaryText : theme.secondaryText,
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    opacity: isActive ? 1 : 0.8,
-    letterSpacing: '0.3px'
-  }), [theme]);
+      // Touch optimizations
+      WebkitTapHighlightColor: 'transparent',
+      touchAction: 'manipulation',
+      userSelect: 'none' as const,
+
+      // Accessibility
+      outline: 'none',
+    }),
+    [theme.primaryText]
+  );
+
+  const getIconStyle = useCallback(
+    (isActive: boolean) => ({
+      fontSize: '24px',
+      marginBottom: '4px',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      transform: isActive ? 'scale(1.1)' : 'scale(1)',
+      // Remove dark drop-shadow that causes the persistent dark effect
+      filter: 'none',
+    }),
+    []
+  );
+
+  const getLabelStyle = useCallback(
+    (isActive: boolean) => ({
+      fontSize: '11px',
+      fontWeight: isActive ? '600' : '500',
+      color: isActive ? theme.primaryText : theme.secondaryText,
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      opacity: isActive ? 1 : 0.8,
+      letterSpacing: '0.3px',
+    }),
+    [theme]
+  );
 
   const navigationStyle: React.CSSProperties = {
     position: 'fixed',
@@ -136,7 +156,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     height: '80px',
     maxHeight: '80px',
     minHeight: '80px',
-    
+
     // Use theme background but ensure it's visible
     background: `${theme.appBackground}F0`, // 94% opacity for better blending
     backdropFilter: 'blur(30px)',
@@ -145,38 +165,39 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     borderBottom: 'none',
     borderLeft: 'none',
     borderRight: 'none',
-    
+
     // Clean shadow that adapts to theme
     boxShadow: `0 -2px 20px ${theme.primaryText}08`,
     padding: '8px 16px',
     boxSizing: 'border-box',
-    
+
     // Safe area support for notched devices
     paddingBottom: 'max(8px, calc(8px + env(safe-area-inset-bottom, 0)))',
-    
+
     // Performance optimizations
     willChange: 'transform',
     backfaceVisibility: 'hidden' as const,
-    
+
     // CRITICAL: Prevent any transform or positioning that could move it
     transform: 'none',
     margin: '0',
     float: 'none',
-    
+
     // Smooth animations
-    transition: 'background-color 0.2s ease'
+    transition: 'background-color 0.2s ease',
   };
 
   return (
-    <nav 
+    <nav
       className={`mobile-navigation ${className}`}
       style={navigationStyle}
       aria-label="Main navigation"
     >
-      {tabs.map((tab) => {
+      {tabs.map(tab => {
         const isActive = activeTab === tab.id;
-        const displayIcon = isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
-        
+        const displayIcon =
+          isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
+
         return (
           <button
             key={tab.id}
@@ -197,31 +218,27 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
               textDecoration: 'none',
               transform: 'none',
               filter: 'none',
-              opacity: 1
+              opacity: 1,
             }}
-            onClick={(e) => handleTabPress(tab.id, e)}
-            onTouchStart={(e) => {
+            onClick={e => handleTabPress(tab.id, e)}
+            onTouchStart={e => {
               // Prevent touch highlighting
               e.preventDefault();
             }}
-            onMouseDown={(e) => {
+            onMouseDown={e => {
               // Prevent mouse down styling
               e.preventDefault();
             }}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 handleTabPress(tab.id);
               }
             }}
           >
-            <div style={getIconStyle(isActive)}>
-              {displayIcon}
-            </div>
-            <span style={getLabelStyle(isActive)}>
-              {tab.label}
-            </span>
-            
+            <div style={getIconStyle(isActive)}>{displayIcon}</div>
+            <span style={getLabelStyle(isActive)}>{tab.label}</span>
+
             {/* Active indicator */}
             {isActive && (
               <div
@@ -235,14 +252,14 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
                   borderRadius: '50%',
                   background: theme.primaryGradient,
                   boxShadow: `0 0 8px ${theme.primaryGradient}60`,
-                  animation: 'fadeIn 0.3s ease-out'
+                  animation: 'fadeIn 0.3s ease-out',
                 }}
               />
             )}
           </button>
         );
       })}
-      
+
       {/* Background pattern overlay for enhanced glassmorphism */}
       <div
         style={{
@@ -257,7 +274,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           `,
           pointerEvents: 'none',
           borderRadius: '0',
-          zIndex: -1
+          zIndex: -1,
         }}
       />
     </nav>

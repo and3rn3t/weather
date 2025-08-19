@@ -1,6 +1,6 @@
 /**
  * Swipe Indicator Component
- * 
+ *
  * Visual feedback component for swipe gestures
  */
 
@@ -14,15 +14,15 @@ export interface SwipeIndicatorProps {
   };
 }
 
-export const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({ 
-  dragProgress, 
-  direction, 
-  theme 
+export const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({
+  dragProgress,
+  direction,
+  theme,
 }) => {
   if (!direction || dragProgress === 0) return null;
 
   const opacity = Math.min(dragProgress * 2, 0.7);
-  const scale = 0.8 + (dragProgress * 0.2);
+  const scale = 0.8 + dragProgress * 0.2;
 
   return (
     <div
@@ -36,7 +36,7 @@ export const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({
         fontSize: '24px',
         transition: 'none',
         pointerEvents: 'none',
-        zIndex: 10
+        zIndex: 10,
       }}
     >
       {direction === 'left' ? '◀' : '▶'}

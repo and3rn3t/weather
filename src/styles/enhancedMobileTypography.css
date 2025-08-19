@@ -15,22 +15,22 @@
 
 :root {
   /* Enhanced mobile font scale with better readability */
-  --mobile-font-2xs: clamp(10px, 2.5vw, 11px);   /* Micro text */
-  --mobile-font-xs: clamp(11px, 3vw, 13px);      /* Small labels */
-  --mobile-font-sm: clamp(13px, 3.5vw, 15px);    /* Body small */
-  --mobile-font-md: clamp(15px, 4vw, 17px);      /* Body text */
-  --mobile-font-lg: clamp(17px, 4.5vw, 20px);    /* Subheadings */
-  --mobile-font-xl: clamp(19px, 5vw, 24px);      /* Headers */
-  --mobile-font-2xl: clamp(22px, 6vw, 28px);     /* Section titles */
-  --mobile-font-3xl: clamp(26px, 7vw, 34px);     /* Page titles */
-  --mobile-font-4xl: clamp(30px, 8vw, 42px);     /* Hero text */
-  
+  --mobile-font-2xs: clamp(10px, 2.5vw, 11px); /* Micro text */
+  --mobile-font-xs: clamp(11px, 3vw, 13px); /* Small labels */
+  --mobile-font-sm: clamp(13px, 3.5vw, 15px); /* Body small */
+  --mobile-font-md: clamp(15px, 4vw, 17px); /* Body text */
+  --mobile-font-lg: clamp(17px, 4.5vw, 20px); /* Subheadings */
+  --mobile-font-xl: clamp(19px, 5vw, 24px); /* Headers */
+  --mobile-font-2xl: clamp(22px, 6vw, 28px); /* Section titles */
+  --mobile-font-3xl: clamp(26px, 7vw, 34px); /* Page titles */
+  --mobile-font-4xl: clamp(30px, 8vw, 42px); /* Hero text */
+
   /* Enhanced line heights for mobile reading */
   --mobile-line-tight: 1.2;
   --mobile-line-normal: 1.4;
   --mobile-line-relaxed: 1.5;
   --mobile-line-loose: 1.6;
-  
+
   /* Better font weights */
   --mobile-weight-light: 300;
   --mobile-weight-normal: 400;
@@ -197,11 +197,11 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     filter: brightness(1.05);
   }
-  
+
   .mobile-text-secondary {
     opacity: 0.9;
   }
-  
+
   .mobile-text-muted {
     opacity: 0.7;
   }
@@ -217,11 +217,11 @@
     font-size: clamp(28px, 10vw, 40px);
     margin: 6px 0;
   }
-  
+
   .weather-metric-value-mobile {
     font-size: clamp(16px, 4.5vw, 20px);
   }
-  
+
   .mobile-text-base {
     font-size: clamp(14px, 4vw, 16px);
     line-height: 1.5;
@@ -233,7 +233,7 @@
   .weather-temperature-mobile {
     font-size: clamp(36px, 11vw, 48px);
   }
-  
+
   .mobile-text-xl {
     font-size: clamp(20px, 5.5vw, 26px);
   }
@@ -244,7 +244,7 @@
   .weather-temperature-mobile {
     font-size: clamp(44px, 10vw, 56px);
   }
-  
+
   .mobile-text-3xl {
     font-size: clamp(28px, 6vw, 36px);
   }
@@ -256,9 +256,10 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .mobile-text-animated {
-    transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -269,7 +270,7 @@
     filter: contrast(1.2);
     font-weight: var(--mobile-weight-semibold);
   }
-  
+
   .weather-temperature-mobile {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }

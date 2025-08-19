@@ -1,6 +1,6 @@
 /**
  * useNativeApi - React Hook for Native API Integration
- * 
+ *
  * Provides easy-to-use React hooks for native device capabilities:
  * - Enhanced geolocation with GPS
  * - Native haptic feedback
@@ -37,13 +37,14 @@ export const useNativeGeolocation = () => {
   const getCurrentLocation = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const position = await nativeGeolocation.getCurrentPosition();
       setLocation(position);
       return position;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to get location';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to get location';
       setError(errorMessage);
       throw err;
     } finally {
@@ -53,21 +54,23 @@ export const useNativeGeolocation = () => {
 
   const startWatching = useCallback(async () => {
     if (isWatching) return;
-    
+
     try {
       setIsWatching(true);
-      await nativeGeolocation.startWatching((newLocation) => {
+      await nativeGeolocation.startWatching(newLocation => {
         setLocation(newLocation);
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start location watching');
+      setError(
+        err instanceof Error ? err.message : 'Failed to start location watching'
+      );
       setIsWatching(false);
     }
   }, [isWatching]);
 
   const stopWatching = useCallback(async () => {
     if (!isWatching) return;
-    
+
     try {
       await nativeGeolocation.stopWatching();
       setIsWatching(false);
@@ -168,21 +171,38 @@ export const useWeatherNotifications = () => {
     }
   }, []);
 
-  const scheduleAlert = useCallback(async (alert: WeatherAlert) => {
-    if (!hasPermission) {
-      console.warn('Cannot schedule alert: No notification permission');
-      return;
-    }
-    await weatherNotifications.scheduleWeatherAlert(alert);
-  }, [hasPermission]);
+  const scheduleAlert = useCallback(
+    async (alert: WeatherAlert) => {
+      if (!hasPermission) {
+        console.warn('Cannot schedule alert: No notification permission');
+        return;
+      }
+      await weatherNotifications.scheduleWeatherAlert(alert);
+    },
+    [hasPermission]
+  );
 
-  const sendWeatherUpdate = useCallback(async (temperature: number, condition: string, city: string) => {
-    await weatherNotifications.sendWeatherUpdate(temperature, condition, city);
-  }, []);
+  const sendWeatherUpdate = useCallback(
+    async (temperature: number, condition: string, city: string) => {
+      await weatherNotifications.sendWeatherUpdate(
+        temperature,
+        condition,
+        city
+      );
+    },
+    []
+  );
 
-  const sendSevereAlert = useCallback(async (alertType: string, description: string, city: string) => {
-    await weatherNotifications.sendSevereWeatherAlert(alertType, description, city);
-  }, []);
+  const sendSevereAlert = useCallback(
+    async (alertType: string, description: string, city: string) => {
+      await weatherNotifications.sendSevereWeatherAlert(
+        alertType,
+        description,
+        city
+      );
+    },
+    []
+  );
 
   const clearAllNotifications = useCallback(async () => {
     await weatherNotifications.clearAllNotifications();
@@ -220,7 +240,7 @@ export const useDeviceInfo = () => {
       try {
         const info = await deviceInfo.getDeviceInfo();
         const advanced = await deviceInfo.canHandleAdvancedFeatures();
-        
+
         setDevice(info);
         setCanHandleAdvanced(advanced);
       } catch (err) {
@@ -328,7 +348,11 @@ export const useNativeServices = () => {
         await initializeNativeServices();
         setInitialized(true);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to initialize native services');
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to initialize native services'
+        );
       }
     };
 
@@ -352,7 +376,9 @@ export const useNativeServices = () => {
  * Hook for smart weather data refresh based on app state and network
  * Enhanced with background refresh capabilities and intelligent scheduling
  */
-export const useSmartWeatherRefresh = (refreshCallback: () => Promise<void>) => {
+export const useSmartWeatherRefresh = (
+  refreshCallback: () => Promise<void>
+) => {
   const { isOnline } = useNetworkStatus();
   const { isActive } = useAppState();
   const lastRefreshRef = useRef<number>(0);
@@ -361,26 +387,30 @@ export const useSmartWeatherRefresh = (refreshCallback: () => Promise<void>) => 
   const backgroundTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const wasInactiveRef = useRef<boolean>(false);
 
-  const smartRefresh = useCallback(async (force: boolean = false) => {
-    const now = Date.now();
-    const timeSinceLastRefresh = now - lastRefreshRef.current;
-    const minRefreshInterval = force ? 0 : 5 * 60 * 1000; // 5 minutes or immediate if forced
+  const smartRefresh = useCallback(
+    async (force: boolean = false) => {
+      const now = Date.now();
+      const timeSinceLastRefresh = now - lastRefreshRef.current;
+      const minRefreshInterval = force ? 0 : 5 * 60 * 1000; // 5 minutes or immediate if forced
 
-    // Only refresh if enough time has passed and we're online
-    if (timeSinceLastRefresh >= minRefreshInterval && isOnline) {
-      try {
-        await refreshCallback();
-        lastRefreshRef.current = now;
-        console.log('Weather data refreshed successfully');
-      } catch (err) {
-        console.error('Smart refresh failed:', err);
+      // Only refresh if enough time has passed and we're online
+      if (timeSinceLastRefresh >= minRefreshInterval && isOnline) {
+        try {
+          await refreshCallback();
+          lastRefreshRef.current = now;
+          console.log('Weather data refreshed successfully');
+        } catch (err) {
+          console.error('Smart refresh failed:', err);
+        }
       }
-    }
-  }, [refreshCallback, isOnline]);
+    },
+    [refreshCallback, isOnline]
+  );
 
   const backgroundRefresh = useCallback(async () => {
     const now = Date.now();
-    const timeSinceLastBackgroundRefresh = now - lastBackgroundRefreshRef.current;
+    const timeSinceLastBackgroundRefresh =
+      now - lastBackgroundRefreshRef.current;
     const minBackgroundInterval = 15 * 60 * 1000; // 15 minutes for background refresh
 
     // Background refresh with longer intervals to preserve battery
@@ -389,7 +419,7 @@ export const useSmartWeatherRefresh = (refreshCallback: () => Promise<void>) => 
         await refreshCallback();
         lastBackgroundRefreshRef.current = now;
         console.log('Background weather refresh completed');
-        
+
         // Send a subtle notification about fresh data
         if (weatherNotifications) {
           // Note: This is a light notification that doesn't interrupt user
@@ -408,13 +438,16 @@ export const useSmartWeatherRefresh = (refreshCallback: () => Promise<void>) => 
     }
 
     // Schedule background refresh for when app is inactive
-    backgroundTimeoutRef.current = setTimeout(() => {
-      if (!isActive && isOnline) {
-        backgroundRefresh();
-        // Schedule next background refresh
-        scheduleBackgroundRefresh();
-      }
-    }, 15 * 60 * 1000); // 15 minutes
+    backgroundTimeoutRef.current = setTimeout(
+      () => {
+        if (!isActive && isOnline) {
+          backgroundRefresh();
+          // Schedule next background refresh
+          scheduleBackgroundRefresh();
+        }
+      },
+      15 * 60 * 1000
+    ); // 15 minutes
   }, [isActive, isOnline, backgroundRefresh]);
 
   useEffect(() => {
@@ -425,7 +458,7 @@ export const useSmartWeatherRefresh = (refreshCallback: () => Promise<void>) => 
         console.log('App returned to foreground, checking for refresh');
         const now = Date.now();
         const timeSinceLastRefresh = now - lastRefreshRef.current;
-        
+
         // If app was inactive for more than 10 minutes, force refresh
         if (timeSinceLastRefresh > 10 * 60 * 1000) {
           smartRefresh(true); // Force refresh when returning from background
@@ -435,13 +468,16 @@ export const useSmartWeatherRefresh = (refreshCallback: () => Promise<void>) => 
 
       // Set up active refresh interval
       if (isOnline) {
-        refreshIntervalRef.current = setInterval(() => smartRefresh(), 10 * 60 * 1000); // 10 minutes
+        refreshIntervalRef.current = setInterval(
+          () => smartRefresh(),
+          10 * 60 * 1000
+        ); // 10 minutes
       }
     } else {
       // App went to background
       wasInactiveRef.current = true;
       console.log('App moved to background, scheduling background refresh');
-      
+
       // Clear active refresh interval
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
@@ -521,88 +557,105 @@ export const useBackgroundRefresh = (
   const { isOnline } = useNetworkStatus();
   const { isActive } = useAppState();
   const haptics = useNativeHaptics();
-  
+
   const refreshTimestamps = useRef({
     lastForeground: 0,
     lastBackground: 0,
     appBackgroundTime: 0,
   });
-  
+
   const intervals = useRef({
     foreground: null as NodeJS.Timeout | null,
     background: null as NodeJS.Timeout | null,
   });
 
-  const performRefresh = useCallback(async (type: 'foreground' | 'background' | 'force') => {
-    const now = Date.now();
-    const timestamps = refreshTimestamps.current;
-    
-    let shouldRefresh = false;
-    let minInterval = 0;
+  const performRefresh = useCallback(
+    async (type: 'foreground' | 'background' | 'force') => {
+      const now = Date.now();
+      const timestamps = refreshTimestamps.current;
 
-    switch (type) {
-      case 'force':
-        shouldRefresh = true;
-        break;
-      case 'foreground':
-        minInterval = foregroundInterval * 60 * 1000;
-        shouldRefresh = (now - timestamps.lastForeground) >= minInterval;
-        break;
-      case 'background':
-        minInterval = backgroundInterval * 60 * 1000;
-        shouldRefresh = (now - timestamps.lastBackground) >= minInterval;
-        break;
-    }
+      let shouldRefresh = false;
+      let minInterval = 0;
 
-    if (shouldRefresh && isOnline) {
-      try {
-        console.log(`Performing ${type} refresh...`);
-        await refreshCallback();
-        
-        if (type === 'foreground' || type === 'force') {
-          timestamps.lastForeground = now;
-          // Haptic feedback for successful foreground refresh
-          if (isActive) {
-            await haptics.light();
-          }
-        } else {
-          timestamps.lastBackground = now;
-        }
-
-        // Optional notification for background updates
-        if (type === 'background' && enableNotifications) {
-          console.log('Weather updated in background');
-          // Could schedule a notification here if needed
-        }
-
-        console.log(`${type} refresh completed successfully`);
-      } catch (error) {
-        console.error(`${type} refresh failed:`, error);
+      switch (type) {
+        case 'force':
+          shouldRefresh = true;
+          break;
+        case 'foreground':
+          minInterval = foregroundInterval * 60 * 1000;
+          shouldRefresh = now - timestamps.lastForeground >= minInterval;
+          break;
+        case 'background':
+          minInterval = backgroundInterval * 60 * 1000;
+          shouldRefresh = now - timestamps.lastBackground >= minInterval;
+          break;
       }
-    }
-  }, [refreshCallback, isOnline, foregroundInterval, backgroundInterval, isActive, haptics, enableNotifications]);
+
+      if (shouldRefresh && isOnline) {
+        try {
+          console.log(`Performing ${type} refresh...`);
+          await refreshCallback();
+
+          if (type === 'foreground' || type === 'force') {
+            timestamps.lastForeground = now;
+            // Haptic feedback for successful foreground refresh
+            if (isActive) {
+              await haptics.light();
+            }
+          } else {
+            timestamps.lastBackground = now;
+          }
+
+          // Optional notification for background updates
+          if (type === 'background' && enableNotifications) {
+            console.log('Weather updated in background');
+            // Could schedule a notification here if needed
+          }
+
+          console.log(`${type} refresh completed successfully`);
+        } catch (error) {
+          console.error(`${type} refresh failed:`, error);
+        }
+      }
+    },
+    [
+      refreshCallback,
+      isOnline,
+      foregroundInterval,
+      backgroundInterval,
+      isActive,
+      haptics,
+      enableNotifications,
+    ]
+  );
 
   const startForegroundRefresh = useCallback(() => {
     if (intervals.current.foreground) {
       clearInterval(intervals.current.foreground);
     }
-    
-    intervals.current.foreground = setInterval(() => {
-      performRefresh('foreground');
-    }, foregroundInterval * 60 * 1000);
+
+    intervals.current.foreground = setInterval(
+      () => {
+        performRefresh('foreground');
+      },
+      foregroundInterval * 60 * 1000
+    );
   }, [performRefresh, foregroundInterval]);
 
   const startBackgroundRefresh = useCallback(() => {
     if (intervals.current.background) {
       clearInterval(intervals.current.background);
     }
-    
+
     // Longer intervals for background to preserve battery
-    intervals.current.background = setInterval(() => {
-      if (!isActive && isOnline) {
-        performRefresh('background');
-      }
-    }, backgroundInterval * 60 * 1000);
+    intervals.current.background = setInterval(
+      () => {
+        if (!isActive && isOnline) {
+          performRefresh('background');
+        }
+      },
+      backgroundInterval * 60 * 1000
+    );
   }, [performRefresh, backgroundInterval, isActive, isOnline]);
 
   const stopAllRefresh = useCallback(() => {
@@ -618,41 +671,42 @@ export const useBackgroundRefresh = (
 
   useEffect(() => {
     const timestamps = refreshTimestamps.current;
-    
+
     if (isActive) {
       // App is in foreground
-      const timeInBackground = timestamps.appBackgroundTime > 0 
-        ? Date.now() - timestamps.appBackgroundTime 
-        : 0;
-      
+      const timeInBackground =
+        timestamps.appBackgroundTime > 0
+          ? Date.now() - timestamps.appBackgroundTime
+          : 0;
+
       // Force refresh if app was in background for too long
       if (timeInBackground > forceRefreshThreshold * 60 * 1000) {
         console.log('App returned from background, forcing refresh');
         performRefresh('force');
       }
-      
+
       // Start foreground refresh schedule
       if (isOnline) {
         startForegroundRefresh();
       }
-      
+
       // Stop background refresh
       if (intervals.current.background) {
         clearInterval(intervals.current.background);
         intervals.current.background = null;
       }
-      
+
       timestamps.appBackgroundTime = 0;
     } else {
       // App is in background
       timestamps.appBackgroundTime = Date.now();
-      
+
       // Stop foreground refresh
       if (intervals.current.foreground) {
         clearInterval(intervals.current.foreground);
         intervals.current.foreground = null;
       }
-      
+
       // Start background refresh if online
       if (isOnline) {
         startBackgroundRefresh();
@@ -665,16 +719,24 @@ export const useBackgroundRefresh = (
     }
 
     return stopAllRefresh;
-  }, [isActive, isOnline, performRefresh, startForegroundRefresh, startBackgroundRefresh, stopAllRefresh, forceRefreshThreshold]);
+  }, [
+    isActive,
+    isOnline,
+    performRefresh,
+    startForegroundRefresh,
+    startBackgroundRefresh,
+    stopAllRefresh,
+    forceRefreshThreshold,
+  ]);
 
   // Initial refresh on mount
   useEffect(() => {
     let mounted = true;
-    
+
     if (isOnline && isActive && mounted) {
       performRefresh('force');
     }
-    
+
     return () => {
       mounted = false;
     };
@@ -690,9 +752,10 @@ export const useBackgroundRefresh = (
     refreshStats: {
       lastForegroundRefresh: refreshTimestamps.current.lastForeground,
       lastBackgroundRefresh: refreshTimestamps.current.lastBackground,
-      timeInBackground: refreshTimestamps.current.appBackgroundTime > 0 
-        ? Date.now() - refreshTimestamps.current.appBackgroundTime 
-        : 0,
+      timeInBackground:
+        refreshTimestamps.current.appBackgroundTime > 0
+          ? Date.now() - refreshTimestamps.current.appBackgroundTime
+          : 0,
     },
   };
 };

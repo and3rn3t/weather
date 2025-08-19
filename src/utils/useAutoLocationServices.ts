@@ -1,9 +1,9 @@
 /**
  * Enhanced Auto Location Services Hook
- * 
+ *
  * Advanced location management with automatic detection, background updates,
  * and intelligent caching for seamless weather app experience.
- * 
+ *
  * Features:
  * - Automatic location detection on app startup
  * - Background location updates with configurable intervals
@@ -23,14 +23,14 @@ import { useHaptic } from './hapticHooks';
 // ============================================================================
 
 export interface AutoLocationConfig {
-  enableAutoDetection?: boolean;        // Auto-detect location on app start
-  enableBackgroundUpdates?: boolean;    // Update location in background
-  updateInterval?: number;              // Minutes between background updates
-  cacheExpiration?: number;             // Minutes until location cache expires
-  enableHighAccuracy?: boolean;         // GPS vs network location
-  maxAge?: number;                     // Maximum age of cached position (ms)
-  timeout?: number;                    // Timeout for location requests (ms)
-  enableNetworkFallback?: boolean;     // Fallback to network location
+  enableAutoDetection?: boolean; // Auto-detect location on app start
+  enableBackgroundUpdates?: boolean; // Update location in background
+  updateInterval?: number; // Minutes between background updates
+  cacheExpiration?: number; // Minutes until location cache expires
+  enableHighAccuracy?: boolean; // GPS vs network location
+  maxAge?: number; // Maximum age of cached position (ms)
+  timeout?: number; // Timeout for location requests (ms)
+  enableNetworkFallback?: boolean; // Fallback to network location
   enableBatteryOptimization?: boolean; // Optimize for battery life
 }
 
@@ -65,7 +65,7 @@ const DEFAULT_CONFIG: Required<AutoLocationConfig> = {
   maxAge: 10 * 60 * 1000, // 10 minutes
   timeout: 15000, // 15 seconds
   enableNetworkFallback: true,
-  enableBatteryOptimization: true
+  enableBatteryOptimization: true,
 };
 
 // ============================================================================
@@ -102,16 +102,19 @@ const isLocationCacheValid = (cache: CachedLocation | null): boolean => {
 // ============================================================================
 
 export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
-  const mergedConfig = useMemo(() => ({ ...DEFAULT_CONFIG, ...config }), [config]);
+  const mergedConfig = useMemo(
+    () => ({ ...DEFAULT_CONFIG, ...config }),
+    [config]
+  );
   const haptic = useHaptic();
-  
+
   const {
     isLoading,
     isSupported,
     error,
     location,
     getCurrentLocation,
-    isPermissionGranted
+    isPermissionGranted,
   } = useLocationServices();
 
   // Auto location state
@@ -122,7 +125,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
     nextUpdateTime: null,
     cacheExpiredAt: null,
     updateCount: 0,
-    isOnline: navigator.onLine
+    isOnline: navigator.onLine,
   });
 
   // Cached location management
@@ -139,8 +142,10 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
   // ============================================================================
 
   useEffect(() => {
-    const handleOnline = () => setAutoState(prev => ({ ...prev, isOnline: true }));
-    const handleOffline = () => setAutoState(prev => ({ ...prev, isOnline: false }));
+    const handleOnline = () =>
+      setAutoState(prev => ({ ...prev, isOnline: true }));
+    const handleOffline = () =>
+      setAutoState(prev => ({ ...prev, isOnline: false }));
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -177,87 +182,104 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
   // CACHE MANAGEMENT
   // ============================================================================
 
-  const updateLocationCache = useCallback((locationData: LocationData, source: CachedLocation['source']) => {
-    const now = Date.now();
-    const expiresAt = now + (mergedConfig.cacheExpiration * 60 * 1000);
-    
-    const cache: CachedLocation = {
-      data: locationData,
-      timestamp: now,
-      expiresAt,
-      source
-    };
+  const updateLocationCache = useCallback(
+    (locationData: LocationData, source: CachedLocation['source']) => {
+      const now = Date.now();
+      const expiresAt = now + mergedConfig.cacheExpiration * 60 * 1000;
 
-    setCachedLocation(cache);
-    saveToStorage('cached-location', cache);
+      const cache: CachedLocation = {
+        data: locationData,
+        timestamp: now,
+        expiresAt,
+        source,
+      };
 
-    setAutoState(prev => ({
-      ...prev,
-      lastAutoUpdate: now,
-      nextUpdateTime: mergedConfig.enableBackgroundUpdates 
-        ? now + (mergedConfig.updateInterval * 60 * 1000)
-        : null,
-      cacheExpiredAt: expiresAt,
-      updateCount: prev.updateCount + 1
-    }));
-  }, [mergedConfig.cacheExpiration, mergedConfig.enableBackgroundUpdates, mergedConfig.updateInterval]);
+      setCachedLocation(cache);
+      saveToStorage('cached-location', cache);
+
+      setAutoState(prev => ({
+        ...prev,
+        lastAutoUpdate: now,
+        nextUpdateTime: mergedConfig.enableBackgroundUpdates
+          ? now + mergedConfig.updateInterval * 60 * 1000
+          : null,
+        cacheExpiredAt: expiresAt,
+        updateCount: prev.updateCount + 1,
+      }));
+    },
+    [
+      mergedConfig.cacheExpiration,
+      mergedConfig.enableBackgroundUpdates,
+      mergedConfig.updateInterval,
+    ]
+  );
 
   // ============================================================================
   // AUTOMATIC LOCATION DETECTION
   // ============================================================================
 
-  const requestAutoLocation = useCallback(async (source: CachedLocation['source'] = 'auto') => {
-    // Rate limiting
-    const now = Date.now();
-    if (now - lastRequestTime.current < 5000) { // 5 second rate limit
-      console.log('Auto location request rate limited');
-      return;
-    }
-    lastRequestTime.current = now;
-
-    // Check if offline and no cached location
-    if (!autoState.isOnline && !isLocationCacheValid(cachedLocation)) {
-      console.log('Offline and no valid cached location');
-      return;
-    }
-
-    // Battery optimization
-    if (mergedConfig.enableBatteryOptimization && autoState.batteryLevel && autoState.batteryLevel < 0.2) {
-      console.log('Battery optimization: skipping location request due to low battery');
-      return;
-    }
-
-    try {
-      console.log(`🎯 Auto-requesting location (source: ${source})`);
-      
-      const locationData = await getCurrentLocation({
-        enableHighAccuracy: mergedConfig.enableHighAccuracy,
-        timeout: mergedConfig.timeout,
-        maximumAge: mergedConfig.maxAge
-      });
-
-      if (locationData) {
-        updateLocationCache(locationData, source);
-        haptic.triggerHaptic('light');
-        console.log('✅ Auto location detection successful:', locationData);
+  const requestAutoLocation = useCallback(
+    async (source: CachedLocation['source'] = 'auto') => {
+      // Rate limiting
+      const now = Date.now();
+      if (now - lastRequestTime.current < 5000) {
+        // 5 second rate limit
+        console.log('Auto location request rate limited');
+        return;
       }
-    } catch (error) {
-      console.error('❌ Auto location detection failed:', error);
-      
-      // Use cached location if available
-      if (isLocationCacheValid(cachedLocation)) {
-        console.log('📍 Using cached location as fallback');
+      lastRequestTime.current = now;
+
+      // Check if offline and no cached location
+      if (!autoState.isOnline && !isLocationCacheValid(cachedLocation)) {
+        console.log('Offline and no valid cached location');
+        return;
       }
-    }
-  }, [
-    autoState.isOnline, 
-    autoState.batteryLevel,
-    cachedLocation, 
-    getCurrentLocation, 
-    updateLocationCache, 
-    haptic, 
-    mergedConfig
-  ]);
+
+      // Battery optimization
+      if (
+        mergedConfig.enableBatteryOptimization &&
+        autoState.batteryLevel &&
+        autoState.batteryLevel < 0.2
+      ) {
+        console.log(
+          'Battery optimization: skipping location request due to low battery'
+        );
+        return;
+      }
+
+      try {
+        console.log(`🎯 Auto-requesting location (source: ${source})`);
+
+        const locationData = await getCurrentLocation({
+          enableHighAccuracy: mergedConfig.enableHighAccuracy,
+          timeout: mergedConfig.timeout,
+          maximumAge: mergedConfig.maxAge,
+        });
+
+        if (locationData) {
+          updateLocationCache(locationData, source);
+          haptic.triggerHaptic('light');
+          console.log('✅ Auto location detection successful:', locationData);
+        }
+      } catch (error) {
+        console.error('❌ Auto location detection failed:', error);
+
+        // Use cached location if available
+        if (isLocationCacheValid(cachedLocation)) {
+          console.log('📍 Using cached location as fallback');
+        }
+      }
+    },
+    [
+      autoState.isOnline,
+      autoState.batteryLevel,
+      cachedLocation,
+      getCurrentLocation,
+      updateLocationCache,
+      haptic,
+      mergedConfig,
+    ]
+  );
 
   // ============================================================================
   // BACKGROUND UPDATES
@@ -282,13 +304,15 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
       }
     }, intervalMs);
 
-    console.log(`🔄 Background location updates enabled (${mergedConfig.updateInterval} min intervals)`);
+    console.log(
+      `🔄 Background location updates enabled (${mergedConfig.updateInterval} min intervals)`
+    );
   }, [
-    mergedConfig.enableBackgroundUpdates, 
+    mergedConfig.enableBackgroundUpdates,
     mergedConfig.updateInterval,
     isPermissionGranted,
     cachedLocation,
-    requestAutoLocation
+    requestAutoLocation,
   ]);
 
   // ============================================================================
@@ -314,7 +338,12 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
     const timer = setTimeout(performAutoDetection, 1000);
 
     return () => clearTimeout(timer);
-  }, [isSupported, mergedConfig.enableAutoDetection, cachedLocation, requestAutoLocation]);
+  }, [
+    isSupported,
+    mergedConfig.enableAutoDetection,
+    cachedLocation,
+    requestAutoLocation,
+  ]);
 
   // Set up background updates when conditions are met
   useEffect(() => {
@@ -334,7 +363,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
   const getCurrentLocationData = useCallback((): LocationData | null => {
     // Return current location if available
     if (location) return location;
-    
+
     // Return cached location if valid
     if (isLocationCacheValid(cachedLocation) && cachedLocation) {
       return cachedLocation.data;
@@ -354,47 +383,53 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
       ...prev,
       lastAutoUpdate: null,
       cacheExpiredAt: null,
-      updateCount: 0
+      updateCount: 0,
     }));
   }, []);
 
-  const toggleAutoDetection = useCallback((enabled: boolean) => {
-    setAutoState(prev => ({ ...prev, isAutoDetectionEnabled: enabled }));
-    if (enabled) {
-      requestAutoLocation('auto');
-    }
-  }, [requestAutoLocation]);
+  const toggleAutoDetection = useCallback(
+    (enabled: boolean) => {
+      setAutoState(prev => ({ ...prev, isAutoDetectionEnabled: enabled }));
+      if (enabled) {
+        requestAutoLocation('auto');
+      }
+    },
+    [requestAutoLocation]
+  );
 
-  const toggleBackgroundUpdates = useCallback((enabled: boolean) => {
-    setAutoState(prev => ({ ...prev, isBackgroundUpdatesEnabled: enabled }));
-    if (enabled) {
-      setupBackgroundUpdates();
-    } else if (backgroundTimer.current) {
-      clearInterval(backgroundTimer.current);
-      backgroundTimer.current = null;
-    }
-  }, [setupBackgroundUpdates]);
+  const toggleBackgroundUpdates = useCallback(
+    (enabled: boolean) => {
+      setAutoState(prev => ({ ...prev, isBackgroundUpdatesEnabled: enabled }));
+      if (enabled) {
+        setupBackgroundUpdates();
+      } else if (backgroundTimer.current) {
+        clearInterval(backgroundTimer.current);
+        backgroundTimer.current = null;
+      }
+    },
+    [setupBackgroundUpdates]
+  );
 
   return {
     // Location data
     currentLocation: getCurrentLocationData(),
     cachedLocation,
     isLocationCacheValid: isLocationCacheValid(cachedLocation),
-    
+
     // State
     isLoading,
     isSupported,
     error,
     autoState,
-    
+
     // Actions
     forceLocationUpdate,
     clearLocationCache,
     toggleAutoDetection,
     toggleBackgroundUpdates,
-    
+
     // Config
-    config: mergedConfig
+    config: mergedConfig,
   };
 };
 

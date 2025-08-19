@@ -110,20 +110,46 @@
 }
 
 /* Staggered animations for lists */
-.modern-forecast-item:nth-child(1) { animation-delay: 0.1s; }
-.modern-forecast-item:nth-child(2) { animation-delay: 0.2s; }
-.modern-forecast-item:nth-child(3) { animation-delay: 0.3s; }
-.modern-forecast-item:nth-child(4) { animation-delay: 0.4s; }
-.modern-forecast-item:nth-child(5) { animation-delay: 0.5s; }
-.modern-forecast-item:nth-child(6) { animation-delay: 0.6s; }
-.modern-forecast-item:nth-child(7) { animation-delay: 0.7s; }
+.modern-forecast-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.modern-forecast-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.modern-forecast-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.modern-forecast-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.modern-forecast-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.modern-forecast-item:nth-child(6) {
+  animation-delay: 0.6s;
+}
+.modern-forecast-item:nth-child(7) {
+  animation-delay: 0.7s;
+}
 
-.modern-metric-card:nth-child(1) { animation-delay: 0.1s; }
-.modern-metric-card:nth-child(2) { animation-delay: 0.15s; }
-.modern-metric-card:nth-child(3) { animation-delay: 0.2s; }
-.modern-metric-card:nth-child(4) { animation-delay: 0.25s; }
-.modern-metric-card:nth-child(5) { animation-delay: 0.3s; }
-.modern-metric-card:nth-child(6) { animation-delay: 0.35s; }
+.modern-metric-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.modern-metric-card:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.modern-metric-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.modern-metric-card:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.modern-metric-card:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.modern-metric-card:nth-child(6) {
+  animation-delay: 0.35s;
+}
 
 /* Responsive adjustments for modern components */
 @media (max-width: 480px) {
@@ -131,17 +157,17 @@
     padding: 24px 20px;
     border-radius: 24px;
   }
-  
+
   .modern-forecast-section {
     padding: 20px;
     border-radius: 20px;
   }
-  
+
   .modern-metric-grid {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
   }
-  
+
   .modern-metric-card {
     padding: 20px 16px;
     min-height: 100px;
@@ -153,7 +179,7 @@
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 10px;
   }
-  
+
   .modern-metric-card {
     padding: 16px 12px;
     min-height: 90px;
@@ -166,11 +192,11 @@
     transform: translateY(-4px);
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
   }
-  
+
   .modern-hover-scale:hover {
     transform: scale(1.02);
   }
-  
+
   .modern-hover-glow:hover {
     box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
   }
@@ -182,7 +208,7 @@
     transform: scale(0.98);
     transition: transform 0.1s ease;
   }
-  
+
   .modern-card:active {
     transform: scale(0.99);
     transition: transform 0.1s ease;
@@ -204,7 +230,7 @@
   .modern-metric-card {
     animation: none;
   }
-  
+
   .modern-hover-lift,
   .modern-hover-scale,
   .modern-button,

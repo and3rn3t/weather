@@ -1,11 +1,11 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  
+
   // Build configuration for production deployment
   build: {
     outDir: 'dist',
@@ -29,12 +29,15 @@ export default defineConfig({
             }
             return 'vendor';
           }
-          
+
           // Feature-based chunking
           if (id.includes('components/modernWeatherUI')) {
             return 'modern-ui';
           }
-          if (id.includes('utils/haptic') || id.includes('utils/weatherHaptic')) {
+          if (
+            id.includes('utils/haptic') ||
+            id.includes('utils/weatherHaptic')
+          ) {
             return 'haptic-features';
           }
           if (id.includes('utils/weather') || id.includes('utils/location')) {
@@ -43,15 +46,15 @@ export default defineConfig({
           if (id.includes('utils/theme') || id.includes('utils/mobile')) {
             return 'ui-utils';
           }
-          
+
           return undefined;
         },
-        chunkFileNames: (chunkInfo) => {
-          return chunkInfo.isDynamicEntry 
-            ? 'chunks/[name]-[hash].js' 
+        chunkFileNames: chunkInfo => {
+          return chunkInfo.isDynamicEntry
+            ? 'chunks/[name]-[hash].js'
             : 'assets/[name]-[hash].js';
         },
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           const info = assetInfo.name?.split('.') || [];
           const ext = info[info.length - 1];
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
@@ -61,27 +64,27 @@ export default defineConfig({
             return `styles/[name]-[hash].${ext}`;
           }
           return `assets/[name]-[hash].${ext}`;
-        }
-      }
+        },
+      },
     },
     // Performance optimization
     chunkSizeWarningLimit: 1000,
-    reportCompressedSize: true
+    reportCompressedSize: true,
   },
-  
+
   // Base URL for deployment (will be updated per environment)
   base: '/',
-  
+
   optimizeDeps: {
-    exclude: ['react-native']
+    exclude: ['react-native'],
   },
   define: {
     global: 'globalThis',
   },
   resolve: {
     alias: {
-      'react-native': 'react-native-web'
-    }
+      'react-native': 'react-native-web',
+    },
   },
   test: {
     globals: true,
@@ -99,16 +102,16 @@ export default defineConfig({
         'dist/',
         'coverage/',
         'vite.config.ts',
-        '**/*.d.ts'
+        '**/*.d.ts',
       ],
       thresholds: {
         global: {
           branches: 70,
           functions: 70,
           lines: 70,
-          statements: 70
-        }
-      }
-    }
-  }
-})
+          statements: 70,
+        },
+      },
+    },
+  },
+});

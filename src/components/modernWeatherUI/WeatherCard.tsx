@@ -1,13 +1,13 @@
 /**
  * Modern Weather Card Component - Phase C Completion (July 2025)
- * 
+ *
  * Enhanced weather display card featuring:
  * - Premium glassmorphism design with improved backdrop blur
  * - Better typography hierarchy with optimized font weights
  * - Seamless weather icon integration with animations
  * - Responsive scaling across mobile, tablet, and desktop
  * - Enhanced visual hierarchy for weather information
- * 
+ *
  * Design Features:
  * - Gradient backgrounds with backdrop blur effects
  * - Improved spacing and padding system
@@ -47,14 +47,15 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   windSpeed = 0,
   humidity = 50,
   pressure = 1013,
-  enableHaptics = true
+  enableHaptics = true,
 }) => {
   const cardStyle: React.CSSProperties = {
     background: `linear-gradient(135deg, ${theme.weatherCardBackground}f0, ${theme.cardBackground}f5)`,
     borderRadius: '28px',
     padding: '32px 24px',
     border: `1px solid ${theme.weatherCardBorder}40`,
-    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.08), 0 8px 25px rgba(0, 0, 0, 0.06)',
+    boxShadow:
+      '0 20px 60px rgba(0, 0, 0, 0.08), 0 8px 25px rgba(0, 0, 0, 0.06)',
     backdropFilter: 'blur(20px)',
     position: 'relative',
     overflow: 'hidden',
@@ -62,7 +63,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     minHeight: '280px',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   };
 
   const temperatureStyle: React.CSSProperties = {
@@ -71,7 +72,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     lineHeight: '0.9',
     color: theme.primaryText,
     marginBottom: '8px',
-    letterSpacing: '-0.02em'
+    letterSpacing: '-0.02em',
   };
 
   const locationStyle: React.CSSProperties = {
@@ -82,7 +83,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     alignItems: 'center',
     gap: '8px',
     marginBottom: '12px',
-    opacity: 0.9
+    opacity: 0.9,
   };
 
   const conditionStyle: React.CSSProperties = {
@@ -91,14 +92,14 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     color: theme.secondaryText,
     textTransform: 'capitalize',
     marginBottom: '20px',
-    lineHeight: '1.3'
+    lineHeight: '1.3',
   };
 
   const feelsLikeStyle: React.CSSProperties = {
     fontSize: '14px',
     color: theme.secondaryText,
     fontWeight: '500',
-    opacity: 0.8
+    opacity: 0.8,
   };
 
   const iconContainerStyle: React.CSSProperties = {
@@ -109,7 +110,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     borderRadius: '20px',
     padding: '16px',
     backdropFilter: 'blur(10px)',
-    border: `1px solid ${theme.weatherCardBorder}30`
+    border: `1px solid ${theme.weatherCardBorder}30`,
   };
 
   const shimmerStyle: React.CSSProperties = {
@@ -119,32 +120,38 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
       transparent 100%)`,
     backgroundSize: '200% 100%',
     animation: 'shimmer 2s infinite ease-in-out',
-    borderRadius: 'inherit'
+    borderRadius: 'inherit',
   };
 
   if (isLoading) {
     return (
       <div style={{ ...cardStyle, ...shimmerStyle }}>
-        <div style={{
-          width: '60%',
-          height: '24px',
-          background: `${theme.primaryText}15`,
-          borderRadius: '12px',
-          marginBottom: '16px'
-        }} />
-        <div style={{
-          width: '40%',
-          height: '80px',
-          background: `${theme.primaryText}15`,
-          borderRadius: '16px',
-          marginBottom: '20px'
-        }} />
-        <div style={{
-          width: '80%',
-          height: '16px',
-          background: `${theme.primaryText}15`,
-          borderRadius: '8px'
-        }} />
+        <div
+          style={{
+            width: '60%',
+            height: '24px',
+            background: `${theme.primaryText}15`,
+            borderRadius: '12px',
+            marginBottom: '16px',
+          }}
+        />
+        <div
+          style={{
+            width: '40%',
+            height: '80px',
+            background: `${theme.primaryText}15`,
+            borderRadius: '16px',
+            marginBottom: '20px',
+          }}
+        />
+        <div
+          style={{
+            width: '80%',
+            height: '16px',
+            background: `${theme.primaryText}15`,
+            borderRadius: '8px',
+          }}
+        />
       </div>
     );
   }
@@ -166,9 +173,9 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
 
       {/* Weather Icon */}
       <div style={iconContainerStyle}>
-        <WeatherIcon 
-          code={weatherCode} 
-          size={56} 
+        <WeatherIcon
+          code={weatherCode}
+          size={56}
           animated={true}
           className="main-weather-icon"
         />
@@ -180,50 +187,50 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
           <span>📍</span>
           <span>{location}</span>
         </div>
-        
+
         {/* Temperature */}
-        <div style={temperatureStyle}>
-          {Math.round(temperature)}°
-        </div>
-        
+        <div style={temperatureStyle}>{Math.round(temperature)}°</div>
+
         {/* Condition */}
-        <div style={conditionStyle}>
-          {condition}
-        </div>
+        <div style={conditionStyle}>{condition}</div>
       </div>
 
       {/* Bottom Info */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: '20px',
-        borderTop: `1px solid ${theme.weatherCardBorder}30`
-      }}>
-        <div style={feelsLikeStyle}>
-          Feels like {Math.round(feelsLike)}°
-        </div>
-        <div style={{
-          fontSize: '12px',
-          color: theme.secondaryText,
-          opacity: 0.7
-        }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingTop: '20px',
+          borderTop: `1px solid ${theme.weatherCardBorder}30`,
+        }}
+      >
+        <div style={feelsLikeStyle}>Feels like {Math.round(feelsLike)}°</div>
+        <div
+          style={{
+            fontSize: '12px',
+            color: theme.secondaryText,
+            opacity: 0.7,
+          }}
+        >
           {time}
         </div>
       </div>
 
       {/* Background Accent */}
-      <div style={{
-        position: 'absolute',
-        bottom: '0',
-        right: '0',
-        width: '120px',
-        height: '120px',
-        background: `linear-gradient(135deg, ${theme.weatherCardBadge}15, transparent)`,
-        borderRadius: '50%',
-        transform: 'translate(40px, 40px)',
-        pointerEvents: 'none'
-      }} />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '0',
+          right: '0',
+          width: '120px',
+          height: '120px',
+          background: `linear-gradient(135deg, ${theme.weatherCardBadge}15, transparent)`,
+          borderRadius: '50%',
+          transform: 'translate(40px, 40px)',
+          pointerEvents: 'none',
+        }}
+      />
     </div>
   );
 };

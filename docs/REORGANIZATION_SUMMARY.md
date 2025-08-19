@@ -130,4 +130,5 @@ docs/
 
 ---
 
-This reorganization provides a solid foundation for scalable, maintainable documentation that grows with the project.
+This reorganization provides a solid foundation for scalable, maintainable documentation that grows
+with the project.

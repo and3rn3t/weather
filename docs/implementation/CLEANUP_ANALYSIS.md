@@ -227,13 +227,13 @@ rm -rf dist/
 
 ### **Space Savings**
 
-| File Type | Count | Estimated Size | Savings |
-|-----------|-------|----------------|---------|
-| **Workflow Files** | 6 files | ~80KB | 85% reduction |
-| **Script Files** | 30+ files | ~500KB | 90% reduction |
-| **Documentation** | 50+ files | ~2MB | 80% reduction |
-| **Backup Files** | 2 files | ~50KB | 100% removal |
-| **Total** | **90+ files** | **~2.6MB** | **85% reduction** |
+| File Type          | Count         | Estimated Size | Savings           |
+| ------------------ | ------------- | -------------- | ----------------- |
+| **Workflow Files** | 6 files       | ~80KB          | 85% reduction     |
+| **Script Files**   | 30+ files     | ~500KB         | 90% reduction     |
+| **Documentation**  | 50+ files     | ~2MB           | 80% reduction     |
+| **Backup Files**   | 2 files       | ~50KB          | 100% removal      |
+| **Total**          | **90+ files** | **~2.6MB**     | **85% reduction** |
 
 ### **Performance Improvements**
 

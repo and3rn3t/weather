@@ -76,11 +76,11 @@ const formatDayName = (dateString: string): string => {
   const date = new Date(dateString);
   const today = new Date();
   const isToday = date.toDateString() === today.toDateString();
-  
+
   if (isToday) {
     return 'Today';
   }
-  
+
   return date.toLocaleDateString('en-US', { weekday: 'short' });
 };
 
@@ -122,15 +122,20 @@ describe('Forecast Utility Functions', () => {
       const now = new Date();
       const today = now.toISOString().split('T')[0];
       const result = formatDayName(today);
-      
+
       // Allow for both 'Today' and weekday names in case of timezone differences
-      expect(result === 'Today' || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].includes(result)).toBe(true);
+      expect(
+        result === 'Today' ||
+          ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].includes(result)
+      ).toBe(true);
     });
 
     test('should format other days as weekday abbreviations', () => {
       // Test with a date that is definitely not today (past date)
       const result = formatDayName('2025-01-01'); // Known past date
-      expect(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).toContain(result);
+      expect(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).toContain(
+        result
+      );
     });
   });
 
@@ -151,7 +156,12 @@ describe('Forecast Utility Functions', () => {
     });
 
     test('should handle empty hourly data gracefully', () => {
-      const emptyData = { time: [], temperature_2m: [], weathercode: [], relative_humidity_2m: [] };
+      const emptyData = {
+        time: [],
+        temperature_2m: [],
+        weathercode: [],
+        relative_humidity_2m: [],
+      };
       const processed = emptyData.time.map((time, index) => ({
         time: formatHourTime(time),
         temperature: Math.round(emptyData.temperature_2m[index]),
@@ -183,8 +193,12 @@ describe('Forecast Utility Functions', () => {
 
     test('should limit daily forecast to 7 days', () => {
       const extendedData = {
-        time: Array.from({ length: 10 }, (_, i) => 
-          new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        time: Array.from(
+          { length: 10 },
+          (_, i) =>
+            new Date(Date.now() + i * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0]
         ),
         temperature_2m_max: Array.from({ length: 10 }, () => 75),
         temperature_2m_min: Array.from({ length: 10 }, () => 65),
@@ -206,14 +220,14 @@ describe('Forecast Utility Functions', () => {
     test('should handle temperature rounding correctly', () => {
       const temps = [68.7, 72.3, 75.9, 78.1];
       const rounded = temps.map(temp => Math.round(temp));
-      
+
       expect(rounded).toEqual([69, 72, 76, 78]);
     });
 
     test('should handle negative temperatures', () => {
       const temp = -5.6;
       const rounded = Math.round(temp);
-      
+
       expect(rounded).toBe(-6);
     });
   });

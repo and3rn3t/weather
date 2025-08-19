@@ -27,7 +27,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 
   const handleClick = async () => {
     if (disabled) return;
-    
+
     await buttonPress();
     onClick();
   };
@@ -46,11 +46,12 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
     fontSize: '24px',
     cursor: disabled ? 'not-allowed' : 'pointer',
     zIndex: 1000,
-    boxShadow: disabled 
-      ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
+    boxShadow: disabled
+      ? '0 4px 12px rgba(0, 0, 0, 0.15)'
       : '0 8px 24px rgba(102, 126, 234, 0.4)',
     transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-    animation: 'fadeInScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both',
+    animation:
+      'fadeInScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both',
     opacity: disabled ? 0.6 : 1,
     transform: disabled ? 'scale(0.9)' : 'scale(1)',
   };
@@ -78,24 +79,26 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
           ...baseStyle,
           ...variantStyles[variant],
         }}
-        onMouseEnter={(e) => {
+        onMouseEnter={e => {
           if (!disabled) {
             e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(102, 126, 234, 0.5)';
+            e.currentTarget.style.boxShadow =
+              '0 12px 32px rgba(102, 126, 234, 0.5)';
           }
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={e => {
           if (!disabled) {
             e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(102, 126, 234, 0.4)';
+            e.currentTarget.style.boxShadow =
+              '0 8px 24px rgba(102, 126, 234, 0.4)';
           }
         }}
-        onTouchStart={(e) => {
+        onTouchStart={e => {
           if (!disabled) {
             e.currentTarget.style.transform = 'scale(0.95)';
           }
         }}
-        onTouchEnd={(e) => {
+        onTouchEnd={e => {
           if (!disabled) {
             e.currentTarget.style.transform = 'scale(1)';
           }

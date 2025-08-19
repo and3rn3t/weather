@@ -1,6 +1,6 @@
 /**
  * Enhanced Weather Display Component - August 2025
- * 
+ *
  * Improved weather display component with:
  * - Better mobile typography and readability
  * - Enhanced contrast and visibility
@@ -33,7 +33,7 @@ interface EnhancedWeatherDisplayProps {
 const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
   weatherData,
   theme,
-  className = ''
+  className = '',
 }) => {
   const formatWindSpeed = (speed: number): string => {
     return `${Math.round(speed)} mph`;
@@ -67,15 +67,15 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
       {/* Main Weather Display */}
       <div className="enhanced-weather-main">
         <p className="enhanced-weather-location">{weatherData.location}</p>
-        
+
         <div className="enhanced-weather-icon">
-          <WeatherIcon 
-            code={weatherData.weatherCode} 
+          <WeatherIcon
+            code={weatherData.weatherCode}
             size={Math.min(window.innerWidth * 0.2, 120)}
             animate={true}
           />
         </div>
-        
+
         <div className="enhanced-weather-temp-section">
           <h1 className="enhanced-weather-temperature">
             {Math.round(weatherData.temperature)}°F
@@ -90,31 +90,43 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
       {/* Weather Metrics Grid */}
       <div className="enhanced-weather-metrics">
         <div className="enhanced-weather-metric">
-          <div className="enhanced-weather-metric-value">{weatherData.humidity}%</div>
+          <div className="enhanced-weather-metric-value">
+            {weatherData.humidity}%
+          </div>
           <div className="enhanced-weather-metric-label">Humidity</div>
         </div>
-        
+
         <div className="enhanced-weather-metric">
-          <div className="enhanced-weather-metric-value">{formatWindSpeed(weatherData.windSpeed)}</div>
+          <div className="enhanced-weather-metric-value">
+            {formatWindSpeed(weatherData.windSpeed)}
+          </div>
           <div className="enhanced-weather-metric-label">Wind Speed</div>
         </div>
-        
+
         <div className="enhanced-weather-metric">
-          <div className="enhanced-weather-metric-value">{formatPressure(weatherData.pressure)}</div>
+          <div className="enhanced-weather-metric-value">
+            {formatPressure(weatherData.pressure)}
+          </div>
           <div className="enhanced-weather-metric-label">Pressure</div>
         </div>
-        
+
         {weatherData.visibility !== undefined && (
           <div className="enhanced-weather-metric">
-            <div className="enhanced-weather-metric-value">{formatVisibility(weatherData.visibility)}</div>
+            <div className="enhanced-weather-metric-value">
+              {formatVisibility(weatherData.visibility)}
+            </div>
             <div className="enhanced-weather-metric-label">Visibility</div>
           </div>
         )}
-        
+
         {weatherData.uvIndex !== undefined && (
           <div className="enhanced-weather-metric">
-            <div className="enhanced-weather-metric-value">{formatUVIndex(weatherData.uvIndex)}</div>
-            <div className="enhanced-weather-metric-label">{getUVIndexLabel(weatherData.uvIndex)}</div>
+            <div className="enhanced-weather-metric-value">
+              {formatUVIndex(weatherData.uvIndex)}
+            </div>
+            <div className="enhanced-weather-metric-label">
+              {getUVIndexLabel(weatherData.uvIndex)}
+            </div>
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 /**
  * Mobile Debug Component
- * 
+ *
  * Shows mobile viewport information and identifies touch issues
  */
 
@@ -12,9 +12,9 @@ interface MobileDebugProps {
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 }
 
-const MobileDebugComponent: React.FC<MobileDebugProps> = ({ 
-  enabled = true, 
-  position = 'bottom-right' 
+const MobileDebugComponent: React.FC<MobileDebugProps> = ({
+  enabled = true,
+  position = 'bottom-right',
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [screenInfo, setScreenInfo] = useState(getScreenInfo());
@@ -34,7 +34,7 @@ const MobileDebugComponent: React.FC<MobileDebugProps> = ({
     // Update screen info on resize/orientation change
     window.addEventListener('resize', updateScreenInfo);
     window.addEventListener('orientationchange', updateScreenInfo);
-    
+
     // Track touch events
     document.addEventListener('touchstart', handleTouch);
 
@@ -88,7 +88,7 @@ const MobileDebugComponent: React.FC<MobileDebugProps> = ({
     <button
       style={getPositionStyles()}
       onClick={() => setIsVisible(!isVisible)}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           setIsVisible(!isVisible);
         }
@@ -99,20 +99,41 @@ const MobileDebugComponent: React.FC<MobileDebugProps> = ({
       <div>📱 Mobile Debug</div>
       {isVisible && (
         <>
-          <div>Screen: {screenInfo.width}×{screenInfo.height}</div>
+          <div>
+            Screen: {screenInfo.width}×{screenInfo.height}
+          </div>
           <div>Pixel Ratio: {screenInfo.pixelRatio}</div>
-          <div>Orientation: {screenInfo.isLandscape ? 'Landscape' : 'Portrait'}</div>
+          <div>
+            Orientation: {screenInfo.isLandscape ? 'Landscape' : 'Portrait'}
+          </div>
           <div>Size: {getScreenSizeDescription()}</div>
-          <div>Safe Area: T:{screenInfo.safeAreaTop} B:{screenInfo.safeAreaBottom}</div>
+          <div>
+            Safe Area: T:{screenInfo.safeAreaTop} B:{screenInfo.safeAreaBottom}
+          </div>
           <div>Has Notch: {screenInfo.hasNotch ? 'Yes' : 'No'}</div>
           <div>Touches: {touchCount}</div>
-          <div>Viewport: {window.innerWidth}×{window.innerHeight}</div>
+          <div>
+            Viewport: {window.innerWidth}×{window.innerHeight}
+          </div>
           <div>DPR: {window.devicePixelRatio}</div>
-          <div>UA: {navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}</div>
+          <div>
+            UA: {navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}
+          </div>
           {process.env.NODE_ENV === 'development' && (
-            <div style={{ marginTop: '4px', borderTop: '1px solid #666', paddingTop: '4px' }}>
-              <div>Zoom: {Math.round((window.outerWidth / window.innerWidth) * 100)}%</div>
-              <div>Available: {screen.availWidth}×{screen.availHeight}</div>
+            <div
+              style={{
+                marginTop: '4px',
+                borderTop: '1px solid #666',
+                paddingTop: '4px',
+              }}
+            >
+              <div>
+                Zoom:{' '}
+                {Math.round((window.outerWidth / window.innerWidth) * 100)}%
+              </div>
+              <div>
+                Available: {screen.availWidth}×{screen.availHeight}
+              </div>
               <div>Color Depth: {screen.colorDepth}</div>
             </div>
           )}

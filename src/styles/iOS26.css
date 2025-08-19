@@ -1,8 +1,12 @@
 /* iOS 26 Cutting-Edge Animations and Styles */
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Weather Card Enhancements */
@@ -12,7 +16,9 @@
 
 .ios26-weather-card:hover {
   transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .ios26-weather-card:active {
@@ -66,7 +72,7 @@
 .ios26-weather-card:focus-visible,
 .quick-action-button:focus-visible,
 .ios26-navigation-bar button:focus-visible {
-  outline: 3px solid #007AFF;
+  outline: 3px solid #007aff;
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -171,7 +177,7 @@
     margin: 16px;
     padding: 24px;
   }
-  
+
   .quick-action-button {
     padding: 16px;
     min-height: 80px;

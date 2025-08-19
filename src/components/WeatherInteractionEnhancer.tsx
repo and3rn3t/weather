@@ -1,6 +1,6 @@
 /**
  * Weather Interaction Enhancer - Phase F-4
- * 
+ *
  * Provides enhanced haptic feedback for weather-specific user interactions,
  * creating an immersive and contextual experience that responds to weather
  * conditions and user gestures.
@@ -8,8 +8,16 @@
 
 import React, { useCallback, useRef } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
-import { logInteraction, logWeatherLoading, logLocation } from '../utils/logger';
-import { executeWeatherVibration, executeVibration, executeProgressiveLoading } from '../utils/hapticPatterns';
+import {
+  logInteraction,
+  logWeatherLoading,
+  logLocation,
+} from '../utils/logger';
+import {
+  executeWeatherVibration,
+  executeVibration,
+  executeProgressiveLoading,
+} from '../utils/hapticPatterns';
 
 export interface WeatherInteractionEnhancerProps {
   children: React.ReactNode;
@@ -28,7 +36,7 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
   enableWeatherContextualFeedback = true,
   onWeatherCardTap,
   onWeatherRefresh,
-  onLocationTap
+  onLocationTap,
 }) => {
   const haptic = useHaptic();
   const lastInteraction = useRef<number>(0);
@@ -43,7 +51,7 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
     if (enableWeatherContextualFeedback) {
       // Base interaction haptic
       haptic.buttonPress();
-      
+
       // Add weather-contextual feedback after a brief delay
       setTimeout(() => {
         executeWeatherVibration(weatherCode, 0.8);
@@ -52,23 +60,25 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
       haptic.buttonPress();
     }
 
-    logInteraction(`Weather card tap - Code: ${weatherCode}, Temp: ${temperature}°`);
+    logInteraction(
+      `Weather card tap - Code: ${weatherCode}, Temp: ${temperature}°`
+    );
     onWeatherCardTap?.();
   }, [
     weatherCode,
     temperature,
     enableWeatherContextualFeedback,
     haptic,
-    onWeatherCardTap
+    onWeatherCardTap,
   ]);
 
   // Enhanced refresh with progressive feedback
   const handleWeatherRefresh = useCallback(() => {
     logWeatherLoading('Enhanced weather refresh with progressive haptics');
-    
+
     // Initial refresh haptic
     haptic.weatherRefresh();
-    
+
     // Progressive loading feedback
     executeProgressiveLoading();
 
@@ -78,10 +88,10 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
   // Enhanced location tap with geographic feedback
   const handleLocationTap = useCallback(() => {
     logLocation('Enhanced location tap with geographic feedback');
-    
+
     // Location selection haptic
     haptic.searchSuccess();
-    
+
     // Add subtle geographic feedback
     setTimeout(() => {
       executeVibration('location_found');
@@ -97,7 +107,7 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
       humidity: 'rainy',
       pressure: 'pressure_change',
       wind: 'wind_gust',
-      uv: 'clear'
+      uv: 'clear',
     } as const;
 
     const patternKey = patternMap[elementType as keyof typeof patternMap];
@@ -109,11 +119,11 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
 
   // Provide interaction methods through a simple wrapper
   return (
-    <div 
-      onClickCapture={(event) => {
+    <div
+      onClickCapture={event => {
         const target = event.target as HTMLElement;
         const className = target.className || '';
-        
+
         if (className.includes('weather-card')) {
           handleWeatherCardTap();
         } else if (className.includes('location')) {

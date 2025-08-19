@@ -1,13 +1,19 @@
 /**
  * iOS HIG Integration Example
- * 
+ *
  * This component demonstrates how to integrate all the new iOS Human Interface Guidelines
  * components into your weather app for a premium, native-like experience.
  */
 
 import React, { useState } from 'react';
 import type { ThemeColors } from '../../utils/themeConfig';
-import { SegmentedControl, ActivityIndicator, StatusBadge, ListItem, ProgressIndicator } from './IOSComponents';
+import {
+  SegmentedControl,
+  ActivityIndicator,
+  StatusBadge,
+  ListItem,
+  ProgressIndicator,
+} from './IOSComponents';
 import { ActionSheet } from './ActionSheet';
 import { EnhancedSearchBar } from './EnhancedSearchBar';
 import { NavigationBar } from './NavigationBar';
@@ -20,7 +26,7 @@ interface IOSWeatherDemoProps {
 
 export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
   theme,
-  isDark = false
+  isDark = false,
 }) => {
   const [selectedView, setSelectedView] = useState(0);
   const [searchText, setSearchText] = useState('');
@@ -28,7 +34,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
   const [loadingProgress, setLoadingProgress] = useState(75);
 
   const viewSegments = ['Today', 'Weekly', 'Radar'];
-  
+
   const searchSuggestions = ['San Francisco', 'New York', 'London', 'Tokyo'];
   const recentSearches = ['Los Angeles', 'Miami'];
 
@@ -36,30 +42,30 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
     {
       title: 'Share Weather',
       icon: <NavigationIcons.Share />,
-      onPress: () => console.log('Share weather')
+      onPress: () => console.log('Share weather'),
     },
     {
       title: 'Add to Favorites',
       icon: <NavigationIcons.Add />,
-      onPress: () => console.log('Add to favorites')
+      onPress: () => console.log('Add to favorites'),
     },
     {
       title: 'Refresh Data',
       icon: <NavigationIcons.Refresh />,
-      onPress: () => console.log('Refresh data')
+      onPress: () => console.log('Refresh data'),
     },
     {
       title: 'Delete Location',
       icon: <NavigationIcons.Close />,
       destructive: true,
-      onPress: () => console.log('Delete location')
-    }
+      onPress: () => console.log('Delete location'),
+    },
   ];
 
   const containerStyle: React.CSSProperties = {
     minHeight: '100vh',
     backgroundColor: theme.appBackground,
-    color: theme.primaryText
+    color: theme.primaryText,
   };
 
   const contentStyle: React.CSSProperties = {
@@ -68,20 +74,20 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
     flexDirection: 'column',
     gap: '24px',
     maxWidth: '400px',
-    margin: '0 auto'
+    margin: '0 auto',
   };
 
   const sectionStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   };
 
   const sectionTitleStyle: React.CSSProperties = {
     fontSize: '22px',
     fontWeight: '600',
     color: theme.primaryText,
-    margin: '0 0 8px 0'
+    margin: '0 0 8px 0',
   };
 
   const cardStyle: React.CSSProperties = {
@@ -89,7 +95,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
     borderRadius: '16px',
     padding: '20px',
     border: `1px solid ${theme.cardBorder}`,
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
   };
 
   return (
@@ -100,11 +106,11 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
         subtitle="San Francisco, CA"
         leadingButton={{
           icon: <NavigationIcons.Menu />,
-          onPress: () => console.log('Menu pressed')
+          onPress: () => console.log('Menu pressed'),
         }}
         trailingButton={{
           icon: <NavigationIcons.Settings />,
-          onPress: () => setShowActionSheet(true)
+          onPress: () => setShowActionSheet(true),
         }}
         searchBar={
           <EnhancedSearchBar
@@ -115,7 +121,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
             isDark={isDark}
             suggestions={searchSuggestions}
             recentSearches={recentSearches}
-            onSubmit={(text) => console.log('Search:', text)}
+            onSubmit={text => console.log('Search:', text)}
           />
         }
         theme={theme}
@@ -149,7 +155,13 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Loading States</h2>
           <div style={cardStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+              }}
+            >
               <ActivityIndicator size="small" theme={theme} text="Loading..." />
               <ActivityIndicator size="medium" theme={theme} />
               <ActivityIndicator size="large" theme={theme} color="#007AFF" />
@@ -161,22 +173,38 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Data Sync Progress</h2>
           <div style={cardStyle}>
-            <ProgressIndicator 
-              progress={loadingProgress} 
-              theme={theme} 
+            <ProgressIndicator
+              progress={loadingProgress}
+              theme={theme}
               showPercentage={true}
               color="#34C759"
             />
             <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-              <button 
-                onClick={() => setLoadingProgress(Math.max(0, loadingProgress - 25))}
-                style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', backgroundColor: '#FF3B30', color: 'white' }}
+              <button
+                onClick={() =>
+                  setLoadingProgress(Math.max(0, loadingProgress - 25))
+                }
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#FF3B30',
+                  color: 'white',
+                }}
               >
                 -25%
               </button>
-              <button 
-                onClick={() => setLoadingProgress(Math.min(100, loadingProgress + 25))}
-                style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', backgroundColor: '#34C759', color: 'white' }}
+              <button
+                onClick={() =>
+                  setLoadingProgress(Math.min(100, loadingProgress + 25))
+                }
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#34C759',
+                  color: 'white',
+                }}
               >
                 +25%
               </button>
@@ -233,7 +261,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
               borderRadius: '12px',
               fontSize: '17px',
               fontWeight: '600',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Show Action Sheet

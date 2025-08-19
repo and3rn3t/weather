@@ -1,6 +1,7 @@
 # iOS Human Interface Guidelines Components Added
 
-Based on Apple's iOS Human Interface Guidelines, I've added several premium visual components to enhance your weather app with native iOS-style interactions and animations.
+Based on Apple's iOS Human Interface Guidelines, I've added several premium visual components to
+enhance your weather app with native iOS-style interactions and animations.
 
 ## 🎨 New Visual Components Added
 
@@ -182,4 +183,5 @@ To add these to your existing weather screens:
 5. **Loading States**: Replace basic spinners with iOS activity indicators
 6. **Alerts**: Use status badges for weather warnings and alerts
 
-These components transform your weather app into a premium, iOS-native experience that users will love! 🌟
+These components transform your weather app into a premium, iOS-native experience that users will
+love! 🌟

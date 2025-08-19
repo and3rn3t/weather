@@ -1,6 +1,6 @@
 /**
  * Pull-to-Refresh Mobile Test Suite
- * 
+ *
  * Tests for pull-to-refresh functionality on mobile devices,
  * ensuring proper touch handling and visual feedback.
  */
@@ -16,34 +16,38 @@ import { usePullToRefresh } from '../usePullToRefresh';
 // Mock touch events for mobile simulation
 const createTouchEvent = (type: string, clientY: number) => {
   return new TouchEvent(type, {
-    touches: [{
-      clientY,
-      clientX: 0,
-      identifier: 0,
-      target: document.body,
-      pageX: 0,
-      pageY: clientY,
-      screenX: 0,
-      screenY: clientY,
-      radiusX: 1,
-      radiusY: 1,
-      rotationAngle: 0,
-      force: 1,
-    } as unknown as Touch],
-    changedTouches: [{
-      clientY,
-      clientX: 0,
-      identifier: 0,
-      target: document.body,
-      pageX: 0,
-      pageY: clientY,
-      screenX: 0,
-      screenY: clientY,
-      radiusX: 1,
-      radiusY: 1,
-      rotationAngle: 0,
-      force: 1,
-    } as unknown as Touch],
+    touches: [
+      {
+        clientY,
+        clientX: 0,
+        identifier: 0,
+        target: document.body,
+        pageX: 0,
+        pageY: clientY,
+        screenX: 0,
+        screenY: clientY,
+        radiusX: 1,
+        radiusY: 1,
+        rotationAngle: 0,
+        force: 1,
+      } as unknown as Touch,
+    ],
+    changedTouches: [
+      {
+        clientY,
+        clientX: 0,
+        identifier: 0,
+        target: document.body,
+        pageX: 0,
+        pageY: clientY,
+        screenX: 0,
+        screenY: clientY,
+        radiusX: 1,
+        radiusY: 1,
+        rotationAngle: 0,
+        force: 1,
+      } as unknown as Touch,
+    ],
     bubbles: true,
     cancelable: true,
   });
@@ -52,14 +56,14 @@ const createTouchEvent = (type: string, clientY: number) => {
 // Helper functions for tests
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <HapticFeedbackProvider>
-    <ThemeProvider>
-      {children}
-    </ThemeProvider>
+    <ThemeProvider>{children}</ThemeProvider>
   </HapticFeedbackProvider>
 );
 
 // Test components moved to top-level to avoid deep nesting
-const TestComponent: React.FC<{ refreshCallback: ReturnType<typeof vi.fn> }> = ({ refreshCallback }) => {
+const TestComponent: React.FC<{
+  refreshCallback: ReturnType<typeof vi.fn>;
+}> = ({ refreshCallback }) => {
   const refreshFn = () => {
     refreshCallback();
     return Promise.resolve();
@@ -76,7 +80,10 @@ const TestComponent: React.FC<{ refreshCallback: ReturnType<typeof vi.fn> }> = (
   );
 };
 
-function handleLoadingRefresh(setIsRefreshing: React.Dispatch<React.SetStateAction<boolean>>, slowRefresh: () => Promise<void>) {
+function handleLoadingRefresh(
+  setIsRefreshing: React.Dispatch<React.SetStateAction<boolean>>,
+  slowRefresh: () => Promise<void>
+) {
   return async () => {
     setIsRefreshing(true);
     await slowRefresh();
@@ -84,7 +91,9 @@ function handleLoadingRefresh(setIsRefreshing: React.Dispatch<React.SetStateActi
   };
 }
 
-const LoadingTestComponent: React.FC<{ slowRefresh: ReturnType<typeof vi.fn> }> = ({ slowRefresh }) => {
+const LoadingTestComponent: React.FC<{
+  slowRefresh: ReturnType<typeof vi.fn>;
+}> = ({ slowRefresh }) => {
   const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   const handleRefresh = handleLoadingRefresh(setIsRefreshing, slowRefresh);
@@ -119,7 +128,9 @@ const AndroidTestContent: React.FC = () => {
   );
 };
 
-const HookTestComponent: React.FC<{ onRefresh: () => Promise<void> }> = ({ onRefresh }) => {
+const HookTestComponent: React.FC<{ onRefresh: () => Promise<void> }> = ({
+  onRefresh,
+}) => {
   const {
     pullDistance,
     isRefreshing,
@@ -132,14 +143,13 @@ const HookTestComponent: React.FC<{ onRefresh: () => Promise<void> }> = ({ onRef
   });
 
   return (
-    <div
-      data-testid="hook-container"
-      {...pullToRefreshHandlers}
-    >
+    <div data-testid="hook-container" {...pullToRefreshHandlers}>
       <div data-testid="pull-distance">{pullDistance}</div>
       <div data-testid="is-refreshing">{isRefreshing.toString()}</div>
       <div data-testid="can-refresh">{canRefresh.toString()}</div>
-      <button onClick={resetState} data-testid="reset-button">Reset</button>
+      <button onClick={resetState} data-testid="reset-button">
+        Reset
+      </button>
     </div>
   );
 };
@@ -156,8 +166,9 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
     // Mock iOS Safari user agent
     Object.defineProperty(navigator, 'userAgent', {
-      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
-      configurable: true
+      value:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
+      configurable: true,
     });
   });
 
@@ -204,7 +215,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       // Mock Android Chrome user agent
       Object.defineProperty(navigator, 'userAgent', {
         value: 'Mozilla/5.0 (Linux; Android 11; SM-G975F) AppleWebKit/537.36',
-        configurable: true
+        configurable: true,
       });
     });
 
@@ -246,7 +257,8 @@ describe('Pull-to-Refresh Mobile Tests', () => {
         </TestWrapper>
       );
 
-      const container = screen.getByTestId('scrollable-content').parentElement?.parentElement;
+      const container =
+        screen.getByTestId('scrollable-content').parentElement?.parentElement;
 
       // Try to pull when already scrolled (should not trigger)
       const touchStart = createTouchEvent('touchstart', 100);
@@ -300,7 +312,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
       // Test that initial state is correct
       expect(screen.getByTestId('is-refreshing')).toHaveTextContent('false');
-      
+
       // Manual refresh call to test the function
       await slowRefresh();
       expect(slowRefresh).toHaveBeenCalled();
@@ -315,7 +327,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
       const container = screen.getByTestId('hook-container');
       expect(container).toBeInTheDocument();
-      
+
       // Test that the component renders successfully with all expected elements
       expect(screen.getByTestId('pull-distance')).toBeInTheDocument();
       expect(screen.getByTestId('is-refreshing')).toBeInTheDocument();
@@ -325,8 +337,10 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle refresh errors gracefully', async () => {
-      const failingRefresh = vi.fn().mockRejectedValue(new Error('Network error'));
-      
+      const failingRefresh = vi
+        .fn()
+        .mockRejectedValue(new Error('Network error'));
+
       // Test error handling directly
       try {
         await failingRefresh();
@@ -357,7 +371,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
 
       const container = screen.getByTestId('disabled-content');
       expect(container).toBeInTheDocument();
-      
+
       // Component should render without allowing refresh
       expect(refreshCallback).not.toHaveBeenCalled();
     });

@@ -8,7 +8,8 @@
 
 ## Reporting a Vulnerability
 
-We take security vulnerabilities seriously. If you discover a security vulnerability in this weather application, please report it responsibly:
+We take security vulnerabilities seriously. If you discover a security vulnerability in this weather
+application, please report it responsibly:
 
 ### How to Report
 

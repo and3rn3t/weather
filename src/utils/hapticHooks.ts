@@ -1,11 +1,14 @@
 /**
  * Enhanced Haptic Feedback Hooks
- * 
+ *
  * Integrates with the enhanced haptic service for both web and native haptics
  */
 
 import { useContext } from 'react';
-import { HapticFeedbackContext, type HapticFeedbackContextType } from './hapticContext';
+import {
+  HapticFeedbackContext,
+  type HapticFeedbackContextType,
+} from './hapticContext';
 import { useEnhancedHaptics, type HapticConfig } from './enhancedHapticService';
 
 // ============================================================================
@@ -14,11 +17,13 @@ import { useEnhancedHaptics, type HapticConfig } from './enhancedHapticService';
 
 export const useHapticContext = (): HapticFeedbackContextType => {
   const context = useContext(HapticFeedbackContext);
-  
+
   if (context === undefined) {
-    throw new Error('useHapticContext must be used within a HapticFeedbackProvider');
+    throw new Error(
+      'useHapticContext must be used within a HapticFeedbackProvider'
+    );
   }
-  
+
   return context;
 };
 
@@ -33,7 +38,7 @@ export const useHapticContext = (): HapticFeedbackContextType => {
 export const useHaptic = (config?: HapticConfig) => {
   const context = useHapticContext();
   const { haptic: hapticCore, isSupported, isEnabled } = context;
-  
+
   // Get enhanced haptics service
   const enhancedHaptics = useEnhancedHaptics(config);
 
@@ -51,10 +56,10 @@ export const useHaptic = (config?: HapticConfig) => {
   return {
     // Core haptic functions (legacy support)
     ...hapticCore,
-    
+
     // Enhanced haptic functions
     ...enhancedHaptics,
-    
+
     // App-specific convenience methods
     buttonPress,
     buttonConfirm,
@@ -65,13 +70,13 @@ export const useHaptic = (config?: HapticConfig) => {
     settingsChange,
     dataLoad,
     criticalAlert,
-    
+
     // Status information
     isSupported,
     isEnabled,
-    
+
     // Enhanced capabilities
-    capabilities: enhancedHaptics.getCapabilities()
+    capabilities: enhancedHaptics.getCapabilities(),
   };
 };
 
@@ -84,7 +89,7 @@ export const useHaptic = (config?: HapticConfig) => {
  */
 export const useWeatherHaptics = (config?: HapticConfig) => {
   const haptics = useEnhancedHaptics(config);
-  
+
   return {
     weatherLoad: haptics.weatherLoad,
     weatherRefresh: haptics.weatherRefresh,
@@ -93,7 +98,7 @@ export const useWeatherHaptics = (config?: HapticConfig) => {
     searchSuccess: haptics.searchSuccess,
     searchError: haptics.searchError,
     criticalAlert: haptics.heavy,
-    dataLoad: haptics.weatherLoad
+    dataLoad: haptics.weatherLoad,
   };
 };
 
@@ -102,14 +107,14 @@ export const useWeatherHaptics = (config?: HapticConfig) => {
  */
 export const useGestureHaptics = (config?: HapticConfig) => {
   const haptics = useEnhancedHaptics(config);
-  
+
   return {
     swipeStart: haptics.swipeStart,
     swipeProgress: haptics.swipeProgress,
     swipeComplete: haptics.swipeComplete,
     pullToRefresh: haptics.pullToRefresh,
     progressiveFeedback: haptics.progressiveFeedback,
-    longPress: haptics.longPress
+    longPress: haptics.longPress,
   };
 };
 
@@ -118,7 +123,7 @@ export const useGestureHaptics = (config?: HapticConfig) => {
  */
 export const useUIHaptics = (config?: HapticConfig) => {
   const haptics = useEnhancedHaptics(config);
-  
+
   return {
     buttonPress: haptics.buttonPress,
     buttonConfirm: haptics.buttonConfirm,
@@ -126,7 +131,7 @@ export const useUIHaptics = (config?: HapticConfig) => {
     navigation: haptics.navigation,
     success: haptics.success,
     error: haptics.error,
-    warning: haptics.warning
+    warning: haptics.warning,
   };
 };
 

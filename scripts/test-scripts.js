@@ -36,7 +36,7 @@ const scripts = [
   'dev-doctor.js',
   'mobile-deploy.js',
   'performance-monitor.js',
-  'quick-setup.js'
+  'quick-setup.js',
 ];
 
 console.log('\n📋 Checking script files:');

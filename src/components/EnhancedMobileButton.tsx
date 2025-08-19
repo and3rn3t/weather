@@ -1,6 +1,6 @@
 /**
  * Enhanced Mobile Button Component
- * 
+ *
  * A high-quality mobile button with:
  * - Proper touch targets (44px minimum)
  * - Haptic feedback
@@ -42,7 +42,7 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
   className = '',
   style = {},
   ariaLabel,
-  type = 'button'
+  type = 'button',
 }) => {
   const { theme } = useTheme();
   const haptic = useHaptic();
@@ -51,10 +51,10 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
 
   const handleClick = () => {
     if (disabled || loading) return;
-    
+
     // Haptic feedback
     haptic.buttonPress();
-    
+
     // Call the onClick handler
     if (onClick) {
       onClick();
@@ -78,21 +78,21 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
           minHeight: '36px',
           padding: '8px 16px',
           fontSize: '14px',
-          fontWeight: 500
+          fontWeight: 500,
         };
       case 'large':
         return {
           minHeight: '52px',
           padding: '16px 24px',
           fontSize: '18px',
-          fontWeight: 600
+          fontWeight: 600,
         };
       default: // medium
         return {
           minHeight: '44px',
           padding: '12px 20px',
           fontSize: '16px',
-          fontWeight: 600
+          fontWeight: 600,
         };
     }
   };
@@ -105,7 +105,7 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
           background: theme.cardBackground || 'rgba(255, 255, 255, 0.1)',
           color: theme.primaryText,
           border: `1px solid ${theme.cardBorder || 'rgba(255, 255, 255, 0.2)'}`,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         };
       case 'glass':
         return {
@@ -113,21 +113,23 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
           color: theme.primaryText,
           border: '1px solid rgba(255, 255, 255, 0.2)',
           backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         };
       case 'outline':
         return {
           background: 'transparent',
           color: theme.primaryText,
           border: `2px solid ${theme.primaryText}`,
-          boxShadow: 'none'
+          boxShadow: 'none',
         };
       default: // primary
         return {
-          background: theme.primaryGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background:
+            theme.primaryGradient ||
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: '#ffffff',
           border: 'none',
-          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
         };
     }
   };
@@ -153,24 +155,24 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
     width: fullWidth ? '100%' : 'auto',
     position: 'relative' as const,
     overflow: 'hidden' as const,
-    
+
     // Animation states
     transform: isPressed ? 'scale(0.98)' : 'scale(1)',
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-    
+
     // Disabled state
     opacity: disabled ? 0.6 : 1,
-    
+
     // Loading state adjustments
     ...(loading && {
       cursor: 'wait',
-      pointerEvents: 'none' as const
-    })
+      pointerEvents: 'none' as const,
+    }),
   };
 
   const combinedStyles = {
     ...baseStyles,
-    ...style
+    ...style,
   };
 
   const renderIcon = () => {
@@ -183,7 +185,7 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
             borderRadius: '50%',
             border: '2px solid currentColor',
             borderTopColor: 'transparent',
-            animation: 'spin 1s linear infinite'
+            animation: 'spin 1s linear infinite',
           }}
         />
       );
@@ -203,7 +205,7 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
               border: '2px solid currentColor',
               borderTopColor: 'transparent',
               animation: 'spin 1s linear infinite',
-              marginRight: '8px'
+              marginRight: '8px',
             }}
           />
           {children}
@@ -256,19 +258,18 @@ const EnhancedMobileButton: React.FC<EnhancedMobileButtonProps> = ({
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
+          background:
+            'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
           opacity: isPressed ? 1 : 0,
           transform: isPressed ? 'scale(1)' : 'scale(0)',
           transition: 'all 0.2s ease',
           pointerEvents: 'none',
-          borderRadius: 'inherit'
+          borderRadius: 'inherit',
         }}
       />
-      
+
       {/* Button content */}
-      <span style={{ position: 'relative', zIndex: 1 }}>
-        {renderContent()}
-      </span>
+      <span style={{ position: 'relative', zIndex: 1 }}>{renderContent()}</span>
     </button>
   );
 };

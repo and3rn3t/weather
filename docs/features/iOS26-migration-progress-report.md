@@ -161,7 +161,8 @@ In VS Code: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
 
 ## 🚀 Ready for Production
 
-The iOS 26 design system is now **80% integrated** into the main weather interface. The core user experience has been transformed with:
+The iOS 26 design system is now **80% integrated** into the main weather interface. The core user
+experience has been transformed with:
 
 - **Modern iOS 26 visual language**
 - **Advanced material effects**
@@ -169,7 +170,8 @@ The iOS 26 design system is now **80% integrated** into the main weather interfa
 - **Touch-optimized interactions**
 - **Enhanced accessibility features**
 
-Once the TypeScript configuration is resolved, the app will have a complete iOS 26 makeover with authentic Apple design patterns and cutting-edge mobile interface elements!
+Once the TypeScript configuration is resolved, the app will have a complete iOS 26 makeover with
+authentic Apple design patterns and cutting-edge mobile interface elements!
 
 ---
 

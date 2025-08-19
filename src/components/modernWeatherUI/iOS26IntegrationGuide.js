@@ -1,10 +1,10 @@
 /**
  * iOS 26 Integration Guide - August 2025
- * 
+ *
  * This file demonstrates how to integrate the new iOS 26 weather interface
  * with the existing AppNavigator component. It provides a practical example
  * of applying iOS 26 design classes to existing weather components.
- * 
+ *
  * Usage:
  * 1. Import this component into AppNavigator.tsx
  * 2. Replace existing weather card components with iOS 26 versions
@@ -140,27 +140,27 @@ const iOS26WeatherCardExample = `
 
 /**
  * Quick Integration Steps:
- * 
+ *
  * 1. TYPOGRAPHY: Replace existing text classes
  *    OLD: className="temperature-display"
  *    NEW: className="ios26-temperature-value ios26-text-large-title"
- * 
+ *
  * 2. CARDS: Replace weather card containers
  *    OLD: className="weather-card"
  *    NEW: className="ios26-main-weather-card" or "ios26-weather-metric"
- * 
+ *
  * 3. LAYOUT: Use iOS 26 layout classes
  *    OLD: className="metrics-grid"
  *    NEW: className="ios26-weather-metrics-grid"
- * 
+ *
  * 4. COLORS: Apply iOS 26 color classes
  *    OLD: style={{ color: theme.textPrimary }}
  *    NEW: className="ios26-text-primary"
- * 
+ *
  * 5. SPACING: Use iOS 26 spacing tokens
  *    OLD: style={{ marginBottom: '16px' }}
  *    NEW: className="ios26-mb-4" (or use CSS custom properties)
- * 
+ *
  * 6. BUTTONS: Enhance with iOS 26 button styles
  *    OLD: className="refresh-button"
  *    NEW: className="ios26-button ios26-button-secondary"
@@ -207,7 +207,7 @@ const iOS26NavigationExample = `
 
 /**
  * CSS Class Reference - Quick Lookup:
- * 
+ *
  * TYPOGRAPHY:
  * - ios26-text-large-title: 34px, bold (main temperatures)
  * - ios26-text-title1: 28px, bold (section headers)
@@ -218,19 +218,19 @@ const iOS26NavigationExample = `
  * - ios26-text-body: 17px, regular (body text)
  * - ios26-text-footnote: 13px, regular (time, labels)
  * - ios26-text-caption: 12px, regular (small details)
- * 
+ *
  * COLORS:
  * - ios26-text-primary: Main text color
  * - ios26-text-secondary: Secondary text (60% opacity)
  * - ios26-text-tertiary: Tertiary text (40% opacity)
  * - ios26-text-quaternary: Quaternary text (25% opacity)
- * 
+ *
  * MATERIALS:
  * - ios26-material-thin: Light glassmorphism
  * - ios26-material-regular: Standard glassmorphism
  * - ios26-material-thick: Heavy glassmorphism
  * - ios26-material-chrome: Chrome-like surface
- * 
+ *
  * COMPONENTS:
  * - ios26-main-weather-card: Primary weather display
  * - ios26-weather-metrics-grid: Metrics layout grid

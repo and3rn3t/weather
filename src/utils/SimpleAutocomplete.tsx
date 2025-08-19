@@ -23,13 +23,13 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
   onCitySelected,
   theme,
   disabled = false,
-  placeholder = "Search cities..."
+  placeholder = 'Search cities...',
 }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<CityResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const timeoutRef = useRef<NodeJS.Timeout>();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -42,21 +42,24 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
     }
 
     setIsLoading(true);
-    
+
     try {
       const params = new URLSearchParams({
         q: searchTerm,
         format: 'json',
         limit: '5',
-        addressdetails: '1'
+        addressdetails: '1',
       });
-      
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
-        headers: {
-          'User-Agent': 'WeatherApp/1.0'
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?${params}`,
+        {
+          headers: {
+            'User-Agent': 'WeatherApp/1.0',
+          },
         }
-      });
-      
+      );
+
       if (response.ok) {
         const data: CityResult[] = await response.json();
         setResults(data.slice(0, 5));
@@ -76,7 +79,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     timeoutRef.current = setTimeout(() => {
       searchCities(query);
     }, 300);
@@ -89,18 +92,24 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
   }, [query, searchCities]);
 
   // Handle selection
-  const handleSelect = useCallback((result: CityResult) => {
-    const cityName = result.display_name.split(',')[0];
-    setQuery(cityName);
-    setIsOpen(false);
-    setResults([]);
-    onCitySelected(cityName, parseFloat(result.lat), parseFloat(result.lon));
-  }, [onCitySelected]);
+  const handleSelect = useCallback(
+    (result: CityResult) => {
+      const cityName = result.display_name.split(',')[0];
+      setQuery(cityName);
+      setIsOpen(false);
+      setResults([]);
+      onCitySelected(cityName, parseFloat(result.lat), parseFloat(result.lon));
+    },
+    [onCitySelected]
+  );
 
   // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -114,7 +123,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={e => setQuery(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
         className="simple-autocomplete-input"
@@ -126,25 +135,27 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
           background: 'rgba(255,255,255,0.1)',
           color: theme?.primaryText || '#333',
           fontSize: '16px',
-          outline: 'none'
+          outline: 'none',
         }}
       />
-      
+
       {isLoading && (
-        <div style={{
-          position: 'absolute',
-          right: '16px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: '20px',
-          height: '20px',
-          border: '2px solid #ccc',
-          borderTop: '2px solid #667eea',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
+        <div
+          style={{
+            position: 'absolute',
+            right: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '20px',
+            height: '20px',
+            border: '2px solid #ccc',
+            borderTop: '2px solid #667eea',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }}
+        />
       )}
-      
+
       {isOpen && results.length > 0 && (
         <div
           className="simple-autocomplete-dropdown"
@@ -160,13 +171,13 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
             zIndex: 1000,
             maxHeight: '300px',
-            overflow: 'auto'
+            overflow: 'auto',
           }}
         >
-          {results.map((result) => (
+          {results.map(result => (
             <button
               key={result.place_id}
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleSelect(result);
@@ -179,12 +190,13 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
                 textAlign: 'left',
                 cursor: 'pointer',
                 color: theme?.primaryText || '#333',
-                fontSize: '14px'
+                fontSize: '14px',
               }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.background = 'rgba(102,126,234,0.1)';
+              onMouseEnter={e => {
+                (e.target as HTMLElement).style.background =
+                  'rgba(102,126,234,0.1)';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={e => {
                 (e.target as HTMLElement).style.background = 'transparent';
               }}
             >
@@ -193,7 +205,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
           ))}
         </div>
       )}
-      
+
       <style>{`
         @keyframes spin {
           0% { transform: translateY(-50%) rotate(0deg); }

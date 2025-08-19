@@ -1,6 +1,6 @@
 /**
  * Performance Monitor Component
- * 
+ *
  * Tracks and displays real-time performance metrics for the weather app.
  * Useful for development and debugging performance issues.
  */
@@ -27,7 +27,7 @@ interface PerformanceMonitorProps {
 export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   theme,
   enabled = process.env.NODE_ENV === 'development',
-  position = 'bottom-right'
+  position = 'bottom-right',
 }) => {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     renderCount: 0,
@@ -35,9 +35,9 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     averageRenderTime: 0,
     cacheHitRate: 0,
     apiCallCount: 0,
-    lastApiCallTime: 0
+    lastApiCallTime: 0,
   });
-  
+
   const [isVisible, setIsVisible] = useState(false);
   const renderTimes = useRef<number[]>([]);
   const startTime = useRef<number>(Date.now());
@@ -48,19 +48,21 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     const measureRender = () => {
       const now = performance.now();
       renderTimes.current.push(now);
-      
+
       // Keep only last 10 render times
       if (renderTimes.current.length > 10) {
         renderTimes.current.shift();
       }
 
-      const averageTime = renderTimes.current.reduce((a, b) => a + b, 0) / renderTimes.current.length;
-      
+      const averageTime =
+        renderTimes.current.reduce((a, b) => a + b, 0) /
+        renderTimes.current.length;
+
       setMetrics(prev => ({
         ...prev,
         renderCount: prev.renderCount + 1,
         lastRenderTime: now,
-        averageRenderTime: averageTime
+        averageRenderTime: averageTime,
       }));
     };
 
@@ -77,7 +79,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
         const memoryInfo = performance.memory;
         setMetrics(prev => ({
           ...prev,
-          memoryUsage: Math.round(memoryInfo.usedJSHeapSize / 1024 / 1024) // MB
+          memoryUsage: Math.round(memoryInfo.usedJSHeapSize / 1024 / 1024), // MB
         }));
       }
     };
@@ -103,7 +105,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       opacity: isVisible ? 0.9 : 0.3,
       transition: 'opacity 0.3s ease',
       cursor: 'pointer',
-      minWidth: '120px'
+      minWidth: '120px',
     };
 
     switch (position) {
@@ -126,7 +128,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     <div
       style={getPositionStyles()}
       onClick={() => setIsVisible(!isVisible)}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           setIsVisible(!isVisible);
@@ -140,7 +142,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '9px' }}>
         ⚡ Performance
       </div>
-      
+
       {isVisible ? (
         <div style={{ lineHeight: '1.3' }}>
           <div>Renders: {metrics.renderCount}</div>
@@ -156,9 +158,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           </div>
         </div>
       ) : (
-        <div style={{ fontSize: '8px' }}>
-          {metrics.renderCount} renders
-        </div>
+        <div style={{ fontSize: '8px' }}>{metrics.renderCount} renders</div>
       )}
     </div>
   );

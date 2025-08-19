@@ -1,6 +1,6 @@
 /**
  * City Selector Component
- * 
+ *
  * Provides a dropdown interface for selecting from favorite and recent cities.
  * Features quick search, favorites management, and smooth animations.
  */
@@ -13,7 +13,11 @@ import type { ThemeColors } from './themeConfig';
 interface CitySelectorProps {
   theme: ThemeColors;
   isMobile: boolean;
-  onCitySelected: (cityName: string, latitude: number, longitude: number) => void;
+  onCitySelected: (
+    cityName: string,
+    latitude: number,
+    longitude: number
+  ) => void;
   disabled?: boolean;
   currentCity?: string;
   className?: string;
@@ -25,42 +29,46 @@ const CitySelector: React.FC<CitySelectorProps> = ({
   onCitySelected,
   disabled = false,
   currentCity,
-  className
+  className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  
+
   const {
     favorites,
     recentCities,
     getQuickAccessCities,
     toggleFavorite,
-    removeFromFavorites
+    removeFromFavorites,
   } = useCityManagement();
-  
+
   const haptic = useHaptic();
 
   // Filter cities based on search term
   const filteredCities = useCallback(() => {
     const allCities = getQuickAccessCities();
     if (!searchTerm.trim()) return allCities;
-    
+
     const term = searchTerm.toLowerCase();
-    return allCities.filter(city => 
-      city.name.toLowerCase().includes(term) ||
-      city.displayName.toLowerCase().includes(term) ||
-      city.country?.toLowerCase().includes(term) ||
-      city.state?.toLowerCase().includes(term)
+    return allCities.filter(
+      city =>
+        city.name.toLowerCase().includes(term) ||
+        city.displayName.toLowerCase().includes(term) ||
+        city.country?.toLowerCase().includes(term) ||
+        city.state?.toLowerCase().includes(term)
     );
   }, [getQuickAccessCities, searchTerm]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -76,21 +84,24 @@ const CitySelector: React.FC<CitySelectorProps> = ({
     }
   }, [isOpen]);
 
-  const handleCitySelect = useCallback((city: SavedCity) => {
-    haptic.buttonConfirm();
-    onCitySelected(city.name, city.latitude, city.longitude);
-    setIsOpen(false);
-    setSearchTerm('');
-    setHoveredIndex(-1);
-  }, [haptic, onCitySelected]);
+  const handleCitySelect = useCallback(
+    (city: SavedCity) => {
+      haptic.buttonConfirm();
+      onCitySelected(city.name, city.latitude, city.longitude);
+      setIsOpen(false);
+      setSearchTerm('');
+      setHoveredIndex(-1);
+    },
+    [haptic, onCitySelected]
+  );
 
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isOpen) return;
-      
+
       const cities = filteredCities();
-      
+
       switch (event.key) {
         case 'ArrowDown':
           event.preventDefault();
@@ -98,7 +109,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
           break;
         case 'ArrowUp':
           event.preventDefault();
-          setHoveredIndex(prev => prev <= 0 ? cities.length - 1 : prev - 1);
+          setHoveredIndex(prev => (prev <= 0 ? cities.length - 1 : prev - 1));
           break;
         case 'Enter':
           event.preventDefault();
@@ -128,7 +139,14 @@ const CitySelector: React.FC<CitySelectorProps> = ({
   const handleToggleFavorite = (city: SavedCity, event: React.MouseEvent) => {
     event.stopPropagation();
     haptic.buttonPress();
-    toggleFavorite(city.name, city.latitude, city.longitude, city.displayName, city.country, city.state);
+    toggleFavorite(
+      city.name,
+      city.latitude,
+      city.longitude,
+      city.displayName,
+      city.country,
+      city.state
+    );
   };
 
   const handleRemoveCity = (city: SavedCity, event: React.MouseEvent) => {
@@ -183,7 +201,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
     backdropFilter: 'blur(10px)',
     opacity: disabled ? 0.6 : 1,
     transform: isOpen ? 'translateY(-1px)' : 'translateY(0)',
-    boxShadow: isOpen ? theme.buttonShadow : 'none'
+    boxShadow: isOpen ? theme.buttonShadow : 'none',
   };
 
   const dropdownStyle: React.CSSProperties = {
@@ -203,24 +221,28 @@ const CitySelector: React.FC<CitySelectorProps> = ({
     transform: isOpen ? 'scale(1)' : 'scale(0.95)',
     opacity: isOpen ? 1 : 0,
     visibility: isOpen ? 'visible' : 'hidden',
-    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }} className={className}>
+    <div
+      ref={dropdownRef}
+      style={{ position: 'relative', width: '100%' }}
+      className={className}
+    >
       {/* Trigger Button */}
       <button
         onClick={handleToggle}
         disabled={disabled}
         style={buttonStyle}
-        onMouseEnter={(e) => {
+        onMouseEnter={e => {
           if (!disabled) {
             const target = e.target as HTMLButtonElement;
             target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             target.style.borderColor = theme.weatherCardBorder;
           }
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={e => {
           if (!disabled) {
             const target = e.target as HTMLButtonElement;
             target.style.backgroundColor = theme.toggleBackground;
@@ -229,21 +251,25 @@ const CitySelector: React.FC<CitySelectorProps> = ({
         }}
         title="Select from saved cities"
       >
-        <span style={{ 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          whiteSpace: 'nowrap',
-          flex: 1,
-          textAlign: 'left'
-        }}>
+        <span
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flex: 1,
+            textAlign: 'left',
+          }}
+        >
           {getCurrentCityDisplay()}
         </span>
-        <span style={{ 
-          marginLeft: '8px',
-          fontSize: '12px',
-          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-          transition: 'transform 0.2s ease'
-        }}>
+        <span
+          style={{
+            marginLeft: '8px',
+            fontSize: '12px',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+          }}
+        >
           ▼
         </span>
       </button>
@@ -257,7 +283,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
             type="text"
             placeholder="Search cities..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             style={{
               width: '100%',
               padding: '10px 12px',
@@ -267,26 +293,32 @@ const CitySelector: React.FC<CitySelectorProps> = ({
               color: theme.primaryText,
               fontSize: '14px',
               outline: 'none',
-              transition: 'border-color 0.2s ease'
+              transition: 'border-color 0.2s ease',
             }}
-            onFocus={(e) => e.target.style.borderColor = theme.weatherCardBorder}
-            onBlur={(e) => e.target.style.borderColor = theme.toggleBorder}
+            onFocus={e =>
+              (e.target.style.borderColor = theme.weatherCardBorder)
+            }
+            onBlur={e => (e.target.style.borderColor = theme.toggleBorder)}
           />
         </div>
 
         {/* City List */}
-        <div style={{ 
-          maxHeight: isMobile ? 'calc(70vh - 80px)' : '320px', 
-          overflowY: 'auto',
-          padding: '8px'
-        }}>
+        <div
+          style={{
+            maxHeight: isMobile ? 'calc(70vh - 80px)' : '320px',
+            overflowY: 'auto',
+            padding: '8px',
+          }}
+        >
           {hasNoCities && (
-            <div style={{
-              padding: '24px 16px',
-              textAlign: 'center',
-              color: theme.secondaryText,
-              fontSize: '14px'
-            }}>
+            <div
+              style={{
+                padding: '24px 16px',
+                textAlign: 'center',
+                color: theme.secondaryText,
+                fontSize: '14px',
+              }}
+            >
               <div style={{ fontSize: '32px', marginBottom: '8px' }}>🏙️</div>
               <div>No saved cities yet</div>
               <div style={{ fontSize: '12px', marginTop: '4px' }}>
@@ -294,126 +326,147 @@ const CitySelector: React.FC<CitySelectorProps> = ({
               </div>
             </div>
           )}
-          
+
           {!hasNoCities && cities.length === 0 && searchTerm && (
-            <div style={{
-              padding: '16px',
-              textAlign: 'center',
-              color: theme.secondaryText,
-              fontSize: '14px'
-            }}>
+            <div
+              style={{
+                padding: '16px',
+                textAlign: 'center',
+                color: theme.secondaryText,
+                fontSize: '14px',
+              }}
+            >
               No cities found for "{searchTerm}"
             </div>
           )}
 
-          {!hasNoCities && cities.length > 0 && cities.map((city, index) => (
-            <button
-              key={city.id}
-              onClick={() => handleCitySelect(city)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                padding: '12px 16px',
-                borderRadius: '8px',
-                border: 'none',
-                background: index === hoveredIndex ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                color: 'inherit',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                textAlign: 'left'
-              }}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(-1)}
-            >
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  color: theme.primaryText,
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  marginBottom: '2px'
-                }}>
-                  {formatCityDisplay(city)}
-                </div>
-                {city.isFavorite && (
-                  <div style={{
-                    color: theme.secondaryText,
-                    fontSize: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                    ⭐ Favorite
+          {!hasNoCities &&
+            cities.length > 0 &&
+            cities.map((city, index) => (
+              <button
+                key={city.id}
+                onClick={() => handleCitySelect(city)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background:
+                    index === hoveredIndex
+                      ? 'rgba(255, 255, 255, 0.1)'
+                      : 'transparent',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'left',
+                }}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(-1)}
+              >
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      color: theme.primaryText,
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      marginBottom: '2px',
+                    }}
+                  >
+                    {formatCityDisplay(city)}
                   </div>
-                )}
-              </div>
-              
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button
-                  onClick={(e) => handleToggleFavorite(city, e)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    padding: '4px',
-                    borderRadius: '4px',
-                    transition: 'background-color 0.2s ease'
-                  }}
-                  title={city.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLButtonElement).style.backgroundColor = 'transparent';
-                  }}
+                  {city.isFavorite && (
+                    <div
+                      style={{
+                        color: theme.secondaryText,
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      ⭐ Favorite
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
                 >
-                  {city.isFavorite ? '⭐' : '☆'}
-                </button>
-                
-                {city.isFavorite && (
                   <button
-                    onClick={(e) => handleRemoveCity(city, e)}
+                    onClick={e => handleToggleFavorite(city, e)}
                     style={{
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      fontSize: '14px',
+                      fontSize: '16px',
                       padding: '4px',
                       borderRadius: '4px',
-                      color: theme.secondaryText,
-                      transition: 'all 0.2s ease'
+                      transition: 'background-color 0.2s ease',
                     }}
-                    title="Remove from favorites"
-                    onMouseEnter={(e) => {
-                      const target = e.target as HTMLButtonElement;
-                      target.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-                      target.style.color = '#ff4444';
+                    title={
+                      city.isFavorite
+                        ? 'Remove from favorites'
+                        : 'Add to favorites'
+                    }
+                    onMouseEnter={e => {
+                      (e.target as HTMLButtonElement).style.backgroundColor =
+                        'rgba(255, 255, 255, 0.1)';
                     }}
-                    onMouseLeave={(e) => {
-                      const target = e.target as HTMLButtonElement;
-                      target.style.backgroundColor = 'transparent';
-                      target.style.color = theme.secondaryText;
+                    onMouseLeave={e => {
+                      (e.target as HTMLButtonElement).style.backgroundColor =
+                        'transparent';
                     }}
                   >
-                    ✕
+                    {city.isFavorite ? '⭐' : '☆'}
                   </button>
-                )}
-              </div>
-            </button>
-          ))}
+
+                  {city.isFavorite && (
+                    <button
+                      onClick={e => handleRemoveCity(city, e)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        color: theme.secondaryText,
+                        transition: 'all 0.2s ease',
+                      }}
+                      title="Remove from favorites"
+                      onMouseEnter={e => {
+                        const target = e.target as HTMLButtonElement;
+                        target.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                        target.style.color = '#ff4444';
+                      }}
+                      onMouseLeave={e => {
+                        const target = e.target as HTMLButtonElement;
+                        target.style.backgroundColor = 'transparent';
+                        target.style.color = theme.secondaryText;
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </button>
+            ))}
         </div>
 
         {/* Footer */}
         {cities.length > 0 && (
-          <div style={{
-            padding: '8px 16px',
-            borderTop: `1px solid ${theme.toggleBorder}`,
-            fontSize: '12px',
-            color: theme.secondaryText,
-            textAlign: 'center'
-          }}>
+          <div
+            style={{
+              padding: '8px 16px',
+              borderTop: `1px solid ${theme.toggleBorder}`,
+              fontSize: '12px',
+              color: theme.secondaryText,
+              textAlign: 'center',
+            }}
+          >
             {favorites.length} favorites • {recentCities.length} recent
           </div>
         )}

@@ -24,7 +24,7 @@
   --ios26-font-family-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   --ios26-font-family-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
   --ios26-font-family-mono: 'SF Mono', Consolas, 'Monaco', monospace;
-  
+
   /* iOS 26 Font Sizes with Dynamic Type Support */
   --ios26-text-caption2: clamp(10px, 2.5vw, 11px);
   --ios26-text-caption1: clamp(11px, 2.8vw, 12px);
@@ -37,7 +37,7 @@
   --ios26-text-title2: clamp(21px, 5.2vw, 24px);
   --ios26-text-title1: clamp(27px, 6.8vw, 32px);
   --ios26-text-large-title: clamp(33px, 8.2vw, 40px);
-  
+
   /* iOS 26 Font Weights */
   --ios26-weight-ultralight: 100;
   --ios26-weight-thin: 200;
@@ -48,7 +48,7 @@
   --ios26-weight-bold: 700;
   --ios26-weight-heavy: 800;
   --ios26-weight-black: 900;
-  
+
   /* iOS 26 Spacing Scale */
   --ios26-space-2: 2px;
   --ios26-space-4: 4px;
@@ -65,7 +65,7 @@
   --ios26-space-48: 48px;
   --ios26-space-56: 56px;
   --ios26-space-64: 64px;
-  
+
   /* iOS 26 Border Radius */
   --ios26-radius-xs: 4px;
   --ios26-radius-sm: 8px;
@@ -76,20 +76,20 @@
   --ios26-radius-3xl: 28px;
   --ios26-radius-4xl: 32px;
   --ios26-radius-full: 9999px;
-  
+
   /* iOS 26 Touch Targets */
   --ios26-touch-small: 44px;
   --ios26-touch-medium: 50px;
   --ios26-touch-large: 56px;
   --ios26-touch-xl: 64px;
-  
+
   /* iOS 26 Animation Curves */
   --ios26-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ios26-ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ios26-ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ios26-ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ios26-ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  
+
   /* iOS 26 Animation Durations */
   --ios26-duration-fast: 0.15s;
   --ios26-duration-normal: 0.25s;
@@ -102,38 +102,38 @@
    ============================================================================ */
 
 /* Light Mode Colors */
-[data-theme="light"] {
-  --ios26-color-primary: #007AFF;
+[data-theme='light'] {
+  --ios26-color-primary: #007aff;
   --ios26-color-primary-tint: rgba(0, 122, 255, 0.1);
-  --ios26-color-secondary: #5856D6;
-  --ios26-color-success: #34C759;
-  --ios26-color-warning: #FF9500;
-  --ios26-color-error: #FF3B30;
-  
+  --ios26-color-secondary: #5856d6;
+  --ios26-color-success: #34c759;
+  --ios26-color-warning: #ff9500;
+  --ios26-color-error: #ff3b30;
+
   /* Background Colors */
-  --ios26-bg-primary: #FFFFFF;
-  --ios26-bg-secondary: #F2F2F7;
-  --ios26-bg-tertiary: #FFFFFF;
-  --ios26-bg-grouped-primary: #F2F2F7;
-  --ios26-bg-grouped-secondary: #FFFFFF;
-  --ios26-bg-grouped-tertiary: #F2F2F7;
-  
+  --ios26-bg-primary: #ffffff;
+  --ios26-bg-secondary: #f2f2f7;
+  --ios26-bg-tertiary: #ffffff;
+  --ios26-bg-grouped-primary: #f2f2f7;
+  --ios26-bg-grouped-secondary: #ffffff;
+  --ios26-bg-grouped-tertiary: #f2f2f7;
+
   /* Text Colors */
   --ios26-text-primary: #000000;
   --ios26-text-secondary: rgba(60, 60, 67, 0.6);
   --ios26-text-tertiary: rgba(60, 60, 67, 0.3);
   --ios26-text-quaternary: rgba(60, 60, 67, 0.18);
-  
+
   /* Fill Colors */
   --ios26-fill-primary: rgba(120, 120, 128, 0.2);
   --ios26-fill-secondary: rgba(120, 120, 128, 0.16);
   --ios26-fill-tertiary: rgba(118, 118, 128, 0.12);
   --ios26-fill-quaternary: rgba(116, 116, 128, 0.08);
-  
+
   /* Separator Colors */
-  --ios26-separator-opaque: #C6C6C8;
+  --ios26-separator-opaque: #c6c6c8;
   --ios26-separator-non-opaque: rgba(60, 60, 67, 0.36);
-  
+
   /* Material Colors (Glassmorphism) */
   --ios26-material-ultrathick: rgba(255, 255, 255, 0.95);
   --ios26-material-thick: rgba(255, 255, 255, 0.8);
@@ -143,38 +143,38 @@
 }
 
 /* Dark Mode Colors */
-[data-theme="dark"] {
-  --ios26-color-primary: #0A84FF;
+[data-theme='dark'] {
+  --ios26-color-primary: #0a84ff;
   --ios26-color-primary-tint: rgba(10, 132, 255, 0.15);
-  --ios26-color-secondary: #5E5CE6;
-  --ios26-color-success: #30D158;
-  --ios26-color-warning: #FF9F0A;
-  --ios26-color-error: #FF453A;
-  
+  --ios26-color-secondary: #5e5ce6;
+  --ios26-color-success: #30d158;
+  --ios26-color-warning: #ff9f0a;
+  --ios26-color-error: #ff453a;
+
   /* Background Colors */
   --ios26-bg-primary: #000000;
-  --ios26-bg-secondary: #1C1C1E;
-  --ios26-bg-tertiary: #2C2C2E;
+  --ios26-bg-secondary: #1c1c1e;
+  --ios26-bg-tertiary: #2c2c2e;
   --ios26-bg-grouped-primary: #000000;
-  --ios26-bg-grouped-secondary: #1C1C1E;
-  --ios26-bg-grouped-tertiary: #2C2C2E;
-  
+  --ios26-bg-grouped-secondary: #1c1c1e;
+  --ios26-bg-grouped-tertiary: #2c2c2e;
+
   /* Text Colors */
-  --ios26-text-primary: #FFFFFF;
+  --ios26-text-primary: #ffffff;
   --ios26-text-secondary: rgba(235, 235, 245, 0.6);
   --ios26-text-tertiary: rgba(235, 235, 245, 0.3);
   --ios26-text-quaternary: rgba(235, 235, 245, 0.18);
-  
+
   /* Fill Colors */
   --ios26-fill-primary: rgba(120, 120, 128, 0.36);
   --ios26-fill-secondary: rgba(120, 120, 128, 0.32);
   --ios26-fill-tertiary: rgba(118, 118, 128, 0.28);
   --ios26-fill-quaternary: rgba(116, 116, 128, 0.24);
-  
+
   /* Separator Colors */
-  --ios26-separator-opaque: #38383A;
+  --ios26-separator-opaque: #38383a;
   --ios26-separator-non-opaque: rgba(84, 84, 88, 0.65);
-  
+
   /* Material Colors (Glassmorphism) */
   --ios26-material-ultrathick: rgba(28, 28, 30, 0.95);
   --ios26-material-thick: rgba(28, 28, 30, 0.8);
@@ -271,22 +271,40 @@
   font-family: var(--ios26-font-family-display);
   font-size: var(--ios26-text-large-title);
   font-weight: var(--ios26-weight-bold);
-  line-height: 1.0;
+  line-height: 1;
   letter-spacing: -0.03em;
 }
 
 /* Typography Modifiers */
-.ios26-text-regular { font-weight: var(--ios26-weight-regular); }
-.ios26-text-medium { font-weight: var(--ios26-weight-medium); }
-.ios26-text-semibold { font-weight: var(--ios26-weight-semibold); }
-.ios26-text-bold { font-weight: var(--ios26-weight-bold); }
-.ios26-text-heavy { font-weight: var(--ios26-weight-heavy); }
+.ios26-text-regular {
+  font-weight: var(--ios26-weight-regular);
+}
+.ios26-text-medium {
+  font-weight: var(--ios26-weight-medium);
+}
+.ios26-text-semibold {
+  font-weight: var(--ios26-weight-semibold);
+}
+.ios26-text-bold {
+  font-weight: var(--ios26-weight-bold);
+}
+.ios26-text-heavy {
+  font-weight: var(--ios26-weight-heavy);
+}
 
 /* Text Colors */
-.ios26-text-primary { color: var(--ios26-text-primary); }
-.ios26-text-secondary { color: var(--ios26-text-secondary); }
-.ios26-text-tertiary { color: var(--ios26-text-tertiary); }
-.ios26-text-quaternary { color: var(--ios26-text-quaternary); }
+.ios26-text-primary {
+  color: var(--ios26-text-primary);
+}
+.ios26-text-secondary {
+  color: var(--ios26-text-secondary);
+}
+.ios26-text-tertiary {
+  color: var(--ios26-text-tertiary);
+}
+.ios26-text-quaternary {
+  color: var(--ios26-text-quaternary);
+}
 
 /* ============================================================================
    iOS 26 MATERIAL COMPONENTS
@@ -298,18 +316,28 @@
   border: 1px solid var(--ios26-separator-non-opaque);
 }
 
-.ios26-material-ultrathick { background: var(--ios26-material-ultrathick); }
-.ios26-material-thick { background: var(--ios26-material-thick); }
-.ios26-material-regular { background: var(--ios26-material-regular); }
-.ios26-material-thin { background: var(--ios26-material-thin); }
-.ios26-material-ultrathin { background: var(--ios26-material-ultrathin); }
+.ios26-material-ultrathick {
+  background: var(--ios26-material-ultrathick);
+}
+.ios26-material-thick {
+  background: var(--ios26-material-thick);
+}
+.ios26-material-regular {
+  background: var(--ios26-material-regular);
+}
+.ios26-material-thin {
+  background: var(--ios26-material-thin);
+}
+.ios26-material-ultrathin {
+  background: var(--ios26-material-ultrathin);
+}
 
 /* Enhanced Material with Advanced Blur */
 .ios26-material-enhanced {
   backdrop-filter: blur(30px) saturate(1.8);
   -webkit-backdrop-filter: blur(30px) saturate(1.8);
   border: 1px solid var(--ios26-separator-non-opaque);
-  box-shadow: 
+  box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.05),
     0 4px 6px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -323,7 +351,7 @@
   background: var(--ios26-bg-grouped-secondary);
   border-radius: var(--ios26-radius-2xl);
   border: 1px solid var(--ios26-separator-non-opaque);
-  box-shadow: 
+  box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.05),
     0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all var(--ios26-duration-normal) var(--ios26-ease-in-out);
@@ -335,7 +363,7 @@
   -webkit-backdrop-filter: blur(20px);
   border-radius: var(--ios26-radius-3xl);
   border: 1px solid var(--ios26-separator-non-opaque);
-  box-shadow: 
+  box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.05),
     0 10px 15px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -348,7 +376,7 @@
   -webkit-backdrop-filter: blur(30px) saturate(1.8);
   border-radius: var(--ios26-radius-4xl);
   border: 1px solid var(--ios26-separator-non-opaque);
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(0, 0, 0, 0.1),
     0 20px 40px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -358,14 +386,14 @@
 /* Card Hover States */
 .ios26-card:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.08),
     0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .ios26-card-elevated:hover {
   transform: translateY(-3px) scale(1.01);
-  box-shadow: 
+  box-shadow:
     0 8px 15px rgba(0, 0, 0, 0.08),
     0 15px 25px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -373,16 +401,22 @@
 
 .ios26-card-floating:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.12),
     0 25px 50px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Card Active States */
-.ios26-card:active { transform: scale(0.98); }
-.ios26-card-elevated:active { transform: translateY(-1px) scale(0.99); }
-.ios26-card-floating:active { transform: translateY(-2px) scale(0.98); }
+.ios26-card:active {
+  transform: scale(0.98);
+}
+.ios26-card-elevated:active {
+  transform: translateY(-1px) scale(0.99);
+}
+.ios26-card-floating:active {
+  transform: translateY(-2px) scale(0.98);
+}
 
 /* ============================================================================
    iOS 26 BUTTONS
@@ -410,7 +444,7 @@
 
 .ios26-button-primary {
   background: var(--ios26-color-primary);
-  color: #FFFFFF;
+  color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 122, 255, 0.2);
 }
 
@@ -471,41 +505,101 @@
    iOS 26 SPACING UTILITIES
    ============================================================================ */
 
-.ios26-space-x-2 > * + * { margin-left: var(--ios26-space-2); }
-.ios26-space-x-4 > * + * { margin-left: var(--ios26-space-4); }
-.ios26-space-x-8 > * + * { margin-left: var(--ios26-space-8); }
-.ios26-space-x-12 > * + * { margin-left: var(--ios26-space-12); }
-.ios26-space-x-16 > * + * { margin-left: var(--ios26-space-16); }
-.ios26-space-x-20 > * + * { margin-left: var(--ios26-space-20); }
-.ios26-space-x-24 > * + * { margin-left: var(--ios26-space-24); }
+.ios26-space-x-2 > * + * {
+  margin-left: var(--ios26-space-2);
+}
+.ios26-space-x-4 > * + * {
+  margin-left: var(--ios26-space-4);
+}
+.ios26-space-x-8 > * + * {
+  margin-left: var(--ios26-space-8);
+}
+.ios26-space-x-12 > * + * {
+  margin-left: var(--ios26-space-12);
+}
+.ios26-space-x-16 > * + * {
+  margin-left: var(--ios26-space-16);
+}
+.ios26-space-x-20 > * + * {
+  margin-left: var(--ios26-space-20);
+}
+.ios26-space-x-24 > * + * {
+  margin-left: var(--ios26-space-24);
+}
 
-.ios26-space-y-2 > * + * { margin-top: var(--ios26-space-2); }
-.ios26-space-y-4 > * + * { margin-top: var(--ios26-space-4); }
-.ios26-space-y-8 > * + * { margin-top: var(--ios26-space-8); }
-.ios26-space-y-12 > * + * { margin-top: var(--ios26-space-12); }
-.ios26-space-y-16 > * + * { margin-top: var(--ios26-space-16); }
-.ios26-space-y-20 > * + * { margin-top: var(--ios26-space-20); }
-.ios26-space-y-24 > * + * { margin-top: var(--ios26-space-24); }
+.ios26-space-y-2 > * + * {
+  margin-top: var(--ios26-space-2);
+}
+.ios26-space-y-4 > * + * {
+  margin-top: var(--ios26-space-4);
+}
+.ios26-space-y-8 > * + * {
+  margin-top: var(--ios26-space-8);
+}
+.ios26-space-y-12 > * + * {
+  margin-top: var(--ios26-space-12);
+}
+.ios26-space-y-16 > * + * {
+  margin-top: var(--ios26-space-16);
+}
+.ios26-space-y-20 > * + * {
+  margin-top: var(--ios26-space-20);
+}
+.ios26-space-y-24 > * + * {
+  margin-top: var(--ios26-space-24);
+}
 
 /* Padding Utilities */
-.ios26-p-2 { padding: var(--ios26-space-2); }
-.ios26-p-4 { padding: var(--ios26-space-4); }
-.ios26-p-8 { padding: var(--ios26-space-8); }
-.ios26-p-12 { padding: var(--ios26-space-12); }
-.ios26-p-16 { padding: var(--ios26-space-16); }
-.ios26-p-20 { padding: var(--ios26-space-20); }
-.ios26-p-24 { padding: var(--ios26-space-24); }
-.ios26-p-32 { padding: var(--ios26-space-32); }
+.ios26-p-2 {
+  padding: var(--ios26-space-2);
+}
+.ios26-p-4 {
+  padding: var(--ios26-space-4);
+}
+.ios26-p-8 {
+  padding: var(--ios26-space-8);
+}
+.ios26-p-12 {
+  padding: var(--ios26-space-12);
+}
+.ios26-p-16 {
+  padding: var(--ios26-space-16);
+}
+.ios26-p-20 {
+  padding: var(--ios26-space-20);
+}
+.ios26-p-24 {
+  padding: var(--ios26-space-24);
+}
+.ios26-p-32 {
+  padding: var(--ios26-space-32);
+}
 
 /* Margin Utilities */
-.ios26-m-2 { margin: var(--ios26-space-2); }
-.ios26-m-4 { margin: var(--ios26-space-4); }
-.ios26-m-8 { margin: var(--ios26-space-8); }
-.ios26-m-12 { margin: var(--ios26-space-12); }
-.ios26-m-16 { margin: var(--ios26-space-16); }
-.ios26-m-20 { margin: var(--ios26-space-20); }
-.ios26-m-24 { margin: var(--ios26-space-24); }
-.ios26-m-32 { margin: var(--ios26-space-32); }
+.ios26-m-2 {
+  margin: var(--ios26-space-2);
+}
+.ios26-m-4 {
+  margin: var(--ios26-space-4);
+}
+.ios26-m-8 {
+  margin: var(--ios26-space-8);
+}
+.ios26-m-12 {
+  margin: var(--ios26-space-12);
+}
+.ios26-m-16 {
+  margin: var(--ios26-space-16);
+}
+.ios26-m-20 {
+  margin: var(--ios26-space-20);
+}
+.ios26-m-24 {
+  margin: var(--ios26-space-24);
+}
+.ios26-m-32 {
+  margin: var(--ios26-space-32);
+}
 
 /* ============================================================================
    iOS 26 ACCESSIBILITY & MOTION
@@ -518,7 +612,7 @@
   .ios26-button {
     transition: none;
   }
-  
+
   .ios26-card:hover,
   .ios26-card-elevated:hover,
   .ios26-card-floating:hover,
@@ -533,7 +627,7 @@
   .ios26-card-floating {
     border-width: 2px;
   }
-  
+
   .ios26-button {
     border-width: 2px;
     font-weight: var(--ios26-weight-bold);
@@ -579,40 +673,96 @@
    ============================================================================ */
 
 /* Text Alignment */
-.ios26-text-left { text-align: left; }
-.ios26-text-center { text-align: center; }
-.ios26-text-right { text-align: right; }
-.ios26-text-justify { text-align: justify; }
+.ios26-text-left {
+  text-align: left;
+}
+.ios26-text-center {
+  text-align: center;
+}
+.ios26-text-right {
+  text-align: right;
+}
+.ios26-text-justify {
+  text-align: justify;
+}
 
 /* Flexbox Utilities */
-.ios26-flex { display: flex; }
-.ios26-flex-col { flex-direction: column; }
-.ios26-flex-row { flex-direction: row; }
-.ios26-flex-wrap { flex-wrap: wrap; }
-.ios26-flex-nowrap { flex-wrap: nowrap; }
-.ios26-items-center { align-items: center; }
-.ios26-items-start { align-items: flex-start; }
-.ios26-items-end { align-items: flex-end; }
-.ios26-justify-center { justify-content: center; }
-.ios26-justify-start { justify-content: flex-start; }
-.ios26-justify-end { justify-content: flex-end; }
-.ios26-justify-between { justify-content: space-between; }
-.ios26-justify-around { justify-content: space-around; }
+.ios26-flex {
+  display: flex;
+}
+.ios26-flex-col {
+  flex-direction: column;
+}
+.ios26-flex-row {
+  flex-direction: row;
+}
+.ios26-flex-wrap {
+  flex-wrap: wrap;
+}
+.ios26-flex-nowrap {
+  flex-wrap: nowrap;
+}
+.ios26-items-center {
+  align-items: center;
+}
+.ios26-items-start {
+  align-items: flex-start;
+}
+.ios26-items-end {
+  align-items: flex-end;
+}
+.ios26-justify-center {
+  justify-content: center;
+}
+.ios26-justify-start {
+  justify-content: flex-start;
+}
+.ios26-justify-end {
+  justify-content: flex-end;
+}
+.ios26-justify-between {
+  justify-content: space-between;
+}
+.ios26-justify-around {
+  justify-content: space-around;
+}
 
 /* Grid Utilities */
-.ios26-grid { display: grid; }
-.ios26-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-.ios26-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-.ios26-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.ios26-grid {
+  display: grid;
+}
+.ios26-grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.ios26-grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.ios26-grid-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
 
 /* Gap Utilities */
-.ios26-gap-2 { gap: var(--ios26-space-2); }
-.ios26-gap-4 { gap: var(--ios26-space-4); }
-.ios26-gap-8 { gap: var(--ios26-space-8); }
-.ios26-gap-12 { gap: var(--ios26-space-12); }
-.ios26-gap-16 { gap: var(--ios26-space-16); }
-.ios26-gap-20 { gap: var(--ios26-space-20); }
-.ios26-gap-24 { gap: var(--ios26-space-24); }
+.ios26-gap-2 {
+  gap: var(--ios26-space-2);
+}
+.ios26-gap-4 {
+  gap: var(--ios26-space-4);
+}
+.ios26-gap-8 {
+  gap: var(--ios26-space-8);
+}
+.ios26-gap-12 {
+  gap: var(--ios26-space-12);
+}
+.ios26-gap-16 {
+  gap: var(--ios26-space-16);
+}
+.ios26-gap-20 {
+  gap: var(--ios26-space-20);
+}
+.ios26-gap-24 {
+  gap: var(--ios26-space-24);
+}
 
 /* Quick Actions Component */
 .ios26-quick-actions {
@@ -645,16 +795,28 @@
 }
 
 /* Height Utilities */
-.ios26-h-screen { min-height: 100vh; }
-.ios26-h-full { height: 100%; }
-.ios26-h-auto { height: auto; }
+.ios26-h-screen {
+  min-height: 100vh;
+}
+.ios26-h-full {
+  height: 100%;
+}
+.ios26-h-auto {
+  height: auto;
+}
 
 /* Width Utilities */
-.ios26-w-full { width: 100%; }
-.ios26-w-auto { width: auto; }
+.ios26-w-full {
+  width: 100%;
+}
+.ios26-w-auto {
+  width: auto;
+}
 
 /* Padding Override */
-.ios26-p-0 { padding: 0 !important; }
+.ios26-p-0 {
+  padding: 0 !important;
+}
 
 /* Pull to Refresh Indicator */
 .ios26-pull-indicator {

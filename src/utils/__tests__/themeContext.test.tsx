@@ -12,17 +12,17 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
   length: 0,
-  key: vi.fn()
+  key: vi.fn(),
 };
 
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+  value: localStorageMock,
 });
 
 // Test component to test the theme hook
 const TestComponent = () => {
   const { theme, isDark, toggleTheme } = useTheme();
-  
+
   return (
     <div>
       <div data-testid="theme-mode">{isDark ? 'dark' : 'light'}</div>
@@ -58,7 +58,7 @@ describe('Theme Context and Hook', () => {
   describe('ThemeProvider', () => {
     it('should provide light theme by default', () => {
       vi.mocked(localStorageMock.getItem).mockReturnValue(null);
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -70,7 +70,7 @@ describe('Theme Context and Hook', () => {
 
     it('should load saved theme from localStorage', () => {
       localStorageMock.getItem.mockReturnValue('dark');
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -78,12 +78,14 @@ describe('Theme Context and Hook', () => {
       );
 
       expect(screen.getByTestId('theme-mode')).toHaveTextContent('dark');
-      expect(localStorageMock.getItem).toHaveBeenCalledWith('weather-app-theme');
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        'weather-app-theme'
+      );
     });
 
     it('should apply correct theme colors', () => {
       localStorageMock.getItem.mockReturnValue(null);
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -96,7 +98,7 @@ describe('Theme Context and Hook', () => {
 
     it('should toggle theme correctly', () => {
       localStorageMock.getItem.mockReturnValue(null);
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -105,30 +107,36 @@ describe('Theme Context and Hook', () => {
 
       const toggleButton = screen.getByTestId('toggle-theme');
       const themeMode = screen.getByTestId('theme-mode');
-      
+
       // Initially light
       expect(themeMode).toHaveTextContent('light');
-      
+
       // Toggle to dark
       act(() => {
         fireEvent.click(toggleButton);
       });
-      
+
       expect(themeMode).toHaveTextContent('dark');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('weather-app-theme', 'dark');
-      
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'weather-app-theme',
+        'dark'
+      );
+
       // Toggle back to light
       act(() => {
         fireEvent.click(toggleButton);
       });
-      
+
       expect(themeMode).toHaveTextContent('light');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('weather-app-theme', 'light');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'weather-app-theme',
+        'light'
+      );
     });
 
     it('should update theme colors when toggling', () => {
       localStorageMock.getItem.mockReturnValue(null);
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -137,21 +145,21 @@ describe('Theme Context and Hook', () => {
 
       const toggleButton = screen.getByTestId('toggle-theme');
       const textElement = screen.getByTestId('primary-text');
-      
+
       // Initially light theme
       expect(textElement).toHaveStyle({ color: lightTheme.primaryText });
-      
+
       // Toggle to dark theme
       act(() => {
         fireEvent.click(toggleButton);
       });
-      
+
       expect(textElement).toHaveStyle({ color: darkTheme.primaryText });
     });
 
     it('should save theme preference to localStorage', () => {
       localStorageMock.getItem.mockReturnValue(null);
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -159,17 +167,20 @@ describe('Theme Context and Hook', () => {
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
-      
+
       act(() => {
         fireEvent.click(toggleButton);
       });
-      
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('weather-app-theme', 'dark');
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'weather-app-theme',
+        'dark'
+      );
     });
 
     it('should handle invalid localStorage values gracefully', () => {
       localStorageMock.getItem.mockReturnValue('invalid-theme');
-      
+
       render(
         <ThemeProvider>
           <TestComponent />
@@ -184,20 +195,22 @@ describe('Theme Context and Hook', () => {
   describe('useTheme hook', () => {
     it('should throw error when used outside ThemeProvider', () => {
       // Suppress console.error for this test
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
       render(<TestComponentWithoutProvider />);
-      
+
       expect(screen.getByTestId('error')).toHaveTextContent(
         'useTheme must be used within a ThemeProvider'
       );
-      
+
       consoleSpy.mockRestore();
     });
 
     it('should provide theme object with all required properties', () => {
       let capturedTheme: ThemeColors | undefined;
-      
+
       const TestComponentCapture = () => {
         const { theme } = useTheme();
         capturedTheme = theme;
@@ -218,8 +231,12 @@ describe('Theme Context and Hook', () => {
 
     it('should provide stable references for theme object', () => {
       const themeRefs: ThemeColors[] = [];
-      
-      const TestComponentStable = ({ renderCount }: { renderCount: number }) => {
+
+      const TestComponentStable = ({
+        renderCount,
+      }: {
+        renderCount: number;
+      }) => {
         const { theme } = useTheme();
         themeRefs[renderCount] = theme;
         return <div>Render {renderCount}</div>;
@@ -249,7 +266,7 @@ describe('Theme Context and Hook', () => {
     it('should persist theme across app reloads', () => {
       // First render with no saved theme
       localStorageMock.getItem.mockReturnValue(null);
-      
+
       const { unmount } = render(
         <ThemeProvider>
           <TestComponent />
@@ -257,19 +274,22 @@ describe('Theme Context and Hook', () => {
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
-      
+
       // Toggle to dark theme
       act(() => {
         fireEvent.click(toggleButton);
       });
-      
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('weather-app-theme', 'dark');
-      
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'weather-app-theme',
+        'dark'
+      );
+
       unmount();
-      
+
       // Simulate app reload with saved theme
       localStorageMock.getItem.mockReturnValue('dark');
-      
+
       render(
         <ThemeProvider>
           <TestComponent />

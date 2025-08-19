@@ -1,17 +1,17 @@
 /**
  * iOS Component Showcase - Demo of all iOS HIG components
- * 
+ *
  * This component demonstrates all the iOS Human Interface Guidelines components
  * we've implemented, showing their various states and configurations.
  */
 
 import React, { useState } from 'react';
-import { 
-  SimpleSegmentedControl, 
-  SimpleActivityIndicator, 
-  SimpleStatusBadge, 
+import {
+  SimpleSegmentedControl,
+  SimpleActivityIndicator,
+  SimpleStatusBadge,
   SimpleEnhancedButton,
-  SimpleCard
+  SimpleCard,
 } from './SimpleIOSComponents';
 import { ActionSheet } from './ActionSheet';
 import { NavigationBar } from './NavigationBar';
@@ -27,7 +27,7 @@ interface IOSComponentShowcaseProps {
 export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
   theme,
   onBack,
-  themeName
+  themeName,
 }) => {
   const [selectedView, setSelectedView] = useState(0);
   const [showActionSheet, setShowActionSheet] = useState(false);
@@ -36,7 +36,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
   const containerStyle: React.CSSProperties = {
     minHeight: '100vh',
     backgroundColor: theme.appBackground,
-    paddingBottom: '100px'
+    paddingBottom: '100px',
   };
 
   const contentStyle: React.CSSProperties = {
@@ -45,20 +45,20 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
     flexDirection: 'column',
     gap: '24px',
     maxWidth: '400px',
-    margin: '0 auto'
+    margin: '0 auto',
   };
 
   const sectionStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   };
 
   const sectionTitleStyle: React.CSSProperties = {
     fontSize: '20px',
     fontWeight: '600',
     color: theme.primaryText,
-    margin: '0 0 8px 0'
+    margin: '0 0 8px 0',
   };
 
   const simulateLoading = () => {
@@ -74,11 +74,11 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
         subtitle="Human Interface Guidelines Demo"
         leadingButton={{
           icon: <NavigationIcons.Back />,
-          onPress: onBack
+          onPress: onBack,
         }}
         trailingButton={{
           icon: <NavigationIcons.Settings />,
-          onPress: () => setShowActionSheet(true)
+          onPress: () => setShowActionSheet(true),
         }}
         theme={theme}
         isDark={themeName === 'dark'}
@@ -111,18 +111,53 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Activity Indicators</h2>
           <SimpleCard theme={theme}>
-            <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '20px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                padding: '20px',
+              }}
+            >
               <div style={{ textAlign: 'center' }}>
                 <SimpleActivityIndicator size="small" theme={theme} />
-                <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: theme.secondaryText }}>Small</p>
+                <p
+                  style={{
+                    margin: '8px 0 0 0',
+                    fontSize: '12px',
+                    color: theme.secondaryText,
+                  }}
+                >
+                  Small
+                </p>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <SimpleActivityIndicator size="medium" theme={theme} text="Loading..." />
-                <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: theme.secondaryText }}>Medium</p>
+                <SimpleActivityIndicator
+                  size="medium"
+                  theme={theme}
+                  text="Loading..."
+                />
+                <p
+                  style={{
+                    margin: '8px 0 0 0',
+                    fontSize: '12px',
+                    color: theme.secondaryText,
+                  }}
+                >
+                  Medium
+                </p>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <SimpleActivityIndicator size="large" theme={theme} />
-                <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: theme.secondaryText }}>Large</p>
+                <p
+                  style={{
+                    margin: '8px 0 0 0',
+                    fontSize: '12px',
+                    color: theme.secondaryText,
+                  }}
+                >
+                  Large
+                </p>
               </div>
             </div>
           </SimpleCard>
@@ -131,7 +166,9 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
         {/* Enhanced Buttons Demo */}
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Enhanced Buttons</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+          >
             <SimpleEnhancedButton
               title="Primary Action"
               onPress={() => console.log('Primary pressed')}
@@ -147,12 +184,12 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
               icon="🔧"
             />
             <SimpleEnhancedButton
-              title={isLoading ? "Processing..." : "Simulate Loading"}
+              title={isLoading ? 'Processing...' : 'Simulate Loading'}
               onPress={simulateLoading}
               variant="primary"
               theme={theme}
               disabled={isLoading}
-              icon={isLoading ? "⏳" : "🚀"}
+              icon={isLoading ? '⏳' : '🚀'}
             />
           </div>
         </div>
@@ -160,13 +197,26 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
         {/* Cards Demo */}
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Card Containers</h2>
-          
+
           <SimpleCard theme={theme} title="Weather Information">
             <div style={{ padding: '16px' }}>
-              <p style={{ color: theme.primaryText, margin: '0 0 8px 0', fontSize: '24px', fontWeight: '600' }}>
+              <p
+                style={{
+                  color: theme.primaryText,
+                  margin: '0 0 8px 0',
+                  fontSize: '24px',
+                  fontWeight: '600',
+                }}
+              >
                 72°F
               </p>
-              <p style={{ color: theme.secondaryText, margin: '0', fontSize: '14px' }}>
+              <p
+                style={{
+                  color: theme.secondaryText,
+                  margin: '0',
+                  fontSize: '14px',
+                }}
+              >
                 Partly cloudy with light winds
               </p>
               <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
@@ -179,8 +229,16 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
           <SimpleCard theme={theme}>
             <div style={{ textAlign: 'center', padding: '24px' }}>
               <div style={{ fontSize: '48px', marginBottom: '12px' }}>🌤️</div>
-              <h3 style={{ color: theme.primaryText, margin: '0 0 8px 0' }}>Weather Updates</h3>
-              <p style={{ color: theme.secondaryText, margin: '0', fontSize: '14px' }}>
+              <h3 style={{ color: theme.primaryText, margin: '0 0 8px 0' }}>
+                Weather Updates
+              </h3>
+              <p
+                style={{
+                  color: theme.secondaryText,
+                  margin: '0',
+                  fontSize: '14px',
+                }}
+              >
                 Real-time weather data from multiple sources
               </p>
             </div>
@@ -191,7 +249,14 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Interactive Elements</h2>
           <SimpleCard theme={theme} title="Try the Components">
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div
+              style={{
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+              }}
+            >
               <SimpleEnhancedButton
                 title="Show Action Sheet"
                 onPress={() => setShowActionSheet(true)}
@@ -200,8 +265,15 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
                 icon="📋"
               />
               <div>
-                <p style={{ color: theme.secondaryText, margin: '0 0 8px 0', fontSize: '14px' }}>
-                  Current Selection: {['Overview', 'Details', 'Settings'][selectedView]}
+                <p
+                  style={{
+                    color: theme.secondaryText,
+                    margin: '0 0 8px 0',
+                    fontSize: '14px',
+                  }}
+                >
+                  Current Selection:{' '}
+                  {['Overview', 'Details', 'Settings'][selectedView]}
                 </p>
                 <SimpleSegmentedControl
                   segments={['A', 'B', 'C']}
@@ -249,7 +321,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
             onPress: () => {
               console.log('Success demo');
               setShowActionSheet(false);
-            }
+            },
           },
           {
             title: 'Start Loading Demo',
@@ -257,7 +329,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
             onPress: () => {
               simulateLoading();
               setShowActionSheet(false);
-            }
+            },
           },
           {
             title: 'Share Components',
@@ -265,7 +337,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
             onPress: () => {
               console.log('Share demo');
               setShowActionSheet(false);
-            }
+            },
           },
           {
             title: 'Reset Demo',
@@ -275,8 +347,8 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
               setSelectedView(0);
               setIsLoading(false);
               setShowActionSheet(false);
-            }
-          }
+            },
+          },
         ]}
         theme={theme}
         isDark={themeName === 'dark'}

@@ -1,6 +1,6 @@
 /**
  * Geolocation Verification Component
- * 
+ *
  * Shows a confirmation dialog when location is detected, allowing users to
  * verify the detected location before proceeding with weather fetch.
  */
@@ -36,7 +36,7 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
   locationData,
   onConfirm,
   onCancel,
-  onRetry
+  onRetry,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const haptic = useHaptic();
@@ -54,12 +54,13 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
   // Handle confirm action
   const handleConfirm = () => {
     if (!locationData) return;
-    
+
     haptic.buttonConfirm();
-    const cityName = locationData.address?.city || 
-                     locationData.address?.display || 
-                     `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}`;
-    
+    const cityName =
+      locationData.address?.city ||
+      locationData.address?.display ||
+      `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}`;
+
     onConfirm(cityName, locationData.latitude, locationData.longitude);
   };
 
@@ -119,7 +120,7 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
     justifyContent: 'center',
     padding: isMobile ? '20px' : '40px',
     opacity: isAnimating ? 1 : 0,
-    transition: 'opacity 0.3s ease'
+    transition: 'opacity 0.3s ease',
   };
 
   const modalStyle: React.CSSProperties = {
@@ -131,83 +132,102 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
     border: `1px solid ${theme.cardBorder}`,
     boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
     backdropFilter: 'blur(20px)',
-    transform: isAnimating ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(20px)',
+    transform: isAnimating
+      ? 'scale(1) translateY(0)'
+      : 'scale(0.9) translateY(20px)',
     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-    position: 'relative'
+    position: 'relative',
   };
 
   return (
     <div style={overlayStyle} onClick={handleCancel}>
-      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+      <div style={modalStyle} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ 
-            fontSize: '48px', 
-            marginBottom: '12px',
-            animation: 'pulse 2s infinite'
-          }}>
+          <div
+            style={{
+              fontSize: '48px',
+              marginBottom: '12px',
+              animation: 'pulse 2s infinite',
+            }}
+          >
             📍
           </div>
-          <h2 style={{
-            color: theme.primaryText,
-            fontSize: isMobile ? '20px' : '24px',
-            fontWeight: '700',
-            margin: '0 0 8px 0'
-          }}>
+          <h2
+            style={{
+              color: theme.primaryText,
+              fontSize: isMobile ? '20px' : '24px',
+              fontWeight: '700',
+              margin: '0 0 8px 0',
+            }}
+          >
             Location Detected
           </h2>
-          <p style={{
-            color: theme.secondaryText,
-            fontSize: '14px',
-            margin: 0,
-            lineHeight: '1.5'
-          }}>
+          <p
+            style={{
+              color: theme.secondaryText,
+              fontSize: '14px',
+              margin: 0,
+              lineHeight: '1.5',
+            }}
+          >
             We found your location. Is this correct?
           </p>
         </div>
 
         {/* Location Details */}
-        <div style={{
-          background: theme.toggleBackground,
-          borderRadius: '12px',
-          padding: '16px',
-          marginBottom: '24px',
-          border: `1px solid ${theme.toggleBorder}`
-        }}>
-          <div style={{
-            color: theme.primaryText,
-            fontSize: '16px',
-            fontWeight: '600',
-            marginBottom: '8px',
-            wordBreak: 'break-word'
-          }}>
-            {locationData.address?.display || 
-             locationData.address?.city || 
-             'Your Current Location'}
+        <div
+          style={{
+            background: theme.toggleBackground,
+            borderRadius: '12px',
+            padding: '16px',
+            marginBottom: '24px',
+            border: `1px solid ${theme.toggleBorder}`,
+          }}
+        >
+          <div
+            style={{
+              color: theme.primaryText,
+              fontSize: '16px',
+              fontWeight: '600',
+              marginBottom: '8px',
+              wordBreak: 'break-word',
+            }}
+          >
+            {locationData.address?.display ||
+              locationData.address?.city ||
+              'Your Current Location'}
           </div>
-          
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '8px'
-          }}>
-            <div style={{
-              color: theme.secondaryText,
-              fontSize: '12px'
-            }}>
-              {locationData.latitude.toFixed(4)}, {locationData.longitude.toFixed(4)}
-            </div>
-            
-            <div style={{
+
+          <div
+            style={{
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              gap: '4px',
-              color: getAccuracyColor(locationData.accuracy),
-              fontSize: '12px',
-              fontWeight: '500'
-            }}>
+              flexWrap: 'wrap',
+              gap: '8px',
+            }}
+          >
+            <div
+              style={{
+                color: theme.secondaryText,
+                fontSize: '12px',
+              }}
+            >
+              {locationData.latitude.toFixed(4)},{' '}
+              {locationData.longitude.toFixed(4)}
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: getAccuracyColor(locationData.accuracy),
+                fontSize: '12px',
+                fontWeight: '500',
+              }}
+            >
               <span style={{ fontSize: '10px' }}>●</span>
               {formatAccuracy(locationData.accuracy)}
             </div>
@@ -215,30 +235,54 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div style={{
-          display: 'flex',
-          gap: '12px',
-          justifyContent: 'space-between',
-          flexWrap: isMobile ? 'wrap' : 'nowrap'
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '12px',
+            justifyContent: 'space-between',
+            flexWrap: isMobile ? 'wrap' : 'nowrap',
+          }}
+        >
           <button
             className="mobile-button-glass"
             onClick={handleCancel}
             aria-label="Cancel"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
-            <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>❌</span>
+            <span
+              style={{
+                fontSize: 18,
+                display: 'inline-flex',
+                alignItems: 'center',
+              }}
+            >
+              ❌
+            </span>
             Cancel
           </button>
 
           {onRetry && (
             <button
               className="mobile-button mobile-button-small"
-              style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+              style={{
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                color: 'white',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
               onClick={handleRetry}
               aria-label="Retry"
             >
-              <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>🔄</span>
+              <span
+                style={{
+                  fontSize: 18,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                }}
+              >
+                🔄
+              </span>
               Retry
             </button>
           )}
@@ -249,7 +293,15 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
             aria-label="Use This Location"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
-            <span style={{ fontSize: 18, display: 'inline-flex', alignItems: 'center' }}>📍</span>
+            <span
+              style={{
+                fontSize: 18,
+                display: 'inline-flex',
+                alignItems: 'center',
+              }}
+            >
+              📍
+            </span>
             Use This Location
           </button>
         </div>

@@ -8,7 +8,9 @@
    ======================================== */
 
 /* Disable any accidental theme triggers */
-html, body, #root {
+html,
+body,
+#root {
   transition: background 0.6s ease !important;
 }
 
@@ -122,8 +124,12 @@ html, body, #root {
 }
 
 @keyframes autocomplete-spin {
-  0% { transform: translateY(-50%) rotate(0deg); }
-  100% { transform: translateY(-50%) rotate(360deg); }
+  0% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }
 
 /* Dark theme overrides */
@@ -166,7 +172,7 @@ html, body, #root {
     font-size: 16px !important; /* Prevent zoom on iOS */
     padding: 16px !important;
   }
-  
+
   .autocomplete-dropdown {
     max-height: 60vh !important;
   }
@@ -187,10 +193,10 @@ html, body, #root {
 }
 
 /* Screen reader support */
-.autocomplete-container[aria-expanded="true"] .autocomplete-dropdown {
+.autocomplete-container[aria-expanded='true'] .autocomplete-dropdown {
   display: block !important;
 }
 
-.autocomplete-container[aria-expanded="false"] .autocomplete-dropdown {
+.autocomplete-container[aria-expanded='false'] .autocomplete-dropdown {
   display: none !important;
 }

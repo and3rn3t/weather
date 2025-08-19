@@ -1,6 +1,6 @@
 /**
  * iOS 26 Main Screen - Cutting-Edge Weather Interface
- * 
+ *
  * Implements the latest iOS design patterns:
  * - Fluid Island-style notifications
  * - Advanced glassmorphism with depth layers
@@ -42,13 +42,15 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
   isLoading = false,
   lastUpdated,
   onRefresh,
-  onLocationTap
+  onLocationTap,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const containerStyle: React.CSSProperties = {
-    background: isDark 
+    background: isDark
       ? 'linear-gradient(135deg, rgba(44, 44, 46, 0.8) 0%, rgba(28, 28, 30, 0.9) 100%)'
       : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%)',
     backdropFilter: 'blur(30px)',
@@ -63,7 +65,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
     overflow: 'hidden',
     transform: `scale(${isPressed ? 0.98 : 1})`,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    userSelect: 'none'
+    userSelect: 'none',
   };
 
   const backgroundAccentStyle: React.CSSProperties = {
@@ -77,14 +79,14 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
       : 'radial-gradient(circle, rgba(0, 122, 255, 0.08) 0%, transparent 70%)',
     borderRadius: '50%',
     filter: 'blur(40px)',
-    pointerEvents: 'none'
+    pointerEvents: 'none',
   };
 
   const headerStyle: React.CSSProperties = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: '24px'
+    marginBottom: '24px',
   };
 
   const locationStyle: React.CSSProperties = {
@@ -95,7 +97,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
     cursor: onLocationTap ? 'pointer' : 'default',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
   };
 
   const temperatureContainerStyle: React.CSSProperties = {
@@ -103,7 +105,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '24px',
-    margin: '32px 0'
+    margin: '32px 0',
   };
 
   const temperatureStyle: React.CSSProperties = {
@@ -112,7 +114,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
     color: theme.primaryText,
     margin: 0,
     letterSpacing: '-2px',
-    lineHeight: '1'
+    lineHeight: '1',
   };
 
   const descriptionStyle: React.CSSProperties = {
@@ -120,7 +122,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
     fontWeight: '500',
     color: theme.secondaryText,
     margin: 0,
-    textAlign: 'center'
+    textAlign: 'center',
   };
 
   const lastUpdatedStyle: React.CSSProperties = {
@@ -128,7 +130,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
     color: theme.secondaryText,
     margin: '16px 0 0',
     textAlign: 'center',
-    opacity: 0.8
+    opacity: 0.8,
   };
 
   const contextActions = [
@@ -136,13 +138,13 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
       id: 'refresh',
       title: 'Refresh Weather',
       icon: '🔄',
-      onAction: () => onRefresh?.()
+      onAction: () => onRefresh?.(),
     },
     {
       id: 'location',
       title: 'Change Location',
       icon: '📍',
-      onAction: () => onLocationTap?.()
+      onAction: () => onLocationTap?.(),
     },
     {
       id: 'share',
@@ -153,11 +155,11 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
           navigator.share({
             title: `Weather in ${location}`,
             text: `${temperature}°F - ${description}`,
-            url: window.location.href
+            url: window.location.href,
           });
         }
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -168,7 +170,7 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
         aria-label={`Weather in ${location}: ${temperature} degrees Fahrenheit, ${description}`}
       >
         <div style={backgroundAccentStyle} />
-        
+
         <div style={headerStyle}>
           <button
             style={locationStyle}
@@ -181,10 +183,13 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
             <span>📍</span>
             <span>{location}</span>
           </button>
-          
+
           {isLoading && (
             <div style={{ width: '24px', height: '24px' }}>
-              <svg viewBox="0 0 24 24" style={{ animation: 'spin 1s linear infinite' }}>
+              <svg
+                viewBox="0 0 24 24"
+                style={{ animation: 'spin 1s linear infinite' }}
+              >
                 <circle
                   cx="12"
                   cy="12"
@@ -208,11 +213,9 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
         </div>
 
         <div style={descriptionStyle}>{description}</div>
-        
+
         {lastUpdated && (
-          <div style={lastUpdatedStyle}>
-            Updated {lastUpdated}
-          </div>
+          <div style={lastUpdatedStyle}>Updated {lastUpdated}</div>
         )}
       </article>
     </ContextMenu>
@@ -236,22 +239,22 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
   onLocationSearch,
   onFavorites,
   onSettings,
-  onRadar
+  onRadar,
 }) => {
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const containerStyle: React.CSSProperties = {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '16px',
     padding: '0 20px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   };
 
   const actionButtonStyle: React.CSSProperties = {
-    background: isDark 
-      ? 'rgba(44, 44, 46, 0.8)' 
-      : 'rgba(255, 255, 255, 0.8)',
+    background: isDark ? 'rgba(44, 44, 46, 0.8)' : 'rgba(255, 255, 255, 0.8)',
     backdropFilter: 'blur(20px)',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
     borderRadius: '20px',
@@ -262,12 +265,12 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     flexDirection: 'column',
     alignItems: 'center',
     gap: '12px',
-    minHeight: '100px'
+    minHeight: '100px',
   };
 
   const iconStyle: React.CSSProperties = {
     fontSize: '28px',
-    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))',
   };
 
   const labelStyle: React.CSSProperties = {
@@ -275,19 +278,19 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     fontWeight: '600',
     color: theme.primaryText,
     margin: 0,
-    textAlign: 'center'
+    textAlign: 'center',
   };
 
   const actions = [
     { icon: '🔍', label: 'Search', action: onLocationSearch },
     { icon: '⭐', label: 'Favorites', action: onFavorites },
     { icon: '⚙️', label: 'Settings', action: onSettings },
-    { icon: '🌦️', label: 'Radar', action: onRadar || (() => {}) }
+    { icon: '🌦️', label: 'Radar', action: onRadar || (() => {}) },
   ];
 
   return (
     <div style={containerStyle} className="ios26-quick-actions">
-      {actions.map((item) => (
+      {actions.map(item => (
         <button
           key={item.label}
           style={actionButtonStyle}
@@ -329,22 +332,22 @@ interface WeatherMetricsGridProps {
 
 const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
   metrics,
-  theme
+  theme,
 }) => {
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const containerStyle: React.CSSProperties = {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '16px',
     padding: '0 20px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   };
 
   const metricCardStyle: React.CSSProperties = {
-    background: isDark 
-      ? 'rgba(44, 44, 46, 0.6)' 
-      : 'rgba(255, 255, 255, 0.7)',
+    background: isDark ? 'rgba(44, 44, 46, 0.6)' : 'rgba(255, 255, 255, 0.7)',
     backdropFilter: 'blur(20px)',
     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
     borderRadius: '18px',
@@ -352,20 +355,20 @@ const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    minHeight: '90px'
+    minHeight: '90px',
   };
 
   const metricHeaderStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   };
 
   const metricLabelStyle: React.CSSProperties = {
     fontSize: '14px',
     fontWeight: '500',
     color: theme.secondaryText,
-    margin: 0
+    margin: 0,
   };
 
   const metricValueStyle: React.CSSProperties = {
@@ -375,27 +378,35 @@ const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
     margin: 0,
     display: 'flex',
     alignItems: 'baseline',
-    gap: '4px'
+    gap: '4px',
   };
 
   const metricUnitStyle: React.CSSProperties = {
     fontSize: '16px',
     fontWeight: '400',
-    color: theme.secondaryText
+    color: theme.secondaryText,
   };
 
   const getTrendIcon = (trend?: 'up' | 'down' | 'stable') => {
     switch (trend) {
-      case 'up': return '↗️';
-      case 'down': return '↘️';
-      case 'stable': return '→';
-      default: return '';
+      case 'up':
+        return '↗️';
+      case 'down':
+        return '↘️';
+      case 'stable':
+        return '→';
+      default:
+        return '';
     }
   };
 
   return (
-    <section style={containerStyle} className="ios26-weather-metrics" aria-label="Weather metrics">
-      {metrics.map((metric) => (
+    <section
+      style={containerStyle}
+      className="ios26-weather-metrics"
+      aria-label="Weather metrics"
+    >
+      {metrics.map(metric => (
         <fieldset
           key={metric.id}
           style={metricCardStyle}
@@ -412,7 +423,7 @@ const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
               </span>
             )}
           </div>
-          
+
           <div style={metricValueStyle}>
             <span>{metric.value}</span>
             {metric.unit && <span style={metricUnitStyle}>{metric.unit}</span>}
@@ -450,14 +461,14 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
   leftAction,
   rightAction,
   showBackButton = false,
-  onBack
+  onBack,
 }) => {
-  const isDark = theme.appBackground.includes('28, 28, 30') || theme.appBackground.includes('#1c1c1e');
+  const isDark =
+    theme.appBackground.includes('28, 28, 30') ||
+    theme.appBackground.includes('#1c1c1e');
 
   const containerStyle: React.CSSProperties = {
-    background: isDark 
-      ? 'rgba(28, 28, 30, 0.8)' 
-      : 'rgba(248, 250, 252, 0.8)',
+    background: isDark ? 'rgba(28, 28, 30, 0.8)' : 'rgba(248, 250, 252, 0.8)',
     backdropFilter: 'blur(30px)',
     borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
     padding: '16px 20px',
@@ -467,7 +478,7 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
     minHeight: '60px',
     position: 'sticky',
     top: 0,
-    zIndex: 100
+    zIndex: 100,
   };
 
   const titleStyle: React.CSSProperties = {
@@ -476,7 +487,7 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
     color: theme.primaryText,
     margin: 0,
     textAlign: 'center',
-    flex: 1
+    flex: 1,
   };
 
   const actionButtonStyle: React.CSSProperties = {
@@ -494,17 +505,23 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
     gap: '6px',
     minWidth: '44px',
     minHeight: '44px',
-    justifyContent: 'center'
+    justifyContent: 'center',
   };
 
   const backButtonStyle: React.CSSProperties = {
     ...actionButtonStyle,
-    color: '#007AFF'
+    color: '#007AFF',
   };
 
   return (
-    <nav style={containerStyle} className="ios26-navigation-bar" role="navigation">
-      <div style={{ width: '80px', display: 'flex', justifyContent: 'flex-start' }}>
+    <nav
+      style={containerStyle}
+      className="ios26-navigation-bar"
+      role="navigation"
+    >
+      <div
+        style={{ width: '80px', display: 'flex', justifyContent: 'flex-start' }}
+      >
         {showBackButton && onBack ? (
           <button
             style={backButtonStyle}
@@ -538,7 +555,9 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
 
       <h1 style={titleStyle}>{title}</h1>
 
-      <div style={{ width: '80px', display: 'flex', justifyContent: 'flex-end' }}>
+      <div
+        style={{ width: '80px', display: 'flex', justifyContent: 'flex-end' }}
+      >
         {rightAction && (
           <button
             style={actionButtonStyle}
@@ -563,7 +582,7 @@ export {
   IOS26WeatherCard as iOS26WeatherCard,
   QuickActionsPanel,
   WeatherMetricsGrid,
-  IOS26NavigationBar as iOS26NavigationBar
+  IOS26NavigationBar as iOS26NavigationBar,
 };
 
 export type {
@@ -571,5 +590,5 @@ export type {
   QuickActionsPanelProps,
   WeatherMetricsGridProps,
   IOS26NavigationBarProps as iOS26NavigationBarProps,
-  WeatherMetric
+  WeatherMetric,
 };

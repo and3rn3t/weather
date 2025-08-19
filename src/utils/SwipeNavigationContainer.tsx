@@ -1,6 +1,6 @@
 /**
  * Swipe Navigation Container
- * 
+ *
  * A container component that provides enhanced swipe navigation between screens
  * with visual feedback, smooth animations, and haptic integration.
  */
@@ -39,14 +39,14 @@ export const SwipeNavigationContainer: React.FC<SwipeNavigationProps> = ({
   className = '',
   style = {},
   swipeThreshold = 80,
-  enableDesktopSupport = false
+  enableDesktopSupport = false,
 }) => {
   const { swipeState, createSwipeHandler } = useSwipeGestures({
     threshold: swipeThreshold,
     maxDrag: 120,
     resistance: 0.4,
     enableVisualFeedback: true,
-    enableHaptic: true
+    enableHaptic: true,
   });
 
   const swipeHandlers = createSwipeHandler(
@@ -61,7 +61,7 @@ export const SwipeNavigationContainer: React.FC<SwipeNavigationProps> = ({
     if (!swipeState.isDragging || !isMobile) {
       return 'translateX(0px)';
     }
-    
+
     // Reduce the visual movement to be more subtle
     const offset = swipeState.dragOffset * 0.3;
     return `translateX(${offset}px)`;
@@ -72,31 +72,29 @@ export const SwipeNavigationContainer: React.FC<SwipeNavigationProps> = ({
     if (!swipeState.isDragging || !isMobile) {
       return 1;
     }
-    
+
     // Slightly reduce opacity during drag
-    return Math.max(0.85, 1 - (swipeState.dragProgress * 0.15));
+    return Math.max(0.85, 1 - swipeState.dragProgress * 0.15);
   };
 
   const containerStyle: React.CSSProperties = {
     position: 'relative',
     transform: getTransform(),
     opacity: getBackgroundOpacity(),
-    transition: swipeState.isDragging ? 'none' : 'transform 0.3s ease, opacity 0.3s ease',
+    transition: swipeState.isDragging
+      ? 'none'
+      : 'transform 0.3s ease, opacity 0.3s ease',
     touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal
     overflow: 'hidden',
-    ...style
+    ...style,
   };
 
-  const handlers = (isMobile || enableDesktopSupport) ? swipeHandlers : {};
+  const handlers = isMobile || enableDesktopSupport ? swipeHandlers : {};
 
   return (
-    <div
-      className={className}
-      style={containerStyle}
-      {...handlers}
-    >
+    <div className={className} style={containerStyle} {...handlers}>
       {children}
-      
+
       {/* Swipe Indicators */}
       {isMobile && swipeState.isDragging && (
         <SwipeIndicator
@@ -105,7 +103,7 @@ export const SwipeNavigationContainer: React.FC<SwipeNavigationProps> = ({
           theme={theme}
         />
       )}
-      
+
       {/* Screen Navigation Hints */}
       {isMobile && !swipeState.isDragging && (
         <SwipeNavigationHints
@@ -130,7 +128,7 @@ interface SwipeNavigationHintsProps {
 const SwipeNavigationHints: React.FC<SwipeNavigationHintsProps> = ({
   canSwipeLeft,
   canSwipeRight,
-  theme
+  theme,
 }) => {
   return (
     <>
@@ -147,14 +145,14 @@ const SwipeNavigationHints: React.FC<SwipeNavigationHintsProps> = ({
             fontSize: '16px',
             pointerEvents: 'none',
             transition: 'opacity 0.3s ease',
-            zIndex: 1
+            zIndex: 1,
           }}
           title="Swipe left for next screen"
         >
           ◀
         </div>
       )}
-      
+
       {/* Right swipe hint */}
       {canSwipeRight && (
         <div
@@ -168,7 +166,7 @@ const SwipeNavigationHints: React.FC<SwipeNavigationHintsProps> = ({
             fontSize: '16px',
             pointerEvents: 'none',
             transition: 'opacity 0.3s ease',
-            zIndex: 1
+            zIndex: 1,
           }}
           title="Swipe right for previous screen"
         >

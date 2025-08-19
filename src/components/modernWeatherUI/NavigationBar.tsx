@@ -1,6 +1,6 @@
 /**
  * iOS Navigation Bar Component
- * 
+ *
  * A premium navigation bar following iOS Human Interface Guidelines:
  * - Large and standard title modes
  * - Blur background effects
@@ -41,7 +41,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   trailingButton,
   searchBar,
   theme,
-  isDark = false
+  isDark = false,
 }) => {
   const getBackgroundColor = () => {
     if (transparent) return 'transparent';
@@ -60,7 +60,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     backgroundColor: getBackgroundColor(),
     backdropFilter: 'blur(20px)',
     borderBottom: getBorderColor(),
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
   };
 
   const navBarStyle: React.CSSProperties = {
@@ -68,7 +68,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: largeTitle ? '16px 20px 8px' : '16px 20px',
-    minHeight: '44px'
+    minHeight: '44px',
   };
 
   const titleContainerStyle: React.CSSProperties = {
@@ -76,7 +76,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -85,7 +85,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     color: theme.primaryText,
     margin: 0,
     letterSpacing: largeTitle ? '-0.02em' : '0',
-    lineHeight: largeTitle ? '40px' : '22px'
+    lineHeight: largeTitle ? '40px' : '22px',
   };
 
   const subtitleStyle: React.CSSProperties = {
@@ -93,7 +93,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     fontWeight: '400',
     color: theme.secondaryText,
     margin: '4px 0 0 0',
-    lineHeight: '20px'
+    lineHeight: '20px',
   };
 
   const buttonStyle: React.CSSProperties = {
@@ -110,27 +110,34 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     minWidth: '44px',
-    justifyContent: 'center'
+    justifyContent: 'center',
   };
 
   const searchContainerStyle: React.CSSProperties = {
     padding: '0 20px 16px',
-    display: searchBar ? 'block' : 'none'
+    display: searchBar ? 'block' : 'none',
   };
 
   return (
     <div style={containerStyle} className="ios-navigation-bar">
       <div style={navBarStyle}>
-        <div style={{ minWidth: '60px', display: 'flex', justifyContent: 'flex-start' }}>
+        <div
+          style={{
+            minWidth: '60px',
+            display: 'flex',
+            justifyContent: 'flex-start',
+          }}
+        >
           {leadingButton && (
             <button
               style={buttonStyle}
               onClick={leadingButton.onPress}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 
-                  isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+              onMouseEnter={e => {
+                (e.target as HTMLElement).style.backgroundColor = isDark
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(0, 0, 0, 0.05)';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={e => {
                 (e.target as HTMLElement).style.backgroundColor = 'transparent';
               }}
               aria-label={leadingButton.title || 'Navigation button'}
@@ -146,16 +153,23 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           {subtitle && <p style={subtitleStyle}>{subtitle}</p>}
         </div>
 
-        <div style={{ minWidth: '60px', display: 'flex', justifyContent: 'flex-end' }}>
+        <div
+          style={{
+            minWidth: '60px',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           {trailingButton && (
             <button
               style={buttonStyle}
               onClick={trailingButton.onPress}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 
-                  isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+              onMouseEnter={e => {
+                (e.target as HTMLElement).style.backgroundColor = isDark
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(0, 0, 0, 0.05)';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={e => {
                 (e.target as HTMLElement).style.backgroundColor = 'transparent';
               }}
               aria-label={trailingButton.title || 'Navigation button'}
@@ -167,11 +181,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         </div>
       </div>
 
-      {searchBar && (
-        <div style={searchContainerStyle}>
-          {searchBar}
-        </div>
-      )}
+      {searchBar && <div style={searchContainerStyle}>{searchBar}</div>}
     </div>
   );
 };

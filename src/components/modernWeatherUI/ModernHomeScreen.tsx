@@ -1,13 +1,13 @@
 /**
  * Modern Home Screen Component - Phase C Completion (July 2025)
- * 
+ *
  * A completely redesigned home screen featuring:
  * - Real-time clock display with live updates
  * - Interactive 3×3 weather icon grid showcase
  * - Enhanced navigation with semantic button elements
  * - Full accessibility compliance with ARIA labeling
  * - Responsive design optimized for mobile-first experience
- * 
+ *
  * Accessibility Features:
  * - Semantic HTML buttons replace generic divs
  * - Comprehensive aria-label attributes for screen readers
@@ -31,7 +31,7 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
   theme,
   onNavigate,
   onGetCurrentLocation,
-  isLocationLoading = false
+  isLocationLoading = false,
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -50,14 +50,14 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   };
 
   const heroSectionStyle: React.CSSProperties = {
     textAlign: 'center',
     marginBottom: '48px',
     maxWidth: '400px',
-    width: '100%'
+    width: '100%',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -68,21 +68,21 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
     marginBottom: '16px',
-    letterSpacing: '-0.02em'
+    letterSpacing: '-0.02em',
   };
 
   const subtitleStyle: React.CSSProperties = {
     fontSize: '18px',
     color: theme.secondaryText,
     marginBottom: '8px',
-    fontWeight: '500'
+    fontWeight: '500',
   };
 
   const timeStyle: React.CSSProperties = {
     fontSize: '16px',
     color: theme.secondaryText,
     opacity: 0.8,
-    fontWeight: '400'
+    fontWeight: '400',
   };
 
   const weatherIconGridStyle: React.CSSProperties = {
@@ -97,7 +97,7 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     backdropFilter: 'blur(20px)',
     boxShadow: '0 20px 60px rgba(0, 0, 0, 0.08)',
     maxWidth: '400px',
-    width: '100%'
+    width: '100%',
   };
 
   const iconItemStyle: React.CSSProperties = {
@@ -110,7 +110,7 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     borderRadius: '20px',
     border: `1px solid ${theme.forecastCardBorder}30`,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    cursor: 'pointer'
+    cursor: 'pointer',
   };
 
   const iconLabelStyle: React.CSSProperties = {
@@ -118,7 +118,7 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     color: theme.secondaryText,
     fontWeight: '600',
     textAlign: 'center',
-    lineHeight: '1.2'
+    lineHeight: '1.2',
   };
 
   const actionsStyle: React.CSSProperties = {
@@ -126,36 +126,43 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
     flexDirection: 'column',
     gap: '16px',
     width: '100%',
-    maxWidth: '400px'
+    maxWidth: '400px',
   };
 
   const weatherIcons = [
     { code: 0, label: 'Clear Sky' },
     { code: 2, label: 'Partly Cloudy' },
     { code: 61, label: 'Light Rain' },
-    { code: 95, label: 'Thunderstorm' }
+    { code: 95, label: 'Thunderstorm' },
   ];
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { 
-      hour: '2-digit', 
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
     });
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString([], { 
+    return date.toLocaleDateString([], {
       weekday: 'long',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   return (
     <div style={containerStyle}>
       {/* Status Indicators */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '20px',
+          flexWrap: 'wrap',
+        }}
+      >
         <SimpleStatusBadge text="Live Weather" variant="success" />
         <SimpleStatusBadge text="Real-time Updates" variant="info" />
       </div>
@@ -169,38 +176,34 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
 
       {/* Weather Icon Preview */}
       <div style={weatherIconGridStyle}>
-        {weatherIcons.map((icon) => (
+        {weatherIcons.map(icon => (
           <button
             key={icon.code}
             style={{
               ...iconItemStyle,
               border: `1px solid ${theme.forecastCardBorder}30`,
               background: `${theme.forecastCardBackground}80`,
-              outline: 'none'
+              outline: 'none',
             }}
             onClick={() => onNavigate('weather')}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
               e.currentTarget.style.background = `${theme.forecastCardBackground}a0`;
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)';
               e.currentTarget.style.background = `${theme.forecastCardBackground}80`;
             }}
-            onFocus={(e) => {
+            onFocus={e => {
               e.currentTarget.style.outline = `2px solid ${theme.primaryText}40`;
               e.currentTarget.style.outlineOffset = '2px';
             }}
-            onBlur={(e) => {
+            onBlur={e => {
               e.currentTarget.style.outline = 'none';
             }}
             aria-label={`View ${icon.label} weather details`}
           >
-            <WeatherIcon 
-              code={icon.code} 
-              size={40} 
-              animated={true}
-            />
+            <WeatherIcon code={icon.code} size={40} animated={true} />
             <span style={iconLabelStyle}>{icon.label}</span>
           </button>
         ))}
@@ -209,12 +212,16 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
       {/* Action Buttons */}
       <div style={actionsStyle}>
         <SimpleEnhancedButton
-          title={isLocationLoading ? "Getting Location..." : "📍 Use Current Location"}
+          title={
+            isLocationLoading
+              ? 'Getting Location...'
+              : '📍 Use Current Location'
+          }
           onPress={onGetCurrentLocation}
           disabled={isLocationLoading}
           variant="primary"
           theme={theme}
-          icon={isLocationLoading ? "⏳" : "📍"}
+          icon={isLocationLoading ? '⏳' : '📍'}
         />
 
         <SimpleEnhancedButton
@@ -227,27 +234,31 @@ const ModernHomeScreen: React.FC<ModernHomeScreenProps> = ({
       </div>
 
       {/* Background Effects */}
-      <div style={{
-        position: 'fixed',
-        top: '-50%',
-        left: '-50%',
-        width: '200%',
-        height: '200%',
-        background: `radial-gradient(circle at 30% 20%, ${theme.weatherCardBadge}15 0%, transparent 50%)`,
-        pointerEvents: 'none',
-        zIndex: -1
-      }} />
-      
-      <div style={{
-        position: 'fixed',
-        bottom: '-50%',
-        right: '-50%',
-        width: '200%',
-        height: '200%',
-        background: `radial-gradient(circle at 70% 80%, ${theme.primaryGradient}10 0%, transparent 50%)`,
-        pointerEvents: 'none',
-        zIndex: -1
-      }} />
+      <div
+        style={{
+          position: 'fixed',
+          top: '-50%',
+          left: '-50%',
+          width: '200%',
+          height: '200%',
+          background: `radial-gradient(circle at 30% 20%, ${theme.weatherCardBadge}15 0%, transparent 50%)`,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      />
+
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '-50%',
+          right: '-50%',
+          width: '200%',
+          height: '200%',
+          background: `radial-gradient(circle at 70% 80%, ${theme.primaryGradient}10 0%, transparent 50%)`,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      />
     </div>
   );
 };

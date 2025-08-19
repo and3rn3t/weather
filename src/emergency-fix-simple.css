@@ -1,12 +1,12 @@
 /* SIMPLE TARGETED FIX FOR NAVIGATION DARK OVAL */
 
 /* HIGHEST SPECIFICITY - Override ALL possible styling */
-nav.mobile-navigation button[role="tab"][aria-selected="true"],
-nav.mobile-navigation button[role="tab"][aria-selected="false"],
-nav.mobile-navigation button[role="tab"]:active,
-nav.mobile-navigation button[role="tab"]:hover,
-nav.mobile-navigation button[role="tab"]:focus,
-nav.mobile-navigation button[role="tab"] {
+nav.mobile-navigation button[role='tab'][aria-selected='true'],
+nav.mobile-navigation button[role='tab'][aria-selected='false'],
+nav.mobile-navigation button[role='tab']:active,
+nav.mobile-navigation button[role='tab']:hover,
+nav.mobile-navigation button[role='tab']:focus,
+nav.mobile-navigation button[role='tab'] {
   all: unset !important;
   display: flex !important;
   flex-direction: column !important;
@@ -39,7 +39,7 @@ nav.mobile-navigation button[role="tab"] {
 }
 
 /* Override JavaScript-applied inline styles */
-nav.mobile-navigation button[role="tab"][style] {
+nav.mobile-navigation button[role='tab'][style] {
   background: transparent !important;
   opacity: 1 !important;
   transform: none !important;
@@ -49,20 +49,20 @@ nav.mobile-navigation button[role="tab"][style] {
 }
 
 /* Clean active state - simple light blue */
-nav.mobile-navigation button[role="tab"]:active {
+nav.mobile-navigation button[role='tab']:active {
   background: rgba(102, 126, 234, 0.1) !important;
   opacity: 1 !important;
 }
 
 /* Remove all pseudo-elements that could create overlays */
-nav.mobile-navigation button[role="tab"]::before,
-nav.mobile-navigation button[role="tab"]::after,
-nav.mobile-navigation button[role="tab"]:active::before,
-nav.mobile-navigation button[role="tab"]:active::after,
-nav.mobile-navigation button[role="tab"]:focus::before,
-nav.mobile-navigation button[role="tab"]:focus::after,
-nav.mobile-navigation button[role="tab"]:hover::before,
-nav.mobile-navigation button[role="tab"]:hover::after {
+nav.mobile-navigation button[role='tab']::before,
+nav.mobile-navigation button[role='tab']::after,
+nav.mobile-navigation button[role='tab']:active::before,
+nav.mobile-navigation button[role='tab']:active::after,
+nav.mobile-navigation button[role='tab']:focus::before,
+nav.mobile-navigation button[role='tab']:focus::after,
+nav.mobile-navigation button[role='tab']:hover::before,
+nav.mobile-navigation button[role='tab']:hover::after {
   display: none !important;
   content: none !important;
   background: none !important;
@@ -70,7 +70,8 @@ nav.mobile-navigation button[role="tab"]:hover::after {
 }
 
 /* Fix scrollbar issues */
-html, body {
+html,
+body {
   overflow-x: hidden !important;
   scrollbar-width: thin !important;
 }
