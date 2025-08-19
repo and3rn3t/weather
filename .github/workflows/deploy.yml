@@ -75,14 +75,12 @@ jobs:
           # Ultra-fast build without TypeScript compilation check
           npm run build:ultra
 
-      - name: ⚡ Deploy to Cloudflare
-        uses: cloudflare/pages-action@v1
+      - name: ⚡ Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: premium-weather-app
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy dist --project-name=premium-weather-app --compatibility-date=2024-01-01
 
       - name: ⚡ Success notification
         if: success()

@@ -11,18 +11,20 @@ command = "npm run build"
 cwd = "."
 watch_dir = "src"
 
+# Pages configuration - Required for Pages deployment
+pages_build_output_dir = "dist"
+
+[pages]
+build_command = "npm run build"
+destination_dir = "dist"
+source_dir = "."
+
 # Environment variables
 [env.production.vars]
 ENVIRONMENT = "production"
 
 [env.preview.vars]
 ENVIRONMENT = "preview"
-
-# Pages configuration
-[pages]
-build_command = "npm run build"
-destination_dir = "dist"
-source_dir = "."
 
 # Optional: Add functions support for future API endpoints
 # [env.production.vars]

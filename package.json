@@ -113,6 +113,8 @@
     "_comment_deployment": "Deployment Scripts",
     "deploy:preview": "npm run build && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01",
     "deploy:production": "npm run build:production && npx wrangler pages publish dist --project-name premium-weather-app --compatibility-date 2024-01-01",
+    "deploy:test": "npm run build:ultra && npx wrangler pages deploy dist --project-name premium-weather-app --compatibility-date 2024-01-01",
+    "deploy:diagnostic": "node scripts/cloudflare-diagnostic.js",
     "predeploy:production": "npm run qa",
     "_comment_mobile": "Mobile Development Scripts",
     "streamline": "node scripts/streamline-package-scripts.ts",
