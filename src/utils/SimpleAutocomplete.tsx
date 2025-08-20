@@ -3,9 +3,8 @@
  * Simple, bulletproof autocomplete that definitely works
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { logError } from './logger';
-
 
 interface SimpleAutocompleteProps {
   onCitySelected: (cityName: string, lat: number, lon: number) => void;
@@ -32,7 +31,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Simple search function
