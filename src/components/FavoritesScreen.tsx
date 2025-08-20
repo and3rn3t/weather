@@ -8,7 +8,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
 import { useHaptic } from '../utils/hapticHooks';
-import { logger } from '../utils/logger';
 import type { ThemeColors } from '../utils/themeConfig';
 
 interface FavoritesScreenProps {

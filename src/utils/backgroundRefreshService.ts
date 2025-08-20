@@ -12,6 +12,8 @@
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { Network } from '@capacitor/network';
+import { logError, logInfo } from '../utils/logger';
+
 
 // Background refresh configuration
 export interface BackgroundRefreshConfig {
@@ -137,7 +139,7 @@ export class BackgroundRefreshService {
         lastRefreshAge: 0,
       });
     } catch (error) {
-      console.error('Failed to initialize background refresh service:', error);
+      logError('Failed to initialize background refresh service:', error);
       throw error;
     }
   }
@@ -302,7 +304,7 @@ export class BackgroundRefreshService {
       const duration = Date.now() - startTime;
       this.updateStats(context.type, duration, false);
 
-      console.error(`${context.type} refresh failed:`, error);
+      logError(`${context.type} refresh failed:`, error);
     }
   }
 
@@ -581,7 +583,7 @@ export class BackgroundRefreshService {
    */
   private log(message: string, ...args: unknown[]): void {
     if (this.config.debugMode) {
-      console.log(`[BackgroundRefresh] ${message}`, ...args);
+      logInfo(`[BackgroundRefresh] ${message}`, ...args);
     }
   }
 }
@@ -598,6 +600,12 @@ export const getDefaultConfig = (): BackgroundRefreshConfig => ({
   ...DEFAULT_CONFIG,
 });
 
+/**
+ * createOptimizedConfig - Creates and configures optimizedconfig
+ */
+/**
+ * createOptimizedConfig - Creates and configures optimizedconfig
+ */
 export const createOptimizedConfig = (
   platform: 'mobile' | 'web' = 'mobile'
 ): BackgroundRefreshConfig => {

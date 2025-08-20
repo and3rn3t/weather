@@ -20,6 +20,8 @@ import React, {
 import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
 import '../styles/IOSSearchBar.css';
+import { logError } from '../utils/logger';
+
 
 interface City {
   display_name: string;
@@ -328,7 +330,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
         const response = await fetch(weatherUrl);
         return await response.json();
       } catch (error) {
-        console.error('Weather fetch error:', error);
+        logError('Weather fetch error:', error);
         return undefined;
       }
     },

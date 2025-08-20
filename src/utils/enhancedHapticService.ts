@@ -7,11 +7,19 @@
 
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { logWarn, logInfo } from '../utils/logger';
+
 
 // ============================================================================
 // HAPTIC PATTERNS & CONFIGURATION
 // ============================================================================
 
+/**
+ * HapticPattern - Haptic feedback system for mobile interactions
+ */
+/**
+ * HapticPattern - Haptic feedback system for mobile interactions
+ */
 export const HapticPattern = {
   // Basic patterns
   LIGHT: 'light',
@@ -164,7 +172,7 @@ export class EnhancedHapticService {
     this.canVibrate = this.isNative || this.isWeb;
 
     if (this.config.debugMode) {
-      console.log('🔧 Enhanced Haptic Service initialized:', {
+      logInfo('🔧 Enhanced Haptic Service initialized:', {
         isNative: this.isNative,
         isWeb: this.isWeb,
         canVibrate: this.canVibrate,
@@ -221,13 +229,13 @@ export class EnhancedHapticService {
       }
 
       if (this.config.debugMode) {
-        console.log('📳 Native haptic executed:', pattern);
+        logInfo('📳 Native haptic executed:', pattern);
       }
 
       return true;
     } catch (error) {
       if (this.config.debugMode) {
-        console.warn('❌ Native haptic failed:', error);
+        logWarn('❌ Native haptic failed:', error);
       }
       return false;
     }
@@ -243,13 +251,13 @@ export class EnhancedHapticService {
       const result = navigator.vibrate(vibrationPattern);
 
       if (this.config.debugMode) {
-        console.log('📳 Web haptic executed:', pattern, vibrationPattern);
+        logInfo('📳 Web haptic executed:', pattern, vibrationPattern);
       }
 
       return result;
     } catch (error) {
       if (this.config.debugMode) {
-        console.warn('❌ Web haptic failed:', error);
+        logWarn('❌ Web haptic failed:', error);
       }
       return false;
     }
@@ -265,7 +273,7 @@ export class EnhancedHapticService {
     const rateLimit = this.config.rateLimitMs || 50;
     if (now - lastTime < rateLimit) {
       if (this.config.debugMode) {
-        console.log('🔇 Haptic rate limited');
+        logInfo('🔇 Haptic rate limited');
       }
       return false;
     }
@@ -431,7 +439,7 @@ export class EnhancedHapticService {
     }
 
     if (this.config.debugMode) {
-      console.log('🔧 Haptic config updated:', this.config);
+      logInfo('🔧 Haptic config updated:', this.config);
     }
   }
 
@@ -444,6 +452,12 @@ export class EnhancedHapticService {
 // SINGLETON INSTANCE
 // ============================================================================
 
+/**
+ * enhancedHaptics - Haptic feedback system for mobile interactions
+ */
+/**
+ * enhancedHaptics - Haptic feedback system for mobile interactions
+ */
 export const enhancedHaptics = EnhancedHapticService.getInstance();
 
 // ============================================================================
@@ -452,6 +466,12 @@ export const enhancedHaptics = EnhancedHapticService.getInstance();
 
 import { useCallback, useEffect, useRef } from 'react';
 
+/**
+ * useEnhancedHaptics - Custom React hook for enhancedHapticService functionality
+ */
+/**
+ * useEnhancedHaptics - Custom React hook for enhancedHapticService functionality
+ */
 export const useEnhancedHaptics = (config?: HapticConfig) => {
   const hapticRef = useRef(EnhancedHapticService.getInstance(config));
 

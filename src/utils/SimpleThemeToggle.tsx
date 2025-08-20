@@ -1,4 +1,6 @@
 import React from 'react';
+import { logInfo } from '../utils/logger';
+
 
 interface SimpleThemeToggleProps {
   className?: string;
@@ -45,7 +47,7 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
       })
     );
 
-    console.log(`🎨 Theme changed to: ${nextTheme}`);
+    logInfo(`🎨 Theme changed to: ${nextTheme}`);
   };
 
   // Get current theme for display

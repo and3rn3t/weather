@@ -6,6 +6,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { logError } from '../utils/logger';
+
 
 export interface SavedCity {
   id: string;
@@ -37,6 +39,12 @@ const STORAGE_KEYS = {
 const MAX_RECENT_CITIES = 10;
 const MAX_FAVORITE_CITIES = 20;
 
+/**
+ * useCityManagement - Custom React hook for useCityManagement functionality
+ */
+/**
+ * useCityManagement - Custom React hook for useCityManagement functionality
+ */
 export const useCityManagement = () => {
   const [state, setState] = useState<CityManagementState>({
     favorites: [],
@@ -61,7 +69,7 @@ export const useCityManagement = () => {
         error: null,
       }));
     } catch (error) {
-      console.error('Failed to load saved city data:', error);
+      logError('Failed to load saved city data:', error);
       setState(prev => ({
         ...prev,
         error: 'Failed to load saved cities',
@@ -325,7 +333,7 @@ export const useCityManagement = () => {
         }
         throw new Error('Invalid city data format');
       } catch (err) {
-        console.error('Failed to import city data:', err);
+        logError('Failed to import city data:', err);
         setState(prev => ({
           ...prev,
           error: 'Failed to import city data',

@@ -17,6 +17,8 @@ import { ActionSheet } from './ActionSheet';
 import { NavigationBar } from './NavigationBar';
 import { NavigationIcons } from './NavigationIcons';
 import type { ThemeColors } from '../../utils/themeConfig';
+import { logInfo } from '../utils/logger';
+
 
 interface IOSComponentShowcaseProps {
   theme: ThemeColors;
@@ -171,14 +173,14 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
           >
             <SimpleEnhancedButton
               title="Primary Action"
-              onPress={() => console.log('Primary pressed')}
+              onPress={() => logInfo('Primary pressed')}
               variant="primary"
               theme={theme}
               icon="⭐"
             />
             <SimpleEnhancedButton
               title="Secondary Action"
-              onPress={() => console.log('Secondary pressed')}
+              onPress={() => logInfo('Secondary pressed')}
               variant="secondary"
               theme={theme}
               icon="🔧"
@@ -299,7 +301,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
             />
             <SimpleEnhancedButton
               title="Toggle Theme"
-              onPress={() => console.log('Theme toggle would go here')}
+              onPress={() => logInfo('Theme toggle would go here')}
               variant="secondary"
               theme={theme}
               icon="🌙"
@@ -319,7 +321,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
             title: 'Show Success Badge',
             icon: <NavigationIcons.Add />,
             onPress: () => {
-              console.log('Success demo');
+              logInfo('Success demo');
               setShowActionSheet(false);
             },
           },
@@ -335,7 +337,7 @@ export const IOSComponentShowcase: React.FC<IOSComponentShowcaseProps> = ({
             title: 'Share Components',
             icon: <NavigationIcons.Share />,
             onPress: () => {
-              console.log('Share demo');
+              logInfo('Share demo');
               setShowActionSheet(false);
             },
           },

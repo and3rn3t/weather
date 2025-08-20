@@ -19,6 +19,8 @@ import {
 import { Device, type DeviceInfo } from '@capacitor/device';
 import { Network, type ConnectionStatus } from '@capacitor/network';
 import { App } from '@capacitor/app';
+import { logError, logWarn, logInfo } from '../utils/logger';
+
 
 // Type definitions for native API responses
 export interface LocationResult {
@@ -67,7 +69,7 @@ export class NativeGeolocationService {
   async getCurrentPosition(): Promise<LocationResult> {
     try {
       if (!Capacitor.isNativePlatform()) {
-        console.log('Web platform detected, using web geolocation API');
+        logInfo('Web platform detected, using web geolocation API');
         return this.getWebLocation();
       }
 
@@ -90,7 +92,7 @@ export class NativeGeolocationService {
         timestamp: position.timestamp,
       };
     } catch (error) {
-      console.warn(
+      logWarn(
         'Native geolocation failed, falling back to web API:',
         error
       );
@@ -156,7 +158,7 @@ export class NativeGeolocationService {
         }
       );
     } catch (error) {
-      console.error('Failed to start location watching:', error);
+      logError('Failed to start location watching:', error);
     }
   }
 
@@ -203,7 +205,7 @@ export class NativeHapticService {
     try {
       await Haptics.impact({ style: ImpactStyle.Light });
     } catch (error) {
-      console.warn('Haptic feedback failed:', error);
+      logWarn('Haptic feedback failed:', error);
     }
   }
 
@@ -216,7 +218,7 @@ export class NativeHapticService {
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (error) {
-      console.warn('Haptic feedback failed:', error);
+      logWarn('Haptic feedback failed:', error);
     }
   }
 
@@ -229,7 +231,7 @@ export class NativeHapticService {
     try {
       await Haptics.impact({ style: ImpactStyle.Heavy });
     } catch (error) {
-      console.warn('Haptic feedback failed:', error);
+      logWarn('Haptic feedback failed:', error);
     }
   }
 
@@ -242,7 +244,7 @@ export class NativeHapticService {
     try {
       await Haptics.notification({ type: NotificationType.Success });
     } catch (error) {
-      console.warn('Haptic feedback failed:', error);
+      logWarn('Haptic feedback failed:', error);
     }
   }
 
@@ -255,7 +257,7 @@ export class NativeHapticService {
     try {
       await Haptics.notification({ type: NotificationType.Warning });
     } catch (error) {
-      console.warn('Haptic feedback failed:', error);
+      logWarn('Haptic feedback failed:', error);
     }
   }
 
@@ -268,7 +270,7 @@ export class NativeHapticService {
     try {
       await Haptics.notification({ type: NotificationType.Error });
     } catch (error) {
-      console.warn('Haptic feedback failed:', error);
+      logWarn('Haptic feedback failed:', error);
     }
   }
 
@@ -287,7 +289,7 @@ export class NativeHapticService {
         await this.heavy();
       }
     } catch (error) {
-      console.warn('Progressive haptic feedback failed:', error);
+      logWarn('Progressive haptic feedback failed:', error);
     }
   }
 }
@@ -326,7 +328,7 @@ export class WeatherNotificationService {
       this.hasPermission = permissionStatus.display === 'granted';
       return this.hasPermission;
     } catch (error) {
-      console.error('Failed to request notification permissions:', error);
+      logError('Failed to request notification permissions:', error);
       return false;
     }
   }
@@ -336,7 +338,7 @@ export class WeatherNotificationService {
    */
   async scheduleWeatherAlert(alert: WeatherAlert): Promise<void> {
     if (!this.hasPermission) {
-      console.warn('Notification permission not granted');
+      logWarn('Notification permission not granted');
       return;
     }
 
@@ -371,9 +373,9 @@ export class WeatherNotificationService {
         notifications: [notification],
       });
 
-      console.log('Weather alert scheduled:', alert.title);
+      logInfo('Weather alert scheduled:', alert.title);
     } catch (error) {
-      console.error('Failed to schedule weather alert:', error);
+      logError('Failed to schedule weather alert:', error);
     }
   }
 
@@ -420,10 +422,10 @@ export class WeatherNotificationService {
     try {
       if (Capacitor.isNativePlatform()) {
         await LocalNotifications.removeAllDeliveredNotifications();
-        console.log('All weather notifications cleared');
+        logInfo('All weather notifications cleared');
       }
     } catch (error) {
-      console.error('Failed to clear notifications:', error);
+      logError('Failed to clear notifications:', error);
     }
   }
 }
@@ -479,7 +481,7 @@ export class DeviceInfoService {
 
       return this.deviceInfo;
     } catch (error) {
-      console.error('Failed to get device info:', error);
+      logError('Failed to get device info:', error);
       return {
         platform: 'unknown',
         model: 'unknown',
@@ -497,7 +499,7 @@ export class DeviceInfoService {
 
     // Basic resource checks
     if (info.memUsed && info.memUsed > 0.8) {
-      console.warn('High memory usage detected, limiting advanced features');
+      logWarn('High memory usage detected, limiting advanced features');
       return false;
     }
 
@@ -552,7 +554,7 @@ export class NetworkStatusService {
         });
       }
     } catch (error) {
-      console.error('Failed to initialize network monitoring:', error);
+      logError('Failed to initialize network monitoring:', error);
     }
   }
 
@@ -585,7 +587,7 @@ export class NetworkStatusService {
       try {
         callback(isOnline);
       } catch (error) {
-        console.error('Network listener callback failed:', error);
+        logError('Network listener callback failed:', error);
       }
     });
   }
@@ -648,7 +650,7 @@ export class AppStateService {
       try {
         callback(isActive);
       } catch (error) {
-        console.error('App state listener callback failed:', error);
+        logError('App state listener callback failed:', error);
       }
     });
   }
@@ -656,10 +658,40 @@ export class AppStateService {
 
 // Export singleton instances for easy use
 export const nativeGeolocation = NativeGeolocationService.getInstance();
+/**
+ * nativeHaptics - Haptic feedback system for mobile interactions
+ */
+/**
+ * nativeHaptics - Haptic feedback system for mobile interactions
+ */
 export const nativeHaptics = NativeHapticService.getInstance();
+/**
+ * weatherNotifications - Core nativeApiService functionality
+ */
+/**
+ * weatherNotifications - Core nativeApiService functionality
+ */
 export const weatherNotifications = WeatherNotificationService.getInstance();
+/**
+ * deviceInfo - Core nativeApiService functionality
+ */
+/**
+ * deviceInfo - Core nativeApiService functionality
+ */
 export const deviceInfo = DeviceInfoService.getInstance();
+/**
+ * networkStatus - Core nativeApiService functionality
+ */
+/**
+ * networkStatus - Core nativeApiService functionality
+ */
 export const networkStatus = NetworkStatusService.getInstance();
+/**
+ * appState - Core nativeApiService functionality
+ */
+/**
+ * appState - Core nativeApiService functionality
+ */
 export const appState = AppStateService.getInstance();
 
 // Export utility function to check if native features are available
@@ -668,21 +700,21 @@ export const isNativePlatform = (): boolean => Capacitor.isNativePlatform();
 // Export function to initialize all native services
 export const initializeNativeServices = async (): Promise<void> => {
   try {
-    console.log('Initializing native services...');
+    logInfo('Initializing native services...');
 
     // Request necessary permissions
     await weatherNotifications.requestPermissions();
 
     // Get device info for optimization
     const info = await deviceInfo.getDeviceInfo();
-    console.log('Device info:', info);
+    logInfo('Device info:', info);
 
     // Check network status
     const online = networkStatus.getNetworkStatus();
-    console.log('Network status:', online ? 'Online' : 'Offline');
+    logInfo('Network status:', online ? 'Online' : 'Offline');
 
-    console.log('Native services initialized successfully');
+    logInfo('Native services initialized successfully');
   } catch (error) {
-    console.error('Failed to initialize native services:', error);
+    logError('Failed to initialize native services:', error);
   }
 };

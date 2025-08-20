@@ -2,6 +2,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
 import './SearchScreen.css';
+import { logError } from '../utils/logger';
+
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -48,7 +50,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         setRecentSearches(JSON.parse(saved).slice(0, 5));
       }
     } catch (error) {
-      console.error('Error loading recent searches:', error);
+      logError('Error loading recent searches:', error);
     }
   }, []);
 
@@ -226,7 +228,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
                 });
             }
           } catch (error) {
-            console.error('Search error:', error);
+            logError('Search error:', error);
             searchResults.innerHTML =
               '<div class="search-empty">Search failed</div>';
           }
@@ -389,7 +391,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       },
       error => {
         haptic.error();
-        console.error('Geolocation error:', error);
+        logError('Geolocation error:', error);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
     );

@@ -8,6 +8,8 @@ import {
 } from 'react';
 import type { ThemeColors, ThemeName } from './themeConfig';
 import { themes } from './themeConfig';
+import { logInfo } from '../utils/logger';
+
 
 interface ThemeContextType {
   theme: ThemeColors;
@@ -26,6 +28,12 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
+/**
+ * ThemeProvider - Theme management functionality for weather app
+ */
+/**
+ * ThemeProvider - Theme management functionality for weather app
+ */
 export const ThemeProvider = ({
   children,
 }: ThemeProviderProps): JSX.Element => {
@@ -48,7 +56,7 @@ export const ThemeProvider = ({
   const isHorror = themeName === 'horror';
 
   const toggleTheme = useCallback(() => {
-    console.log('🎨 Theme toggle triggered - legitimate theme change');
+    logInfo('🎨 Theme toggle triggered - legitimate theme change');
     let newTheme: ThemeName;
 
     // Cycle through: light -> dark -> horror -> light
@@ -75,7 +83,7 @@ export const ThemeProvider = ({
     if (typeof document !== 'undefined') {
       // NUCLEAR FIX: Completely disable automatic background changes
       // Let the nuclear system in index.html handle all background changes
-      console.log(
+      logInfo(
         '🚫 React theme context disabled - nuclear system handling background'
       );
 

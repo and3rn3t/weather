@@ -19,6 +19,12 @@ interface CacheEntry<T> {
   key: string;
 }
 
+/**
+ * useWeatherOptimization - Custom React hook for useWeatherOptimization functionality
+ */
+/**
+ * useWeatherOptimization - Custom React hook for useWeatherOptimization functionality
+ */
 export const useWeatherOptimization = <T>(
   data: T,
   key: string,
@@ -102,6 +108,12 @@ export const useWeatherOptimization = <T>(
 /**
  * Hook for optimizing weather API calls
  */
+/**
+ * useWeatherAPIOptimization - Custom React hook for useWeatherOptimization functionality
+ */
+/**
+ * useWeatherAPIOptimization - Custom React hook for useWeatherOptimization functionality
+ */
 export const useWeatherAPIOptimization = () => {
   const requestCache = useRef<Map<string, Promise<Response>>>(new Map());
   const lastRequestTime = useRef<Map<string, number>>(new Map());
@@ -158,6 +170,12 @@ export const useWeatherAPIOptimization = () => {
 
 /**
  * Hook for weather data transformation optimization
+ */
+/**
+ * useWeatherDataTransform - Custom React hook for useWeatherOptimization functionality
+ */
+/**
+ * useWeatherDataTransform - Custom React hook for useWeatherOptimization functionality
  */
 export const useWeatherDataTransform = () => {
   const transformCache = useRef<Map<string, unknown>>(new Map());

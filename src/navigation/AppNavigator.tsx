@@ -78,7 +78,8 @@ import {
 } from '../components/modernWeatherUI/SimpleIOSComponents';
 import '../styles/iosComponents.css';
 import '../styles/modernWeatherUI.css';
-import {
+import { logWarn, logInfo } from '../utils/logger';
+
   getAdaptiveBorderRadius,
   getAdaptiveFontSizes,
   getAdaptiveSpacing,
@@ -247,7 +248,7 @@ const weatherDetailItems = [
 /** Process hourly forecast data into structured format */
 const processHourlyForecast = (hourlyData: HourlyData): HourlyForecast[] => {
   if (!hourlyData?.time || !hourlyData?.temperature_2m) {
-    console.warn('⚠️ No hourly data available for forecast');
+    logWarn('⚠️ No hourly data available for forecast');
     return [];
   }
 
@@ -298,7 +299,7 @@ const formatDayInfo = (dateString: string, index: number) => {
 /** Process daily forecast data into structured format */
 const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
   if (!dailyData?.time || !dailyData?.temperature_2m_max) {
-    console.warn('⚠️ No daily data available for forecast');
+    logWarn('⚠️ No daily data available for forecast');
     return [];
   }
 
@@ -687,7 +688,7 @@ function WeatherDetailsScreen({
             title: 'Share Weather',
             icon: <NavigationIcons.Share />,
             onPress: () => {
-              console.log('Share weather');
+              logInfo('Share weather');
               setShowActionSheet(false);
             },
           },
@@ -695,7 +696,7 @@ function WeatherDetailsScreen({
             title: 'Add to Favorites',
             icon: <NavigationIcons.Add />,
             onPress: () => {
-              console.log('Add to favorites');
+              logInfo('Add to favorites');
               setShowActionSheet(false);
             },
           },
@@ -1008,9 +1009,9 @@ const AppNavigator = () => {
         try {
           await fetchWeatherData(crystalLakeLat, crystalLakeLon);
           setCity('Crystal Lake, NJ');
-          console.log('🎃 Welcome to Crystal Lake... Weather Station Online');
+          logInfo('🎃 Welcome to Crystal Lake... Weather Station Online');
         } catch (error) {
-          console.log(
+          logInfo(
             'Failed to load Crystal Lake data, user will need to search'
           );
         }
@@ -1317,9 +1318,9 @@ const AppNavigator = () => {
 
         // Fetch updated weather data
         await fetchWeatherData(lat, lon);
-        console.log('Weather data refreshed in background');
+        logInfo('Weather data refreshed in background');
       } catch (error) {
-        console.error('Background weather refresh failed:', error);
+        logError('Background weather refresh failed:', error);
         // Don't set error state for background refreshes to avoid disrupting UI
       }
     }
@@ -1363,10 +1364,10 @@ const AppNavigator = () => {
       // Use background refresh for manual refresh with enhanced capabilities
       try {
         await backgroundRefresh.manualRefresh();
-        console.log('Manual refresh completed via background refresh service');
+        logInfo('Manual refresh completed via background refresh service');
       } catch (error) {
         // Fallback to traditional refresh
-        console.log('Falling back to traditional refresh:', error);
+        logInfo('Falling back to traditional refresh:', error);
         await new Promise(resolve => setTimeout(resolve, 500));
         await getWeather();
       }
@@ -1393,7 +1394,7 @@ const AppNavigator = () => {
       {/* Enhanced Auto Location Manager - Phase F-2 */}
       <LocationManager
         onLocationReceived={(detectedCity, lat, lon) => {
-          console.log(
+          logInfo(
             `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
           );
           setCity(detectedCity);
@@ -1401,7 +1402,7 @@ const AppNavigator = () => {
           haptic.triggerHaptic('light');
         }}
         onError={errorMessage => {
-          console.warn('📍 Auto location failed:', errorMessage);
+          logWarn('📍 Auto location failed:', errorMessage);
           // Don't show error to user for automatic detection, just log it
         }}
         enableAutoDetection={true}

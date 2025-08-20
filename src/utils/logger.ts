@@ -1,3 +1,5 @@
+import { logError, logWarn, logInfo, logDebug } from '../utils/logger';
+
 /**
  * Production Logger Utility
  *
@@ -57,55 +59,55 @@ class Logger {
   // Weather-specific logging
   weatherHaptic(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🌤️', message, ...args));
+      logInfo(...this.formatMessage('🌤️', message, ...args));
     }
   }
 
   weatherTransition(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🌦️', message, ...args));
+      logInfo(...this.formatMessage('🌦️', message, ...args));
     }
   }
 
   temperatureChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🌡️', message, ...args));
+      logInfo(...this.formatMessage('🌡️', message, ...args));
     }
   }
 
   pressureChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('📊', message, ...args));
+      logInfo(...this.formatMessage('📊', message, ...args));
     }
   }
 
   windChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('💨', message, ...args));
+      logInfo(...this.formatMessage('💨', message, ...args));
     }
   }
 
   weatherLoading(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🔄', message, ...args));
+      logInfo(...this.formatMessage('🔄', message, ...args));
     }
   }
 
   interaction(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🎯', message, ...args));
+      logInfo(...this.formatMessage('🎯', message, ...args));
     }
   }
 
   location(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('📍', message, ...args));
+      logInfo(...this.formatMessage('📍', message, ...args));
     }
   }
 
   api(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('📡', message, ...args));
+      logInfo(...this.formatMessage('📡', message, ...args));
     }
   }
 
@@ -118,25 +120,25 @@ class Logger {
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.debug(...this.formatMessage('🐛', message, ...args));
+      logDebug(...this.formatMessage('🐛', message, ...args));
     }
   }
 
   info(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.INFO)) {
-      console.info(...this.formatMessage('ℹ️', message, ...args));
+      logInfo(...this.formatMessage('ℹ️', message, ...args));
     }
   }
 
   warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.WARN)) {
-      console.warn(...this.formatMessage('⚠️', message, ...args));
+      logWarn(...this.formatMessage('⚠️', message, ...args));
     }
   }
 
   error(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.ERROR)) {
-      console.error(...this.formatMessage('❌', message, ...args));
+      logError(...this.formatMessage('❌', message, ...args));
     }
   }
 
@@ -146,7 +148,7 @@ class Logger {
       const start = performance.now();
       fn();
       const end = performance.now();
-      console.log(
+      logInfo(
         ...this.formatMessage(
           '⚡',
           `${label} took ${(end - start).toFixed(2)}ms`
@@ -174,13 +176,61 @@ export const logger = new Logger();
 
 // Export convenience functions for common patterns
 export const logWeatherHaptic = logger.weatherHaptic.bind(logger);
+/**
+ * logWeatherTransition - Weather data processing and display
+ */
+/**
+ * logWeatherTransition - Weather data processing and display
+ */
 export const logWeatherTransition = logger.weatherTransition.bind(logger);
+/**
+ * logTemperatureChange - Core logger functionality
+ */
+/**
+ * logTemperatureChange - Core logger functionality
+ */
 export const logTemperatureChange = logger.temperatureChange.bind(logger);
+/**
+ * logPressureChange - Core logger functionality
+ */
+/**
+ * logPressureChange - Core logger functionality
+ */
 export const logPressureChange = logger.pressureChange.bind(logger);
+/**
+ * logWindChange - Core logger functionality
+ */
+/**
+ * logWindChange - Core logger functionality
+ */
 export const logWindChange = logger.windChange.bind(logger);
+/**
+ * logWeatherLoading - Weather data processing and display
+ */
+/**
+ * logWeatherLoading - Weather data processing and display
+ */
 export const logWeatherLoading = logger.weatherLoading.bind(logger);
+/**
+ * logInteraction - Core logger functionality
+ */
+/**
+ * logInteraction - Core logger functionality
+ */
 export const logInteraction = logger.interaction.bind(logger);
+/**
+ * logLocation - Location services and geolocation handling
+ */
+/**
+ * logLocation - Location services and geolocation handling
+ */
 export const logLocation = logger.location.bind(logger);
+/**
+ * logApi - Core logger functionality
+ */
+/**
+ * logApi - Core logger functionality
+ */
 export const logApi = logger.api.bind(logger);
 
 export default logger;

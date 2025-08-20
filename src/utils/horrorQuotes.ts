@@ -1,3 +1,5 @@
+import { logWarn } from '../utils/logger';
+
 /**
  * Horror Weather Quotes
  * Spooky weather-related quotes inspired by horror movies
@@ -208,7 +210,7 @@ const getSecureRandomIndex = (maxValue: number): number => {
       return randomValue % maxValue;
     } catch (error) {
       // Fallback to Math.random if crypto is not available
-      console.warn('Crypto module not available, falling back to Math.random');
+      logWarn('Crypto module not available, falling back to Math.random');
       return Math.floor(Math.random() * maxValue);
     }
   } else {

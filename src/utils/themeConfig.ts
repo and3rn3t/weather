@@ -199,6 +199,12 @@ export const horrorTheme: ThemeColors = {
 
 export type ThemeName = 'light' | 'dark' | 'horror';
 
+/**
+ * themes - Core themeConfig functionality
+ */
+/**
+ * themes - Core themeConfig functionality
+ */
 export const themes = {
   light: lightTheme,
   dark: darkTheme,

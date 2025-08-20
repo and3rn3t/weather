@@ -320,6 +320,12 @@ const getEnhancedBorderRadius = (
 // MAIN HOOK
 // ============================================================================
 
+/**
+ * useEnhancedMobileScreen - Custom React hook for useEnhancedMobileScreen functionality
+ */
+/**
+ * useEnhancedMobileScreen - Custom React hook for useEnhancedMobileScreen functionality
+ */
 export const useEnhancedMobileScreen = () => {
   const [screenInfo, setScreenInfo] = useState<EnhancedScreenInfo>(
     getEnhancedScreenInfo

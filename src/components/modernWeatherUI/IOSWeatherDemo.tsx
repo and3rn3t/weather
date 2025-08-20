@@ -18,6 +18,8 @@ import { ActionSheet } from './ActionSheet';
 import { EnhancedSearchBar } from './EnhancedSearchBar';
 import { NavigationBar } from './NavigationBar';
 import { NavigationIcons } from './NavigationIcons';
+import { logInfo } from '../utils/logger';
+
 
 interface IOSWeatherDemoProps {
   theme: ThemeColors;
@@ -42,23 +44,23 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
     {
       title: 'Share Weather',
       icon: <NavigationIcons.Share />,
-      onPress: () => console.log('Share weather'),
+      onPress: () => logInfo('Share weather'),
     },
     {
       title: 'Add to Favorites',
       icon: <NavigationIcons.Add />,
-      onPress: () => console.log('Add to favorites'),
+      onPress: () => logInfo('Add to favorites'),
     },
     {
       title: 'Refresh Data',
       icon: <NavigationIcons.Refresh />,
-      onPress: () => console.log('Refresh data'),
+      onPress: () => logInfo('Refresh data'),
     },
     {
       title: 'Delete Location',
       icon: <NavigationIcons.Close />,
       destructive: true,
-      onPress: () => console.log('Delete location'),
+      onPress: () => logInfo('Delete location'),
     },
   ];
 
@@ -106,7 +108,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
         subtitle="San Francisco, CA"
         leadingButton={{
           icon: <NavigationIcons.Menu />,
-          onPress: () => console.log('Menu pressed'),
+          onPress: () => logInfo('Menu pressed'),
         }}
         trailingButton={{
           icon: <NavigationIcons.Settings />,
@@ -121,7 +123,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
             isDark={isDark}
             suggestions={searchSuggestions}
             recentSearches={recentSearches}
-            onSubmit={text => console.log('Search:', text)}
+            onSubmit={text => logInfo('Search:', text)}
           />
         }
         theme={theme}
@@ -222,14 +224,14 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
               icon={<NavigationIcons.Location />}
               badge="Now"
               disclosure={true}
-              onPress={() => console.log('Current location pressed')}
+              onPress={() => logInfo('Current location pressed')}
               theme={theme}
             />
             <ListItem
               title="New York"
               subtitle="Partly Cloudy • 68°F"
               disclosure={true}
-              onPress={() => console.log('New York pressed')}
+              onPress={() => logInfo('New York pressed')}
               theme={theme}
             />
             <ListItem
@@ -237,7 +239,7 @@ export const IOSWeatherDemo: React.FC<IOSWeatherDemoProps> = ({
               subtitle="Rainy • 55°F"
               badge="3h ago"
               disclosure={true}
-              onPress={() => console.log('London pressed')}
+              onPress={() => logInfo('London pressed')}
               theme={theme}
             />
             <ListItem

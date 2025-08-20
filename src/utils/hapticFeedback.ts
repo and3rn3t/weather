@@ -4,6 +4,8 @@
  */
 
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { logInfo } from '../utils/logger';
+
 
 export type HapticType =
   | 'light'
@@ -28,7 +30,7 @@ class HapticFeedbackManager {
         this.isAvailable = true;
       }
     } catch (error) {
-      console.log('Haptic feedback not available:', error);
+      logInfo('Haptic feedback not available:', error);
       this.isAvailable = false;
     }
   }
@@ -70,7 +72,7 @@ class HapticFeedbackManager {
           await Haptics.impact({ style: ImpactStyle.Light });
       }
     } catch (error) {
-      console.log('Haptic feedback error:', error);
+      logInfo('Haptic feedback error:', error);
       this.webFallback(type);
     }
   }

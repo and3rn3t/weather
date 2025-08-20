@@ -14,6 +14,12 @@ export interface SwipeConfig {
 /**
  * Hook for screen-specific swipe configuration
  */
+/**
+ * useScreenSwipeConfig - Custom React hook for useScreenSwipeConfig functionality
+ */
+/**
+ * useScreenSwipeConfig - Custom React hook for useScreenSwipeConfig functionality
+ */
 export const useScreenSwipeConfig = (currentScreen: string): SwipeConfig => {
   const getSwipeConfig = (): SwipeConfig => {
     switch (currentScreen) {

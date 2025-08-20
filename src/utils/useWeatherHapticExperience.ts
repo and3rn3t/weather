@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logWeatherHaptic, logWeatherTransition, logger } from './logger';
+import { logWeatherHaptic, logWeatherTransition } from '../utils/logger';
 
 // ============================================================================
 // WEATHER-CONTEXTUAL HAPTIC PATTERNS
@@ -209,6 +209,12 @@ const WEATHER_HAPTIC_PATTERNS: Record<string, number[]> = {
 // MAIN HOOK
 // ============================================================================
 
+/**
+ * useWeatherHapticExperience - Custom React hook for useWeatherHapticExperience functionality
+ */
+/**
+ * useWeatherHapticExperience - Custom React hook for useWeatherHapticExperience functionality
+ */
 export const useWeatherHapticExperience = (
   config: WeatherHapticConfig = {}
 ) => {

@@ -3,6 +3,12 @@
  * Smooth, performant animations optimized for mobile devices
  */
 
+/**
+ * ANIMATION_DURATIONS - Core animations functionality
+ */
+/**
+ * ANIMATION_DURATIONS - Core animations functionality
+ */
 export const ANIMATION_DURATIONS = {
   fast: 150,
   normal: 250,
@@ -10,6 +16,12 @@ export const ANIMATION_DURATIONS = {
   loading: 1000,
 } as const;
 
+/**
+ * EASING - Core animations functionality
+ */
+/**
+ * EASING - Core animations functionality
+ */
 export const EASING = {
   easeOut: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   easeIn: 'cubic-bezier(0.55, 0.055, 0.675, 0.19)',

@@ -15,6 +15,12 @@ interface HorrorQuoteDisplayProps {
   className?: string;
 }
 
+/**
+ * HorrorQuoteDisplay - Core HorrorQuoteDisplay functionality
+ */
+/**
+ * HorrorQuoteDisplay - Core HorrorQuoteDisplay functionality
+ */
 export const HorrorQuoteDisplay = ({
   weatherCode,
   isDay = true,

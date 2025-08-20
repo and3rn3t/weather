@@ -20,6 +20,12 @@ import {
 /**
  * Hook for responsive breakpoint detection
  */
+/**
+ * useBreakpoint - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useBreakpoint - Custom React hook for useMobileOptimization functionality
+ */
 export const useBreakpoint = () => {
   const [currentBreakpoint, setCurrentBreakpoint] = useState(() =>
     getCurrentBreakpoint()
@@ -61,6 +67,12 @@ export const useBreakpoint = () => {
 /**
  * Hook for touch and interaction capabilities
  */
+/**
+ * useInteractionCapabilities - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useInteractionCapabilities - Custom React hook for useMobileOptimization functionality
+ */
 export const useInteractionCapabilities = () => {
   const [capabilities, setCapabilities] = useState({
     hasHover: supportsHover(),
@@ -92,6 +104,12 @@ export const useInteractionCapabilities = () => {
 
 /**
  * Hook for optimized scroll behavior on mobile
+ */
+/**
+ * useOptimizedScroll - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useOptimizedScroll - Custom React hook for useMobileOptimization functionality
  */
 export const useOptimizedScroll = () => {
   const [isScrolling, setIsScrolling] = useState(false);
@@ -146,6 +164,12 @@ export const useOptimizedScroll = () => {
 
 /**
  * Hook for network-aware loading
+ */
+/**
+ * useNetworkAwareLoading - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useNetworkAwareLoading - Custom React hook for useMobileOptimization functionality
  */
 export const useNetworkAwareLoading = () => {
   const [networkInfo, setNetworkInfo] = useState({
@@ -209,6 +233,12 @@ export const useNetworkAwareLoading = () => {
 /**
  * Hook for mobile performance optimization
  */
+/**
+ * useMobilePerformance - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useMobilePerformance - Custom React hook for useMobileOptimization functionality
+ */
 export const useMobilePerformance = () => {
   const { isSmallScreen } = useBreakpoint();
   const { hasTouch, reducedMotion } = useInteractionCapabilities();
@@ -239,6 +269,12 @@ export const useMobilePerformance = () => {
 
 /**
  * Hook for responsive container queries
+ */
+/**
+ * useContainerSize - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useContainerSize - Custom React hook for useMobileOptimization functionality
  */
 export const useContainerSize = (ref: React.RefObject<HTMLElement>) => {
   const [containerSize, setContainerSize] = useState({
@@ -273,6 +309,12 @@ export const useContainerSize = (ref: React.RefObject<HTMLElement>) => {
 
 /**
  * Hook for mobile-optimized API requests
+ */
+/**
+ * useMobileOptimizedAPI - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useMobileOptimizedAPI - Custom React hook for useMobileOptimization functionality
  */
 export const useMobileOptimizedAPI = () => {
   const { isSlowConnection } = useNetworkAwareLoading();
@@ -331,6 +373,12 @@ export const useMobileOptimizedAPI = () => {
 
 /**
  * Hook for touch gesture support
+ */
+/**
+ * useTouchGestures - Custom React hook for useMobileOptimization functionality
+ */
+/**
+ * useTouchGestures - Custom React hook for useMobileOptimization functionality
  */
 export const useTouchGestures = () => {
   const [touchState, setTouchState] = useState({

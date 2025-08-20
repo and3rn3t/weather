@@ -26,6 +26,12 @@ export interface ScreenInfo {
 /**
  * Get comprehensive screen information for mobile optimization
  */
+/**
+ * getScreenInfo - Retrieves screeninfo data
+ */
+/**
+ * getScreenInfo - Retrieves screeninfo data
+ */
 export const getScreenInfo = (): ScreenInfo => {
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -86,6 +92,12 @@ export const getScreenInfo = (): ScreenInfo => {
 /**
  * Get adaptive font sizes based on screen size
  */
+/**
+ * getAdaptiveFontSizes - Retrieves adaptivefontsizes data
+ */
+/**
+ * getAdaptiveFontSizes - Retrieves adaptivefontsizes data
+ */
 export const getAdaptiveFontSizes = (screenInfo: ScreenInfo) => ({
   // Main title sizes
   heroTitle: screenInfo.isVerySmallScreen
@@ -123,6 +135,12 @@ export const getAdaptiveFontSizes = (screenInfo: ScreenInfo) => ({
 
 /**
  * Get adaptive spacing based on screen size
+ */
+/**
+ * getAdaptiveSpacing - Retrieves adaptivespacing data
+ */
+/**
+ * getAdaptiveSpacing - Retrieves adaptivespacing data
  */
 export const getAdaptiveSpacing = (screenInfo: ScreenInfo) => ({
   // Container padding
@@ -172,6 +190,12 @@ export const getAdaptiveSpacing = (screenInfo: ScreenInfo) => ({
 /**
  * Get adaptive border radius based on screen size
  */
+/**
+ * getAdaptiveBorderRadius - Retrieves adaptiveborderradius data
+ */
+/**
+ * getAdaptiveBorderRadius - Retrieves adaptiveborderradius data
+ */
 export const getAdaptiveBorderRadius = (screenInfo: ScreenInfo) => ({
   small: screenInfo.isVerySmallScreen ? '8px' : '12px',
   medium: screenInfo.isVerySmallScreen ? '12px' : '16px',
@@ -185,6 +209,12 @@ export const getAdaptiveBorderRadius = (screenInfo: ScreenInfo) => ({
 
 /**
  * Get touch-optimized button styles
+ */
+/**
+ * getTouchOptimizedButton - Retrieves touchoptimizedbutton data
+ */
+/**
+ * getTouchOptimizedButton - Retrieves touchoptimizedbutton data
  */
 export const getTouchOptimizedButton = (
   theme: ThemeColors,
@@ -259,6 +289,12 @@ export const getTouchOptimizedButton = (
 /**
  * Get responsive grid configuration
  */
+/**
+ * getResponsiveGrid - Retrieves responsivegrid data
+ */
+/**
+ * getResponsiveGrid - Retrieves responsivegrid data
+ */
 export const getResponsiveGrid = (
   screenInfo: ScreenInfo,
   itemMinWidth: number = 120
@@ -288,6 +324,12 @@ export const getResponsiveGrid = (
 /**
  * Get safe area styles for notched devices
  */
+/**
+ * getSafeAreaStyles - Retrieves safeareastyles data
+ */
+/**
+ * getSafeAreaStyles - Retrieves safeareastyles data
+ */
 export const getSafeAreaStyles = (
   screenInfo: ScreenInfo
 ): React.CSSProperties => ({
@@ -303,6 +345,12 @@ export const getSafeAreaStyles = (
 
 /**
  * Get container styles optimized for mobile screens
+ */
+/**
+ * getMobileOptimizedContainer - Retrieves mobileoptimizedcontainer data
+ */
+/**
+ * getMobileOptimizedContainer - Retrieves mobileoptimizedcontainer data
  */
 export const getMobileOptimizedContainer = (
   theme: ThemeColors,
@@ -334,6 +382,12 @@ export const getMobileOptimizedContainer = (
 
 /**
  * Get card styles optimized for mobile screens
+ */
+/**
+ * getMobileOptimizedCard - Retrieves mobileoptimizedcard data
+ */
+/**
+ * getMobileOptimizedCard - Retrieves mobileoptimizedcard data
  */
 export const getMobileOptimizedCard = (
   theme: ThemeColors,
@@ -371,6 +425,12 @@ export const getMobileOptimizedCard = (
 /**
  * Handle orientation changes and adapt layout
  */
+/**
+ * handleOrientationChange - Handles orientationchange events
+ */
+/**
+ * handleOrientationChange - Handles orientationchange events
+ */
 export const handleOrientationChange = (
   callback: (screenInfo: ScreenInfo) => void
 ) => {
@@ -400,6 +460,12 @@ export const handleOrientationChange = (
 /**
  * Optimize images for mobile screens
  */
+/**
+ * getOptimizedImageProps - Retrieves optimizedimageprops data
+ */
+/**
+ * getOptimizedImageProps - Retrieves optimizedimageprops data
+ */
 export const getOptimizedImageProps = (screenInfo: ScreenInfo) => ({
   loading: 'lazy' as const,
   decoding: 'async' as const,
@@ -414,6 +480,12 @@ export const getOptimizedImageProps = (screenInfo: ScreenInfo) => ({
 
 /**
  * Get viewport meta tag content for optimal mobile display
+ */
+/**
+ * getOptimalViewportContent - Retrieves optimalviewportcontent data
+ */
+/**
+ * getOptimalViewportContent - Retrieves optimalviewportcontent data
  */
 export const getOptimalViewportContent = (
   allowZoom: boolean = true
@@ -434,6 +506,12 @@ export const getOptimalViewportContent = (
 
 /**
  * Get styles that improve accessibility on mobile devices
+ */
+/**
+ * getAccessibilityStyles - Retrieves accessibilitystyles data
+ */
+/**
+ * getAccessibilityStyles - Retrieves accessibilitystyles data
  */
 export const getAccessibilityStyles = (
   screenInfo: ScreenInfo

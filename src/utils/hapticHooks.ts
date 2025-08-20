@@ -15,6 +15,12 @@ import { useEnhancedHaptics, type HapticConfig } from './enhancedHapticService';
 // CONTEXT HOOK
 // ============================================================================
 
+/**
+ * useHapticContext - Custom React hook for hapticHooks functionality
+ */
+/**
+ * useHapticContext - Custom React hook for hapticHooks functionality
+ */
 export const useHapticContext = (): HapticFeedbackContextType => {
   const context = useContext(HapticFeedbackContext);
 
@@ -34,6 +40,12 @@ export const useHapticContext = (): HapticFeedbackContextType => {
 /**
  * Enhanced haptic feedback hook that integrates both web and native haptics
  * Provides additional convenience methods and smart defaults
+ */
+/**
+ * useHaptic - Custom React hook for hapticHooks functionality
+ */
+/**
+ * useHaptic - Custom React hook for hapticHooks functionality
  */
 export const useHaptic = (config?: HapticConfig) => {
   const context = useHapticContext();
@@ -87,6 +99,12 @@ export const useHaptic = (config?: HapticConfig) => {
 /**
  * Hook for weather-specific haptic feedback
  */
+/**
+ * useWeatherHaptics - Custom React hook for hapticHooks functionality
+ */
+/**
+ * useWeatherHaptics - Custom React hook for hapticHooks functionality
+ */
 export const useWeatherHaptics = (config?: HapticConfig) => {
   const haptics = useEnhancedHaptics(config);
 
@@ -105,6 +123,12 @@ export const useWeatherHaptics = (config?: HapticConfig) => {
 /**
  * Hook for gesture-specific haptic feedback
  */
+/**
+ * useGestureHaptics - Custom React hook for hapticHooks functionality
+ */
+/**
+ * useGestureHaptics - Custom React hook for hapticHooks functionality
+ */
 export const useGestureHaptics = (config?: HapticConfig) => {
   const haptics = useEnhancedHaptics(config);
 
@@ -120,6 +144,12 @@ export const useGestureHaptics = (config?: HapticConfig) => {
 
 /**
  * Hook for UI interaction haptic feedback
+ */
+/**
+ * useUIHaptics - Custom React hook for hapticHooks functionality
+ */
+/**
+ * useUIHaptics - Custom React hook for hapticHooks functionality
  */
 export const useUIHaptics = (config?: HapticConfig) => {
   const haptics = useEnhancedHaptics(config);

@@ -2,6 +2,14 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Mock logger functions for tests
+vi.mock('./utils/logger', () => ({
+  logInfo: vi.fn(),
+  logWarn: vi.fn(),
+  logError: vi.fn(),
+  logDebug: vi.fn(),
+}));
+
 // Mock CSS.supports for test environment
 Object.defineProperty(window, 'CSS', {
   value: {

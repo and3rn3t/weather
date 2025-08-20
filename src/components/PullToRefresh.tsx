@@ -5,6 +5,8 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useHapticFeedback } from '../utils/hapticFeedback';
+import { logError } from '../utils/logger';
+
 
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
@@ -82,7 +84,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         await onRefresh();
         success();
       } catch (error) {
-        console.error('Refresh failed:', error);
+        logError('Refresh failed:', error);
       } finally {
         setIsRefreshing(false);
       }

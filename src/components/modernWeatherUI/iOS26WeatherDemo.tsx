@@ -20,7 +20,8 @@ import {
   ModalSheet,
   SwipeActions,
 } from './iOS26Components';
-import {
+import { logInfo } from '../utils/logger';
+
   ActivityIndicator,
   ListItem,
   ProgressIndicator,
@@ -121,7 +122,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       id: 'share',
       title: 'Share Location',
       icon: '📍',
-      onAction: () => console.log('Share location'),
+      onAction: () => logInfo('Share location'),
     },
     {
       id: 'settings',
@@ -134,7 +135,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Remove Location',
       icon: '🗑️',
       destructive: true,
-      onAction: () => console.log('Delete location'),
+      onAction: () => logInfo('Delete location'),
     },
   ];
 
@@ -144,7 +145,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Favorite',
       icon: '⭐',
       color: '#FF9500',
-      onAction: () => console.log('Added to favorites'),
+      onAction: () => logInfo('Added to favorites'),
     },
   ];
 
@@ -154,14 +155,14 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Share',
       icon: '📤',
       color: '#007AFF',
-      onAction: () => console.log('Share weather'),
+      onAction: () => logInfo('Share weather'),
     },
     {
       id: 'delete',
       title: 'Delete',
       icon: '🗑️',
       color: '#FF3B30',
-      onAction: () => console.log('Delete weather data'),
+      onAction: () => logInfo('Delete weather data'),
     },
   ];
 
@@ -260,7 +261,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             title="Air Quality"
             size="medium"
             theme={theme}
-            onTap={() => console.log('View air quality details')}
+            onTap={() => logInfo('View air quality details')}
           >
             <div
               style={{
@@ -349,7 +350,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
               badge="Now"
               disclosure
               theme={theme}
-              onPress={() => console.log('View San Francisco weather')}
+              onPress={() => logInfo('View San Francisco weather')}
             />
           </ContextMenu>
         </SwipeActions>
@@ -367,7 +368,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
                 badge="5 min ago"
                 disclosure
                 theme={theme}
-                onPress={() => console.log('View New York weather')}
+                onPress={() => logInfo('View New York weather')}
               />
             </ContextMenu>
           </SwipeActions>
@@ -459,7 +460,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             subtitle="Fahrenheit"
             disclosure
             theme={theme}
-            onPress={() => console.log('Change temperature unit')}
+            onPress={() => logInfo('Change temperature unit')}
           />
           <ListItem
             title="Weather Alerts"
@@ -467,21 +468,21 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             badge="On"
             disclosure
             theme={theme}
-            onPress={() => console.log('Configure alerts')}
+            onPress={() => logInfo('Configure alerts')}
           />
           <ListItem
             title="Location Services"
             subtitle="Always"
             disclosure
             theme={theme}
-            onPress={() => console.log('Location settings')}
+            onPress={() => logInfo('Location settings')}
           />
           <ListItem
             title="Data Refresh"
             subtitle="Every 15 minutes"
             disclosure
             theme={theme}
-            onPress={() => console.log('Refresh settings')}
+            onPress={() => logInfo('Refresh settings')}
           />
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>

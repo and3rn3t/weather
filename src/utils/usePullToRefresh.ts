@@ -7,6 +7,8 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useHapticFeedback, HapticPattern } from './useHapticFeedback';
+import { logError } from '../utils/logger';
+
 
 interface PullToRefreshOptions {
   maxPullDistance?: number;
@@ -23,6 +25,12 @@ interface PullToRefreshState {
   canRefresh: boolean;
 }
 
+/**
+ * usePullToRefresh - Custom React hook for usePullToRefresh functionality
+ */
+/**
+ * usePullToRefresh - Custom React hook for usePullToRefresh functionality
+ */
 export const usePullToRefresh = (
   onRefresh: () => Promise<void>,
   options: PullToRefreshOptions = {}
@@ -158,7 +166,7 @@ export const usePullToRefresh = (
         // Success haptic when refresh completes
         haptic.triggerHaptic(HapticPattern.SUCCESS);
       } catch (error) {
-        console.error('Pull-to-refresh error:', error);
+        logError('Pull-to-refresh error:', error);
         // Error haptic when refresh fails
         haptic.triggerHaptic(HapticPattern.ERROR);
       } finally {

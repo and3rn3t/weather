@@ -14,6 +14,8 @@ import React, {
 } from 'react';
 import { useHaptic } from './hapticHooks';
 import type { ThemeColors } from './themeConfig';
+import { logError } from '../utils/logger';
+
 
 interface CityResult {
   display_name: string;
@@ -205,7 +207,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
         setSelectedIndex(-1);
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('City search error:', error);
+          logError('City search error:', error);
           onError?.('Failed to search for cities. Please try again.');
         }
         setSuggestions([]);

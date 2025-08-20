@@ -3,6 +3,12 @@ import { createResponsiveTheme } from './responsiveUtils';
 import { ThemeContext } from './themeContext';
 import { useBreakpoint, useMobilePerformance } from './useMobileOptimization';
 
+/**
+ * useTheme - Custom React hook for useTheme functionality
+ */
+/**
+ * useTheme - Custom React hook for useTheme functionality
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {

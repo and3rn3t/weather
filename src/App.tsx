@@ -17,6 +17,8 @@ import ErrorBoundary from './ErrorBoundary';
 import IOS26WeatherDemo from './components/modernWeatherUI/iOS26WeatherDemo';
 import './App.css';
 import './styles/mobileEnhancements.css';
+import { logError } from '../utils/logger';
+
 
 // Interfaces for type safety
 interface NominatimResult {
@@ -365,7 +367,7 @@ const SimpleWeatherApp: React.FC = () => {
         await getWeather();
       }
     } catch (err) {
-      console.error('Refresh failed:', err);
+      logError('Refresh failed:', err);
     } finally {
       setRefreshing(false);
       setIsRefreshTriggered(false);
@@ -449,7 +451,7 @@ const SimpleWeatherApp: React.FC = () => {
       setSearchSuggestions(suggestions);
       setShowSuggestions(suggestions.length > 0);
     } catch (error) {
-      console.error('Failed to fetch suggestions:', error);
+      logError('Failed to fetch suggestions:', error);
     }
   };
 
@@ -513,7 +515,7 @@ const SimpleWeatherApp: React.FC = () => {
       setError(
         err instanceof Error ? err.message : 'Failed to fetch weather data'
       );
-      console.error('Weather fetch error:', err);
+      logError('Weather fetch error:', err);
     } finally {
       setLoading(false);
     }

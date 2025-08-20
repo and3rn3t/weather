@@ -4,6 +4,8 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { logError } from '../utils/logger';
+
 
 interface SimpleAutocompleteProps {
   onCitySelected: (cityName: string, lat: number, lon: number) => void;
@@ -66,7 +68,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
         setIsOpen(data.length > 0);
       }
     } catch (error) {
-      console.error('Search error:', error);
+      logError('Search error:', error);
       setResults([]);
       setIsOpen(false);
     } finally {

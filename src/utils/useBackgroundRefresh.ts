@@ -6,7 +6,8 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import {
+import { logInfo } from '../utils/logger';
+
   BackgroundRefreshService,
   createBackgroundRefreshService,
   type BackgroundRefreshConfig,
@@ -52,6 +53,12 @@ export interface BackgroundRefreshHook {
 
 /**
  * Main background refresh hook
+ */
+/**
+ * useBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
+/**
+ * useBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
  */
 export const useBackgroundRefresh = (
   refreshCallback: () => Promise<void>,
@@ -105,9 +112,9 @@ export const useBackgroundRefresh = (
         isInitialized = true;
         statusRef.current.isInitialized = true;
 
-        console.log('Background refresh service initialized via hook');
+        logInfo('Background refresh service initialized via hook');
       } catch (error) {
-        console.error(
+        logError(
           'Failed to initialize background refresh service:',
           error
         );
@@ -195,6 +202,12 @@ export const useBackgroundRefresh = (
 /**
  * Simple background refresh hook with minimal configuration
  */
+/**
+ * useSimpleBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
+/**
+ * useSimpleBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
 export const useSimpleBackgroundRefresh = (
   refreshCallback: () => Promise<void>,
   enabled: boolean = true
@@ -222,6 +235,12 @@ interface RefreshStatusEvent {
 /**
  * Advanced background refresh hook with full configuration
  */
+/**
+ * useAdvancedBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
+/**
+ * useAdvancedBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
 export const useAdvancedBackgroundRefresh = (
   refreshCallback: () => Promise<void>,
   options: {
@@ -246,11 +265,11 @@ export const useAdvancedBackgroundRefresh = (
     maxBackgroundRefreshes: 4,
     ...customConfig,
     onRefreshComplete: success => {
-      console.log(`Background refresh ${success ? 'succeeded' : 'failed'}`);
+      logInfo(`Background refresh ${success ? 'succeeded' : 'failed'}`);
       onStatusChange?.({ lastRefresh: Date.now(), success });
     },
     onRefreshError: error => {
-      console.error('Background refresh error:', error);
+      logError('Background refresh error:', error);
       onStatusChange?.({ error: error.message });
     },
   });
@@ -283,6 +302,12 @@ export const useAdvancedBackgroundRefresh = (
 /**
  * Weather-specific background refresh hook
  */
+/**
+ * useWeatherBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
+/**
+ * useWeatherBackgroundRefresh - Custom React hook for useBackgroundRefresh functionality
+ */
 export const useWeatherBackgroundRefresh = (
   fetchWeatherData: () => Promise<void>,
   enabled: boolean = true
@@ -300,9 +325,9 @@ export const useWeatherBackgroundRefresh = (
     },
     onStatusChange: status => {
       if (status.success) {
-        console.log('Weather data refreshed in background');
+        logInfo('Weather data refreshed in background');
       } else if (status.error) {
-        console.error('Weather refresh failed:', status.error);
+        logError('Weather refresh failed:', status.error);
       }
     },
   });

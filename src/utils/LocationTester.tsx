@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useLocationServices } from './useLocationServices';
+import { logInfo } from '../utils/logger';
+
 
 export const LocationTester: React.FC = () => {
   const {
@@ -17,7 +19,7 @@ export const LocationTester: React.FC = () => {
       ...prev,
       `${new Date().toLocaleTimeString()}: ${message}`,
     ]);
-    console.log(message);
+    logInfo(message);
   };
 
   const runLocationTest = async () => {

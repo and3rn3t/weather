@@ -37,6 +37,12 @@ export interface SwipeHandlers {
 /**
  * Enhanced swipe gesture hook with visual feedback and haptic integration
  */
+/**
+ * useSwipeGestures - Custom React hook for useSwipeGestures functionality
+ */
+/**
+ * useSwipeGestures - Custom React hook for useSwipeGestures functionality
+ */
 export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
   const {
     threshold = 100,

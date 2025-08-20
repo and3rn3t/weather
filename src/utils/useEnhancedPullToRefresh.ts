@@ -17,6 +17,12 @@ interface EnhancedPullToRefreshOptions {
   enableHaptics?: boolean;
 }
 
+/**
+ * useEnhancedPullToRefresh - Custom React hook for useEnhancedPullToRefresh functionality
+ */
+/**
+ * useEnhancedPullToRefresh - Custom React hook for useEnhancedPullToRefresh functionality
+ */
 export const useEnhancedPullToRefresh = (
   onRefresh: () => Promise<void>,
   options: EnhancedPullToRefreshOptions = {}
