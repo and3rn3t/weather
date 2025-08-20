@@ -1,5 +1,3 @@
-import { logError, logWarn, logInfo, logDebug } from '../utils/logger';
-
 /**
  * Production Logger Utility
  *
@@ -59,55 +57,55 @@ class Logger {
   // Weather-specific logging
   weatherHaptic(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('🌤️', message, ...args));
+      console.info(...this.formatMessage('🌤️', message, ...args));
     }
   }
 
   weatherTransition(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('🌦️', message, ...args));
+      console.info(...this.formatMessage('🌦️', message, ...args));
     }
   }
 
   temperatureChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('🌡️', message, ...args));
+      console.info(...this.formatMessage('🌡️', message, ...args));
     }
   }
 
   pressureChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('📊', message, ...args));
+      console.info(...this.formatMessage('📊', message, ...args));
     }
   }
 
   windChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('💨', message, ...args));
+      console.info(...this.formatMessage('💨', message, ...args));
     }
   }
 
   weatherLoading(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('🔄', message, ...args));
+      console.info(...this.formatMessage('🔄', message, ...args));
     }
   }
 
   interaction(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('🎯', message, ...args));
+      console.info(...this.formatMessage('🎯', message, ...args));
     }
   }
 
   location(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('📍', message, ...args));
+      console.info(...this.formatMessage('📍', message, ...args));
     }
   }
 
   api(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logInfo(...this.formatMessage('📡', message, ...args));
+      console.info(...this.formatMessage('📡', message, ...args));
     }
   }
 
@@ -120,25 +118,25 @@ class Logger {
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      logDebug(...this.formatMessage('🐛', message, ...args));
+      console.debug(...this.formatMessage('🐛', message, ...args));
     }
   }
 
   info(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.INFO)) {
-      logInfo(...this.formatMessage('ℹ️', message, ...args));
+      console.info(...this.formatMessage('ℹ️', message, ...args));
     }
   }
 
   warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.WARN)) {
-      logWarn(...this.formatMessage('⚠️', message, ...args));
+      console.warn(...this.formatMessage('⚠️', message, ...args));
     }
   }
 
   error(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.ERROR)) {
-      logError(...this.formatMessage('❌', message, ...args));
+      console.error(...this.formatMessage('❌', message, ...args));
     }
   }
 
@@ -148,7 +146,7 @@ class Logger {
       const start = performance.now();
       fn();
       const end = performance.now();
-      logInfo(
+      console.info(
         ...this.formatMessage(
           '⚡',
           `${label} took ${(end - start).toFixed(2)}ms`
@@ -173,6 +171,13 @@ class Logger {
 
 // Export singleton instance
 export const logger = new Logger();
+
+// Export basic logging functions
+export const logTrace = logger.trace.bind(logger);
+export const logDebug = logger.debug.bind(logger);
+export const logInfo = logger.info.bind(logger);
+export const logWarn = logger.warn.bind(logger);
+export const logError = logger.error.bind(logger);
 
 // Export convenience functions for common patterns
 export const logWeatherHaptic = logger.weatherHaptic.bind(logger);

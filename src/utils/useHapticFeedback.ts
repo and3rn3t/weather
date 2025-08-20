@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useRef } from 'react';
-import { logError, logInfo } from '../utils/logger';
+import { logError, logInfo } from './logger';
 
 
 // ============================================================================

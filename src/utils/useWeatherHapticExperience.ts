@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logWeatherHaptic, logWeatherTransition } from '../utils/logger';
+import { logWeatherHaptic, logWeatherTransition } from './logger';
 
 // ============================================================================
 // WEATHER-CONTEXTUAL HAPTIC PATTERNS

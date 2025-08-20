@@ -5,20 +5,19 @@
  */
 
 import React, { useState } from 'react';
-import { ThemeProvider } from './utils/themeContext';
-import { HapticFeedbackProvider } from './utils/hapticContext';
-import { useTheme } from './utils/useTheme';
-import WeatherIcon from './utils/weatherIcons';
-import ThemeToggle from './utils/ThemeToggle';
+import './App.css';
 import MobileNavigation, {
   type NavigationScreen,
 } from './components/MobileNavigation';
-import ErrorBoundary from './ErrorBoundary';
 import IOS26WeatherDemo from './components/modernWeatherUI/iOS26WeatherDemo';
-import './App.css';
+import ErrorBoundary from './ErrorBoundary';
 import './styles/mobileEnhancements.css';
-import { logError } from '../utils/logger';
-
+import { HapticFeedbackProvider } from './utils/hapticContext';
+import { logError } from './utils/logger';
+import { ThemeProvider } from './utils/themeContext';
+import ThemeToggle from './utils/ThemeToggle';
+import { useTheme } from './utils/useTheme';
+import WeatherIcon from './utils/weatherIcons';
 
 // Interfaces for type safety
 interface NominatimResult {
@@ -122,7 +121,9 @@ const SimpleWeatherApp: React.FC = () => {
     try {
       // Step 1: Get coordinates from city name
       const geoResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          city
+        )}&format=json&limit=1`
       );
       const geoData = await geoResponse.json();
 
@@ -434,7 +435,9 @@ const SimpleWeatherApp: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchTerm)}&format=json&limit=5&addressdetails=1`,
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchTerm
+        )}&format=json&limit=5&addressdetails=1`,
         { headers: { 'User-Agent': 'WeatherApp/1.0' } }
       );
       const data = await response.json();
@@ -894,7 +897,9 @@ const SimpleWeatherApp: React.FC = () => {
               style={{
                 background: alert.severity === 'high' ? '#fef2f2' : '#fff7ed',
                 color: alert.severity === 'high' ? '#dc2626' : '#ea580c',
-                border: `1px solid ${alert.severity === 'high' ? '#fecaca' : '#fed7aa'}`,
+                border: `1px solid ${
+                  alert.severity === 'high' ? '#fecaca' : '#fed7aa'
+                }`,
                 padding: '12px',
                 borderRadius: '8px',
                 marginBottom: '8px',

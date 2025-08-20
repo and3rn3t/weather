@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { logInfo } from '../utils/logger';
+import { logInfo } from './logger';
 
   BackgroundRefreshService,
   createBackgroundRefreshService,

@@ -14,7 +14,7 @@ import React, {
 } from 'react';
 import { useHaptic } from './hapticHooks';
 import type { ThemeColors } from './themeConfig';
-import { logError } from '../utils/logger';
+import { logError } from './logger';
 
 
 interface CityResult {

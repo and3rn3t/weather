@@ -11,7 +11,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { logWarn, logInfo } from '../utils/logger';
+import { logWarn, logInfo } from './logger';
 
   nativeGeolocation,
   nativeHaptics,

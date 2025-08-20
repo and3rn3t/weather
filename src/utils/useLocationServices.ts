@@ -7,7 +7,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logError, logWarn, logInfo } from '../utils/logger';
+import { logError, logWarn, logInfo } from './logger';
 
 
 // ============================================================================

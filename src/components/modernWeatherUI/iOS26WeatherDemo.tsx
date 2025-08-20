@@ -12,6 +12,7 @@
 
 import React, { useEffect, useState } from 'react';
 import '../../styles/iOS26Components.css';
+import { logInfo } from '../../utils/logger';
 import type { ThemeColors } from '../../utils/themeConfig';
 import {
   ContextMenu,
@@ -20,8 +21,7 @@ import {
   ModalSheet,
   SwipeActions,
 } from './iOS26Components';
-import { logInfo } from '../utils/logger';
-
+import {
   ActivityIndicator,
   ListItem,
   ProgressIndicator,

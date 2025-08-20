@@ -12,7 +12,7 @@
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { Network } from '@capacitor/network';
-import { logError, logInfo } from '../utils/logger';
+import { logError, logInfo } from './logger';
 
 
 // Background refresh configuration

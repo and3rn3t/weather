@@ -19,7 +19,7 @@ import {
 import { Device, type DeviceInfo } from '@capacitor/device';
 import { Network, type ConnectionStatus } from '@capacitor/network';
 import { App } from '@capacitor/app';
-import { logError, logWarn, logInfo } from '../utils/logger';
+import { logError, logWarn, logInfo } from './logger';
 
 
 // Type definitions for native API responses

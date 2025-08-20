@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { logError } from '../utils/logger';
+import { logError } from './logger';
 
 
 export interface SavedCity {

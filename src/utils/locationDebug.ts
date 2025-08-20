@@ -5,7 +5,7 @@
  */
 
 import { useLocationServices } from './useLocationServices';
-import { logError, logInfo } from '../utils/logger';
+import { logError, logInfo } from './logger';
 
 
 /**

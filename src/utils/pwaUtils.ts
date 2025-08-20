@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { logError, logInfo } from '../utils/logger';
+import { logError, logInfo } from './logger';
 
 
 interface BeforeInstallPromptEvent extends Event {

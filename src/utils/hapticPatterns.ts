@@ -1,4 +1,4 @@
-import { logWarn } from '../utils/logger';
+import { logWarn } from './logger';
 
 /**
  * Centralized Haptic Patterns - Optimization

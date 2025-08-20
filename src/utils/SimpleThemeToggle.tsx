@@ -1,5 +1,5 @@
 import React from 'react';
-import { logInfo } from '../utils/logger';
+import { logInfo } from './logger';
 
 
 interface SimpleThemeToggleProps {

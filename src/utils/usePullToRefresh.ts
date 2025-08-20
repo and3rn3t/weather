@@ -7,7 +7,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useHapticFeedback, HapticPattern } from './useHapticFeedback';
-import { logError } from '../utils/logger';
+import { logError } from './logger';
 
 
 interface PullToRefreshOptions {

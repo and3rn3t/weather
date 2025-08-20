@@ -8,7 +8,7 @@ import {
 } from 'react';
 import type { ThemeColors, ThemeName } from './themeConfig';
 import { themes } from './themeConfig';
-import { logInfo } from '../utils/logger';
+import { logInfo } from './logger';
 
 
 interface ThemeContextType {

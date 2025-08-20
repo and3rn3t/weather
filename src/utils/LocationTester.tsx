@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocationServices } from './useLocationServices';
-import { logInfo } from '../utils/logger';
+import { logInfo } from './logger';
 
 
 export const LocationTester: React.FC = () => {

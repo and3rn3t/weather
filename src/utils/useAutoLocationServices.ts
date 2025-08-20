@@ -17,7 +17,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocationServices } from './useLocationServices';
 import type { LocationData } from './useLocationServices';
 import { useHaptic } from './hapticHooks';
-import { logError, logWarn, logInfo } from '../utils/logger';
+import { logError, logWarn, logInfo } from './logger';
 
 
 // ============================================================================
