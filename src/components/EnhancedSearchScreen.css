@@ -218,3 +218,43 @@
   border: 2px solid rgba(102, 126, 234, 0.3);
   border-top: 2px solid rgba(102, 126, 234, 1);
 }
+
+/* Location Troubleshooting Styles */
+.enhanced-location-tips {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: rgba(255, 165, 0, 0.1);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.enhanced-location-tips-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff8c00;
+}
+
+.enhanced-location-tips-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.enhanced-tip {
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+/* Enhanced Current Location Button States */
+.enhanced-current-location-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.enhanced-current-location-button:disabled:hover {
+  background: inherit !important;
+  border-color: inherit !important;
+}

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
+import '../utils/locationDiagnostic'; // Load diagnostic tools in development
+import { locationService } from '../utils/locationService';
 import { logError } from '../utils/logger';
 import type { ThemeColors } from '../utils/themeConfig';
 import './EnhancedSearchScreen.css';
@@ -53,6 +55,10 @@ function EnhancedSearchScreen({
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
+  const [locationPermission, setLocationPermission] = useState<
+    PermissionState | 'not-supported' | 'unknown'
+  >('unknown');
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load recent searches
@@ -65,6 +71,21 @@ function EnhancedSearchScreen({
     } catch (error) {
       logError('Error loading recent searches:', error);
     }
+  }, []);
+
+  // Check location permissions on mount
+  useEffect(() => {
+    const checkPermissions = async () => {
+      try {
+        const permission = await locationService.checkPermissions();
+        setLocationPermission(permission);
+      } catch (error) {
+        console.warn('Failed to check location permissions:', error);
+        setLocationPermission('unknown');
+      }
+    };
+
+    checkPermissions();
   }, []);
 
   // Enhanced search function with better error handling
@@ -241,55 +262,74 @@ function EnhancedSearchScreen({
   );
 
   // Get current location with enhanced error handling
-  const getCurrentLocation = useCallback(() => {
+  const getCurrentLocation = useCallback(async () => {
     haptic.dataLoad();
+    setError(null);
+    setIsGettingLocation(true);
 
-    if (!navigator.geolocation) {
-      haptic.error();
-      setError('Geolocation is not supported by this browser.');
-      return;
-    }
-
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 15000, // 15 seconds
-      maximumAge: 300000, // 5 minutes
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        haptic.dataLoad();
-        onLocationSelect(
-          'Current Location',
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      },
-      error => {
+    try {
+      // Check if we're in a secure context
+      if (!locationService.isSecureContext()) {
         haptic.error();
-        logError('Geolocation error:', error);
+        setError(
+          'Location services require a secure connection (HTTPS). This feature may not work on non-secure websites.'
+        );
+        return;
+      }
 
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setError(
-              'Location access denied. Please enable location services and try again.'
-            );
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setError(
-              'Location information is unavailable. Please try searching for a city instead.'
-            );
-            break;
-          case error.TIMEOUT:
-            setError('Location request timed out. Please try again.');
-            break;
-          default:
-            setError('An unknown error occurred while getting your location.');
-            break;
-        }
-      },
-      options
-    );
+      // Check if location is supported
+      if (!locationService.isSupported()) {
+        haptic.error();
+        setError(
+          'Geolocation is not supported by this browser. Please search for your city manually.'
+        );
+        return;
+      }
+
+      // Check permissions first
+      const permissionState = await locationService.checkPermissions();
+      setLocationPermission(permissionState);
+
+      if (permissionState === 'denied') {
+        haptic.error();
+        setError(
+          'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.'
+        );
+        return;
+      }
+
+      // Get location
+      const locationResult = await locationService.getCurrentLocation();
+
+      haptic.dataLoad();
+
+      // Use the city name if available, otherwise use "Current Location"
+      const cityName = locationResult.cityName || 'Current Location';
+
+      onLocationSelect(
+        cityName,
+        locationResult.latitude,
+        locationResult.longitude
+      );
+    } catch (locationError: any) {
+      haptic.error();
+      logError('Enhanced geolocation error:', locationError);
+
+      // Use the user-friendly message from the location service
+      if (locationError.userMessage) {
+        setError(locationError.userMessage);
+      } else {
+        setError(
+          'Failed to get your location. Please try again or search for your city manually.'
+        );
+      }
+
+      // Log additional troubleshooting tips
+      const tips = locationService.getLocationTips();
+      console.log('Location troubleshooting tips:', tips);
+    } finally {
+      setIsGettingLocation(false);
+    }
   }, [haptic, onLocationSelect]);
 
   return (
@@ -370,17 +410,64 @@ function EnhancedSearchScreen({
         <button
           className="enhanced-current-location-button"
           onClick={getCurrentLocation}
+          disabled={isGettingLocation || locationPermission === 'denied'}
         >
-          <span className="enhanced-current-location-icon">📍</span>
+          <span className="enhanced-current-location-icon">
+            {isGettingLocation
+              ? '�'
+              : locationPermission === 'denied'
+              ? '🚫'
+              : '�📍'}
+          </span>
           <div className="enhanced-current-location-text">
             <div className="enhanced-current-location-title">
-              Use Current Location
+              {isGettingLocation
+                ? 'Getting Location...'
+                : locationPermission === 'denied'
+                ? 'Location Blocked'
+                : 'Use Current Location'}
             </div>
             <div className="enhanced-current-location-subtitle">
-              Get weather for your current location
+              {isGettingLocation
+                ? 'Please wait while we get your location'
+                : locationPermission === 'denied'
+                ? 'Enable location permissions to use this feature'
+                : locationPermission === 'granted'
+                ? 'Location access granted - tap to get weather'
+                : 'Get weather for your current location'}
             </div>
           </div>
         </button>
+
+        {/* Location Troubleshooting Tips */}
+        {(locationPermission === 'denied' ||
+          error?.includes('Location') ||
+          error?.includes('permission')) && (
+          <div className="enhanced-location-tips">
+            <h4 className="enhanced-location-tips-title">
+              📍 Location Troubleshooting
+            </h4>
+            <div className="enhanced-location-tips-content">
+              {!locationService.isSecureContext() && (
+                <div className="enhanced-tip">
+                  🔒 Location requires a secure connection (HTTPS)
+                </div>
+              )}
+              <div className="enhanced-tip">
+                🌐 Make sure location services are enabled in your browser
+              </div>
+              <div className="enhanced-tip">
+                📱 Check that your device has location services turned on
+              </div>
+              <div className="enhanced-tip">
+                🔄 Try refreshing the page and allowing location access
+              </div>
+              <div className="enhanced-tip">
+                🔍 You can also search for your city manually above
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Search Results */}
         {searchResults.length > 0 && (
