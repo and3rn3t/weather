@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useTheme } from '../utils/useTheme';
-import { useHaptic } from '../utils/hapticHooks';
+import React, { useCallback, useEffect, useState } from 'react';
 import '../styles/mobileEnhancements.css';
-import '../core-navigation-fix-clean.css';
+import { useHaptic } from '../utils/hapticHooks';
+import { useTheme } from '../utils/useTheme';
 
 export type NavigationScreen =
   | 'Home'
@@ -269,8 +268,12 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           right: 0,
           bottom: 0,
           background: `
-            radial-gradient(circle at 20% 50%, ${theme.primaryGradient}05, transparent 70%),
-            radial-gradient(circle at 80% 50%, ${theme.secondaryGradient || theme.primaryGradient}05, transparent 70%)
+            radial-gradient(circle at 20% 50%, ${
+              theme.primaryGradient
+            }05, transparent 70%),
+            radial-gradient(circle at 80% 50%, ${
+              theme.secondaryGradient || theme.primaryGradient
+            }05, transparent 70%)
           `,
           pointerEvents: 'none',
           borderRadius: '0',
