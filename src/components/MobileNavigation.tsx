@@ -26,6 +26,7 @@ interface TabConfig {
 const tabs: TabConfig[] = [
   { id: 'Home', icon: '🏠', label: 'Home', activeIcon: '🏡' },
   { id: 'Weather', icon: '🌤️', label: 'Weather', activeIcon: '☀️' },
+  { id: 'Search', icon: '🔍', label: 'Search', activeIcon: '🔎' },
   { id: 'Favorites', icon: '⭐', label: 'Cities', activeIcon: '🌟' },
   { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' },
 ];
