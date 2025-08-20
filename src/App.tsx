@@ -6,10 +6,10 @@
 
 import React, { useState } from 'react';
 import './App.css';
+import EnhancedSearchScreen from './components/EnhancedSearchScreen';
 import MobileNavigation, {
   type NavigationScreen,
 } from './components/MobileNavigation';
-import IOS26WeatherDemo from './components/modernWeatherUI/iOS26WeatherDemo';
 import ErrorBoundary from './ErrorBoundary';
 import './styles/mobileEnhancements.css';
 import { HapticFeedbackProvider } from './utils/hapticContext';
@@ -583,8 +583,6 @@ const SimpleWeatherApp: React.FC = () => {
         return renderHomeScreen();
       case 'Weather':
         return renderWeatherScreen();
-      case 'iOS26':
-        return renderIOS26Screen();
       case 'Search':
         return renderSearchScreen();
       case 'Favorites':
@@ -729,10 +727,6 @@ const SimpleWeatherApp: React.FC = () => {
       )}
     </div>
   );
-
-  // iOS 26 Demo Screen - Latest iOS components showcase
-  const renderIOS26Screen = () => <IOS26WeatherDemo theme={theme} />;
-
   // Weather Screen - Full weather functionality
   const renderWeatherScreen = () => (
     <div
@@ -1351,35 +1345,22 @@ const SimpleWeatherApp: React.FC = () => {
     </div>
   );
 
-  // Search Screen - Placeholder
+  // Enhanced Search Screen
   const renderSearchScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        textAlign: 'center',
+    <EnhancedSearchScreen
+      theme={theme}
+      onBack={() => setActiveScreen('Weather')}
+      onLocationSelect={(cityName, latitude, longitude) => {
+        // Update the location and switch back to weather screen
+        setLatitude(latitude);
+        setLongitude(longitude);
+        setCity(cityName);
+        setActiveScreen('Weather');
+
+        // Fetch weather for the new location
+        fetchWeatherForLocation(latitude, longitude);
       }}
-    >
-      <h1 style={{ color: theme.primaryText, marginBottom: '30px' }}>
-        🔍 Search
-      </h1>
-      <div
-        style={{
-          background: theme.weatherCardBackground,
-          padding: '40px 20px',
-          borderRadius: '16px',
-          border: `1px solid ${theme.weatherCardBorder}`,
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚧</div>
-        <p style={{ color: theme.secondaryText, fontSize: '16px' }}>
-          Enhanced search screen coming soon!
-          <br />
-          Use the Weather tab for now.
-        </p>
-      </div>
-    </div>
+    />
   );
 
   // Favorites Screen - Show current favorites

@@ -8,8 +8,7 @@ export type NavigationScreen =
   | 'Weather'
   | 'Settings'
   | 'Search'
-  | 'Favorites'
-  | 'iOS26';
+  | 'Favorites';
 
 interface MobileNavigationProps {
   currentScreen: NavigationScreen;
@@ -27,7 +26,6 @@ interface TabConfig {
 const tabs: TabConfig[] = [
   { id: 'Home', icon: '🏠', label: 'Home', activeIcon: '🏡' },
   { id: 'Weather', icon: '🌤️', label: 'Weather', activeIcon: '☀️' },
-  { id: 'iOS26', icon: '📱', label: 'iOS 26', activeIcon: '✨' },
   { id: 'Favorites', icon: '⭐', label: 'Cities', activeIcon: '🌟' },
   { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' },
 ];
@@ -203,22 +201,6 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
             type="button"
             aria-label={`Navigate to ${tab.label}`}
             aria-pressed={isActive}
-            style={{
-              ...getTabStyle(tab, isActive),
-              // Clean styling - let horror theme CSS handle backgrounds
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              boxShadow: 'none',
-              WebkitTapHighlightColor: 'transparent',
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-              appearance: 'none',
-              textDecoration: 'none',
-              transform: 'none',
-              filter: 'none',
-              opacity: 1,
-            }}
             className={`nav-button ${isActive ? 'active' : ''}`}
             onClick={e => handleTabPress(tab.id, e)}
             onTouchStart={e => {
@@ -236,26 +218,15 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
               }
             }}
           >
-            <div style={getIconStyle(isActive)}>{displayIcon}</div>
-            <span style={getLabelStyle(isActive)}>{tab.label}</span>
+            <div className={`nav-icon${isActive ? ' active' : ''}`}>
+              {displayIcon}
+            </div>
+            <span className={`nav-label${isActive ? ' active' : ''}`}>
+              {tab.label}
+            </span>
 
             {/* Active indicator */}
-            {isActive && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '4px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: '4px',
-                  height: '4px',
-                  borderRadius: '50%',
-                  background: theme.primaryGradient,
-                  boxShadow: `0 0 8px ${theme.primaryGradient}60`,
-                  animation: 'fadeIn 0.3s ease-out',
-                }}
-              />
-            )}
+            {isActive && <div className="nav-active-indicator" />}
           </button>
         );
       })}
