@@ -191,9 +191,21 @@ document.addEventListener('DOMContentLoaded', function () {
       'The mist is rising... and so is the temperature.',
     ];
 
+    // Helper function for secure random selection
+    function getSecureRandomIndex(arrayLength) {
+      if (window.crypto && window.crypto.getRandomValues) {
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        return Math.floor((array[0] / (0xffffffff + 1)) * arrayLength);
+      } else {
+        // Fallback for older browsers
+        return Math.floor(Math.random() * arrayLength);
+      }
+    }
+
     // Only add quote if one doesn't exist
     if (!document.querySelector('.horror-weather-quote')) {
-      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      const quote = quotes[getSecureRandomIndex(quotes.length)];
 
       const quoteDiv = document.createElement('div');
       quoteDiv.className = 'horror-weather-quote';

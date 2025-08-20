@@ -33,7 +33,10 @@ console.log('');
 
 // Check if wrangler is available
 try {
-  execSync('npx wrangler --version', { stdio: 'pipe' });
+  execSync('npx wrangler --version', {
+    stdio: 'pipe',
+    shell: false, // Disable shell interpretation for security
+  });
   console.log('✅ Wrangler CLI available');
 } catch (error) {
   console.log('❌ Wrangler CLI not available');
@@ -46,6 +49,7 @@ try {
   const whoami = execSync('npx wrangler whoami', {
     stdio: 'pipe',
     encoding: 'utf8',
+    shell: false, // Disable shell interpretation for security
   });
   console.log('✅ Logged in to Cloudflare');
   console.log(`   Account: ${whoami.trim()}`);

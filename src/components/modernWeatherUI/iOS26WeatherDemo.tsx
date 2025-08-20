@@ -10,23 +10,23 @@
  * - Enhanced Search with advanced filtering
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import '../../styles/iOS26Components.css';
+import type { ThemeColors } from '../../utils/themeConfig';
 import {
   ContextMenu,
-  LiveActivity,
   InteractiveWidget,
+  LiveActivity,
   ModalSheet,
   SwipeActions,
 } from './iOS26Components';
 import {
-  SegmentedControl,
   ActivityIndicator,
-  StatusBadge,
   ListItem,
   ProgressIndicator,
+  SegmentedControl,
+  StatusBadge,
 } from './IOSComponents';
-import type { ThemeColors } from '../../utils/themeConfig';
-import '../../styles/iOS26Components.css';
 
 interface WeatherData {
   temperature: number;
@@ -57,12 +57,28 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
   const [showLiveActivity, setShowLiveActivity] = useState(false);
   const [showModalSheet, setShowModalSheet] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  // Security: Use cryptographically secure random number generation
+  const getSecureRandom = (): number => {
+    if (
+      typeof window !== 'undefined' &&
+      window.crypto &&
+      window.crypto.getRandomValues
+    ) {
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      return array[0] / (0xffffffff + 1); // Convert to 0-1 range
+    } else {
+      // Fallback for environments without crypto
+      return Math.random();
+    }
+  };
+
   const [syncProgress, setSyncProgress] = useState(0);
 
   // Simulate data updates
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.8) {
+      if (getSecureRandom() > 0.8) {
         setShowLiveActivity(true);
         setTimeout(() => setShowLiveActivity(false), 5000);
       }
@@ -76,7 +92,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     if (isUpdating) {
       const interval = setInterval(() => {
         setSyncProgress(prev => {
-          const next = prev + Math.random() * 15;
+          const next = prev + getSecureRandom() * 15;
           if (next >= 100) {
             setIsUpdating(false);
             return 100;

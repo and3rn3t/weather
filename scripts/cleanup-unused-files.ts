@@ -5,8 +5,8 @@
  * Cross-platform script to remove backup files, unused workflows, and redundant configurations
  */
 
-import { existsSync, rmSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
+import { existsSync, readdirSync, rmSync, statSync } from 'fs';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -210,8 +210,17 @@ class ProjectCleaner {
       const files = readdirSync(projectRoot);
       const matchingFiles = files.filter(file => {
         if (pattern.includes('*')) {
-          const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-          return regex.test(file);
+          // Security: Limit pattern complexity to prevent ReDoS
+          const sanitizedPattern = pattern
+            .replace(/\*/g, '.*')
+            .substring(0, 100);
+          try {
+            const regex = new RegExp(sanitizedPattern, 'i');
+            return regex.test(file);
+          } catch (error) {
+            console.warn(`Invalid regex pattern: ${pattern}`);
+            return false;
+          }
         }
         return file === pattern;
       });
@@ -304,7 +313,9 @@ class ProjectCleaner {
   private generateReport(): void {
     this.log('\n📊 Cleanup Report:', 'info');
     console.log(
-      `Total files/directories processed: ${this.removedCount + this.skippedCount}`
+      `Total files/directories processed: ${
+        this.removedCount + this.skippedCount
+      }`
     );
     console.log(`Removed: ${this.removedCount}`);
     console.log(`Skipped: ${this.skippedCount}`);

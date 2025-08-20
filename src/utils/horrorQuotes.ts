@@ -188,6 +188,35 @@ export const getHorrorQuoteCategory = (
   return 'general';
 };
 
+// Security: Use cryptographically secure random number generation
+const getSecureRandomIndex = (maxValue: number): number => {
+  if (
+    typeof window !== 'undefined' &&
+    window.crypto &&
+    window.crypto.getRandomValues
+  ) {
+    // Browser environment with crypto API
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0] % maxValue;
+  } else if (typeof require !== 'undefined') {
+    // Node.js environment
+    try {
+      const crypto = require('crypto');
+      const randomBytes = crypto.randomBytes(4);
+      const randomValue = randomBytes.readUInt32BE(0);
+      return randomValue % maxValue;
+    } catch (error) {
+      // Fallback to Math.random if crypto is not available
+      console.warn('Crypto module not available, falling back to Math.random');
+      return Math.floor(Math.random() * maxValue);
+    }
+  } else {
+    // Fallback for environments without crypto
+    return Math.floor(Math.random() * maxValue);
+  }
+};
+
 // Get a random horror quote for the weather condition
 export const getRandomHorrorQuote = (
   code: number,
@@ -196,7 +225,7 @@ export const getRandomHorrorQuote = (
   const category = getHorrorQuoteCategory(code, isDay);
   const quotes = horrorWeatherQuotes[category] || horrorWeatherQuotes.general;
 
-  return quotes[Math.floor(Math.random() * quotes.length)];
+  return quotes[getSecureRandomIndex(quotes.length)];
 };
 
 // Crystal Lake specific quotes
@@ -231,7 +260,5 @@ export const crystalLakeQuotes: HorrorQuote[] = [
 
 // Get Crystal Lake specific quote
 export const getCrystalLakeQuote = (): HorrorQuote => {
-  return crystalLakeQuotes[
-    Math.floor(Math.random() * crystalLakeQuotes.length)
-  ];
+  return crystalLakeQuotes[getSecureRandomIndex(crystalLakeQuotes.length)];
 };

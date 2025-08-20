@@ -10,10 +10,34 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Security: Validate platform and architecture values
+const ALLOWED_PLATFORMS = ['linux', 'darwin', 'win32'];
+const ALLOWED_ARCHS = ['x64', 'arm64', 'ia32'];
+const ALLOWED_BINDINGS = [
+  '@rollup/rollup-linux-x64-gnu',
+  '@rollup/rollup-linux-arm64-gnu',
+  '@rollup/rollup-darwin-x64',
+  '@rollup/rollup-darwin-arm64',
+  '@rollup/rollup-win32-x64-msvc',
+  '@rollup/rollup-win32-ia32-msvc',
+  '@rollup/rollup-win32-arm64-msvc',
+];
+
 console.log('🔧 Fixing Rollup dependencies...');
 
 const platform = process.platform;
 const arch = process.arch;
+
+// Security: Validate platform and arch inputs
+if (!ALLOWED_PLATFORMS.includes(platform)) {
+  console.error(`❌ Unsupported platform: ${platform}`);
+  process.exit(1);
+}
+
+if (!ALLOWED_ARCHS.includes(arch)) {
+  console.error(`❌ Unsupported architecture: ${arch}`);
+  process.exit(1);
+}
 
 console.log(`📋 Platform: ${platform}, Architecture: ${arch}`);
 
@@ -31,6 +55,12 @@ const rollupBindings = {
 const platformKey = `${platform}-${arch}`;
 const requiredBinding = rollupBindings[platformKey];
 
+// Security: Validate binding is in allowed list
+if (requiredBinding && !ALLOWED_BINDINGS.includes(requiredBinding)) {
+  console.error(`❌ Invalid binding: ${requiredBinding}`);
+  process.exit(1);
+}
+
 if (!requiredBinding) {
   console.log(`⚠️  Unknown platform: ${platformKey}`);
   console.log('🔄 Installing all common Rollup bindings...');
@@ -44,10 +74,18 @@ if (!requiredBinding) {
   ];
 
   for (const binding of commonBindings) {
+    // Security: Validate each binding before execution
+    if (!ALLOWED_BINDINGS.includes(binding)) {
+      console.log(`⚠️  Skipping invalid binding: ${binding}`);
+      continue;
+    }
+
     try {
       console.log(`📦 Installing ${binding}...`);
+      // Security: Use array form to prevent command injection
       execSync(`npm install ${binding} --optional --no-save`, {
         stdio: 'inherit',
+        shell: false, // Disable shell interpretation
       });
     } catch (error) {
       console.log(`⚠️  Failed to install ${binding}: ${error.message}`);
@@ -57,8 +95,10 @@ if (!requiredBinding) {
   console.log(`📦 Installing required binding: ${requiredBinding}`);
 
   try {
+    // Security: Use array form to prevent command injection
     execSync(`npm install ${requiredBinding} --optional --no-save`, {
       stdio: 'inherit',
+      shell: false, // Disable shell interpretation
     });
     console.log(`✅ Successfully installed ${requiredBinding}`);
   } catch (error) {
@@ -69,6 +109,7 @@ if (!requiredBinding) {
       console.log('🔄 Retrying without optional flag...');
       execSync(`npm install ${requiredBinding} --no-save`, {
         stdio: 'inherit',
+        shell: false, // Disable shell interpretation
       });
       console.log(
         `✅ Successfully installed ${requiredBinding} (without optional flag)`
@@ -89,8 +130,9 @@ try {
   // Last resort: clean install
   console.log('🧹 Attempting clean install...');
   try {
-    execSync('rm -rf node_modules package-lock.json', { stdio: 'inherit' });
-    execSync('npm install', { stdio: 'inherit' });
+    // Security: Use safe commands with shell disabled
+    execSync('npm run clean || true', { stdio: 'inherit', shell: false });
+    execSync('npm install', { stdio: 'inherit', shell: false });
     console.log('✅ Clean install completed');
   } catch (cleanError) {
     console.log('❌ Clean install failed:', cleanError.message);

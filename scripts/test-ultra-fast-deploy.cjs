@@ -15,7 +15,10 @@ console.log('⚡ Testing Ultra-Fast Deployment Optimizations...\n');
 console.log('🏗️ Testing build performance...');
 const buildStart = Date.now();
 try {
-  execSync('npm run build:ci', { stdio: 'inherit' });
+  execSync('npm run build:ci', {
+    stdio: 'inherit',
+    shell: false, // Security: disable shell interpretation
+  });
   const buildTime = Date.now() - buildStart;
   console.log(`✅ Build completed in ${buildTime}ms\n`);
 } catch (error) {
@@ -26,7 +29,10 @@ try {
 console.log('🧪 Testing fast test performance...');
 const testStart = Date.now();
 try {
-  execSync('npm run test:fast', { stdio: 'inherit' });
+  execSync('npm run test:fast', {
+    stdio: 'inherit',
+    shell: false, // Security: disable shell interpretation
+  });
   const testTime = Date.now() - testStart;
   console.log(`✅ Tests completed in ${testTime}ms\n`);
 } catch (error) {

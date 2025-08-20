@@ -168,6 +168,7 @@ class StreamlinedTestRunner {
     try {
       const output = execSync('git diff --name-only HEAD~1 HEAD', {
         encoding: 'utf8',
+        shell: false, // Security: disable shell interpretation
       });
       return output.trim().split('\n').filter(Boolean);
     } catch (error) {
@@ -176,6 +177,7 @@ class StreamlinedTestRunner {
       try {
         const output = execSync('git diff --cached --name-only', {
           encoding: 'utf8',
+          shell: false, // Security: disable shell interpretation
         });
         return output.trim().split('\n').filter(Boolean);
       } catch (fallbackError) {

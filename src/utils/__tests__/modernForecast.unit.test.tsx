@@ -3,12 +3,12 @@
  * Tests the forecast UI components in isolation
  */
 
-import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, test, expect } from 'vitest';
+import { render } from '@testing-library/react';
+import { describe, expect, test } from 'vitest';
 import ModernForecast from '../../components/modernWeatherUI/ModernForecast';
-import { ThemeProvider } from '../../utils/themeContext';
 import { lightTheme } from '../../utils/themeConfig';
+import { ThemeProvider } from '../../utils/themeContext';
 
 // Mock data for testing (matching the actual component interface)
 const mockHourlyData = [
@@ -188,10 +188,26 @@ describe('ModernForecast Component', () => {
   });
 
   describe('Edge Cases', () => {
+    // Helper function for secure test random values
+    const getSecureTestRandom = (): number => {
+      if (
+        typeof window !== 'undefined' &&
+        window.crypto &&
+        window.crypto.getRandomValues
+      ) {
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        return array[0] / (0xffffffff + 1);
+      } else {
+        // For tests, use a predictable value
+        return 0.5;
+      }
+    };
+
     test('handles large datasets', () => {
       const largeHourlyData = Array.from({ length: 24 }, (_, i) => ({
         time: `${i}:00`,
-        temperature: 70 + Math.random() * 10,
+        temperature: 70 + getSecureTestRandom() * 10,
         weatherCode: 1,
         humidity: 60,
         feelsLike: 72,
@@ -200,8 +216,8 @@ describe('ModernForecast Component', () => {
       const largeDailyData = Array.from({ length: 7 }, (_, i) => ({
         date: `2025-07-${27 + i}`,
         weatherCode: 1,
-        tempMax: 75 + Math.random() * 10,
-        tempMin: 65 + Math.random() * 10,
+        tempMax: 75 + getSecureTestRandom() * 10,
+        tempMin: 65 + getSecureTestRandom() * 10,
         precipitation: 0,
         windSpeed: 10,
       }));

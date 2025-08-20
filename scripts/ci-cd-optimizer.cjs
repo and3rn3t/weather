@@ -45,6 +45,7 @@ class CICDOptimizer {
         cwd: this.projectRoot,
         stdio: 'pipe',
         timeout: 300000, // 5 minutes
+        shell: false, // Security: disable shell interpretation
       });
       const buildTime = Date.now() - startTime;
 
@@ -74,6 +75,7 @@ class CICDOptimizer {
         cwd: this.projectRoot,
         stdio: 'pipe',
         timeout: 180000, // 3 minutes
+        shell: false, // Security: disable shell interpretation
       });
       const testTime = Date.now() - startTime;
 
@@ -127,7 +129,9 @@ class CICDOptimizer {
     }
 
     console.log(
-      `   ${hasOptimizedCache ? '✅' : '❌'} Cache Optimization: ${hasOptimizedCache ? 'Implemented' : 'Not implemented'}`
+      `   ${hasOptimizedCache ? '✅' : '❌'} Cache Optimization: ${
+        hasOptimizedCache ? 'Implemented' : 'Not implemented'
+      }`
     );
   }
 
@@ -140,6 +144,7 @@ class CICDOptimizer {
         cwd: this.projectRoot,
         stdio: 'pipe',
         timeout: 60000,
+        shell: false, // Security: disable shell interpretation
       });
 
       // Check bundle size
@@ -206,7 +211,9 @@ class CICDOptimizer {
     }
 
     console.log(
-      `   ${hasParallelJobs ? '✅' : '❌'} Parallelization: ${hasParallelJobs ? 'Implemented' : 'Not implemented'}`
+      `   ${hasParallelJobs ? '✅' : '❌'} Parallelization: ${
+        hasParallelJobs ? 'Implemented' : 'Not implemented'
+      }`
     );
   }
 
