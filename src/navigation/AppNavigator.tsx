@@ -78,8 +78,9 @@ import {
 } from '../components/modernWeatherUI/SimpleIOSComponents';
 import '../styles/iosComponents.css';
 import '../styles/modernWeatherUI.css';
-import { logWarn, logInfo } from '../utils/logger';
-
+import { logError, logInfo, logWarn } from '../utils/logger';
+import type { ScreenInfo } from '../utils/mobileScreenOptimization';
+import {
   getAdaptiveBorderRadius,
   getAdaptiveFontSizes,
   getAdaptiveSpacing,
@@ -87,7 +88,6 @@ import { logWarn, logInfo } from '../utils/logger';
   getScreenInfo,
   getTouchOptimizedButton,
   handleOrientationChange,
-  type ScreenInfo,
 } from '../utils/mobileScreenOptimization';
 // PWA utilities available but not imported yet - will be added when needed
 // import { usePWAInstall, useServiceWorker, useNetworkStatus, usePWAUpdate } from '../utils/pwaUtils';
@@ -1011,9 +1011,7 @@ const AppNavigator = () => {
           setCity('Crystal Lake, NJ');
           logInfo('🎃 Welcome to Crystal Lake... Weather Station Online');
         } catch (error) {
-          logInfo(
-            'Failed to load Crystal Lake data, user will need to search'
-          );
+          logInfo('Failed to load Crystal Lake data, user will need to search');
         }
       }
     };

@@ -32,14 +32,46 @@ interface NominatimResult {
   place_id: number;
   type: string;
   class: string;
+  name?: string;
+  importance?: number;
   address?: {
     city?: string;
     town?: string;
     village?: string;
+    municipality?: string;
     state?: string;
     country?: string;
   };
+  relevanceScore?: number;
+  cleanDisplayName?: string;
 }
+
+/**
+ * Create a clean, readable display name from Nominatim result
+ */
+const createCleanDisplayName = (item: NominatimResult): string => {
+  if (item.name) {
+    // Use the name if available, with country
+    const country = item.address?.country || '';
+    const state = item.address?.state || '';
+
+    if (state && country) {
+      return `${item.name}, ${state}, ${country}`;
+    } else if (country) {
+      return `${item.name}, ${country}`;
+    }
+    return item.name;
+  }
+
+  // Fallback to parsing display_name
+  const parts = item.display_name.split(',').map(part => part.trim());
+  if (parts.length >= 2) {
+    // Return first part (city) + last part (country)
+    return `${parts[0]}, ${parts[parts.length - 1]}`;
+  }
+
+  return item.display_name;
+};
 
 /**
  * Enhanced SearchScreen with improved error handling and fallback mechanisms
@@ -48,7 +80,7 @@ function EnhancedSearchScreen({
   theme,
   onBack,
   onLocationSelect,
-}: SearchScreenProps) {
+}: Readonly<SearchScreenProps>) {
   const haptic = useHaptic();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<NominatimResult[]>([]);
@@ -126,31 +158,73 @@ function EnhancedSearchScreen({
 
       const data: NominatimResult[] = await response.json();
 
-      // Filter and prioritize results
+      // Filter and prioritize results with improved logic
       const filteredResults = data
         .filter((item: NominatimResult) => {
-          // Include cities, towns, villages, and administrative areas
-          return (
+          // Include a broader range of location types
+          const isValidLocationType =
             item.type === 'city' ||
             item.type === 'town' ||
             item.type === 'village' ||
+            item.type === 'municipality' ||
             item.type === 'administrative' ||
+            item.type === 'suburb' ||
+            item.type === 'neighbourhood' ||
             item.class === 'place' ||
-            item.class === 'boundary'
-          );
+            item.class === 'boundary' ||
+            (item.class === 'amenity' && item.type === 'university') ||
+            (item.address &&
+              (item.address.city || item.address.town || item.address.village));
+
+          // Exclude very specific locations like individual buildings
+          const isNotTooSpecific =
+            item.type !== 'house' &&
+            item.type !== 'building' &&
+            item.type !== 'shop' &&
+            item.type !== 'restaurant';
+
+          return isValidLocationType && isNotTooSpecific;
         })
-        .map(item => ({
-          ...item,
-          // Enhance display name for better readability
-          display_name:
-            item.display_name ||
-            `${
-              item.address?.city ||
-              item.address?.town ||
-              item.address?.village ||
-              'Unknown'
-            }, ${item.address?.country || 'Unknown Country'}`,
-        }))
+        .map(item => {
+          // Calculate relevance score for better sorting
+          const queryLower = query.toLowerCase();
+          const displayName = item.display_name.toLowerCase();
+          const name = (item.name || '').toLowerCase();
+
+          let relevanceScore = 0;
+
+          // Exact name match gets highest score
+          if (name === queryLower) {
+            relevanceScore += 1000;
+          } else if (name.startsWith(queryLower)) {
+            relevanceScore += 500;
+          } else if (name.includes(queryLower)) {
+            relevanceScore += 100;
+          }
+
+          // Display name partial matches
+          if (displayName.includes(queryLower)) {
+            relevanceScore += 50;
+          }
+
+          // Boost major cities and administrative areas
+          if (item.type === 'city' || item.type === 'administrative') {
+            relevanceScore += 200;
+          }
+
+          // Boost based on importance (if available)
+          if (item.importance) {
+            relevanceScore += Math.round(item.importance * 100);
+          }
+
+          return {
+            ...item,
+            relevanceScore,
+            // Create clean, readable display name
+            cleanDisplayName: createCleanDisplayName(item),
+          };
+        })
+        .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance
         .slice(0, 10); // Limit to top 10 results
 
       setSearchResults(filteredResults);
@@ -413,28 +487,30 @@ function EnhancedSearchScreen({
           disabled={isGettingLocation || locationPermission === 'denied'}
         >
           <span className="enhanced-current-location-icon">
-            {isGettingLocation
-              ? '�'
-              : locationPermission === 'denied'
-              ? '🚫'
-              : '�📍'}
+            {(() => {
+              if (isGettingLocation) return '⏳';
+              if (locationPermission === 'denied') return '🚫';
+              return '�';
+            })()}
           </span>
           <div className="enhanced-current-location-text">
             <div className="enhanced-current-location-title">
-              {isGettingLocation
-                ? 'Getting Location...'
-                : locationPermission === 'denied'
-                ? 'Location Blocked'
-                : 'Use Current Location'}
+              {(() => {
+                if (isGettingLocation) return 'Getting Location...';
+                if (locationPermission === 'denied') return 'Location Blocked';
+                return 'Use Current Location';
+              })()}
             </div>
             <div className="enhanced-current-location-subtitle">
-              {isGettingLocation
-                ? 'Please wait while we get your location'
-                : locationPermission === 'denied'
-                ? 'Enable location permissions to use this feature'
-                : locationPermission === 'granted'
-                ? 'Location access granted - tap to get weather'
-                : 'Get weather for your current location'}
+              {(() => {
+                if (isGettingLocation)
+                  return 'Please wait while we get your location';
+                if (locationPermission === 'denied')
+                  return 'Enable location permissions to use this feature';
+                if (locationPermission === 'granted')
+                  return 'Location access granted - tap to get weather';
+                return 'Get weather for your current location';
+              })()}
             </div>
           </div>
         </button>

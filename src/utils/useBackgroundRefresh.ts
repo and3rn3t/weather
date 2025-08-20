@@ -5,14 +5,16 @@
  * Provides easy integration with React components and proper cleanup
  */
 
-import { useEffect, useRef, useCallback } from 'react';
-import { logInfo } from './logger';
-
+import { useCallback, useEffect, useRef } from 'react';
+import type {
+  BackgroundRefreshConfig,
+  RefreshStats,
+} from './backgroundRefreshService';
+import {
   BackgroundRefreshService,
   createBackgroundRefreshService,
-  type BackgroundRefreshConfig,
-  type RefreshStats,
 } from './backgroundRefreshService';
+import { logError, logInfo } from './logger';
 
 /**
  * Hook options for background refresh
@@ -104,9 +106,7 @@ export const useBackgroundRefresh = (
 
     const initializeService = async () => {
       try {
-        if (!serviceRef.current) {
-          serviceRef.current = createBackgroundRefreshService(configOptions);
-        }
+        serviceRef.current ??= createBackgroundRefreshService(configOptions);
 
         await serviceRef.current.initialize(wrappedRefreshCallback);
         isInitialized = true;
@@ -114,10 +114,7 @@ export const useBackgroundRefresh = (
 
         logInfo('Background refresh service initialized via hook');
       } catch (error) {
-        logError(
-          'Failed to initialize background refresh service:',
-          error
-        );
+        logError('Failed to initialize background refresh service:', error);
         onRefreshError?.(error as Error);
       }
     };
