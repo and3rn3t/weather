@@ -15,6 +15,9 @@
 @import './styles/iOS26DesignSystem.css';
 @import './styles/iOS26WeatherInterface.css';
 
+/* NEW: Horror Theme Styles */
+@import './styles/horrorTheme.css';
+
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
     'Droid Sans', 'Helvetica Neue', sans-serif;

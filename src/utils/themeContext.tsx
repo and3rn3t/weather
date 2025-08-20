@@ -1,11 +1,11 @@
+import type { ReactNode } from 'react';
 import React, {
   createContext,
-  useState,
+  useCallback,
   useEffect,
   useMemo,
-  useCallback,
+  useState,
 } from 'react';
-import type { ReactNode } from 'react';
 import type { ThemeColors, ThemeName } from './themeConfig';
 import { themes } from './themeConfig';
 
@@ -14,6 +14,7 @@ interface ThemeContextType {
   themeName: ThemeName;
   toggleTheme: () => void;
   isDark: boolean;
+  isHorror: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -31,7 +32,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('weather-app-theme') as ThemeName;
       // Validate the saved theme and fallback to 'light' if invalid
-      return savedTheme === 'light' || savedTheme === 'dark'
+      return savedTheme === 'light' ||
+        savedTheme === 'dark' ||
+        savedTheme === 'horror'
         ? savedTheme
         : 'light';
     }
@@ -40,10 +43,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const theme = themes[themeName];
   const isDark = themeName === 'dark';
+  const isHorror = themeName === 'horror';
 
   const toggleTheme = useCallback(() => {
     console.log('🎨 Theme toggle triggered - legitimate theme change');
-    const newTheme: ThemeName = themeName === 'light' ? 'dark' : 'light';
+    let newTheme: ThemeName;
+
+    // Cycle through: light -> dark -> horror -> light
+    switch (themeName) {
+      case 'light':
+        newTheme = 'dark';
+        break;
+      case 'dark':
+        newTheme = 'horror';
+        break;
+      case 'horror':
+        newTheme = 'light';
+        break;
+      default:
+        newTheme = 'light';
+    }
+
     setThemeName(newTheme);
     localStorage.setItem('weather-app-theme', newTheme);
   }, [themeName]);
@@ -57,11 +77,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         '🚫 React theme context disabled - nuclear system handling background'
       );
 
-      // Only toggle dark-theme class for CSS variables (safe)
+      // Remove all theme classes first
+      document.body.classList.remove('dark-theme', 'horror-theme');
+
+      // Apply appropriate theme class
       if (themeName === 'dark') {
         document.body.classList.add('dark-theme');
-      } else {
-        document.body.classList.remove('dark-theme');
+      } else if (themeName === 'horror') {
+        document.body.classList.add('horror-theme');
       }
 
       // Store theme info for nuclear system but don't apply background
@@ -77,8 +100,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       themeName,
       toggleTheme,
       isDark,
+      isHorror,
     }),
-    [theme, themeName, toggleTheme, isDark]
+    [theme, themeName, toggleTheme, isDark, isHorror]
   );
 
   return (

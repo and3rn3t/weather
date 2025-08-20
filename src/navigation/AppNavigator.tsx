@@ -996,6 +996,30 @@ const AppNavigator = () => {
     return cleanup;
   }, []);
 
+  // Load Crystal Lake, NJ as default horror location
+  useEffect(() => {
+    const loadCrystalLake = async () => {
+      // Crystal Lake, NJ coordinates (approximate)
+      const crystalLakeLat = 40.913;
+      const crystalLakeLon = -74.345;
+      
+      // Only load if no city is set and no user location preference
+      if (!city && !localStorage.getItem('user-preferred-location')) {
+        try {
+          await fetchWeatherData(crystalLakeLat, crystalLakeLon);
+          setCity('Crystal Lake, NJ');
+          console.log('🎃 Welcome to Crystal Lake... Weather Station Online');
+        } catch (error) {
+          console.log('Failed to load Crystal Lake data, user will need to search');
+        }
+      }
+    };
+
+    // Delay slightly to let other initialization complete
+    const timer = setTimeout(loadCrystalLake, 1000);
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array for mount-only effect
+
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
     () => getAdaptiveFontSizes(screenInfo),
@@ -1037,7 +1061,7 @@ const AppNavigator = () => {
   // const { updateAvailable, applyUpdate } = usePWAUpdate();
 
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState('Crystal Lake, NJ'); // Default to horror movie location
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherCode, setWeatherCode] = useState(0);
   const [loading, setLoading] = useState(false);
