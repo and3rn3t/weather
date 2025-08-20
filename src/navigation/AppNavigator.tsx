@@ -1002,7 +1002,7 @@ const AppNavigator = () => {
       // Crystal Lake, NJ coordinates (approximate)
       const crystalLakeLat = 40.913;
       const crystalLakeLon = -74.345;
-      
+
       // Only load if no city is set and no user location preference
       if (!city && !localStorage.getItem('user-preferred-location')) {
         try {
@@ -1010,7 +1010,9 @@ const AppNavigator = () => {
           setCity('Crystal Lake, NJ');
           console.log('🎃 Welcome to Crystal Lake... Weather Station Online');
         } catch (error) {
-          console.log('Failed to load Crystal Lake data, user will need to search');
+          console.log(
+            'Failed to load Crystal Lake data, user will need to search'
+          );
         }
       }
     };

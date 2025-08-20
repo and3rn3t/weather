@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React, {
+import {
   createContext,
   useCallback,
   useEffect,
@@ -26,7 +26,9 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+export const ThemeProvider = ({
+  children,
+}: ThemeProviderProps): JSX.Element => {
   // Initialize theme from localStorage or default to light
   const [themeName, setThemeName] = useState<ThemeName>(() => {
     if (typeof window !== 'undefined') {

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { ThemeContext } from './themeContext';
 import { createResponsiveTheme } from './responsiveUtils';
+import { ThemeContext } from './themeContext';
 import { useBreakpoint, useMobilePerformance } from './useMobileOptimization';
 
 export const useTheme = () => {
@@ -18,6 +18,8 @@ export const useTheme = () => {
   return {
     ...context,
     theme: responsiveTheme,
+    // Add horror theme helper
+    isHorror: context.themeName === 'horror',
     // Add responsive information
     ...breakpointInfo,
     // Add performance settings

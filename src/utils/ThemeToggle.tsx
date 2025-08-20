@@ -1,12 +1,12 @@
-import React from 'react';
-import { useTheme } from './useTheme';
+import { MouseEvent } from 'react';
 import { useHaptic } from './hapticHooks';
+import { useTheme } from './useTheme';
 
 interface ThemeToggleProps {
   className?: string;
 }
 
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
+const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
   const { isDark, themeName, toggleTheme } = useTheme();
   const haptic = useHaptic();
 
@@ -56,9 +56,11 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
   return (
     <button
       onClick={handleThemeToggle}
-      className={`theme-toggle-btn ${getThemeClass()}${className ? ' ' + className : ''}`}
+      className={`theme-toggle-btn ${getThemeClass()}${
+        className ? ' ' + className : ''
+      }`}
       title={getThemeTitle()}
-      onMouseEnter={e => {
+      onMouseEnter={(e: MouseEvent<HTMLButtonElement>) => {
         if (themeName === 'horror') {
           e.currentTarget.style.transform = 'scale(1.1) rotate(5deg)';
           e.currentTarget.style.boxShadow = '0 6px 20px rgba(139, 0, 0, 0.6)';
@@ -67,7 +69,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
           e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.25)';
         }
       }}
-      onMouseLeave={e => {
+      onMouseLeave={(e: MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.style.transform = 'scale(1)';
         if (themeName === 'horror') {
           e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.4)';

@@ -3,7 +3,6 @@
  * Shows spooky weather-related quotes for the horror theme
  */
 
-import React from 'react';
 import {
   getCrystalLakeQuote,
   getRandomHorrorQuote,
@@ -16,12 +15,12 @@ interface HorrorQuoteDisplayProps {
   className?: string;
 }
 
-export const HorrorQuoteDisplay: React.FC<HorrorQuoteDisplayProps> = ({
+export const HorrorQuoteDisplay = ({
   weatherCode,
   isDay = true,
   cityName = '',
   className = '',
-}) => {
+}: HorrorQuoteDisplayProps): JSX.Element => {
   // Use Crystal Lake specific quotes if the city name contains "Crystal Lake"
   const isCrystalLake = cityName.toLowerCase().includes('crystal lake');
 

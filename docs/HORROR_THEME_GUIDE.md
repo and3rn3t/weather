@@ -179,4 +179,4 @@ document.querySelectorAll('h1').forEach(el => {
 
 ### Enjoy your stay at Crystal Lake... if you dare! 🏕️💀
 
-_"Ki ki ki... ma ma ma..."_
+Ki ki ki... ma ma ma...

@@ -205,9 +205,9 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
             aria-pressed={isActive}
             style={{
               ...getTabStyle(tab, isActive),
-              // NUCLEAR INLINE OVERRIDE - should beat any CSS
-              background: isActive ? 'rgba(120, 97, 255, 0.15)' : 'transparent',
-              border: isActive ? '1px solid rgba(120, 97, 255, 0.2)' : 'none',
+              // Clean styling - let horror theme CSS handle backgrounds
+              background: 'transparent',
+              border: 'none',
               outline: 'none',
               boxShadow: 'none',
               WebkitTapHighlightColor: 'transparent',
@@ -219,6 +219,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
               filter: 'none',
               opacity: 1,
             }}
+            className={`nav-button ${isActive ? 'active' : ''}`}
             onClick={e => handleTabPress(tab.id, e)}
             onTouchStart={e => {
               // Prevent touch highlighting

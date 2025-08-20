@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -94,50 +94,38 @@
         border-bottom: none !important;
       }
 
-      /* MAXIMUM NUCLEAR LOCKDOWN - Zero background changes */
+      /* SELECTIVE BACKGROUND PROTECTION - Only prevent unwanted background changes */
       html,
-      html *,
       body,
-      body *,
       #root,
-      #root *,
-      .app-container,
-      .app-container *,
-      div,
-      span,
-      section,
-      main {
+      .app-container {
         background-color: transparent !important;
-        transition: none !important;
-        transition-property: none !important;
-        transition-duration: 0s !important;
-        animation: none !important;
       }
 
-      /* NUCLEAR :ACTIVE STATE BLOCKING - This causes the grey blink! */
-      *:active,
-      *:focus,
-      *:hover,
-      html:active,
-      body:active,
-      div:active,
-      section:active,
-      main:active,
-      #root:active,
-      .app-container:active {
-        background: transparent !important;
-        background-color: transparent !important;
-        outline: none !important;
-        border: none !important;
-        box-shadow: none !important;
+      /* Allow normal animations and transitions for UI components */
+      .theme-toggle-btn,
+      button,
+      .mobile-navigation,
+      .weather-card {
+        transition: all 0.3s ease !important;
+      }
+
+      /* SELECTIVE :ACTIVE STATE CONTROL - Only prevent unwanted styling */
+      *:active {
         -webkit-tap-highlight-color: transparent !important;
-        -webkit-touch-callout: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
+      }
+
+      /* Allow normal interactions but prevent grey background flashes */
+      button:active,
+      .theme-toggle-btn:active,
+      [role='button']:active {
+        background-color: inherit !important;
+        outline: none !important;
       }
 
       /* Lock body background permanently */
-      html body {
+      html,
+      body {
         background: linear-gradient(
           135deg,
           #667eea 0%,
@@ -145,6 +133,26 @@
         ) !important;
         background-attachment: fixed !important;
         transition: none !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* Ensure only one scrollbar */
+      #root {
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+      }
+
+      .app-container {
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+        width: 100% !important;
       }
 
       html body.dark-theme {
@@ -155,6 +163,37 @@
         ) !important;
         background-attachment: fixed !important;
         transition: none !important;
+      }
+
+      html body.horror-theme,
+      html.horror-theme,
+      body.horror-theme,
+      body.horror-theme *,
+      html.horror-theme *,
+      body.horror-theme #root,
+      body.horror-theme .app-container,
+      body.horror-theme main,
+      body.horror-theme section,
+      body.horror-theme div:not(.weather-card):not(.forecast-card) {
+        background: linear-gradient(
+          135deg,
+          #0d0d0d 0%,
+          #1a0000 50%,
+          #000000 100%
+        ) !important;
+        background-color: #0d0d0d !important;
+        background-attachment: fixed !important;
+        transition: none !important;
+      }
+
+      /* Ensure horror theme overrides any other styling */
+      body.horror-theme {
+        background: linear-gradient(
+          135deg,
+          #0d0d0d 0%,
+          #1a0000 50%,
+          #000000 100%
+        ) !important;
       }
 
       /* Prevent body from ever having :active state */
@@ -175,6 +214,17 @@
           135deg,
           #1a1a2e 0%,
           #16213e 100%
+        ) !important;
+      }
+
+      html body.horror-theme:active,
+      html body.horror-theme:focus,
+      html body.horror-theme:hover {
+        background: linear-gradient(
+          135deg,
+          #0d0d0d 0%,
+          #1a0000 50%,
+          #000000 100%
         ) !important;
       }
 
@@ -225,7 +275,7 @@
         console.log('🔧 Nuclear fixes loading...');
         nuclearFixesApplied = true;
 
-        // NUCLEAR CLICK PROTECTION - Block ALL background changes except theme toggle
+        // SELECTIVE CLICK PROTECTION - Only block background changes, not all clicks
         document.addEventListener(
           'click',
           function (e) {
@@ -235,7 +285,8 @@
             const isRealThemeToggle =
               (target.closest('.theme-toggle-btn') &&
                 (target.textContent?.includes('☀️') ||
-                  target.textContent?.includes('🌙'))) ||
+                  target.textContent?.includes('🌙') ||
+                  target.textContent?.includes('💀'))) ||
               target.getAttribute('aria-label')?.includes('Toggle theme');
 
             if (isRealThemeToggle) {
@@ -253,34 +304,20 @@
               return; // Allow the theme toggle
             }
 
-            // For ALL other clicks - prevent background changes
+            // Allow normal interactions, just prevent unwanted background changes
             console.log(
-              '🚫 NUCLEAR: Blocking ALL background changes from click on:',
-              target.tagName
+              'ℹ️ Click detected on:',
+              target.tagName,
+              '- allowing normal interaction'
             );
-
-            // Prevent React from doing anything
-            e.stopImmediatePropagation();
-            e.preventDefault();
-
-            // Force background lock
-            document.body.style.setProperty(
-              'background',
-              document.body.classList.contains('dark-theme')
-                ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              'important'
-            );
-
-            return false;
           },
-          true
+          false
         );
 
-        // Fix 2: Add working autocomplete
-        setTimeout(function () {
-          addNuclearAutocomplete();
-        }, 2000);
+        // Fix 2: Add working autocomplete - DISABLED FOR HORROR THEME
+        // setTimeout(function () {
+        //   addNuclearAutocomplete();
+        // }, 2000);
 
         console.log('✅ Nuclear fixes loaded');
 
@@ -326,6 +363,7 @@
         console.log('🔒 NUCLEAR MUTATION OBSERVER: Background lock active');
       });
 
+      /* NUCLEAR AUTOCOMPLETE DISABLED - CAUSING FLOATING SEARCH BOX
       function addNuclearAutocomplete() {
         // Check if already exists
         if (document.querySelector('.nuclear-autocomplete')) {
@@ -376,7 +414,9 @@
 
         console.log('✅ Nuclear autocomplete added');
       }
+      */ // END OF DISABLED NUCLEAR AUTOCOMPLETE
 
+      /* DISABLED NUCLEAR SEARCH FUNCTION
       async function nuclearSearchCities(query, dropdown) {
         try {
           console.log('🔍 Fuzzy searching for:', query);
@@ -588,7 +628,9 @@
           dropdown.classList.add('show');
         }
       }
+      */ // END OF DISABLED NUCLEAR SEARCH FUNCTION
 
+      /* DISABLED NUCLEAR DISPLAY RESULTS
       function nuclearDisplayResults(results, dropdown) {
         console.log('🎯 Displaying results:', results);
 
@@ -603,7 +645,10 @@
         const html = results
           .map(
             result =>
-              `<div class="suggestion" onclick="nuclearSelectCity('${result.display_name.replace(/'/g, "\\'")}', ${result.lat}, ${result.lon})">
+              `<div class="suggestion" onclick="nuclearSelectCity('${result.display_name.replace(
+                /'/g,
+                "\\'"
+              )}', ${result.lat}, ${result.lon})">
             ${result.display_name.split(',').slice(0, 3).join(', ')}
           </div>`
           )
@@ -717,24 +762,32 @@
           // Create weather display
           weatherContainer.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-              <h2 style="margin: 0; color: #333; font-size: 20px;">${name.split(',')[0]} Weather</h2>
-              <button onclick="document.getElementById('nuclear-weather').remove()" 
+              <h2 style="margin: 0; color: #333; font-size: 20px;">${
+                name.split(',')[0]
+              } Weather</h2>
+              <button onclick="document.getElementById('nuclear-weather').remove()"
                       style="background: #ff4757; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>
             </div>
-            
+
             <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                  <div style="font-size: 36px; font-weight: bold;">${Math.round(current.temperature)}°F</div>
+                  <div style="font-size: 36px; font-weight: bold;">${Math.round(
+                    current.temperature
+                  )}°F</div>
                   <div style="font-size: 18px; margin-top: 5px;">${currentWeatherDesc}</div>
                   <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
-                    Wind: ${Math.round(current.windspeed)} mph | Humidity: ${hourly.relative_humidity_2m[0]}%
+                    Wind: ${Math.round(current.windspeed)} mph | Humidity: ${
+            hourly.relative_humidity_2m[0]
+          }%
                   </div>
                 </div>
-                <div style="font-size: 60px;">${currentWeatherDesc.split(' ')[0]}</div>
+                <div style="font-size: 60px;">${
+                  currentWeatherDesc.split(' ')[0]
+                }</div>
               </div>
             </div>
-            
+
             <div style="margin-bottom: 15px;">
               <h3 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">7-Day Forecast</h3>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
@@ -749,9 +802,13 @@
                     return `
                     <div style="text-align: center; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
                       <div style="font-weight: bold; color: #333; margin-bottom: 5px;">${dayName}</div>
-                      <div style="font-size: 24px; margin: 5px 0;">${weatherDesc.split(' ')[0]}</div>
+                      <div style="font-size: 24px; margin: 5px 0;">${
+                        weatherDesc.split(' ')[0]
+                      }</div>
                       <div style="font-size: 14px; color: #666;">
-                        ${Math.round(daily.temperature_2m_max[i])}° / ${Math.round(daily.temperature_2m_min[i])}°
+                        ${Math.round(
+                          daily.temperature_2m_max[i]
+                        )}° / ${Math.round(daily.temperature_2m_min[i])}°
                       </div>
                     </div>
                   `;
@@ -759,7 +816,7 @@
                   .join('')}
               </div>
             </div>
-            
+
             <div style="text-align: center; font-size: 12px; color: #666; margin-top: 15px;">
               🌤️ Real weather data from OpenMeteo API
             </div>
@@ -773,7 +830,7 @@
                 <h2 style="color: #333;">📍 ${name.split(',')[0]}</h2>
                 <p style="color: #666;">❌ Weather data unavailable</p>
                 <p style="font-size: 12px; color: #999;">Coordinates: ${lat}, ${lon}</p>
-                <button onclick="document.getElementById('nuclear-weather').remove()" 
+                <button onclick="document.getElementById('nuclear-weather').remove()"
                         style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Close</button>
               </div>
             `;
@@ -804,8 +861,9 @@
       });
 
       // Check if functions are available globally
-      window.nuclearSelectCity = nuclearSelectCity;
-      window.testSearch = testSearch;
+      // window.nuclearSelectCity = nuclearSelectCity; // DISABLED
+      // window.testSearch = testSearch; // DISABLED
+      */ // END OF ALL DISABLED NUCLEAR FUNCTIONS
     </script>
 
     <!-- Apple Touch Icons -->
