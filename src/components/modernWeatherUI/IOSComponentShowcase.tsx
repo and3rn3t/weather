@@ -6,19 +6,18 @@
  */
 
 import React, { useState } from 'react';
-import {
-  SimpleSegmentedControl,
-  SimpleActivityIndicator,
-  SimpleStatusBadge,
-  SimpleEnhancedButton,
-  SimpleCard,
-} from './SimpleIOSComponents';
+import { logInfo } from '../../utils/logger';
+import type { ThemeColors } from '../../utils/themeConfig';
 import { ActionSheet } from './ActionSheet';
 import { NavigationBar } from './NavigationBar';
 import { NavigationIcons } from './NavigationIcons';
-import type { ThemeColors } from '../../utils/themeConfig';
-import { logInfo } from '../utils/logger';
-
+import {
+  SimpleActivityIndicator,
+  SimpleCard,
+  SimpleEnhancedButton,
+  SimpleSegmentedControl,
+  SimpleStatusBadge,
+} from './SimpleIOSComponents';
 
 interface IOSComponentShowcaseProps {
   theme: ThemeColors;

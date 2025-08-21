@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { useHaptic } from './hapticHooks';
 import { useTheme } from './useTheme';
 

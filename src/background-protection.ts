@@ -1,4 +1,4 @@
-import { logWarn, logInfo } from '../utils/logger';
+import { logInfo, logWarn } from './utils/logger';
 
 /**
  * NUCLEAR FIX for Background Color Changes

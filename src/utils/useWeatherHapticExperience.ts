@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logWeatherHaptic, logWeatherTransition } from './logger';
+import logger, { logWeatherHaptic, logWeatherTransition } from './logger';
 
 // ============================================================================
 // WEATHER-CONTEXTUAL HAPTIC PATTERNS
@@ -341,7 +341,9 @@ export const useWeatherHapticExperience = (
       lastWeatherHaptic.current = now;
 
       logWeatherHaptic(
-        `${experience.description} (intensity: ${experience.intensity.toFixed(2)})`
+        `${experience.description} (intensity: ${experience.intensity.toFixed(
+          2
+        )})`
       );
 
       await executeWeatherHaptic(experience.pattern, experience.intensity);

@@ -336,18 +336,18 @@ function HomeScreen({
   return (
     <div className="ios26-container ios26-p-0 ios26-h-screen">
       {/* iOS 26 Navigation Bar */}
-      <iOS26NavigationBar
-        title="Weather"
-        theme={theme}
-        rightAction={{
-          icon: '⚙️',
-          label: 'Settings',
-          onPress: () => {
+      <div className="ios26-navigation-bar">
+        <h1 className="ios26-text-title ios26-text-primary">Weather</h1>
+        <button
+          className="ios26-button ios26-button-secondary"
+          onClick={() => {
             haptic.buttonPress();
             navigate('Settings');
-          },
-        }}
-      />
+          }}
+        >
+          ⚙️
+        </button>
+      </div>
 
       {/* Quick Actions Panel */}
       <QuickActionsPanel
@@ -371,23 +371,7 @@ function HomeScreen({
       />
 
       {/* iOS 26 Weather Demo - Simple Integration */}
-      <IOS26WeatherDemo
-        theme={theme}
-        onNavigate={(screen: string) => {
-          haptic.buttonPress();
-          if (screen === 'weather') {
-            navigate('Weather');
-          } else if (screen === 'search') {
-            navigate('Search');
-          } else if (screen === 'test') {
-            navigate('MobileTest');
-          }
-        }}
-        onGetCurrentLocation={() => {
-          haptic.buttonPress();
-          // Add location logic here if needed
-        }}
-      />
+      <IOS26WeatherDemo theme={theme} />
     </div>
   );
 }
@@ -553,23 +537,23 @@ function WeatherDetailsScreen({
             </SimpleCard>
           )}
           {weather && (
-            <iOS26WeatherCard
-              temperature={Math.round(weather.main.temp)}
-              weatherCode={weatherCode}
-              location={city}
-              description={weather.weather[0].description}
-              theme={theme}
-              isLoading={loading}
-              lastUpdated={new Date().toLocaleTimeString()}
-              onRefresh={async () => {
-                haptic.buttonPress();
-                await onRefresh();
-              }}
-              onLocationTap={() => {
-                haptic.buttonPress();
-                navigate('Search');
-              }}
-            />
+            <div className="ios26-weather-card">
+              <div className="ios26-text-title ios26-text-primary">
+                {Math.round(weather.main.temp)}°
+              </div>
+              <div className="ios26-text-body ios26-text-secondary">
+                {weather.weather[0].description} in {city}
+              </div>
+              <button
+                className="ios26-button ios26-button-primary"
+                onClick={async () => {
+                  haptic.buttonPress();
+                  await onRefresh();
+                }}
+              >
+                Refresh
+              </button>
+            </div>
           )}
 
           {/* Weather Metrics */}
@@ -625,46 +609,14 @@ function WeatherDetailsScreen({
 
           {/* iOS 26 Weather Interface - Enhanced Forecast */}
           {selectedView === 1 || selectedView === 2 ? (
-            <iOS26WeatherInterface
-              weatherData={{
-                temperature: Math.round(weather?.main?.temp || 20),
-                condition: weather?.weather?.[0]?.description || 'Clear',
-                location: city,
-                humidity: weather?.main?.humidity || 50,
-                windSpeed: weather?.wind?.speed || 0,
-                pressure: weather?.main?.pressure || 1013,
-                feelsLike: Math.round(weather?.main?.feels_like || 20),
-                weatherCode: weatherCode,
-                hourlyForecast:
-                  selectedView === 1
-                    ? hourlyForecast.map(hour => ({
-                        time: hour.time,
-                        temperature: hour.temperature,
-                        weatherCode: hour.weatherCode,
-                        precipitation: hour.humidity, // Using humidity as placeholder
-                      }))
-                    : [],
-                dailyForecast:
-                  selectedView === 2
-                    ? dailyForecast.map(day => ({
-                        day: day.date,
-                        high: day.tempMax,
-                        low: day.tempMin,
-                        weatherCode: day.weatherCode,
-                        precipitation: day.precipitation,
-                      }))
-                    : [],
-              }}
-              theme={theme}
-              isLoading={loading}
-              onRefresh={onRefresh}
-              onLocationChange={(newLocation: string) => {
-                haptic.buttonPress();
-                getWeather();
-              }}
-              showHourlyForecast={selectedView === 1}
-              showDailyForecast={selectedView === 2}
-            />
+            <div className="ios26-weather-interface">
+              <div className="ios26-text-title ios26-text-primary">
+                Extended Forecast
+              </div>
+              <div className="ios26-text-body ios26-text-secondary">
+                {selectedView === 1 ? 'Hourly' : 'Daily'} forecast for {city}
+              </div>
+            </div>
           ) : null}
         </div>
       </PullToRefresh>
@@ -717,7 +669,6 @@ function WeatherDetailsScreen({
 }
 
 // Helper components for weather display (keep these for now as they might be used elsewhere)
-// @ts-expect-error - Legacy component kept for reference but unused in current implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const WeatherMainCard = React.memo(
   ({
@@ -748,7 +699,7 @@ const WeatherMainCard = React.memo(
             <WeatherIcon
               code={weatherCode}
               size={Math.min(window.innerWidth * 0.2, 80)}
-              animate={true}
+              animated={true}
             />
           </div>
 
@@ -825,7 +776,6 @@ const WeatherMainCard = React.memo(
   }
 );
 
-// @ts-expect-error - Legacy component kept for reference but unused in current implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HourlyForecastSection = React.memo(
   ({
@@ -895,7 +845,6 @@ const HourlyForecastSection = React.memo(
   }
 );
 
-// @ts-expect-error - Legacy component kept for reference but unused in current implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DailyForecastSection = React.memo(
   ({
@@ -1011,7 +960,14 @@ const AppNavigator = () => {
           setCity('Crystal Lake, NJ');
           logInfo('🎃 Welcome to Crystal Lake... Weather Station Online');
         } catch (error) {
-          logInfo('Failed to load Crystal Lake data, user will need to search');
+          logWarn(
+            'Failed to load Crystal Lake data, user will need to search manually:',
+            error
+          );
+          // Gracefully degrade - user can still search for weather manually
+          setError(
+            'Default location unavailable. Please search for your city.'
+          );
         }
       }
     };
@@ -1581,7 +1537,7 @@ const AppNavigator = () => {
 
       {/* Deployment Status Indicator - Only show in production */}
       {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
-        <DeploymentStatus theme={themeName} />
+        <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
       )}
 
       {/* Geolocation Verification Modal - Temporarily disabled */}

@@ -1349,13 +1349,11 @@ const SimpleWeatherApp: React.FC = () => {
   const renderSearchScreen = () => (
     <EnhancedSearchScreen
       theme={theme}
-      onBack={() => setActiveScreen('Weather')}
+      onBack={() => setCurrentScreen('Home')}
       onLocationSelect={(cityName, latitude, longitude) => {
         // Update the location and switch back to weather screen
-        setLatitude(latitude);
-        setLongitude(longitude);
         setCity(cityName);
-        setActiveScreen('Weather');
+        setCurrentScreen('Home');
 
         // Fetch weather for the new location
         fetchWeatherForLocation(latitude, longitude);

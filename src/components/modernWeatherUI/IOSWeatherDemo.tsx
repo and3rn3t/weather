@@ -6,20 +6,19 @@
  */
 
 import React, { useState } from 'react';
+import { logInfo } from '../../utils/logger';
 import type { ThemeColors } from '../../utils/themeConfig';
-import {
-  SegmentedControl,
-  ActivityIndicator,
-  StatusBadge,
-  ListItem,
-  ProgressIndicator,
-} from './IOSComponents';
 import { ActionSheet } from './ActionSheet';
 import { EnhancedSearchBar } from './EnhancedSearchBar';
+import {
+  ActivityIndicator,
+  ListItem,
+  ProgressIndicator,
+  SegmentedControl,
+  StatusBadge,
+} from './IOSComponents';
 import { NavigationBar } from './NavigationBar';
 import { NavigationIcons } from './NavigationIcons';
-import { logInfo } from '../utils/logger';
-
 
 interface IOSWeatherDemoProps {
   theme: ThemeColors;

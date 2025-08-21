@@ -5,10 +5,10 @@
  * quick weather previews, and seamless city switching functionality.
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
+import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
 
 interface FavoritesScreenProps {
   theme: ThemeColors;
@@ -202,6 +202,8 @@ const CityCard: React.FC<CityCardProps> = React.memo(
     );
   }
 );
+
+import logger from '../utils/logger';
 
 const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   theme,
@@ -652,7 +654,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-        
+
         .city-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(0,0,0,0.15);
