@@ -5,7 +5,7 @@
  * Useful for development and debugging performance issues.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ThemeColors } from './themeConfig';
 
 interface PerformanceMetrics {
@@ -125,8 +125,14 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   const formatMemory = (mb: number) => `${mb}MB`;
 
   return (
-    <div
-      style={getPositionStyles()}
+    <button
+      style={{
+        ...getPositionStyles(),
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        padding: 0,
+      }}
       onClick={() => setIsVisible(!isVisible)}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -134,10 +140,8 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           setIsVisible(!isVisible);
         }
       }}
-      role="button"
-      tabIndex={0}
-      title="Click to toggle performance details"
       aria-label="Toggle performance monitor details"
+      title="Click to toggle performance details"
     >
       <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '9px' }}>
         ⚡ Performance
@@ -160,7 +164,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       ) : (
         <div style={{ fontSize: '8px' }}>{metrics.renderCount} renders</div>
       )}
-    </div>
+    </button>
   );
 };
 
