@@ -6,16 +6,15 @@
  */
 
 import React, {
-  useState,
-  useRef,
-  useEffect,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
 import { useHaptic } from './hapticHooks';
-import type { ThemeColors } from './themeConfig';
 import { logError } from './logger';
-
+import type { ThemeColors } from './themeConfig';
 
 interface CityResult {
   display_name: string;
@@ -128,7 +127,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
             signal: abortControllerRef.current.signal,
             // Add timeout for faster failure
             cache: 'default',
-          },
+          }
         );
 
         if (!response.ok) {
@@ -216,7 +215,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
         setIsLoading(false);
       }
     },
-    [onError],
+    [onError]
   );
 
   // Faster debounce for better responsiveness
@@ -276,13 +275,13 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
       case 'ArrowDown':
         event.preventDefault();
         setSelectedIndex(prev =>
-          prev < suggestions.length - 1 ? prev + 1 : 0,
+          prev < suggestions.length - 1 ? prev + 1 : 0
         );
         break;
       case 'ArrowUp':
         event.preventDefault();
         setSelectedIndex(prev =>
-          prev > 0 ? prev - 1 : suggestions.length - 1,
+          prev > 0 ? prev - 1 : suggestions.length - 1
         );
         break;
       case 'Enter':
@@ -342,7 +341,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
       haptic.buttonConfirm();
       onCitySelected(cityName, latitude, longitude);
     },
-    [formatCityName, haptic, onCitySelected],
+    [formatCityName, haptic, onCitySelected]
   );
 
   // Handle input focus
@@ -382,7 +381,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
       cursor: disabled ? 'not-allowed' : 'text',
       paddingRight: isLoading ? '50px' : '16px',
     }),
-    [theme, isMobile, disabled, isLoading],
+    [theme, isMobile, disabled, isLoading]
   );
 
   const dropdownStyle: React.CSSProperties = useMemo(
@@ -407,7 +406,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
       visibility: isOpen ? 'visible' : 'hidden',
       transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
     }),
-    [theme, isMobile, isOpen],
+    [theme, isMobile, isOpen]
   );
 
   return (
