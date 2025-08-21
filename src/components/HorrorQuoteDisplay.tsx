@@ -7,6 +7,7 @@ import {
   getCrystalLakeQuote,
   getRandomHorrorQuote,
 } from '../utils/horrorQuotes';
+import { useTheme } from '../utils/useTheme';
 
 interface HorrorQuoteDisplayProps {
   weatherCode?: number;
@@ -17,16 +18,21 @@ interface HorrorQuoteDisplayProps {
 
 /**
  * HorrorQuoteDisplay - Core HorrorQuoteDisplay functionality
- */
-/**
- * HorrorQuoteDisplay - Core HorrorQuoteDisplay functionality
+ * Only renders when horror theme is active
  */
 export const HorrorQuoteDisplay = ({
   weatherCode = 0,
   isDay = true,
   cityName = '',
   className = '',
-}: HorrorQuoteDisplayProps): JSX.Element => {
+}: HorrorQuoteDisplayProps): JSX.Element | null => {
+  const { isHorror } = useTheme();
+
+  // Only render when horror theme is active
+  if (!isHorror) {
+    return null;
+  }
+
   // Use Crystal Lake specific quotes if the city name contains "Crystal Lake"
   const isCrystalLake = cityName.toLowerCase().includes('crystal lake');
 

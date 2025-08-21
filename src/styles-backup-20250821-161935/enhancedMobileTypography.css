@@ -1,0 +1,284 @@
+/**
+ * Enhanced Mobile Typography System - August 2025
+ * 
+ * Comprehensive typography enhancements focused on:
+ * - Better readability on small screens (< 375px)
+ * - Improved contrast ratios for accessibility
+ * - Dynamic font scaling with viewport units
+ * - Enhanced line spacing for mobile reading
+ * - Better font weight distribution
+ */
+
+/* ============================================================================
+   ENHANCED MOBILE TYPOGRAPHY VARIABLES
+   ============================================================================ */
+
+:root {
+  /* Enhanced mobile font scale with better readability */
+  --mobile-font-2xs: clamp(10px, 2.5vw, 11px); /* Micro text */
+  --mobile-font-xs: clamp(11px, 3vw, 13px); /* Small labels */
+  --mobile-font-sm: clamp(13px, 3.5vw, 15px); /* Body small */
+  --mobile-font-md: clamp(15px, 4vw, 17px); /* Body text */
+  --mobile-font-lg: clamp(17px, 4.5vw, 20px); /* Subheadings */
+  --mobile-font-xl: clamp(19px, 5vw, 24px); /* Headers */
+  --mobile-font-2xl: clamp(22px, 6vw, 28px); /* Section titles */
+  --mobile-font-3xl: clamp(26px, 7vw, 34px); /* Page titles */
+  --mobile-font-4xl: clamp(30px, 8vw, 42px); /* Hero text */
+
+  /* Enhanced line heights for mobile reading */
+  --mobile-line-tight: 1.2;
+  --mobile-line-normal: 1.4;
+  --mobile-line-relaxed: 1.5;
+  --mobile-line-loose: 1.6;
+
+  /* Better font weights */
+  --mobile-weight-light: 300;
+  --mobile-weight-normal: 400;
+  --mobile-weight-medium: 500;
+  --mobile-weight-semibold: 600;
+  --mobile-weight-bold: 700;
+  --mobile-weight-extrabold: 800;
+}
+
+/* ============================================================================
+   VIEWPORT-BASED TYPOGRAPHY CLASSES
+   ============================================================================ */
+
+.mobile-text-2xs {
+  font-size: var(--mobile-font-2xs);
+  line-height: var(--mobile-line-normal);
+}
+
+.mobile-text-xs {
+  font-size: var(--mobile-font-xs);
+  line-height: var(--mobile-line-normal);
+}
+
+.mobile-text-sm {
+  font-size: var(--mobile-font-sm);
+  line-height: var(--mobile-line-relaxed);
+}
+
+.mobile-text-base {
+  font-size: var(--mobile-font-md);
+  line-height: var(--mobile-line-relaxed);
+  font-weight: var(--mobile-weight-normal);
+}
+
+.mobile-text-lg {
+  font-size: var(--mobile-font-lg);
+  line-height: var(--mobile-line-normal);
+  font-weight: var(--mobile-weight-medium);
+}
+
+.mobile-text-xl {
+  font-size: var(--mobile-font-xl);
+  line-height: var(--mobile-line-normal);
+  font-weight: var(--mobile-weight-semibold);
+}
+
+.mobile-text-2xl {
+  font-size: var(--mobile-font-2xl);
+  line-height: var(--mobile-line-tight);
+  font-weight: var(--mobile-weight-bold);
+}
+
+.mobile-text-3xl {
+  font-size: var(--mobile-font-3xl);
+  line-height: var(--mobile-line-tight);
+  font-weight: var(--mobile-weight-extrabold);
+}
+
+.mobile-text-4xl {
+  font-size: var(--mobile-font-4xl);
+  line-height: var(--mobile-line-tight);
+  font-weight: var(--mobile-weight-extrabold);
+  letter-spacing: -0.02em;
+}
+
+/* ============================================================================
+   WEATHER-SPECIFIC TYPOGRAPHY
+   ============================================================================ */
+
+.weather-temperature-mobile {
+  font-size: clamp(32px, 12vw, 56px);
+  font-weight: var(--mobile-weight-extrabold);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  margin: 8px 0;
+}
+
+.weather-condition-mobile {
+  font-size: clamp(16px, 4.5vw, 20px);
+  font-weight: var(--mobile-weight-semibold);
+  line-height: var(--mobile-line-normal);
+  text-transform: capitalize;
+  margin: 4px 0 16px 0;
+}
+
+.weather-location-mobile {
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: var(--mobile-weight-medium);
+  line-height: var(--mobile-line-normal);
+  opacity: 0.8;
+  margin: 0 0 12px 0;
+}
+
+.weather-metric-value-mobile {
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: var(--mobile-weight-bold);
+  line-height: var(--mobile-line-tight);
+  margin: 0;
+}
+
+.weather-metric-label-mobile {
+  font-size: clamp(12px, 3.5vw, 14px);
+  font-weight: var(--mobile-weight-medium);
+  line-height: var(--mobile-line-normal);
+  opacity: 0.7;
+  margin: 4px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   FORECAST TYPOGRAPHY
+   ============================================================================ */
+
+.forecast-time-mobile {
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: var(--mobile-weight-semibold);
+  line-height: var(--mobile-line-tight);
+  opacity: 0.8;
+  margin: 0 0 4px 0;
+}
+
+.forecast-temp-mobile {
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: var(--mobile-weight-bold);
+  line-height: var(--mobile-line-tight);
+  margin: 2px 0;
+}
+
+.forecast-day-mobile {
+  font-size: clamp(13px, 3.5vw, 15px);
+  font-weight: var(--mobile-weight-semibold);
+  line-height: var(--mobile-line-normal);
+  margin: 0 0 6px 0;
+}
+
+/* ============================================================================
+   ENHANCED CONTRAST AND READABILITY
+   ============================================================================ */
+
+.mobile-high-contrast {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  filter: contrast(1.1);
+}
+
+.mobile-text-primary {
+  color: var(--primary-text);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-text-secondary {
+  color: var(--secondary-text);
+  opacity: 0.8;
+}
+
+.mobile-text-muted {
+  color: var(--secondary-text);
+  opacity: 0.6;
+}
+
+/* Dark mode text optimizations */
+@media (prefers-color-scheme: dark) {
+  .mobile-text-primary {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.05);
+  }
+
+  .mobile-text-secondary {
+    opacity: 0.9;
+  }
+
+  .mobile-text-muted {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================================================
+   SCREEN SIZE SPECIFIC OPTIMIZATIONS
+   ============================================================================ */
+
+/* Very small screens (< 360px) */
+@media (max-width: 359px) {
+  .weather-temperature-mobile {
+    font-size: clamp(28px, 10vw, 40px);
+    margin: 6px 0;
+  }
+
+  .weather-metric-value-mobile {
+    font-size: clamp(16px, 4.5vw, 20px);
+  }
+
+  .mobile-text-base {
+    font-size: clamp(14px, 4vw, 16px);
+    line-height: 1.5;
+  }
+}
+
+/* Small screens (360px - 414px) */
+@media (min-width: 360px) and (max-width: 414px) {
+  .weather-temperature-mobile {
+    font-size: clamp(36px, 11vw, 48px);
+  }
+
+  .mobile-text-xl {
+    font-size: clamp(20px, 5.5vw, 26px);
+  }
+}
+
+/* Medium screens (415px - 768px) */
+@media (min-width: 415px) and (max-width: 768px) {
+  .weather-temperature-mobile {
+    font-size: clamp(44px, 10vw, 56px);
+  }
+
+  .mobile-text-3xl {
+    font-size: clamp(28px, 6vw, 36px);
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-text-animated {
+    transition:
+      font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mobile-text-primary {
+    text-shadow: none;
+    filter: contrast(1.2);
+    font-weight: var(--mobile-weight-semibold);
+  }
+
+  .weather-temperature-mobile {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Large font preferences */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-text-animated {
+    transition: none;
+  }
+}

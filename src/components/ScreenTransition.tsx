@@ -205,7 +205,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
           onSwipeLeft || (() => {}),
           onSwipeRight || (() => {}),
           !!onSwipeLeft,
-          !!onSwipeRight
+          !!onSwipeRight,
         )
       : {};
 
@@ -215,7 +215,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
 
   const getDirection = (
     from: string | null,
-    to: string
+    to: string,
   ): TransitionDirection => {
     if (!from || transitionDirection !== 'slide-left') {
       return transitionDirection;

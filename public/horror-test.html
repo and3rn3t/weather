@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎃 Horror Theme Test - Weather App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0d0d0d 0%,
+          #1a0000 50%,
+          #000000 100%
+        );
+        color: #ff6b6b;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .test-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid #8b0000;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 0 20px rgba(139, 0, 0, 0.6);
+      }
+
+      h1 {
+        text-align: center;
+        color: #ff6b6b;
+        text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        position: relative;
+      }
+
+      h1::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 20px;
+        background: linear-gradient(to bottom, #8b0000 0%, transparent 100%);
+        animation: bloodDrip 3s ease-in-out infinite;
+      }
+
+      .test-button {
+        background: #8b0000;
+        color: #ff6b6b;
+        border: 2px solid #ff6b6b;
+        border-radius: 8px;
+        padding: 12px 24px;
+        cursor: pointer;
+        font-weight: bold;
+        margin: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+      }
+
+      .test-button:hover {
+        background: #ff6b6b;
+        color: #8b0000;
+        box-shadow: 0 0 20px rgba(139, 0, 0, 0.8);
+        transform: scale(1.05);
+      }
+
+      .feature-demo {
+        margin: 20px 0;
+        padding: 15px;
+        background: rgba(26, 0, 0, 0.5);
+        border: 1px solid #8b0000;
+        border-radius: 8px;
+      }
+
+      .horror-weather-quote {
+        background: rgba(0, 0, 0, 0.95);
+        border: 2px solid #8b0000;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin: 20px auto;
+        max-width: 90%;
+        font-style: italic;
+        color: #ff6b6b;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(139, 0, 0, 0.8), 0 8px 32px rgba(0, 0, 0, 0.8);
+        position: relative;
+        animation: horrorGlow 3s ease-in-out infinite;
+      }
+
+      .horror-weather-quote::before {
+        content: '"';
+        font-size: 3em;
+        position: absolute;
+        top: -15px;
+        left: 15px;
+        color: #8b0000;
+        text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        animation: flickering 2s infinite;
+      }
+
+      .horror-weather-quote::after {
+        content: '"';
+        font-size: 3em;
+        position: absolute;
+        bottom: -25px;
+        right: 15px;
+        color: #8b0000;
+        text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        animation: flickering 2s infinite;
+      }
+
+      .flicker-text {
+        animation: flickeringHorror 4s infinite ease-in-out;
+      }
+
+      .film-grain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(
+            circle at 25% 25%,
+            rgba(255, 255, 255, 0.08) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle at 75% 75%,
+            rgba(0, 0, 0, 0.12) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(139, 0, 0, 0.04) 1px,
+            transparent 1px
+          );
+        background-size: 4px 4px, 6px 6px, 8px 8px;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.8;
+        animation: filmGrainFlicker 0.15s infinite;
+      }
+
+      @keyframes bloodDrip {
+        0% {
+          height: 0;
+          opacity: 0;
+        }
+        50% {
+          height: 20px;
+          opacity: 1;
+        }
+        100% {
+          height: 30px;
+          opacity: 0;
+        }
+      }
+
+      @keyframes flickering {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        2% {
+          opacity: 0.9;
+        }
+        4% {
+          opacity: 1;
+        }
+        6% {
+          opacity: 0.8;
+        }
+        8% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        92% {
+          opacity: 0.9;
+        }
+        94% {
+          opacity: 1;
+        }
+        96% {
+          opacity: 0.85;
+        }
+        98% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes flickeringHorror {
+        0%,
+        94% {
+          opacity: 1;
+          text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        }
+        95% {
+          opacity: 0.8;
+          text-shadow: 0 0 15px rgba(139, 0, 0, 0.9);
+        }
+        96% {
+          opacity: 0.95;
+          text-shadow: 0 0 8px rgba(139, 0, 0, 0.7);
+        }
+        97% {
+          opacity: 0.85;
+          text-shadow: 0 0 20px rgba(139, 0, 0, 1);
+        }
+        98% {
+          opacity: 0.98;
+          text-shadow: 0 0 12px rgba(139, 0, 0, 0.8);
+        }
+        99% {
+          opacity: 0.9;
+          text-shadow: 0 0 18px rgba(139, 0, 0, 0.9);
+        }
+      }
+
+      @keyframes horrorGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(139, 0, 0, 0.8),
+            0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(139, 0, 0, 1), 0 8px 32px rgba(0, 0, 0, 0.9);
+        }
+      }
+
+      @keyframes filmGrainFlicker {
+        0% {
+          opacity: 0.8;
+        }
+        25% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 0.9;
+        }
+        75% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 0.8;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="film-grain"></div>
+
+    <div class="test-container">
+      <h1>🎃 Horror Theme Improvements Test</h1>
+
+      <div class="feature-demo">
+        <h3 class="flicker-text">📍 Fixed Issues:</h3>
+        <ul>
+          <li>
+            <strong>✅ Quote Container:</strong> Better positioned at bottom
+            with enhanced styling
+          </li>
+          <li>
+            <strong>✅ Blood Drip:</strong> Fixed to appear below headers (not
+            upside down)
+          </li>
+          <li>
+            <strong>✅ Film Flicker:</strong> Enhanced visibility and smoother
+            animation
+          </li>
+          <li>
+            <strong>✅ Film Grain:</strong> More visible with better flicker
+            effect
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-demo">
+        <h3 class="flicker-text">🩸 Blood Drip Demo</h3>
+        <p>
+          The header above should have a blood drip effect coming DOWN from the
+          text
+        </p>
+      </div>
+
+      <div class="feature-demo">
+        <h3 class="flicker-text">⚡ Film Flicker Demo</h3>
+        <p class="flicker-text">
+          This text should flicker like an old horror movie
+        </p>
+      </div>
+
+      <div class="feature-demo">
+        <h3>🎬 Film Grain Effect</h3>
+        <p>
+          The entire page should have a subtle film grain overlay that flickers
+        </p>
+      </div>
+
+      <div class="horror-weather-quote">
+        <div class="quote-text">
+          The darkness is coming... and it knows the weather.
+        </div>
+        <div class="quote-attribution">
+          <span class="quote-author">— Jason Voorhees</span>,
+          <span class="quote-movie">Friday the 13th</span>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 30px">
+        <button
+          class="test-button"
+          onclick="window.open('http://localhost:5173', '_blank')"
+        >
+          🌤️ Open Main Weather App
+        </button>
+        <button class="test-button" onclick="window.location.reload()">
+          🔄 Reload Test
+        </button>
+      </div>
+
+      <div class="feature-demo">
+        <h3>🎃 Test Instructions:</h3>
+        <ol>
+          <li>Open the main weather app</li>
+          <li>Activate horror theme (look for the theme toggle)</li>
+          <li>Check that the quote appears at the bottom of the screen</li>
+          <li>Verify blood drip effects on headers</li>
+          <li>Observe film flicker on text and cards</li>
+          <li>Notice the film grain overlay</li>
+        </ol>
+      </div>
+    </div>
+
+    <script>
+      console.log('🎃 Horror Theme Test Page Loaded');
+      console.log('✅ All improvements demonstrated');
+      console.log('🔗 Open main app to test live implementation');
+
+      // Add some dynamic effects
+      setTimeout(() => {
+        const elements = document.querySelectorAll('.flicker-text');
+        elements.forEach(el => {
+          el.style.animation = 'flickeringHorror 3s infinite ease-in-out';
+        });
+      }, 1000);
+    </script>
+  </body>
+</html>

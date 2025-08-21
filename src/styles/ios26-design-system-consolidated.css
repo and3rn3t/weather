@@ -1,0 +1,923 @@
+/**
+ * iOS 26 Design System - CONSOLIDATED - August 2025
+ *
+ * Comprehensive unified iOS 26 design system combining:
+ * - iOS26DesignSystem.css (design tokens & variables)
+ * - iOS26WeatherInterface.css (weather-specific components)
+ * - iOS26Components.css (UI components)
+ * - iOS26.css (animations & interactions)
+ * - modernWeatherUI.css (modern patterns)
+ * - enhancedWeatherDisplay.css (display components)
+ * - enhancedForecast.css (forecast components)
+ *
+ * Total consolidation: 7 files → 1 unified system
+ * Estimated reduction: 15-25% through deduplication and optimization
+ */
+
+/* ============================================================================
+   SECTION 1: iOS 26 CORE DESIGN TOKENS & VARIABLES
+   ============================================================================ */
+
+:root {
+  /* iOS 26 Typography - SF Pro Display/Text */
+  --ios26-font-family-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --ios26-font-family-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --ios26-font-family-mono: 'SF Mono', Consolas, 'Monaco', monospace;
+  --ios26-font-family: var(--ios26-font-family-text);
+
+  /* iOS 26 Font Sizes with Dynamic Type Support */
+  --ios26-text-caption2: clamp(10px, 2.5vw, 11px);
+  --ios26-text-caption1: clamp(11px, 2.8vw, 12px);
+  --ios26-text-footnote: clamp(12px, 3vw, 13px);
+  --ios26-text-subheadline: clamp(14px, 3.5vw, 15px);
+  --ios26-text-callout: clamp(15px, 3.8vw, 16px);
+  --ios26-text-body: clamp(16px, 4vw, 17px);
+  --ios26-text-headline: clamp(18px, 4.5vw, 20px);
+  --ios26-text-title3: clamp(19px, 4.8vw, 22px);
+  --ios26-text-title2: clamp(21px, 5.2vw, 24px);
+  --ios26-text-title1: clamp(27px, 6.8vw, 32px);
+  --ios26-text-large-title: clamp(33px, 8.2vw, 40px);
+
+  /* iOS 26 Font Weights */
+  --ios26-weight-ultralight: 100;
+  --ios26-weight-thin: 200;
+  --ios26-weight-light: 300;
+  --ios26-weight-regular: 400;
+  --ios26-weight-medium: 500;
+  --ios26-weight-semibold: 600;
+  --ios26-weight-bold: 700;
+  --ios26-weight-heavy: 800;
+  --ios26-weight-black: 900;
+
+  /* iOS 26 Spacing Scale */
+  --ios26-spacing-1: 4px;
+  --ios26-spacing-2: 8px;
+  --ios26-spacing-3: 12px;
+  --ios26-spacing-4: 16px;
+  --ios26-spacing-5: 20px;
+  --ios26-spacing-6: 24px;
+  --ios26-spacing-7: 28px;
+  --ios26-spacing-8: 32px;
+  --ios26-spacing-10: 40px;
+  --ios26-spacing-12: 48px;
+  --ios26-spacing-14: 56px;
+  --ios26-spacing-16: 64px;
+
+  /* iOS 26 Border Radius */
+  --ios26-radius-xs: 4px;
+  --ios26-radius-sm: 8px;
+  --ios26-radius-md: 12px;
+  --ios26-radius-lg: 16px;
+  --ios26-radius-xl: 20px;
+  --ios26-radius-2xl: 24px;
+  --ios26-radius-3xl: 28px;
+  --ios26-radius-4xl: 32px;
+  --ios26-radius-full: 9999px;
+
+  /* iOS 26 Touch Targets */
+  --ios26-touch-small: 44px;
+  --ios26-touch-medium: 50px;
+  --ios26-touch-large: 56px;
+  --ios26-touch-xl: 64px;
+
+  /* iOS 26 Animation Curves */
+  --ios26-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ios26-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ios26-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ios26-ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ios26-ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* iOS 26 Animation Durations */
+  --ios26-duration-fast: 0.15s;
+  --ios26-duration-normal: 0.25s;
+  --ios26-duration-slow: 0.35s;
+  --ios26-duration-slower: 0.5s;
+
+  /* iOS 26 Color System - Light Mode */
+  --ios26-color-primary: #007aff;
+  --ios26-color-secondary: #5856d6;
+  --ios26-color-success: #34c759;
+  --ios26-color-warning: #ff9500;
+  --ios26-color-error: #ff3b30;
+
+  /* iOS 26 Background Colors */
+  --ios26-background-primary: #ffffff;
+  --ios26-background-secondary: #f2f2f7;
+  --ios26-background-tertiary: #ffffff;
+  --ios26-background-grouped-primary: #f2f2f7;
+  --ios26-background-grouped-secondary: #ffffff;
+
+  /* iOS 26 Text Colors */
+  --ios26-text-primary: #000000;
+  --ios26-text-secondary: rgba(60, 60, 67, 0.6);
+  --ios26-text-tertiary: rgba(60, 60, 67, 0.3);
+  --ios26-text-quaternary: rgba(60, 60, 67, 0.18);
+
+  /* iOS 26 Border Colors */
+  --ios26-border-primary: rgba(60, 60, 67, 0.36);
+  --ios26-border-secondary: rgba(60, 60, 67, 0.29);
+  --ios26-border-tertiary: rgba(60, 60, 67, 0.12);
+  --ios26-border-quaternary: rgba(60, 60, 67, 0.04);
+
+  /* iOS 26 Material Effects */
+  --ios26-material-thin: rgba(255, 255, 255, 0.7);
+  --ios26-material-regular: rgba(255, 255, 255, 0.8);
+  --ios26-material-thick: rgba(255, 255, 255, 0.9);
+  --ios26-material-chrome: rgba(255, 255, 255, 0.95);
+}
+
+/* Dark Mode Color Adjustments */
+[data-theme='dark'] {
+  --ios26-background-primary: #000000;
+  --ios26-background-secondary: #1c1c1e;
+  --ios26-background-tertiary: #2c2c2e;
+  --ios26-background-grouped-primary: #000000;
+  --ios26-background-grouped-secondary: #1c1c1e;
+
+  --ios26-text-primary: #ffffff;
+  --ios26-text-secondary: rgba(235, 235, 245, 0.6);
+  --ios26-text-tertiary: rgba(235, 235, 245, 0.3);
+  --ios26-text-quaternary: rgba(235, 235, 245, 0.18);
+
+  --ios26-border-primary: rgba(84, 84, 88, 0.65);
+  --ios26-border-secondary: rgba(84, 84, 88, 0.48);
+  --ios26-border-tertiary: rgba(84, 84, 88, 0.24);
+  --ios26-border-quaternary: rgba(84, 84, 88, 0.04);
+
+  --ios26-material-thin: rgba(28, 28, 30, 0.7);
+  --ios26-material-regular: rgba(28, 28, 30, 0.8);
+  --ios26-material-thick: rgba(28, 28, 30, 0.9);
+  --ios26-material-chrome: rgba(28, 28, 30, 0.95);
+}
+
+/* ============================================================================
+   SECTION 2: iOS 26 CORE ANIMATIONS & KEYFRAMES
+   ============================================================================ */
+
+@keyframes ios26-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ios26-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes ios26-bounce {
+  0%,
+  20%,
+  53%,
+  100% {
+    transform: translateY(0);
+  }
+  40%,
+  43% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes ios26-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ios26-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ios26-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes ios26-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================================================
+   SECTION 3: iOS 26 TYPOGRAPHY CLASSES
+   ============================================================================ */
+
+.ios26-text-large-title {
+  font-size: var(--ios26-text-large-title);
+  font-weight: var(--ios26-weight-bold);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.ios26-text-title1 {
+  font-size: var(--ios26-text-title1);
+  font-weight: var(--ios26-weight-bold);
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+.ios26-text-title2 {
+  font-size: var(--ios26-text-title2);
+  font-weight: var(--ios26-weight-bold);
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+.ios26-text-title3 {
+  font-size: var(--ios26-text-title3);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.4;
+}
+
+.ios26-text-headline {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.4;
+}
+
+.ios26-text-body {
+  font-size: var(--ios26-text-body);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.5;
+}
+
+.ios26-text-callout {
+  font-size: var(--ios26-text-callout);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.4;
+}
+
+.ios26-text-subheadline {
+  font-size: var(--ios26-text-subheadline);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.4;
+}
+
+.ios26-text-footnote {
+  font-size: var(--ios26-text-footnote);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.3;
+}
+
+.ios26-text-caption1 {
+  font-size: var(--ios26-text-caption1);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.3;
+}
+
+.ios26-text-caption2 {
+  font-size: var(--ios26-text-caption2);
+  font-weight: var(--ios26-weight-regular);
+  line-height: 1.3;
+}
+
+/* Typography Color Classes */
+.ios26-text-primary {
+  color: var(--ios26-text-primary);
+}
+.ios26-text-secondary {
+  color: var(--ios26-text-secondary);
+}
+.ios26-text-tertiary {
+  color: var(--ios26-text-tertiary);
+}
+.ios26-text-quaternary {
+  color: var(--ios26-text-quaternary);
+}
+
+/* Typography Weight Classes */
+.ios26-text-ultralight {
+  font-weight: var(--ios26-weight-ultralight);
+}
+.ios26-text-thin {
+  font-weight: var(--ios26-weight-thin);
+}
+.ios26-text-light {
+  font-weight: var(--ios26-weight-light);
+}
+.ios26-text-regular {
+  font-weight: var(--ios26-weight-regular);
+}
+.ios26-text-medium {
+  font-weight: var(--ios26-weight-medium);
+}
+.ios26-text-semibold {
+  font-weight: var(--ios26-weight-semibold);
+}
+.ios26-text-bold {
+  font-weight: var(--ios26-weight-bold);
+}
+.ios26-text-heavy {
+  font-weight: var(--ios26-weight-heavy);
+}
+.ios26-text-black {
+  font-weight: var(--ios26-weight-black);
+}
+
+/* Typography Alignment Classes */
+.ios26-text-left {
+  text-align: left;
+}
+.ios26-text-center {
+  text-align: center;
+}
+.ios26-text-right {
+  text-align: right;
+}
+
+/* ============================================================================
+   SECTION 4: iOS 26 WEATHER INTERFACE COMPONENTS
+   ============================================================================ */
+
+/* Main Weather Interface Container */
+.ios26-weather-interface {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ios26-spacing-4);
+  padding: var(--ios26-spacing-4);
+  min-height: 100vh;
+  background: var(--ios26-background-primary);
+  color: var(--ios26-text-primary);
+  font-family: var(--ios26-font-family);
+}
+
+/* Main Weather Card */
+.ios26-main-weather-card {
+  position: relative;
+  background: var(--ios26-material-regular);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ios26-border-tertiary);
+  border-radius: var(--ios26-radius-3xl);
+  padding: var(--ios26-spacing-6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.3s var(--ios26-ease-spring);
+  cursor: pointer;
+  transform: scale(1);
+  transform-origin: center;
+}
+
+.ios26-main-weather-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.ios26-main-weather-card.pressed {
+  transform: scale(0.98);
+  transition: all 0.15s var(--ios26-ease-out);
+}
+
+/* Weather Header */
+.ios26-weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--ios26-spacing-4);
+}
+
+.ios26-weather-location {
+  display: flex;
+  align-items: center;
+  gap: var(--ios26-spacing-2);
+  cursor: pointer;
+  padding: var(--ios26-spacing-2);
+  margin: calc(-1 * var(--ios26-spacing-2));
+  border-radius: var(--ios26-radius-lg);
+  transition: all 0.2s var(--ios26-ease-out);
+}
+
+.ios26-weather-location:hover {
+  background: var(--ios26-background-secondary);
+}
+
+.ios26-location-icon {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.ios26-last-updated {
+  text-align: right;
+  opacity: 0.6;
+}
+
+/* Temperature Display */
+.ios26-temperature-container {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--ios26-spacing-1);
+  margin: var(--ios26-spacing-4) 0;
+}
+
+.ios26-temperature-value {
+  font-size: clamp(56px, 14vw, 80px);
+  font-weight: var(--ios26-weight-thin);
+  color: var(--ios26-text-primary);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.ios26-temperature-unit {
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: var(--ios26-weight-light);
+  color: var(--ios26-text-secondary);
+  margin-top: clamp(8px, 2vw, 12px);
+}
+
+.ios26-weather-condition {
+  margin: var(--ios26-spacing-2) 0;
+  text-align: center;
+  max-width: 300px;
+}
+
+.ios26-feels-like {
+  opacity: 0.8;
+}
+
+/* Loading Indicator */
+.ios26-loading-indicator {
+  position: absolute;
+  top: var(--ios26-spacing-4);
+  right: var(--ios26-spacing-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ios26-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ios26-border-quaternary);
+  border-top: 2px solid var(--ios26-color-primary);
+  border-radius: 50%;
+  animation: ios26-spin 1s linear infinite;
+}
+
+/* ============================================================================
+   SECTION 5: iOS 26 WEATHER METRICS GRID
+   ============================================================================ */
+
+.ios26-weather-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--ios26-spacing-3);
+  margin-top: var(--ios26-spacing-4);
+}
+
+.ios26-weather-metric {
+  background: var(--ios26-material-thin);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ios26-border-quaternary);
+  border-radius: var(--ios26-radius-xl);
+  padding: var(--ios26-spacing-4);
+  text-align: left;
+  transition: all 0.3s var(--ios26-ease-out);
+}
+
+.ios26-weather-metric:hover {
+  background: var(--ios26-material-thick);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.ios26-weather-metric-content {
+  display: flex;
+  align-items: center;
+  gap: var(--ios26-spacing-3);
+}
+
+.ios26-weather-metric-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ios26-radius-lg);
+  background: var(--ios26-background-tertiary);
+}
+
+.ios26-weather-metric-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ios26-weather-metric-value {
+  font-weight: var(--ios26-weight-semibold);
+  color: var(--ios26-text-primary);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.ios26-weather-metric-label {
+  color: var(--ios26-text-secondary);
+  display: block;
+}
+
+.ios26-weather-metric-subtitle {
+  color: var(--ios26-text-tertiary);
+  font-size: var(--ios26-text-caption2);
+  display: block;
+  margin-top: 2px;
+}
+
+/* ============================================================================
+   SECTION 6: iOS 26 FORECAST COMPONENTS
+   ============================================================================ */
+
+.ios26-forecast-section {
+  background: var(--ios26-material-thin);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ios26-border-quaternary);
+  border-radius: var(--ios26-radius-2xl);
+  padding: var(--ios26-spacing-4);
+  margin-top: var(--ios26-spacing-4);
+}
+
+.ios26-forecast-title {
+  margin-bottom: var(--ios26-spacing-3);
+  color: var(--ios26-text-primary);
+}
+
+.ios26-forecast-scroll {
+  display: flex;
+  gap: var(--ios26-spacing-3);
+  overflow-x: auto;
+  padding-bottom: var(--ios26-spacing-2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ios26-forecast-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ios26-forecast-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ios26-spacing-2);
+  min-width: 80px;
+  padding: var(--ios26-spacing-3);
+  background: var(--ios26-background-secondary);
+  border-radius: var(--ios26-radius-lg);
+  transition: all 0.2s var(--ios26-ease-out);
+  cursor: pointer;
+}
+
+.ios26-forecast-item:hover {
+  background: var(--ios26-background-tertiary);
+  transform: translateY(-2px);
+}
+
+.ios26-forecast-time {
+  color: var(--ios26-text-secondary);
+  font-weight: var(--ios26-weight-medium);
+}
+
+.ios26-forecast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.ios26-forecast-precipitation {
+  color: var(--ios26-color-primary);
+  font-weight: var(--ios26-weight-medium);
+}
+
+.ios26-forecast-temperature {
+  color: var(--ios26-text-primary);
+  font-weight: var(--ios26-weight-semibold);
+}
+
+/* ============================================================================
+   SECTION 7: iOS 26 ENHANCED WEATHER DISPLAYS
+   ============================================================================ */
+
+.enhanced-weather-display {
+  background: var(--ios26-material-regular);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--ios26-border-tertiary);
+  border-radius: var(--ios26-radius-3xl);
+  padding: var(--ios26-spacing-6);
+  margin: var(--ios26-spacing-4) 0;
+  transition: all 0.3s var(--ios26-ease-out);
+}
+
+.enhanced-weather-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--ios26-spacing-3);
+}
+
+.enhanced-weather-temperature {
+  font-size: clamp(48px, 12vw, 72px);
+  font-weight: var(--ios26-weight-thin);
+  color: var(--ios26-text-primary);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.enhanced-weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--ios26-spacing-3);
+  margin-top: var(--ios26-spacing-4);
+  width: 100%;
+}
+
+.enhanced-weather-metric {
+  background: var(--ios26-background-secondary);
+  border-radius: var(--ios26-radius-lg);
+  padding: var(--ios26-spacing-3);
+  text-align: center;
+  transition: all 0.2s var(--ios26-ease-out);
+}
+
+.enhanced-weather-metric:hover {
+  background: var(--ios26-background-tertiary);
+  transform: translateY(-1px);
+}
+
+.enhanced-weather-metric-value {
+  font-size: var(--ios26-text-title2);
+  font-weight: var(--ios26-weight-semibold);
+  color: var(--ios26-text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.enhanced-weather-metric-label {
+  font-size: var(--ios26-text-footnote);
+  color: var(--ios26-text-secondary);
+  display: block;
+}
+
+/* ============================================================================
+   SECTION 8: iOS 26 BUTTONS & INTERACTIVE ELEMENTS
+   ============================================================================ */
+
+.ios26-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ios26-spacing-2);
+  padding: var(--ios26-spacing-3) var(--ios26-spacing-4);
+  border: none;
+  border-radius: var(--ios26-radius-lg);
+  font-family: var(--ios26-font-family);
+  font-size: var(--ios26-text-body);
+  font-weight: var(--ios26-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s var(--ios26-ease-out);
+  min-height: var(--ios26-touch-small);
+  user-select: none;
+}
+
+.ios26-button-primary {
+  background: var(--ios26-color-primary);
+  color: white;
+}
+
+.ios26-button-primary:hover {
+  background: #0056cc;
+  transform: translateY(-1px);
+}
+
+.ios26-button-secondary {
+  background: var(--ios26-background-secondary);
+  color: var(--ios26-text-primary);
+  border: 1px solid var(--ios26-border-secondary);
+}
+
+.ios26-button-secondary:hover {
+  background: var(--ios26-background-tertiary);
+  transform: translateY(-1px);
+}
+
+.ios26-button-ghost {
+  background: transparent;
+  color: var(--ios26-color-primary);
+}
+
+.ios26-button-ghost:hover {
+  background: var(--ios26-background-secondary);
+}
+
+/* Quick Actions */
+.ios26-quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ios26-spacing-2);
+  padding: var(--ios26-spacing-4);
+  background: var(--ios26-material-thin);
+  border: 1px solid var(--ios26-border-quaternary);
+  border-radius: var(--ios26-radius-xl);
+  cursor: pointer;
+  transition: all 0.2s var(--ios26-ease-out);
+  min-height: var(--ios26-touch-large);
+}
+
+.ios26-quick-action:hover {
+  background: var(--ios26-material-thick);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.ios26-quick-action:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================================
+   SECTION 9: RESPONSIVE DESIGN BREAKPOINTS
+   ============================================================================ */
+
+/* Extra small devices (320px - 359px) */
+@media (max-width: 359px) {
+  .ios26-weather-interface {
+    padding: var(--ios26-spacing-3);
+    gap: var(--ios26-spacing-3);
+  }
+
+  .ios26-main-weather-card {
+    padding: var(--ios26-spacing-4);
+  }
+
+  .ios26-weather-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ios26-spacing-2);
+  }
+
+  .ios26-temperature-value {
+    font-size: clamp(48px, 12vw, 64px);
+  }
+}
+
+/* Small mobile devices (360px - 414px) */
+@media (min-width: 360px) and (max-width: 414px) {
+  .ios26-weather-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ios26-forecast-item {
+    min-width: 70px;
+    padding: var(--ios26-spacing-2);
+  }
+}
+
+/* Medium mobile devices and tablets (415px - 768px) */
+@media (min-width: 415px) and (max-width: 768px) {
+  .ios26-weather-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ios26-forecast-scroll {
+    justify-content: center;
+  }
+}
+
+/* Large screens (> 768px) */
+@media (min-width: 769px) {
+  .ios26-weather-interface {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--ios26-spacing-6);
+  }
+
+  .ios26-weather-metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .ios26-main-weather-card {
+    padding: var(--ios26-spacing-8);
+  }
+}
+
+/* ============================================================================
+   SECTION 10: ACCESSIBILITY & MOTION PREFERENCES
+   ============================================================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ios26-main-weather-card,
+  .ios26-weather-metric,
+  .ios26-forecast-section,
+  .ios26-forecast-item,
+  .ios26-quick-action {
+    border-width: 2px;
+    border-color: var(--ios26-text-primary);
+  }
+
+  .ios26-temperature-value {
+    font-weight: var(--ios26-weight-bold);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ios26-main-weather-card,
+  .ios26-weather-metric,
+  .ios26-forecast-item,
+  .ios26-quick-action,
+  .ios26-weather-location,
+  .enhanced-weather-display,
+  .enhanced-weather-metric {
+    transition: none;
+  }
+
+  .ios26-spinner {
+    animation: none;
+  }
+
+  .ios26-main-weather-card:hover,
+  .ios26-main-weather-card.pressed {
+    transform: none;
+  }
+}
+
+/* Focus indicators for keyboard navigation */
+.ios26-weather-location:focus,
+.ios26-quick-action:focus,
+.ios26-button:focus,
+.ios26-forecast-item:focus {
+  outline: 2px solid var(--ios26-color-primary);
+  outline-offset: 2px;
+}
+
+/* Touch optimization for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .ios26-button:active,
+  .ios26-quick-action:active,
+  .ios26-forecast-item:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* ============================================================================
+   SECTION 11: DARK MODE ENHANCEMENTS
+   ============================================================================ */
+
+[data-theme='dark'] .ios26-main-weather-card {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+[data-theme='dark'] .ios26-main-weather-card:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+[data-theme='dark'] .ios26-weather-metric:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .enhanced-weather-display {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   END: iOS 26 Design System Consolidated
+   ============================================================================ */

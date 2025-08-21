@@ -1,26 +1,19 @@
-/* Import mobile optimization styles */
+/* Import core mobile foundation */
 @import './styles/mobile.css';
-@import './styles/mobileEnhancements.css';
-@import './styles/modernWeatherUI.css';
 @import './styles/iosComponents.css';
 
-/* NEW: Enhanced mobile readability styles */
-@import './styles/enhancedMobileTypography.css';
-@import './styles/enhancedMobileLayout.css';
-@import './styles/enhancedWeatherDisplay.css';
-@import './styles/enhancedForecast.css';
+/* NEW: Mobile Enhancement System - CONSOLIDATED */
+@import './styles/mobile-enhanced-consolidated.css';
 @import './styles/enhancedMobileNavigation.css';
 
-/* NEW: iOS 26 Design System Styles */
-@import './styles/iOS26DesignSystem.css';
-@import './styles/iOS26WeatherInterface.css';
+/* NEW: iOS 26 Design System - CONSOLIDATED (Phase 4) */
+@import './styles/ios26-design-system-consolidated.css';
 
-/* NEW: Layout fixes for off-screen content issues */
-@import './styles/layout-fixes.css';
-@import './styles/ios26-layout-fixes.css';
+/* NEW: Responsive Layout System - CONSOLIDATED */
+@import './styles/responsive-layout-consolidated.css';
 
-/* NEW: Horror Theme Styles */
-@import './styles/horrorTheme.css';
+/* NEW: Horror Theme Styles - CONSOLIDATED */
+@import './styles/horror-theme-consolidated.css';
 
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',

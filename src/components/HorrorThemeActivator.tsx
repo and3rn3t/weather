@@ -23,7 +23,7 @@ const HorrorThemeActivator: React.FC = () => {
       // Activate blood drip animations on headers
       setTimeout(() => {
         const headers = document.querySelectorAll(
-          'h1, h2, h3, .temperature-display'
+          'h1, h2, h3, .temperature-display',
         );
         headers.forEach(header => {
           (header as HTMLElement).classList.add('horror-blood-drip');
@@ -31,7 +31,7 @@ const HorrorThemeActivator: React.FC = () => {
 
         // Add flickering animation to text elements
         const textElements = document.querySelectorAll(
-          '.weather-description, .forecast-day, .metric-label'
+          '.weather-description, .forecast-day, .metric-label',
         );
         textElements.forEach(element => {
           (element as HTMLElement).classList.add('horror-flicker');
@@ -49,12 +49,12 @@ const HorrorThemeActivator: React.FC = () => {
 
       // Remove horror classes
       const elements = document.querySelectorAll(
-        '.horror-blood-drip, .horror-flicker'
+        '.horror-blood-drip, .horror-flicker',
       );
       elements.forEach(element => {
         (element as HTMLElement).classList.remove(
           'horror-blood-drip',
-          'horror-flicker'
+          'horror-flicker',
         );
       });
     }
@@ -63,12 +63,12 @@ const HorrorThemeActivator: React.FC = () => {
       // Cleanup on unmount
       document.body.classList.remove('horror-film-grain');
       const elements = document.querySelectorAll(
-        '.horror-blood-drip, .horror-flicker'
+        '.horror-blood-drip, .horror-flicker',
       );
       elements.forEach(element => {
         (element as HTMLElement).classList.remove(
           'horror-blood-drip',
-          'horror-flicker'
+          'horror-flicker',
         );
       });
     };

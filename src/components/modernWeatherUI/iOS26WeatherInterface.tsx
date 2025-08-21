@@ -79,7 +79,7 @@ interface iOS26WeatherInterfaceProps {
 // MAIN iOS 26 WEATHER INTERFACE COMPONENT
 // ============================================================================
 
-// eslint-disable-next-line react-hooks/rules-of-hooks
+ 
 const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   weatherData,
   theme,

@@ -1,0 +1,473 @@
+/**
+ * Enhanced Mobile Layout System - August 2025
+ * 
+ * Comprehensive layout enhancements for better mobile experience:
+ * - Adaptive spacing based on screen size
+ * - Better content hierarchy and visual flow
+ * - Enhanced touch targets and gesture areas
+ * - Improved card layouts for weather content
+ * - Better responsive grid systems
+ */
+
+/* ============================================================================
+   ENHANCED MOBILE SPACING SYSTEM
+   ============================================================================ */
+
+:root {
+  /* Adaptive spacing scale based on screen size */
+  --mobile-space-1: clamp(2px, 1vw, 4px);
+  --mobile-space-2: clamp(4px, 1.5vw, 8px);
+  --mobile-space-3: clamp(6px, 2vw, 12px);
+  --mobile-space-4: clamp(8px, 2.5vw, 16px);
+  --mobile-space-5: clamp(12px, 3vw, 20px);
+  --mobile-space-6: clamp(16px, 4vw, 24px);
+  --mobile-space-7: clamp(20px, 5vw, 32px);
+  --mobile-space-8: clamp(24px, 6vw, 40px);
+  --mobile-space-9: clamp(32px, 8vw, 48px);
+  --mobile-space-10: clamp(40px, 10vw, 60px);
+
+  /* Content spacing */
+  --mobile-content-gap: var(--mobile-space-6);
+  --mobile-section-gap: var(--mobile-space-8);
+  --mobile-card-padding: var(--mobile-space-5);
+  --mobile-page-padding: var(--mobile-space-4);
+
+  /* Touch target enhancements */
+  --mobile-touch-min: 44px;
+  --mobile-touch-comfortable: 52px;
+  --mobile-touch-large: 60px;
+  --mobile-touch-gesture: 72px; /* For swipe areas */
+}
+
+/* ============================================================================
+   ENHANCED MOBILE CONTAINERS
+   ============================================================================ */
+
+.mobile-app-enhanced {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  position: relative;
+
+  /* Safe area support with enhanced padding */
+  padding-top: max(env(safe-area-inset-top), var(--mobile-space-4));
+  padding-bottom: max(env(safe-area-inset-bottom), var(--mobile-space-4));
+  padding-left: max(env(safe-area-inset-left), var(--mobile-space-4));
+  padding-right: max(env(safe-area-inset-right), var(--mobile-space-4));
+
+  /* Performance optimizations */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+  will-change: transform;
+}
+
+.mobile-content-enhanced {
+  flex: 1;
+  width: 100%;
+  padding: var(--mobile-page-padding);
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /* Enhanced content spacing */
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-section-gap);
+
+  /* Prevent content from going behind navigation */
+  padding-bottom: calc(var(--mobile-touch-large) + var(--mobile-space-6) + env(safe-area-inset-bottom, 0));
+}
+
+.mobile-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--mobile-space-6) 0;
+  gap: var(--mobile-space-3);
+}
+
+.mobile-page-title {
+  font-size: var(--mobile-font-3xl);
+  font-weight: var(--mobile-weight-extrabold);
+  line-height: var(--mobile-line-tight);
+  margin: 0;
+  background: linear-gradient(135deg, var(--primary-text), var(--secondary-text));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mobile-page-subtitle {
+  font-size: var(--mobile-font-lg);
+  font-weight: var(--mobile-weight-medium);
+  color: var(--secondary-text);
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* ============================================================================
+   ENHANCED WEATHER CARD LAYOUTS
+   ============================================================================ */
+
+.weather-card-enhanced {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: clamp(16px, 4vw, 24px);
+  padding: var(--mobile-card-padding);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Enhanced touch feedback */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.weather-card-enhanced:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.weather-main-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--mobile-space-4);
+  padding: var(--mobile-space-7);
+  margin-bottom: var(--mobile-space-6);
+}
+
+.weather-icon-container {
+  width: clamp(80px, 20vw, 120px);
+  height: clamp(80px, 20vw, 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--mobile-space-4) 0;
+}
+
+.weather-temperature-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mobile-space-2);
+  margin: var(--mobile-space-3) 0;
+}
+
+.weather-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--mobile-space-5);
+  margin-top: var(--mobile-space-6);
+}
+
+.weather-detail-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: clamp(12px, 3vw, 16px);
+  padding: var(--mobile-space-5);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.weather-detail-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   ENHANCED FORECAST LAYOUTS
+   ============================================================================ */
+
+.forecast-section-enhanced {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-space-5);
+  margin: var(--mobile-space-7) 0;
+}
+
+.forecast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--mobile-space-2);
+}
+
+.forecast-title {
+  font-size: var(--mobile-font-xl);
+  font-weight: var(--mobile-weight-bold);
+  color: var(--primary-text);
+  margin: 0;
+}
+
+.forecast-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--mobile-space-4);
+  padding: var(--mobile-space-4) 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.forecast-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.forecast-item-enhanced {
+  flex: 0 0 auto;
+  min-width: clamp(80px, 20vw, 100px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: clamp(12px, 3vw, 16px);
+  padding: var(--mobile-space-4);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  scroll-snap-align: start;
+  transition: all 0.2s ease;
+
+  /* Enhanced touch target */
+  min-height: var(--mobile-touch-comfortable);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--mobile-space-2);
+}
+
+.forecast-item-enhanced:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+   RESPONSIVE GRID SYSTEMS
+   ============================================================================ */
+
+.mobile-grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 30vw, 200px), 1fr));
+  gap: var(--mobile-space-5);
+}
+
+.mobile-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mobile-space-4);
+}
+
+.mobile-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--mobile-space-4);
+}
+
+.mobile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-space-4);
+}
+
+.mobile-stack-tight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-space-2);
+}
+
+.mobile-stack-loose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-space-7);
+}
+
+.mobile-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mobile-space-4);
+  flex-wrap: wrap;
+}
+
+.mobile-row-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mobile-space-4);
+  flex-wrap: wrap;
+}
+
+.mobile-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mobile-space-4);
+  flex-wrap: wrap;
+}
+
+/* ============================================================================
+   ENHANCED BUTTON LAYOUTS
+   ============================================================================ */
+
+.mobile-button-enhanced {
+  min-height: var(--mobile-touch-min);
+  min-width: var(--mobile-touch-min);
+  padding: var(--mobile-space-4) var(--mobile-space-6);
+  border: none;
+  border-radius: clamp(12px, 3vw, 16px);
+  font-size: var(--mobile-font-md);
+  font-weight: var(--mobile-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mobile-space-3);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Touch optimizations */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.mobile-button-enhanced:active {
+  transform: scale(0.96);
+}
+
+.mobile-button-primary {
+  background: var(--primary-gradient, linear-gradient(135deg, #667eea, #764ba2));
+  color: var(--inverse-text, white);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.mobile-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.mobile-button-large {
+  min-height: var(--mobile-touch-comfortable);
+  padding: var(--mobile-space-5) var(--mobile-space-8);
+  font-size: var(--mobile-font-lg);
+}
+
+.mobile-button-small {
+  min-height: 36px;
+  padding: var(--mobile-space-3) var(--mobile-space-5);
+  font-size: var(--mobile-font-sm);
+}
+
+/* ============================================================================
+   SCREEN SIZE SPECIFIC LAYOUT OPTIMIZATIONS
+   ============================================================================ */
+
+/* Very small screens (< 360px) */
+@media (max-width: 359px) {
+  .mobile-content-enhanced {
+    padding: var(--mobile-space-3);
+    gap: var(--mobile-space-5);
+  }
+
+  .weather-details-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--mobile-space-3);
+  }
+
+  .forecast-item-enhanced {
+    min-width: clamp(70px, 18vw, 85px);
+    padding: var(--mobile-space-3);
+  }
+
+  :root {
+    --mobile-card-padding: var(--mobile-space-4);
+  }
+}
+
+/* Small screens (360px - 414px) */
+@media (min-width: 360px) and (max-width: 414px) {
+  .weather-details-grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  }
+
+  .mobile-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-content-enhanced {
+    padding: var(--mobile-space-3) var(--mobile-space-4);
+    gap: var(--mobile-space-4);
+  }
+
+  .mobile-page-header {
+    padding: var(--mobile-space-4) 0;
+  }
+
+  .weather-main-card {
+    padding: var(--mobile-space-5);
+    margin-bottom: var(--mobile-space-4);
+  }
+
+  .mobile-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY AND PERFORMANCE ENHANCEMENTS
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-card-enhanced,
+  .forecast-item-enhanced,
+  .mobile-button-enhanced {
+    transition: none;
+  }
+
+  .weather-card-enhanced:active,
+  .forecast-item-enhanced:active,
+  .mobile-button-enhanced:active {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .weather-card-enhanced,
+  .weather-detail-card,
+  .forecast-item-enhanced {
+    border-width: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Focus management for keyboard navigation */
+.weather-card-enhanced:focus-visible,
+.forecast-item-enhanced:focus-visible,
+.mobile-button-enhanced:focus-visible {
+  outline: 2px solid var(--focus-color, #667eea);
+  outline-offset: 2px;
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .weather-card-enhanced {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .weather-detail-card,
+  .forecast-item-enhanced {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
