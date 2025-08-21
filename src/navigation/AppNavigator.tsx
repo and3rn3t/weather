@@ -64,6 +64,9 @@ import {
 } from '../components/modernWeatherUI/iOS26MainScreen';
 import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
 import '../styles/iOS26.css';
+// Horror Theme Components
+import HorrorQuoteDisplay from '../components/HorrorQuoteDisplay';
+import HorrorThemeActivator from '../components/HorrorThemeActivator';
 // iOS HIG Components
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
 import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShowcase';
@@ -1570,6 +1573,12 @@ const AppNavigator = () => {
           />
         </div>
       )}
+
+      {/* Horror Quote Display - Shows spooky quotes when horror theme is active */}
+      <HorrorQuoteDisplay cityName={city} className="horror-quote-overlay" />
+
+      {/* Horror Theme Activator - Easy horror mode activation */}
+      <HorrorThemeActivator />
     </EnhancedMobileContainer>
   );
 };

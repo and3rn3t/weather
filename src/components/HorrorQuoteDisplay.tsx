@@ -9,7 +9,7 @@ import {
 } from '../utils/horrorQuotes';
 
 interface HorrorQuoteDisplayProps {
-  weatherCode: number;
+  weatherCode?: number;
   isDay?: boolean;
   cityName?: string;
   className?: string;
@@ -22,7 +22,7 @@ interface HorrorQuoteDisplayProps {
  * HorrorQuoteDisplay - Core HorrorQuoteDisplay functionality
  */
 export const HorrorQuoteDisplay = ({
-  weatherCode,
+  weatherCode = 0,
   isDay = true,
   cityName = '',
   className = '',
