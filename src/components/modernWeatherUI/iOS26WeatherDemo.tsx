@@ -204,7 +204,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     <div style={containerStyle}>
       {/* Header with Segmented Control */}
       <div style={sectionStyle}>
-        <h1 style={titleStyle}>🌤️ iOS 26 Weather Experience</h1>
+        <h1 style={titleStyle}>🌤️ Weather Dashboard</h1>
         <SegmentedControl
           segments={['Today', 'Weekly', 'Radar', 'Settings']}
           selectedIndex={selectedView}
@@ -229,7 +229,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Interactive Widgets Grid */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>📱 Interactive Widgets</h2>
+        <h2 style={titleStyle}>🌡️ Weather Details</h2>
         <div style={gridStyle}>
           {/* Current Weather Widget */}
           <InteractiveWidget
@@ -332,10 +332,10 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Context Menu Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>📝 Context Menu & Swipe Actions</h2>
+        <h2 style={titleStyle}>� My Locations</h2>
         <p style={{ color: theme.secondaryText, marginBottom: '16px' }}>
-          Right-click or tap and hold for context menu. Swipe left/right for
-          quick actions.
+          Right-click or tap and hold for options. Swipe left/right for quick
+          actions.
         </p>
 
         <SwipeActions
@@ -377,7 +377,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Loading States Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>⏳ Loading States & Indicators</h2>
+        <h2 style={titleStyle}>⏳ Loading Status</h2>
         <div
           style={{
             display: 'flex',
@@ -403,7 +403,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Status Badges Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>🏷️ Status Badges</h2>
+        <h2 style={titleStyle}>⚠️ Weather Alerts</h2>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <StatusBadge
             text="Good Air Quality"

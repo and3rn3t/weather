@@ -21,6 +21,9 @@
 /* NEW: Horror Theme Styles - CONSOLIDATED */
 @import './styles/horror-theme-consolidated.css';
 
+/* NEW: Horror Icon Fixes - Prevents black backgrounds behind icons */
+@import './styles/horror-icon-fixes.css';
+
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
     'Droid Sans', 'Helvetica Neue', sans-serif;

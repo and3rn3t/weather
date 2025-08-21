@@ -113,7 +113,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
       try {
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          searchQuery,
+          searchQuery
         )}&format=json&limit=20&addressdetails=1&extratags=1`;
 
         const response = await fetch(url, {
@@ -185,7 +185,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         setIsLoading(false);
       }
     },
-    [formatCityDisplay],
+    [formatCityDisplay]
   );
 
   // Debounced search
@@ -204,7 +204,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         performSearch(value);
       }, 300);
     },
-    [performSearch],
+    [performSearch]
   );
 
   // Handle city selection
@@ -224,13 +224,13 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       setRecentSearches(newRecent);
       localStorage.setItem(
         'weather-recent-searches',
-        JSON.stringify(newRecent),
+        JSON.stringify(newRecent)
       );
 
       logInfo(`Selected city: ${city.name} (${latitude}, ${longitude})`);
       onLocationSelect(city.name, latitude, longitude);
     },
-    [haptic, onLocationSelect, recentSearches],
+    [haptic, onLocationSelect, recentSearches]
   );
 
   // Handle recent search selection
@@ -241,7 +241,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect],
+    [haptic, onLocationSelect]
   );
 
   // Get current location
@@ -259,12 +259,12 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
     navigator.geolocation.getCurrentPosition(
       position => {
-        haptic.confirm();
+        haptic.searchSuccess();
         setIsLoading(false);
         onLocationSelect(
           'Current Location',
           position.coords.latitude,
-          position.coords.longitude,
+          position.coords.longitude
         );
       },
       error => {
@@ -277,7 +277,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 300000,
-      },
+      }
     );
   }, [haptic, onLocationSelect]);
 
@@ -299,7 +299,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: theme.appBackground,
       color: theme.primaryText,
     }),
-    [theme],
+    [theme]
   );
 
   const searchContainerStyles = useMemo(
@@ -307,14 +307,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: `${theme.primaryGradient}10`,
       borderColor: `${theme.primaryGradient}30`,
     }),
-    [theme],
+    [theme]
   );
 
   const resultItemStyles = useMemo(
     () => ({
       borderColor: `${theme.primaryGradient}20`,
     }),
-    [theme],
+    [theme]
   );
 
   return (

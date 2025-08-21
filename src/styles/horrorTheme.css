@@ -387,12 +387,16 @@ body.horror-film-grain::before {
   background: transparent !important;
 }
 
-/* Horror icons styling */
+/* Horror icons styling - FIXED: No black backgrounds */
 .horror-theme .weather-icon,
 .horror-theme svg,
 .horror-theme .icon {
   filter: drop-shadow(0 0 8px rgba(139, 0, 0, 0.8)) !important;
   color: var(--horror-light-red) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 .horror-theme ::-webkit-scrollbar-thumb:hover {
@@ -961,10 +965,14 @@ body.horror-film-grain::before {
   background: var(--horror-light-red);
 }
 
-/* Halloween/Friday the 13th special effects */
+/* Halloween/Friday the 13th special effects - CONSOLIDATED ICON RULES */
 .horror-theme .weather-icon {
   filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6)) sepia(0.3) contrast(1.2) !important;
   transition: all 0.3s ease !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 .horror-theme .weather-icon:hover {
