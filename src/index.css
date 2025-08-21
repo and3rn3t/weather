@@ -6,6 +6,12 @@
 @import './styles/mobile-enhanced-consolidated.css';
 @import './styles/enhancedMobileNavigation.css';
 
+/* NEW: iOS26 Liquid Glass Navigation - Apple HIG Compliant */
+@import './liquid-glass-navigation.css';
+
+/* NEW: iOS26 Seamless Full-Width Navigation - Override for seamless layout */
+@import './seamless-navigation.css';
+
 /* NEW: iOS 26 Design System - CONSOLIDATED (Phase 4) */
 @import './styles/ios26-design-system-consolidated.css';
 
