@@ -48,6 +48,38 @@ backup/
 legacy/
 deprecated/
 
+# Debug and Test Files (Public Directory)
+public/*-debug.js
+public/*-test.js
+public/*-test.html
+public/horror-*.js
+public/horror-*.html
+public/theme-*.js
+public/test-*.js
+public/instant-*.js
+public/comprehensive-*.js
+public/targeted-*.js
+public/transparent-*.js
+public/enhanced-*.js
+public/console-*.js
+public/background-*.js
+public/final-*.js
+public/simple-*.js
+public/quote-*.js
+public/mobile-nav-*.js
+
+# Documentation Archives
+docs/archive/
+docs/legacy/
+docs/backup/
+docs/deprecated/
+
+# Archive and Development Files
+archive/
+*.old
+*.temp
+*.tmp
+
 # Config files that shouldn't be formatted
 package-lock.json
 yarn.lock

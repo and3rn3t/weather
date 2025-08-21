@@ -1,0 +1,76 @@
+# SonarCloud ignore patterns
+# Files and directories to skip during SonarCloud analysis
+
+# Dependencies and Build Output
+node_modules/
+dist/
+build/
+coverage/
+
+# Mobile Development
+android/
+ios/
+capacitor/
+
+# Documentation Archives
+docs/archive/
+docs/legacy/
+docs/backup/
+docs/deprecated/
+
+# Debug and Test Files in Public Directory
+public/*-debug.js
+public/*-test.js
+public/*-test.html
+public/horror-*.js
+public/horror-*.html
+public/theme-*.js
+public/test-*.js
+public/instant-*.js
+public/comprehensive-*.js
+public/targeted-*.js
+public/transparent-*.js
+public/enhanced-*.js
+public/console-*.js
+public/background-*.js
+public/final-*.js
+public/simple-*.js
+public/quote-*.js
+public/mobile-nav-*.js
+
+# Archive and Backup Files
+backup/
+archive/
+legacy/
+deprecated/
+*.backup
+*.bak
+*.old
+*.temp
+*.tmp
+
+# Configuration Files (but keep some for analysis)
+capacitor.config.json
+wrangler.toml
+
+# Generated and Minified Files
+*.min.js
+*.min.css
+*.bundle.js
+*.chunk.js
+
+# Cache and Temporary Files
+.cache/
+.vite/
+.temp/
+.tmp/
+
+# IDE Files
+.vscode/
+.idea/
+
+# Specific Problem Files
+compact-horror-console.js
+emergency-console-horror.js
+nuclear-glassmorphic-horror.js
+feature-4-demo.html
