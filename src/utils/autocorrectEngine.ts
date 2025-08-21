@@ -50,7 +50,7 @@ export function levenshteinDistance(str1: string, str2: string): number {
       matrix[i][j] = Math.min(
         matrix[i - 1][j] + 1, // deletion
         matrix[i][j - 1] + 1, // insertion
-        matrix[i - 1][j - 1] + cost // substitution
+        matrix[i - 1][j - 1] + cost, // substitution
       );
     }
   }
@@ -142,7 +142,7 @@ export class AutocorrectEngine {
    */
   findBestCorrection(
     query: string,
-    cities: CityData[]
+    cities: CityData[],
   ): AutocorrectResult | null {
     if (!query.trim() || cities.length === 0) return null;
 
@@ -162,7 +162,7 @@ export class AutocorrectEngine {
   private addExactMatches(
     queryLower: string,
     cities: CityData[],
-    results: AutocorrectResult[]
+    results: AutocorrectResult[],
   ): void {
     for (const city of cities) {
       const cityName = city.name.toLowerCase();
@@ -190,12 +190,12 @@ export class AutocorrectEngine {
   private addMisspellingMatches(
     queryLower: string,
     cities: CityData[],
-    results: AutocorrectResult[]
+    results: AutocorrectResult[],
   ): void {
     for (const [correct, misspellings] of Object.entries(COMMON_MISSPELLINGS)) {
       if (misspellings.includes(queryLower)) {
         const matchingCity = cities.find(c =>
-          c.name.toLowerCase().includes(correct)
+          c.name.toLowerCase().includes(correct),
         );
         if (matchingCity) {
           results.push({
@@ -212,7 +212,7 @@ export class AutocorrectEngine {
   private addLevenshteinMatches(
     queryLower: string,
     cities: CityData[],
-    results: AutocorrectResult[]
+    results: AutocorrectResult[],
   ): void {
     for (const city of cities) {
       const cityName = city.name.toLowerCase();
@@ -236,7 +236,7 @@ export class AutocorrectEngine {
   private addPhoneticMatches(
     queryLower: string,
     cities: CityData[],
-    results: AutocorrectResult[]
+    results: AutocorrectResult[],
   ): void {
     const queryPhonetic = this.getPhoneticCode(queryLower);
     for (const city of cities) {
@@ -255,12 +255,12 @@ export class AutocorrectEngine {
   private addFuzzyMatches(
     queryLower: string,
     cities: CityData[],
-    results: AutocorrectResult[]
+    results: AutocorrectResult[],
   ): void {
     for (const city of cities) {
       const fuzzyScore = this.calculateFuzzyScore(
         queryLower,
-        city.name.toLowerCase()
+        city.name.toLowerCase(),
       );
       if (fuzzyScore >= 0.5) {
         results.push({
@@ -274,7 +274,7 @@ export class AutocorrectEngine {
   }
 
   private getBestResult(
-    results: AutocorrectResult[]
+    results: AutocorrectResult[],
   ): AutocorrectResult | null {
     if (results.length === 0) return null;
 
@@ -284,7 +284,7 @@ export class AutocorrectEngine {
     // Remove duplicates, keeping highest confidence
     const uniqueResults = results.filter(
       (result, index, arr) =>
-        arr.findIndex(r => r.corrected === result.corrected) === index
+        arr.findIndex(r => r.corrected === result.corrected) === index,
     );
 
     return uniqueResults.length > 0 ? uniqueResults[0] : null;
@@ -296,7 +296,7 @@ export class AutocorrectEngine {
   getSuggestions(
     query: string,
     cities: CityData[],
-    maxSuggestions = 3
+    maxSuggestions = 3,
   ): AutocorrectResult[] {
     if (!query.trim() || cities.length === 0) return [];
 
@@ -349,7 +349,7 @@ export class AutocorrectEngine {
     results.sort((a, b) => b.confidence - a.confidence);
     const uniqueResults = results.filter(
       (result, index, arr) =>
-        arr.findIndex(r => r.corrected === result.corrected) === index
+        arr.findIndex(r => r.corrected === result.corrected) === index,
     );
 
     return uniqueResults.slice(0, maxSuggestions);

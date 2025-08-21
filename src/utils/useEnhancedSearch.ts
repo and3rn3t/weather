@@ -58,7 +58,7 @@ interface APIResult {
  * Enhanced search hook with popular cities integration
  */
 export function useEnhancedSearch(
-  options: UseEnhancedSearchOptions = {}
+  options: UseEnhancedSearchOptions = {},
 ): UseEnhancedSearchReturn {
   const {
     maxResults = 8,
@@ -72,7 +72,7 @@ export function useEnhancedSearch(
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<EnhancedCityResult[]>([]);
   const [popularSuggestions, setPopularSuggestions] = useState<PopularCity[]>(
-    []
+    [],
   );
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -104,7 +104,7 @@ export function useEnhancedSearch(
             resolve(position);
           },
           () => resolve(null), // Silent fail on geolocation error
-          { timeout: 5000, enableHighAccuracy: false }
+          { timeout: 5000, enableHighAccuracy: false },
         );
       });
     }, [enableGeolocation]);
@@ -118,10 +118,10 @@ export function useEnhancedSearch(
 
       return popularCitiesCache.getPopularCities(
         searchQuery,
-        userLocation || undefined
+        userLocation || undefined,
       );
     },
-    [includePopularCities, userLocation]
+    [includePopularCities, userLocation],
   );
 
   /**
@@ -161,7 +161,7 @@ export function useEnhancedSearch(
             },
             signal: abortControllerRef.current.signal,
             cache: 'default',
-          }
+          },
         );
 
         if (!response.ok) {
@@ -177,7 +177,7 @@ export function useEnhancedSearch(
               result.type === 'city' ||
               result.type === 'town' ||
               result.type === 'village' ||
-              result.class === 'place'
+              result.class === 'place',
           )
           .map((result: APIResult) => {
             const cityName =
@@ -194,7 +194,7 @@ export function useEnhancedSearch(
                   popular.name.toLowerCase() === cityName.toLowerCase() &&
                   popular.country
                     .toLowerCase()
-                    .includes((result.address?.country || '').toLowerCase())
+                    .includes((result.address?.country || '').toLowerCase()),
               );
 
             return {
@@ -238,7 +238,7 @@ export function useEnhancedSearch(
         return [];
       }
     },
-    [maxResults, popularCitiesFirst]
+    [maxResults, popularCitiesFirst],
   );
 
   /**
@@ -306,8 +306,8 @@ export function useEnhancedSearch(
                 arr.findIndex(
                   r =>
                     r.name.toLowerCase() === result.name.toLowerCase() &&
-                    r.country.toLowerCase() === result.country.toLowerCase()
-                ) === index
+                    r.country.toLowerCase() === result.country.toLowerCase(),
+                ) === index,
             );
 
             setResults(uniqueResults.slice(0, maxResults));
@@ -323,7 +323,7 @@ export function useEnhancedSearch(
         setIsLoading(false);
       }
     },
-    [searchPopularCities, searchAPI, includePopularCities, maxResults]
+    [searchPopularCities, searchAPI, includePopularCities, maxResults],
   );
 
   /**
@@ -427,7 +427,7 @@ export function usePopularCitiesByCategory(category: PopularCity['category']) {
  * Hook for getting nearby popular cities
  */
 export function useNearbyPopularCities(
-  userLocation: { lat: number; lon: number } | null
+  userLocation: { lat: number; lon: number } | null,
 ) {
   const [nearbyCities, setNearbyCities] = useState<PopularCity[]>([]);
 

@@ -681,7 +681,7 @@ export class PopularCitiesCache {
    */
   getPopularCities(
     query: string = '',
-    userLocation?: { lat: number; lon: number }
+    userLocation?: { lat: number; lon: number },
   ): PopularCity[] {
     const cacheKey = `${query.toLowerCase()}_${userLocation?.lat || 0}_${
       userLocation?.lon || 0
@@ -703,7 +703,7 @@ export class PopularCitiesCache {
       results = results.filter(
         city =>
           city.name.toLowerCase().includes(queryLower) ||
-          city.country.toLowerCase().includes(queryLower)
+          city.country.toLowerCase().includes(queryLower),
       );
     }
 
@@ -716,7 +716,7 @@ export class PopularCitiesCache {
             userLocation.lat,
             userLocation.lon,
             city.lat,
-            city.lon
+            city.lon,
           ),
         }))
         .sort((a, b) => {
@@ -750,7 +750,7 @@ export class PopularCitiesCache {
    */
   getCitiesByCategory(
     category: PopularCity['category'],
-    maxResults = 10
+    maxResults = 10,
   ): PopularCity[] {
     return POPULAR_CITIES.filter(city => city.category === category)
       .sort((a, b) => b.searchPriority - a.searchPriority)
@@ -773,7 +773,7 @@ export class PopularCitiesCache {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number
+    lon2: number,
   ): number {
     const R = 6371; // Earth's radius in kilometers
     const dLat = this.degreesToRadians(lat2 - lat1);
@@ -807,11 +807,11 @@ export class PopularCitiesCache {
     try {
       localStorage.setItem(
         'weather-popular-cities',
-        JSON.stringify(POPULAR_CITIES)
+        JSON.stringify(POPULAR_CITIES),
       );
       localStorage.setItem(
         'weather-popular-cities-timestamp',
-        Date.now().toString()
+        Date.now().toString(),
       );
     } catch {
       // Storage not available or quota exceeded - continue silently
@@ -826,7 +826,7 @@ export class PopularCitiesCache {
     try {
       const stored = localStorage.getItem('weather-popular-cities');
       const timestamp = localStorage.getItem(
-        'weather-popular-cities-timestamp'
+        'weather-popular-cities-timestamp',
       );
 
       if (stored && timestamp) {
