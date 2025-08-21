@@ -1,6 +1,6 @@
 /**
  * Mobile-First CSS Optimizations
- * 
+ *
  * Comprehensive mobile styles for the weather app
  * Following modern mobile-first responsive design principles
  * Enhanced with animations, micro-interactions, and modern UI patterns
@@ -1170,6 +1170,26 @@ body.dark-theme {
   padding: 0 !important;
 }
 
+/* Theme-specific toggle button classes */
+.theme-toggle-light {
+  background: var(--toggle-background, rgba(255, 255, 255, 0.8));
+  border-color: var(--toggle-border, rgba(255, 255, 255, 0.3));
+  color: var(--toggle-icon, #2563eb);
+}
+
+.theme-toggle-dark {
+  background: var(--toggle-background, rgba(139, 92, 246, 0.2));
+  border-color: var(--toggle-border, rgba(139, 92, 246, 0.4));
+  color: var(--toggle-icon, #cbd5e1);
+}
+
+.theme-toggle-horror {
+  background: var(--toggle-background, linear-gradient(135deg, #1a0a0a, #0a0a0a));
+  border-color: var(--toggle-border, #8b0000);
+  color: var(--toggle-icon, #dc143c);
+  box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4), 0 0 20px rgba(220, 20, 60, 0.2);
+}
+
 /* Weather Results Polishing */
 .weather-display {
   padding: 24px 12px 24px 12px;
@@ -1249,9 +1269,7 @@ body.dark-theme {
 }
 
 .forecast-card {
-  transition:
-    box-shadow 0.2s,
-    background 0.2s;
+  transition: box-shadow 0.2s, background 0.2s;
   cursor: pointer;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
