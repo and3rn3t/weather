@@ -79,7 +79,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       // Navigate to new screen
       onNavigate(tabId);
     },
-    [activeTab, onNavigate, haptic]
+    [activeTab, onNavigate, haptic],
   );
 
   const getTabStyle = useCallback(
@@ -113,7 +113,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       // Accessibility
       outline: 'none',
     }),
-    [theme.primaryText]
+    [theme.primaryText],
   );
 
   const getIconStyle = useCallback(
@@ -125,7 +125,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       // Remove dark drop-shadow that causes the persistent dark effect
       filter: 'none',
     }),
-    []
+    [],
   );
 
   const getLabelStyle = useCallback(
@@ -137,7 +137,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       opacity: isActive ? 1 : 0.8,
       letterSpacing: '0.3px',
     }),
-    [theme]
+    [theme],
   );
 
   const navigationStyle: React.CSSProperties = {

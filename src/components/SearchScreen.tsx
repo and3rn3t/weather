@@ -76,18 +76,18 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       const newRecent = [
         searchResult,
         ...recentSearches.filter(
-          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon
+          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon,
         ),
       ].slice(0, 5);
       setRecentSearches(newRecent);
       localStorage.setItem(
         'weather-recent-searches',
-        JSON.stringify(newRecent)
+        JSON.stringify(newRecent),
       );
 
       onLocationSelect(cityName, latitude, longitude);
     },
-    [haptic, onLocationSelect, recentSearches]
+    [haptic, onLocationSelect, recentSearches],
   );
 
   // Initialize nuclear search when component mounts
@@ -114,10 +114,10 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
       // Add nuclear search functionality
       const searchInput = container.querySelector(
-        '#nuclear-search-input'
+        '#nuclear-search-input',
       ) as HTMLInputElement;
       const searchResults = container.querySelector(
-        '#nuclear-search-results'
+        '#nuclear-search-results',
       ) as HTMLElement;
 
       if (searchInput && searchResults) {
@@ -174,9 +174,9 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
           try {
             const url =
-              'https://nominatim.openstreetmap.org/search?q=' +
-              encodeURIComponent(query) +
-              '&format=json&limit=25&addressdetails=1';
+              `https://nominatim.openstreetmap.org/search?q=${ 
+              encodeURIComponent(query) 
+              }&format=json&limit=25&addressdetails=1`;
             const response = await fetch(url, {
               headers: {
                 'User-Agent': 'WeatherApp/1.0',
@@ -190,7 +190,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
                   item.type === 'city' ||
                   item.type === 'town' ||
                   item.type === 'village' ||
-                  item.class === 'place'
+                  item.class === 'place',
               );
 
               const fuzzyResults = fuzzySearch(query, cities);
@@ -211,7 +211,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
                     <div class="result-location">${city.display_name}</div>
                   </div>
                 </button>
-              `
+              `,
                 )
                 .join('');
 
@@ -221,7 +221,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
                 .forEach(button => {
                   button.addEventListener('click', () => {
                     const cityData = JSON.parse(
-                      button.getAttribute('data-city') || '{}'
+                      button.getAttribute('data-city') || '{}',
                     );
                     handleCitySelection(cityData);
                   });
@@ -368,7 +368,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect]
+    [haptic, onLocationSelect],
   );
 
   // Get current location
@@ -386,14 +386,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         onLocationSelect(
           'Current Location',
           position.coords.latitude,
-          position.coords.longitude
+          position.coords.longitude,
         );
       },
       error => {
         haptic.error();
         logError('Geolocation error:', error);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
     );
   }, [haptic, onLocationSelect]);
 
@@ -476,13 +476,13 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
           onClick: onBack,
           'aria-label': 'Go back',
         },
-        '←'
+        '←',
       ),
 
       React.createElement('div', {
         ref: searchContainerRef,
         className: 'search-container',
-      })
+      }),
     ),
 
     // Content
@@ -503,14 +503,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
           React.createElement(
             'div',
             { className: 'location-title' },
-            'Use Current Location'
+            'Use Current Location',
           ),
           React.createElement(
             'div',
             { className: 'location-subtitle' },
-            'Get weather for your current location'
-          )
-        )
+            'Get weather for your current location',
+          ),
+        ),
       ),
 
       // Recent Searches
@@ -521,7 +521,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
           React.createElement(
             'div',
             { className: 'section-title' },
-            'Recent Searches'
+            'Recent Searches',
           ),
           ...recentSearches.map((result, index) =>
             React.createElement(
@@ -538,18 +538,18 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
                 React.createElement(
                   'div',
                   { className: 'recent-name' },
-                  result.name
+                  result.name,
                 ),
                 React.createElement(
                   'div',
                   { className: 'recent-location' },
-                  `${result.state ? result.state + ', ' : ''}${result.country}`
-                )
-              )
-            )
-          )
-        )
-    )
+                  `${result.state ? `${result.state  }, ` : ''}${result.country}`,
+                ),
+              ),
+            ),
+          ),
+        ),
+    ),
   );
 }
 

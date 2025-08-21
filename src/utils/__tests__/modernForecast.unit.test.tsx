@@ -73,7 +73,7 @@ describe('ModernForecast Component', () => {
       render(
         <TestWrapper>
           <ModernForecast theme={lightTheme} hourlyData={[]} dailyData={[]} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Component should render without throwing
@@ -89,7 +89,7 @@ describe('ModernForecast Component', () => {
             dailyData={[]}
             isLoading={true}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should handle loading state gracefully
@@ -106,7 +106,7 @@ describe('ModernForecast Component', () => {
             hourlyData={mockHourlyData}
             dailyData={[]}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should render forecast data
@@ -117,7 +117,7 @@ describe('ModernForecast Component', () => {
       render(
         <TestWrapper>
           <ModernForecast theme={lightTheme} hourlyData={[]} dailyData={[]} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should not crash with empty data
@@ -134,7 +134,7 @@ describe('ModernForecast Component', () => {
             hourlyData={[]}
             dailyData={mockDailyData}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should render forecast data
@@ -145,7 +145,7 @@ describe('ModernForecast Component', () => {
       render(
         <TestWrapper>
           <ModernForecast theme={lightTheme} hourlyData={[]} dailyData={[]} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should not crash with empty data
@@ -162,7 +162,7 @@ describe('ModernForecast Component', () => {
             hourlyData={mockHourlyData}
             dailyData={mockDailyData}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should have accessible structure
@@ -178,7 +178,7 @@ describe('ModernForecast Component', () => {
             hourlyData={mockHourlyData}
             dailyData={mockDailyData}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Look for SVG elements (weather icons)
@@ -230,7 +230,7 @@ describe('ModernForecast Component', () => {
               hourlyData={largeHourlyData}
               dailyData={largeDailyData}
             />
-          </TestWrapper>
+          </TestWrapper>,
         );
       }).not.toThrow();
     });
@@ -254,7 +254,7 @@ describe('ModernForecast Component', () => {
               hourlyData={dataWithMissingTemps}
               dailyData={[]}
             />
-          </TestWrapper>
+          </TestWrapper>,
         );
       }).not.toThrow();
     });
@@ -278,7 +278,7 @@ describe('ModernForecast Component', () => {
               hourlyData={dataWithInvalidCodes}
               dailyData={[]}
             />
-          </TestWrapper>
+          </TestWrapper>,
         );
       }).not.toThrow();
     });

@@ -151,11 +151,11 @@ describe('useLocationServices', () => {
       console.log('navigator.geolocation:', global.navigator.geolocation);
       console.log(
         'getCurrentPosition exists:',
-        'getCurrentPosition' in global.navigator.geolocation
+        'getCurrentPosition' in global.navigator.geolocation,
       );
       console.log(
         'geolocation in navigator:',
-        'geolocation' in global.navigator
+        'geolocation' in global.navigator,
       );
 
       const { result } = renderHook(() => useLocationServices(), { wrapper });
@@ -270,7 +270,7 @@ describe('useLocationServices', () => {
           headers: expect.objectContaining({
             'User-Agent': expect.stringContaining('WeatherApp'),
           }),
-        })
+        }),
       );
     });
 
@@ -406,7 +406,7 @@ describe('useLocationServices', () => {
 
       act(() => {
         expect(result.current.formatLocationDisplay(mockLocation)).toBe(
-          'New York, NY, USA'
+          'New York, NY, USA',
         );
       });
     });
@@ -423,7 +423,7 @@ describe('useLocationServices', () => {
 
       act(() => {
         expect(result.current.formatLocationDisplay(mockLocation)).toBe(
-          '40.7128, -74.0060'
+          '40.7128, -74.0060',
         );
       });
     });
@@ -469,7 +469,7 @@ describe('LocationButton', () => {
         <ThemeProvider>
           <LocationButton {...defaultProps} />
         </ThemeProvider>
-      </HapticFeedbackProvider>
+      </HapticFeedbackProvider>,
     );
 
     expect(screen.getByRole('button')).toBeInTheDocument();
@@ -495,7 +495,7 @@ describe('LocationButton', () => {
         <ThemeProvider>
           <LocationButton {...defaultProps} />
         </ThemeProvider>
-      </HapticFeedbackProvider>
+      </HapticFeedbackProvider>,
     );
 
     const button = screen.getByRole('button');
@@ -505,7 +505,7 @@ describe('LocationButton', () => {
       expect(defaultProps.onLocationReceived).toHaveBeenCalledWith(
         expect.any(String), // city
         40.7128, // latitude
-        -74.006 // longitude
+        -74.006, // longitude
       );
     });
   });
@@ -521,7 +521,7 @@ describe('LocationButton', () => {
         <ThemeProvider>
           <LocationButton {...defaultProps} />
         </ThemeProvider>
-      </HapticFeedbackProvider>
+      </HapticFeedbackProvider>,
     );
 
     const button = screen.getByRole('button');
@@ -529,7 +529,7 @@ describe('LocationButton', () => {
 
     await waitFor(() => {
       expect(defaultProps.onError).toHaveBeenCalledWith(
-        'Location access denied by user'
+        'Location access denied by user',
       );
     });
   });

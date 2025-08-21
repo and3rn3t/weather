@@ -57,7 +57,7 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     <button
       onClick={handleThemeToggle}
       className={`theme-toggle-btn ${getThemeClass()}${
-        className ? ' ' + className : ''
+        className ? ` ${  className}` : ''
       }`}
       title={getThemeTitle()}
       onMouseEnter={(e: MouseEvent<HTMLButtonElement>) => {

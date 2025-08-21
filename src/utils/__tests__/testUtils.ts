@@ -55,7 +55,7 @@ export const createNavigatorMock = () => {
 export const mockViewport = (
   width: number,
   height: number,
-  userAgent?: string
+  userAgent?: string,
 ) => {
   Object.defineProperty(window, 'innerWidth', {
     writable: true,
@@ -89,7 +89,7 @@ export const createTouchEvent = (
   touches:
     | Array<{ clientX?: number; clientY?: number }>
     | { clientX?: number; clientY?: number }
-    | number
+    | number,
 ) => {
   let touchArray;
 
@@ -205,7 +205,7 @@ export const setupDesktopTest = () => {
 
 export const waitForElement = async (
   callback: () => void,
-  timeout: number = TEST_TIMEOUTS.MEDIUM
+  timeout: number = TEST_TIMEOUTS.MEDIUM,
 ) => {
   return new Promise<void>((resolve, reject) => {
     const startTime = Date.now();

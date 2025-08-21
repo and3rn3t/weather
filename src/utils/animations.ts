@@ -67,7 +67,7 @@ export const animations = {
     animation: `rainDrop 1s ${EASING.easeIn} infinite`,
   },
   snowFall: {
-    animation: `snowFall 3s linear infinite`,
+    animation: 'snowFall 3s linear infinite',
   },
 };
 

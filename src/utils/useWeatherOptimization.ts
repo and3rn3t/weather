@@ -28,7 +28,7 @@ interface CacheEntry<T> {
 export const useWeatherOptimization = <T>(
   data: T,
   key: string,
-  options: WeatherOptimizationOptions = {}
+  options: WeatherOptimizationOptions = {},
 ) => {
   const {
     debounceMs = 300,
@@ -78,7 +78,7 @@ export const useWeatherOptimization = <T>(
         debounceTimer.current = null;
       }, debounceMs);
     },
-    [debounceMs]
+    [debounceMs],
   );
 
   // Cache statistics
@@ -88,7 +88,7 @@ export const useWeatherOptimization = <T>(
       keys: Array.from(cache.current.keys()),
       hitRate: cache.current.size > 0 ? 1 : 0, // Simplified calculation
     }),
-    []
+    [],
   );
 
   // Clear cache
@@ -153,7 +153,7 @@ export const useWeatherAPIOptimization = () => {
 
       return request;
     },
-    []
+    [],
   );
 
   const clearAPICache = useCallback(() => {
@@ -184,7 +184,7 @@ export const useWeatherDataTransform = () => {
     <TInput, TOutput>(
       data: TInput,
       transformFn: (data: TInput) => TOutput,
-      cacheKey: string
+      cacheKey: string,
     ): TOutput => {
       const cached = transformCache.current.get(cacheKey) as TOutput;
       if (cached) {
@@ -204,7 +204,7 @@ export const useWeatherDataTransform = () => {
 
       return result;
     },
-    []
+    [],
   );
 
   return { optimizedTransform };

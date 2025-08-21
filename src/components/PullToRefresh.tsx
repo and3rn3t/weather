@@ -43,7 +43,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
       startY.current = e.touches[0].clientY;
       setIsPulling(true);
     },
-    [disabled, isRefreshing]
+    [disabled, isRefreshing],
   );
 
   const handleTouchMove = useCallback(
@@ -70,7 +70,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         }
       }
     },
-    [isPulling, disabled, isRefreshing, threshold, canRefresh, pullToRefresh]
+    [isPulling, disabled, isRefreshing, threshold, canRefresh, pullToRefresh],
   );
 
   const handleTouchEnd = useCallback(async () => {

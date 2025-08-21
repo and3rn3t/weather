@@ -62,14 +62,14 @@ const LocationButton: React.FC<LocationButtonProps> = ({
         onLocationReceived(
           locationData.city,
           locationData.latitude,
-          locationData.longitude
+          locationData.longitude,
         );
       } else if (locationData) {
         // Fallback to coordinates if city name unavailable
         onLocationReceived(
           `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}`,
           locationData.latitude,
-          locationData.longitude
+          locationData.longitude,
         );
       }
     } catch (err) {

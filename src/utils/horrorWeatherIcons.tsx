@@ -64,7 +64,7 @@ export const getHorrorWeatherIcon = (
   code: number,
   size: number = 48,
   isDay: boolean = true,
-  animated: boolean = true
+  animated: boolean = true,
 ): React.ReactElement => {
   return (
     <HorrorWeatherIcon

@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { darkTheme, lightTheme, type ThemeColors } from '../themeConfig';
 import { ThemeProvider } from '../themeContext';
 import { useTheme } from '../useTheme';
-import { lightTheme, darkTheme, type ThemeColors } from '../themeConfig';
 
 // Mock localStorage
 const localStorageMock = {
@@ -21,11 +21,16 @@ Object.defineProperty(window, 'localStorage', {
 
 // Test component to test the theme hook
 const TestComponent = () => {
-  const { theme, isDark, toggleTheme } = useTheme();
+  const { theme, isDark, toggleTheme, isHorror } = useTheme();
+
+  const getThemeMode = () => {
+    if (isHorror) return 'horror';
+    return isDark ? 'dark' : 'light';
+  };
 
   return (
     <div>
-      <div data-testid="theme-mode">{isDark ? 'dark' : 'light'}</div>
+      <div data-testid="theme-mode">{getThemeMode()}</div>
       <div data-testid="primary-text" style={{ color: theme.primaryText }}>
         Test Text
       </div>
@@ -62,7 +67,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       expect(screen.getByTestId('theme-mode')).toHaveTextContent('light');
@@ -74,12 +79,12 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       expect(screen.getByTestId('theme-mode')).toHaveTextContent('dark');
       expect(localStorageMock.getItem).toHaveBeenCalledWith(
-        'weather-app-theme'
+        'weather-app-theme',
       );
     });
 
@@ -89,7 +94,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const textElement = screen.getByTestId('primary-text');
@@ -102,7 +107,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
@@ -119,7 +124,18 @@ describe('Theme Context and Hook', () => {
       expect(themeMode).toHaveTextContent('dark');
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'weather-app-theme',
-        'dark'
+        'dark',
+      );
+
+      // Toggle to horror
+      act(() => {
+        fireEvent.click(toggleButton);
+      });
+
+      expect(themeMode).toHaveTextContent('horror');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'weather-app-theme',
+        'horror',
       );
 
       // Toggle back to light
@@ -130,7 +146,7 @@ describe('Theme Context and Hook', () => {
       expect(themeMode).toHaveTextContent('light');
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'weather-app-theme',
-        'light'
+        'light',
       );
     });
 
@@ -140,7 +156,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
@@ -163,7 +179,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
@@ -174,7 +190,7 @@ describe('Theme Context and Hook', () => {
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'weather-app-theme',
-        'dark'
+        'dark',
       );
     });
 
@@ -184,7 +200,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       // Should default to light theme for invalid values
@@ -202,7 +218,7 @@ describe('Theme Context and Hook', () => {
       render(<TestComponentWithoutProvider />);
 
       expect(screen.getByTestId('error')).toHaveTextContent(
-        'useTheme must be used within a ThemeProvider'
+        'useTheme must be used within a ThemeProvider',
       );
 
       consoleSpy.mockRestore();
@@ -220,7 +236,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponentCapture />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       expect(capturedTheme).toBeDefined();
@@ -245,13 +261,13 @@ describe('Theme Context and Hook', () => {
       const { rerender } = render(
         <ThemeProvider>
           <TestComponentStable renderCount={0} />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       rerender(
         <ThemeProvider>
           <TestComponentStable renderCount={1} />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       // Theme objects should have the same properties even if references differ due to responsive processing
@@ -270,7 +286,7 @@ describe('Theme Context and Hook', () => {
       const { unmount } = render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
@@ -282,7 +298,7 @@ describe('Theme Context and Hook', () => {
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'weather-app-theme',
-        'dark'
+        'dark',
       );
 
       unmount();
@@ -293,7 +309,7 @@ describe('Theme Context and Hook', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       expect(screen.getByTestId('theme-mode')).toHaveTextContent('dark');

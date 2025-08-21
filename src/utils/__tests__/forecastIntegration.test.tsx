@@ -3,12 +3,18 @@
  * Tests key forecast functionality without the heavy AppNavigator component
  */
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
-import { ThemeProvider } from '../themeContext';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import React from 'react';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { HapticFeedbackProvider } from '../hapticContext';
+import { ThemeProvider } from '../themeContext';
 
 // Mock fetch for API calls
 global.fetch = vi.fn();
@@ -42,7 +48,7 @@ const WeatherSearchTest = ({
 }) => {
   const [city, setCity] = React.useState('');
   const [weatherData, setWeatherData] = React.useState<WeatherData | null>(
-    null
+    null,
   );
   const [loading, setLoading] = React.useState(false);
 
@@ -53,7 +59,7 @@ const WeatherSearchTest = ({
     try {
       // Geocoding request
       const geoResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${city}&format=json&limit=1`
+        `https://nominatim.openstreetmap.org/search?q=${city}&format=json&limit=1`,
       );
       const geoData = await geoResponse.json();
 
@@ -62,7 +68,7 @@ const WeatherSearchTest = ({
 
         // Weather request
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit`
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit`,
         );
         const data = await weatherResponse.json();
 
@@ -139,11 +145,11 @@ const WeatherSearchTest = ({
                             })}
                         :{' '}
                         {Math.round(
-                          weatherData.daily.temperature_2m_max[index]
+                          weatherData.daily.temperature_2m_max[index],
                         )}
                         °F /{' '}
                         {Math.round(
-                          weatherData.daily.temperature_2m_min[index]
+                          weatherData.daily.temperature_2m_min[index],
                         )}
                         °F
                       </div>
@@ -233,7 +239,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
     render(
       <TestWrapper>
         <WeatherSearchTest />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Enter city name
@@ -249,7 +255,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
       () => {
         expect(screen.getByTestId('hourly-forecast')).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     // Check for hourly forecast content
@@ -264,7 +270,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
     render(
       <TestWrapper>
         <WeatherSearchTest />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Enter city name
@@ -280,7 +286,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
       () => {
         expect(screen.getByTestId('daily-forecast')).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     // Check for daily forecast content
@@ -300,7 +306,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
     render(
       <TestWrapper>
         <WeatherSearchTest />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Enter city name
@@ -316,7 +322,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
       () => {
         expect(screen.getByTestId('weather-results')).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     // Check for current temperature
@@ -326,23 +332,48 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
   });
 
   test('shows loading state during search', async () => {
+    // Mock fetch to return a delayed promise to capture loading state
+    const mockResponse = {
+      json: () => Promise.resolve([{ lat: 52.52, lon: 13.405 }]),
+    };
+
+    const mockFetch = vi.fn(
+      () =>
+        new Promise(resolve => {
+          setTimeout(() => resolve(mockResponse), 100);
+        }),
+    );
+
+    global.fetch = mockFetch as any;
+
     render(
       <TestWrapper>
         <WeatherSearchTest />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Enter city name
     const searchInput = screen.getByTestId('city-search-input');
-    fireEvent.change(searchInput, { target: { value: 'Berlin' } });
+
+    await act(async () => {
+      fireEvent.change(searchInput, { target: { value: 'Berlin' } });
+    });
 
     // Click search
     const searchButton = screen.getByTestId('search-button');
-    fireEvent.click(searchButton);
 
-    // Should show loading state (briefly)
-    expect(searchButton.textContent).toContain('Searching...');
-    expect(searchButton).toBeDisabled();
+    await act(async () => {
+      fireEvent.click(searchButton);
+    });
+
+    // Should show loading state immediately after click
+    await waitFor(
+      () => {
+        expect(searchButton.textContent).toContain('Searching...');
+        expect(searchButton).toBeDisabled();
+      },
+      { timeout: 50 },
+    );
   });
 
   test('handles API call sequence correctly', async () => {
@@ -351,7 +382,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
     render(
       <TestWrapper>
         <WeatherSearchTest onWeatherData={onWeatherData} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Enter city name
@@ -367,7 +398,7 @@ describe('Weather Forecast Integration Tests (Simplified)', () => {
       () => {
         expect(onWeatherData).toHaveBeenCalledWith(mockWeatherResponse);
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     // Verify API calls were made in correct sequence

@@ -30,7 +30,7 @@ class ProjectCleaner {
 
   private log(
     message: string,
-    type: 'info' | 'success' | 'warning' | 'error' = 'info'
+    type: 'info' | 'success' | 'warning' | 'error' = 'info',
   ) {
     const icons = {
       info: 'ℹ️',
@@ -49,7 +49,7 @@ class ProjectCleaner {
 
     const prefix = this.options.dryRun ? '[DRY RUN] ' : '';
     console.log(
-      `${icons[type]} ${colors[type]}${prefix}${message}${colors.reset}`
+      `${icons[type]} ${colors[type]}${prefix}${message}${colors.reset}`,
     );
   }
 
@@ -234,7 +234,7 @@ class ProjectCleaner {
           error instanceof Error ? error.message : String(error);
         this.log(
           `Error scanning for pattern ${pattern}: ${errorMessage}`,
-          'warning'
+          'warning',
         );
       }
     }
@@ -287,7 +287,7 @@ class ProjectCleaner {
           } else if (this.options.verbose) {
             this.log(
               `Directory not empty: ${dir} (${files.length} files)`,
-              'info'
+              'info',
             );
           }
         } catch (error: unknown) {
@@ -296,7 +296,7 @@ class ProjectCleaner {
               error instanceof Error ? error.message : String(error);
             this.log(
               `Error checking directory ${dir}: ${errorMessage}`,
-              'warning'
+              'warning',
             );
           }
         }
@@ -315,7 +315,7 @@ class ProjectCleaner {
     console.log(
       `Total files/directories processed: ${
         this.removedCount + this.skippedCount
-      }`
+      }`,
     );
     console.log(`Removed: ${this.removedCount}`);
     console.log(`Skipped: ${this.skippedCount}`);
@@ -323,7 +323,7 @@ class ProjectCleaner {
     if (this.options.dryRun) {
       this.log(
         '\nThis was a dry run. No files were actually removed.',
-        'warning'
+        'warning',
       );
       this.log('Run without --dry-run to perform actual cleanup.', 'info');
     } else {

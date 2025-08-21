@@ -223,7 +223,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
         place_id: 25,
       },
     ],
-    []
+    [],
   );
 
   // Fuzzy search algorithm
@@ -302,7 +302,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
       setShowResults(filteredResults.length > 0);
       setIsLoading(false);
     },
-    [cities, fuzzyMatch]
+    [cities, fuzzyMatch],
   );
 
   // Handle input change with debouncing
@@ -318,7 +318,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
         performSearch(value);
       }, 300);
     },
-    [performSearch]
+    [performSearch],
   );
 
   // Fetch weather data
@@ -334,7 +334,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
         return undefined;
       }
     },
-    []
+    [],
   );
 
   // Handle city selection
@@ -350,7 +350,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
         onCitySelected(city, weatherData);
       }
     },
-    [triggerHaptic, onCitySelected, fetchWeatherData]
+    [triggerHaptic, onCitySelected, fetchWeatherData],
   );
 
   // Handle focus/blur

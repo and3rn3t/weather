@@ -31,7 +31,7 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
 
     // Apply theme classes
     document.body.classList.remove('light-theme', 'dark-theme', 'horror-theme');
-    document.body.classList.add(nextTheme + '-theme');
+    document.body.classList.add(`${nextTheme  }-theme`);
 
     // Update title for horror theme
     if (nextTheme === 'horror') {
@@ -44,7 +44,7 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
     window.dispatchEvent(
       new CustomEvent('themeChanged', {
         detail: { theme: nextTheme },
-      })
+      }),
     );
 
     logInfo(`🎨 Theme changed to: ${nextTheme}`);
@@ -99,7 +99,7 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
         transition: 'all 0.3s ease',
       },
     },
-    getThemeIcon()
+    getThemeIcon(),
   );
 };
 

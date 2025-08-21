@@ -54,7 +54,7 @@ describe('Mobile Responsive Design Tests', () => {
       mockViewport(
         375,
         812,
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15'
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
       );
 
       const TestComponent = () => {
@@ -71,7 +71,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-mobile')).toHaveTextContent('true');
@@ -82,7 +82,7 @@ describe('Mobile Responsive Design Tests', () => {
       mockViewport(
         360,
         640,
-        'Mozilla/5.0 (Linux; Android 11; SM-G975F) AppleWebKit/537.36'
+        'Mozilla/5.0 (Linux; Android 11; SM-G975F) AppleWebKit/537.36',
       );
 
       const TestComponent = () => {
@@ -98,7 +98,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-mobile')).toHaveTextContent('true');
@@ -109,7 +109,7 @@ describe('Mobile Responsive Design Tests', () => {
       mockViewport(
         768,
         1024,
-        'Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/605.1.15'
+        'Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
       );
 
       const TestComponent = () => {
@@ -125,7 +125,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-tablet')).toHaveTextContent('true');
@@ -151,7 +151,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-mobile')).toHaveTextContent('true');
@@ -175,7 +175,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-tablet')).toHaveTextContent('true');
@@ -199,7 +199,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-tablet')).toHaveTextContent('false');
@@ -230,7 +230,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('orientation')).toHaveTextContent('portrait');
@@ -242,10 +242,10 @@ describe('Mobile Responsive Design Tests', () => {
       await waitFor(
         () => {
           expect(screen.getByTestId('orientation')).toHaveTextContent(
-            'landscape'
+            'landscape',
           );
         },
-        { timeout: 200 }
+        { timeout: 200 },
       );
     });
 
@@ -272,7 +272,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-tablet')).toHaveTextContent('true');
@@ -286,10 +286,10 @@ describe('Mobile Responsive Design Tests', () => {
       await waitFor(
         () => {
           expect(screen.getByTestId('orientation')).toHaveTextContent(
-            'landscape'
+            'landscape',
           );
         },
-        { timeout: 200 }
+        { timeout: 200 },
       );
 
       // In landscape, iPad becomes tabletLarge (1024px width)
@@ -319,7 +319,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <MobileCard />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const card = screen.getByTestId('mobile-card');
@@ -349,7 +349,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TabletCard />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const card = screen.getByTestId('tablet-card');
@@ -394,11 +394,11 @@ describe('Mobile Responsive Design Tests', () => {
         render(
           <TestWrapper>
             <TouchButton deviceName={device.name} />
-          </TestWrapper>
+          </TestWrapper>,
         );
 
         const button = screen.getByTestId(
-          `button-${device.name.replace(/\s+/g, '-').toLowerCase()}`
+          `button-${device.name.replace(/\s+/g, '-').toLowerCase()}`,
         );
         const styles = window.getComputedStyle(button);
 
@@ -436,7 +436,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TouchTargetGroup />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const group = screen.getByTestId('touch-group');
@@ -466,7 +466,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <AnimatedElement />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const element = screen.getByTestId('animated-element');
@@ -496,7 +496,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <ScrollContainer />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const container = screen.getByTestId('scroll-container');
@@ -525,7 +525,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-mobile')).toHaveTextContent('true');
@@ -549,7 +549,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('is-mobile')).toHaveTextContent('false');
@@ -572,7 +572,7 @@ describe('Mobile Responsive Design Tests', () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set final orientation and wait for it
@@ -582,7 +582,7 @@ describe('Mobile Responsive Design Tests', () => {
         () => {
           expect(screen.getByTestId('dimensions')).toHaveTextContent('375x812');
         },
-        { timeout: 200 }
+        { timeout: 200 },
       );
     });
   });

@@ -62,7 +62,7 @@ export const useLocationDebug = () => {
           headers: {
             'User-Agent': 'WeatherApp/1.0 (test@example.com)',
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -160,7 +160,7 @@ if (typeof window !== 'undefined') {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,
         {
           headers: { 'User-Agent': 'WeatherApp/1.0 (test@example.com)' },
-        }
+        },
       );
       const data = await response.json();
       logInfo('Reverse geocoding result:', data);

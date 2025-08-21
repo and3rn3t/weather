@@ -59,7 +59,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
           headers: {
             'User-Agent': 'WeatherApp/1.0',
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -102,7 +102,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
       setResults([]);
       onCitySelected(cityName, parseFloat(result.lat), parseFloat(result.lon));
     },
-    [onCitySelected]
+    [onCitySelected],
   );
 
   // Click outside to close

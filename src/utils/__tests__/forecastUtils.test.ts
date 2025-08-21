@@ -126,7 +126,7 @@ describe('Forecast Utility Functions', () => {
       // Allow for both 'Today' and weekday names in case of timezone differences
       expect(
         result === 'Today' ||
-          ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].includes(result)
+          ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].includes(result),
       ).toBe(true);
     });
 
@@ -134,7 +134,7 @@ describe('Forecast Utility Functions', () => {
       // Test with a date that is definitely not today (past date)
       const result = formatDayName('2025-01-01'); // Known past date
       expect(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).toContain(
-        result
+        result,
       );
     });
   });
@@ -198,7 +198,7 @@ describe('Forecast Utility Functions', () => {
           (_, i) =>
             new Date(Date.now() + i * 24 * 60 * 60 * 1000)
               .toISOString()
-              .split('T')[0]
+              .split('T')[0],
         ),
         temperature_2m_max: Array.from({ length: 10 }, () => 75),
         temperature_2m_min: Array.from({ length: 10 }, () => 65),
@@ -244,7 +244,7 @@ describe('Forecast Utility Functions', () => {
       const minLength = Math.min(
         mismatchedData.time.length,
         mismatchedData.temperature_2m.length,
-        mismatchedData.weathercode.length
+        mismatchedData.weathercode.length,
       );
 
       expect(minLength).toBe(1);

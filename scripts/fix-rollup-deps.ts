@@ -32,7 +32,7 @@ class RollupDependencyFixer {
 
   private log(
     message: string,
-    type: 'info' | 'success' | 'warning' | 'error' = 'info'
+    type: 'info' | 'success' | 'warning' | 'error' = 'info',
   ) {
     const icons = {
       info: 'ℹ️',
@@ -54,7 +54,7 @@ class RollupDependencyFixer {
 
   private async runCommand(
     command: string,
-    description: string
+    description: string,
   ): Promise<{ success: boolean; output?: string; error?: string }> {
     if (this.options.verbose) {
       this.log(`Executing: ${command}`, 'info');
@@ -85,7 +85,7 @@ class RollupDependencyFixer {
     if (!existsSync(packageJsonPath)) {
       this.log(
         'package.json not found. Please run this script from the project root.',
-        'error'
+        'error',
       );
       return false;
     }
@@ -166,12 +166,12 @@ class RollupDependencyFixer {
     if (platformBinary) {
       this.log(
         `Installing platform-specific binary: ${platformBinary}`,
-        'info'
+        'info',
       );
 
       const installResult = await this.runCommand(
         `npm install ${platformBinary} --save-optional --no-save`,
-        `Install ${platformBinary}`
+        `Install ${platformBinary}`,
       );
 
       if (installResult.success) {
@@ -179,7 +179,7 @@ class RollupDependencyFixer {
       } else {
         this.log(
           `Failed to install ${platformBinary}, continuing...`,
-          'warning'
+          'warning',
         );
       }
     }
@@ -190,13 +190,13 @@ class RollupDependencyFixer {
     for (const binary of rollupBinaries) {
       const result = await this.runCommand(
         `npm install ${binary} --save-optional --no-save || echo "Skipped ${binary}"`,
-        `Install ${binary}`
+        `Install ${binary}`,
       );
 
       if (this.options.verbose) {
         this.log(
           `${binary}: ${result.success ? 'installed' : 'skipped'}`,
-          'info'
+          'info',
         );
       }
     }
@@ -212,7 +212,7 @@ class RollupDependencyFixer {
     if (buildResult.success) {
       this.log(
         'Build test successful - Rollup dependencies are working!',
-        'success'
+        'success',
       );
       return true;
     } else {
@@ -283,7 +283,7 @@ class RollupDependencyFixer {
       if (!installSuccess && !this.options.force) {
         this.log(
           'Dependency installation failed. Use --force to continue anyway.',
-          'error'
+          'error',
         );
         process.exit(1);
       }
@@ -300,7 +300,7 @@ class RollupDependencyFixer {
         if (!testSuccess && !this.options.force) {
           this.log(
             'Build test failed. Rollup issues may not be fully resolved.',
-            'warning'
+            'warning',
           );
           process.exit(1);
         }

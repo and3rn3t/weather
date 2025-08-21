@@ -37,7 +37,7 @@ class CICDOptimizer {
 
   private log(
     message: string,
-    type: 'info' | 'success' | 'warning' | 'error' = 'info'
+    type: 'info' | 'success' | 'warning' | 'error' = 'info',
   ) {
     const icons = {
       info: 'ℹ️',
@@ -62,7 +62,7 @@ class CICDOptimizer {
     if (!existsSync(packageJsonPath)) {
       this.log(
         'Please run this script from the project root directory',
-        'error'
+        'error',
       );
       return false;
     }
@@ -247,7 +247,7 @@ jobs:
       writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
       this.log(
         `Added ${added} CI-optimized scripts to package.json`,
-        'success'
+        'success',
       );
     } else {
       this.log('CI scripts already exist in package.json', 'info');
@@ -278,7 +278,7 @@ updates:
       writeFileSync(dependabotPath, dependabotConfig);
       this.log(
         'Created dependabot.yml for automated dependency updates',
-        'success'
+        'success',
       );
     }
 
@@ -326,7 +326,7 @@ Closes #
         projectRoot,
         '.github',
         'workflows',
-        'deploy.yml'
+        'deploy.yml',
       );
 
       if (existsSync(workflowPath)) {
@@ -364,7 +364,7 @@ Closes #
 
     this.log('\n🚀 Next Steps:', 'info');
     console.log(
-      '1. Review the generated workflow in .github/workflows/deploy.yml'
+      '1. Review the generated workflow in .github/workflows/deploy.yml',
     );
     console.log('2. Customize deployment commands for your hosting platform');
     console.log('3. Set up any required secrets in GitHub repository settings');
@@ -401,14 +401,14 @@ Closes #
       if (!healthPassed) {
         this.log(
           'Consider running npm run doctor to fix issues before deployment',
-          'warning'
+          'warning',
         );
       }
 
       this.generateReport();
       this.log(
         '\n🎉 CI/CD optimization setup completed successfully!',
-        'success'
+        'success',
       );
     } catch (error: unknown) {
       const errorMessage =

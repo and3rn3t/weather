@@ -37,7 +37,7 @@ class WorkflowCleaner {
 
   private log(
     message: string,
-    type: 'info' | 'success' | 'warning' | 'error' = 'info'
+    type: 'info' | 'success' | 'warning' | 'error' = 'info',
   ) {
     const icons = {
       info: 'ℹ️',
@@ -95,18 +95,18 @@ class WorkflowCleaner {
     }
 
     const existing = readdirSync(this.workflowsDir).filter(
-      file => file.endsWith('.yml') || file.endsWith('.yaml')
+      file => file.endsWith('.yml') || file.endsWith('.yaml'),
     );
     const redundantPatterns = this.getRedundantWorkflows();
 
     const redundant = existing.filter(file =>
       redundantPatterns.some(pattern =>
-        file.includes(pattern.replace('.yml', ''))
-      )
+        file.includes(pattern.replace('.yml', '')),
+      ),
     );
 
     const toKeep = existing.filter(
-      file => !redundant.includes(file) && !file.includes('backup')
+      file => !redundant.includes(file) && !file.includes('backup'),
     );
 
     return { existing, redundant, toKeep };
@@ -124,12 +124,12 @@ class WorkflowCleaner {
           .split('T')[0];
         const backupPath = join(
           this.workflowsDir,
-          `deploy-backup-${timestamp}.yml`
+          `deploy-backup-${timestamp}.yml`,
         );
         copyFileSync(deployPath, backupPath);
         this.log(
           `Current workflow backed up to deploy-backup-${timestamp}.yml`,
-          'success'
+          'success',
         );
       }
     }
@@ -173,7 +173,7 @@ class WorkflowCleaner {
     } else {
       this.log(
         'Streamlined workflow not found, creating minimal workflow',
-        'warning'
+        'warning',
       );
       this.createMinimalWorkflow();
     }
@@ -284,7 +284,7 @@ jobs:
 
   private generateReport(
     analysis: { existing: string[]; redundant: string[]; toKeep: string[] },
-    removedCount: number
+    removedCount: number,
   ): void {
     console.log('\n🧹 Workflow Cleanup Report:');
     console.log('==========================');
@@ -322,14 +322,14 @@ jobs:
     if (!this.options.dryRun && removedCount > 0) {
       console.log('\n✨ Next steps:');
       console.log(
-        '   1. Review the streamlined workflow in .github/workflows/deploy.yml'
+        '   1. Review the streamlined workflow in .github/workflows/deploy.yml',
       );
       console.log(
-        '   2. Customize deployment commands for your hosting platform'
+        '   2. Customize deployment commands for your hosting platform',
       );
       console.log('   3. Test the workflow by creating a pull request');
       console.log(
-        '   4. Remove backup files after confirming everything works'
+        '   4. Remove backup files after confirming everything works',
       );
     }
   }
@@ -349,7 +349,7 @@ jobs:
       if (analysis.redundant.length === 0) {
         this.log(
           'No redundant workflows found - your CI/CD is already clean!',
-          'success'
+          'success',
         );
         return;
       }
@@ -357,7 +357,7 @@ jobs:
       if (!this.options.force && !this.options.dryRun) {
         this.log(
           `Found ${analysis.redundant.length} redundant workflows. Use --force to remove or --dry-run to preview`,
-          'warning'
+          'warning',
         );
         return;
       }

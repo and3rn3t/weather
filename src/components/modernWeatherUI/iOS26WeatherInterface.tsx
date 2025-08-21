@@ -33,7 +33,7 @@
  * - Modern iOS spacing and typography
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import type { ThemeColors } from '../../utils/themeConfig';

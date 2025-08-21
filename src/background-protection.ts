@@ -29,7 +29,7 @@ document.addEventListener(
         // Block theme context from running
         logInfo(
           '🚫 Blocking potential accidental theme change from click on:',
-          target
+          target,
         );
         event.stopImmediatePropagation();
       }
@@ -43,7 +43,7 @@ document.addEventListener(
       }, 1000);
     }
   },
-  true
+  true,
 );
 
 // Monitor for unauthorized background changes
@@ -51,7 +51,7 @@ const originalSetProperty = CSSStyleDeclaration.prototype.setProperty;
 CSSStyleDeclaration.prototype.setProperty = function (
   property,
   value,
-  priority
+  priority,
 ) {
   if (property === 'background' && this === document.body.style) {
     const now = Date.now();

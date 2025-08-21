@@ -39,7 +39,6 @@ export default tseslint.config([
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/prefer-const': 'error',
 
       // React specific rules
       'react-hooks/rules-of-hooks': 'error',
@@ -60,7 +59,7 @@ export default tseslint.config([
       // Code style (should match Prettier)
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
-      'comma-dangle': ['error', 'es5'],
+      'comma-dangle': ['error', 'always-multiline'],
       'trailing-comma': 'off', // Let Prettier handle this
     },
   },

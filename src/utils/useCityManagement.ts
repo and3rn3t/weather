@@ -86,7 +86,7 @@ export const useCityManagement = () => {
     (name: string, latitude: number, longitude: number): string => {
       return `${name.toLowerCase().replace(/\s+/g, '-')}-${latitude.toFixed(4)}-${longitude.toFixed(4)}`;
     },
-    []
+    [],
   );
 
   // Create SavedCity object from basic data
@@ -98,7 +98,7 @@ export const useCityManagement = () => {
       displayName?: string,
       country?: string,
       state?: string,
-      isFavorite: boolean = false
+      isFavorite: boolean = false,
     ): SavedCity => {
       const now = Date.now();
       return {
@@ -114,7 +114,7 @@ export const useCityManagement = () => {
         addedAt: now,
       };
     },
-    [generateCityId]
+    [generateCityId],
   );
 
   // Add city to favorites
@@ -125,14 +125,14 @@ export const useCityManagement = () => {
       longitude: number,
       displayName?: string,
       country?: string,
-      state?: string
+      state?: string,
     ) => {
       setState(prev => {
         const cityId = generateCityId(name, latitude, longitude);
 
         // Check if already in favorites
         const existingIndex = prev.favorites.findIndex(
-          city => city.id === cityId
+          city => city.id === cityId,
         );
         if (existingIndex !== -1) {
           // Update existing favorite
@@ -155,17 +155,17 @@ export const useCityManagement = () => {
           displayName,
           country,
           state,
-          true
+          true,
         );
         const updatedFavorites = [newCity, ...prev.favorites].slice(
           0,
-          MAX_FAVORITE_CITIES
+          MAX_FAVORITE_CITIES,
         );
 
         return { ...prev, favorites: updatedFavorites };
       });
     },
-    [generateCityId, createCityObject]
+    [generateCityId, createCityObject],
   );
 
   // Remove city from favorites
@@ -184,14 +184,14 @@ export const useCityManagement = () => {
       longitude: number,
       displayName?: string,
       country?: string,
-      state?: string
+      state?: string,
     ) => {
       setState(prev => {
         const cityId = generateCityId(name, latitude, longitude);
 
         // Remove if already exists
         const filteredRecent = prev.recentCities.filter(
-          city => city.id !== cityId
+          city => city.id !== cityId,
         );
 
         // Add to front of list
@@ -202,17 +202,17 @@ export const useCityManagement = () => {
           displayName,
           country,
           state,
-          false
+          false,
         );
         const updatedRecent = [newCity, ...filteredRecent].slice(
           0,
-          MAX_RECENT_CITIES
+          MAX_RECENT_CITIES,
         );
 
         return { ...prev, recentCities: updatedRecent };
       });
     },
-    [generateCityId, createCityObject]
+    [generateCityId, createCityObject],
   );
 
   // Set current city
@@ -223,7 +223,7 @@ export const useCityManagement = () => {
       longitude: number,
       displayName?: string,
       country?: string,
-      state?: string
+      state?: string,
     ) => {
       const city = createCityObject(
         name,
@@ -232,7 +232,7 @@ export const useCityManagement = () => {
         displayName,
         country,
         state,
-        false
+        false,
       );
 
       setState(prev => ({
@@ -243,7 +243,7 @@ export const useCityManagement = () => {
       // Also add to recent history
       addToRecent(name, latitude, longitude, displayName, country, state);
     },
-    [createCityObject, addToRecent]
+    [createCityObject, addToRecent],
   );
 
   // Check if city is in favorites
@@ -252,7 +252,7 @@ export const useCityManagement = () => {
       const cityId = generateCityId(name, latitude, longitude);
       return state.favorites.some(city => city.id === cityId);
     },
-    [state.favorites, generateCityId]
+    [state.favorites, generateCityId],
   );
 
   // Toggle favorite status
@@ -263,7 +263,7 @@ export const useCityManagement = () => {
       longitude: number,
       displayName?: string,
       country?: string,
-      state?: string
+      state?: string,
     ) => {
       if (isFavorite(name, latitude, longitude)) {
         const cityId = generateCityId(name, latitude, longitude);
@@ -272,7 +272,7 @@ export const useCityManagement = () => {
         addToFavorites(name, latitude, longitude, displayName, country, state);
       }
     },
-    [isFavorite, generateCityId, removeFromFavorites, addToFavorites]
+    [isFavorite, generateCityId, removeFromFavorites, addToFavorites],
   );
 
   // Clear all recent cities
@@ -291,7 +291,7 @@ export const useCityManagement = () => {
   const getQuickAccessCities = useCallback((): SavedCity[] => {
     const allCities = [...state.favorites, ...state.recentCities];
     const uniqueCities = allCities.filter(
-      (city, index, self) => index === self.findIndex(c => c.id === city.id)
+      (city, index, self) => index === self.findIndex(c => c.id === city.id),
     );
 
     // Sort by: favorites first, then by last accessed
@@ -341,7 +341,7 @@ export const useCityManagement = () => {
         return false;
       }
     },
-    []
+    [],
   );
 
   return {

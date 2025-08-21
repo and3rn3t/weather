@@ -64,7 +64,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
       (event: React.MouseEvent) => {
         onToggleFavorite(city, event);
       },
-      [onToggleFavorite, city]
+      [onToggleFavorite, city],
     );
 
     const handleKeyDown = useCallback(
@@ -74,7 +74,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
           onCitySelect(city);
         }
       },
-      [onCitySelect, city]
+      [onCitySelect, city],
     );
 
     return (
@@ -84,7 +84,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
         aria-label={`Select ${city.displayName || city.name} weather`}
         style={{
           background: isCurrentCity
-            ? `rgba(103, 126, 234, 0.2)` // Semi-transparent blue
+            ? 'rgba(103, 126, 234, 0.2)' // Semi-transparent blue
             : theme.cardBackground,
           border: `1px solid ${isCurrentCity ? '#667eea' : theme.cardBorder}`,
           borderRadius: '16px',
@@ -200,7 +200,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
         </div>
       </button>
     );
-  }
+  },
 );
 
 import logger from '../utils/logger';
@@ -214,13 +214,13 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
 }) => {
   const haptic = useHaptic();
   const [selectedTab, setSelectedTab] = useState<'favorites' | 'recent'>(
-    'favorites'
+    'favorites',
   );
   const [weatherPreviews, setWeatherPreviews] = useState<
     Record<string, WeatherPreview>
   >({});
   const [loadingPreviews, setLoadingPreviews] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   const {
@@ -245,7 +245,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
       try {
         // Simplified weather API call for preview
         const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&timezone=auto`
+          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&timezone=auto`,
         );
 
         if (response.ok) {
@@ -271,7 +271,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
         });
       }
     },
-    [loadingPreviews, weatherPreviews]
+    [loadingPreviews, weatherPreviews],
   );
 
   // Load previews for visible cities
@@ -288,7 +288,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
       haptic.triggerHaptic('light');
       onCitySelect(city.name, city.latitude, city.longitude);
     },
-    [haptic, onCitySelect]
+    [haptic, onCitySelect],
   );
 
   // Handle favorite toggle
@@ -306,11 +306,11 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
           city.longitude,
           city.displayName,
           city.country,
-          city.state
+          city.state,
         );
       }
     },
-    [haptic, removeFromFavorites, addToFavorites]
+    [haptic, removeFromFavorites, addToFavorites],
   );
 
   // Handle clear recent cities
@@ -356,7 +356,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   // Render weather preview content
   const renderWeatherPreview = (
     preview: WeatherPreview | undefined,
-    isLoading: boolean
+    isLoading: boolean,
   ) => {
     if (isLoading) {
       return (
@@ -365,7 +365,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
             width: '16px',
             height: '16px',
             border: `2px solid ${theme.cardBorder}`,
-            borderTop: `2px solid #667eea`,
+            borderTop: '2px solid #667eea',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
           }}

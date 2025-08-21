@@ -164,7 +164,7 @@ const getEnhancedScreenInfo = (): EnhancedScreenInfo => {
 // ============================================================================
 
 const getEnhancedTypography = (
-  screenInfo: EnhancedScreenInfo
+  screenInfo: EnhancedScreenInfo,
 ): EnhancedTypography => {
   const { width, viewportUnits, isVerySmallScreen, isSmallScreen } = screenInfo;
 
@@ -188,32 +188,32 @@ const getEnhancedTypography = (
     medium: clampFont(
       baseFontSize + 1,
       baseFontSize * scaleRatio,
-      baseFontSize + 4
+      baseFontSize + 4,
     ),
     large: clampFont(
       baseFontSize + 2,
       baseFontSize * Math.pow(scaleRatio, 2),
-      baseFontSize + 6
+      baseFontSize + 6,
     ),
     xlarge: clampFont(
       baseFontSize + 4,
       baseFontSize * Math.pow(scaleRatio, 3),
-      baseFontSize + 10
+      baseFontSize + 10,
     ),
     xxlarge: clampFont(
       baseFontSize + 6,
       baseFontSize * Math.pow(scaleRatio, 4),
-      baseFontSize + 14
+      baseFontSize + 14,
     ),
     hero: clampFont(
       baseFontSize + 12,
       baseFontSize * Math.pow(scaleRatio, 5),
-      baseFontSize + 24
+      baseFontSize + 24,
     ),
     display: clampFont(
       baseFontSize + 16,
       baseFontSize * Math.pow(scaleRatio, 6),
-      baseFontSize + 32
+      baseFontSize + 32,
     ),
   };
 };
@@ -223,7 +223,7 @@ const getEnhancedTypography = (
 // ============================================================================
 
 const getEnhancedSpacing = (
-  screenInfo: EnhancedScreenInfo
+  screenInfo: EnhancedScreenInfo,
 ): EnhancedSpacing => {
   const { width, isVerySmallScreen, isSmallScreen, isLandscape } = screenInfo;
 
@@ -235,7 +235,7 @@ const getEnhancedSpacing = (
   const clampSpacing = (
     min: number,
     preferred: number,
-    max: number
+    max: number,
   ): string => {
     const adjustedMin = min * landscapeMultiplier;
     const adjustedMax = Math.min(max, width * 0.08); // Prevent excessive spacing
@@ -262,7 +262,7 @@ const getEnhancedSpacing = (
 // ============================================================================
 
 const getEnhancedTouchTargets = (
-  screenInfo: EnhancedScreenInfo
+  screenInfo: EnhancedScreenInfo,
 ): EnhancedTouchTargets => {
   const { isVerySmallScreen, isSmallScreen, pixelRatio } = screenInfo;
 
@@ -293,7 +293,7 @@ const getEnhancedTouchTargets = (
 // ============================================================================
 
 const getEnhancedBorderRadius = (
-  screenInfo: EnhancedScreenInfo
+  screenInfo: EnhancedScreenInfo,
 ): EnhancedBorderRadius => {
   const { width, isVerySmallScreen } = screenInfo;
 
@@ -328,7 +328,7 @@ const getEnhancedBorderRadius = (
  */
 export const useEnhancedMobileScreen = () => {
   const [screenInfo, setScreenInfo] = useState<EnhancedScreenInfo>(
-    getEnhancedScreenInfo
+    getEnhancedScreenInfo,
   );
 
   // Handle screen changes with debouncing
@@ -362,16 +362,16 @@ export const useEnhancedMobileScreen = () => {
   // Memoized calculations for performance
   const typography = useMemo(
     () => getEnhancedTypography(screenInfo),
-    [screenInfo]
+    [screenInfo],
   );
   const spacing = useMemo(() => getEnhancedSpacing(screenInfo), [screenInfo]);
   const touchTargets = useMemo(
     () => getEnhancedTouchTargets(screenInfo),
-    [screenInfo]
+    [screenInfo],
   );
   const borderRadius = useMemo(
     () => getEnhancedBorderRadius(screenInfo),
-    [screenInfo]
+    [screenInfo],
   );
 
   // Utility functions
@@ -379,30 +379,30 @@ export const useEnhancedMobileScreen = () => {
     (size: keyof EnhancedTypography) => {
       return typography[size];
     },
-    [typography]
+    [typography],
   );
 
   const getResponsiveSpacing = useCallback(
     (size: keyof EnhancedSpacing) => {
       return spacing[size];
     },
-    [spacing]
+    [spacing],
   );
 
   const getOptimalTouchTarget = useCallback(
     (
-      priority: 'minimum' | 'comfortable' | 'large' | 'gesture' = 'comfortable'
+      priority: 'minimum' | 'comfortable' | 'large' | 'gesture' = 'comfortable',
     ) => {
       return touchTargets[priority];
     },
-    [touchTargets]
+    [touchTargets],
   );
 
   const getAdaptiveBorderRadius = useCallback(
     (size: keyof EnhancedBorderRadius) => {
       return borderRadius[size];
     },
-    [borderRadius]
+    [borderRadius],
   );
 
   // CSS custom properties generator

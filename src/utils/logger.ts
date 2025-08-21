@@ -149,8 +149,8 @@ class Logger {
       console.info(
         ...this.formatMessage(
           '⚡',
-          `${label} took ${(end - start).toFixed(2)}ms`
-        )
+          `${label} took ${(end - start).toFixed(2)}ms`,
+        ),
       );
     } else {
       fn();

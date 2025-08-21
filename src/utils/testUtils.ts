@@ -39,7 +39,7 @@ export const createMockWeatherData = (overrides = {}) => ({
 export const createMockGeocodingResponse = (
   city = 'New York',
   lat = 40.7128,
-  lon = -74.006
+  lon = -74.006,
 ) => [{ lat: lat.toString(), lon: lon.toString(), display_name: city }];
 
 /**
@@ -83,7 +83,7 @@ export const createMockNavigation = () => {
  */
 export const setupSuccessfulApiFetch = (
   cityName = 'New York',
-  weatherData = createMockOpenMeteoResponse()
+  weatherData = createMockOpenMeteoResponse(),
 ) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
 
@@ -105,7 +105,7 @@ export const setupSuccessfulApiFetch = (
  */
 export const setupFailedApiFetch = (
   failAtGeocoding = false,
-  errorMessage = 'API Error'
+  errorMessage = 'API Error',
 ) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
 

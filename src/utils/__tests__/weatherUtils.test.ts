@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Import the functions we want to test from AppNavigator
@@ -166,7 +166,7 @@ describe('Weather Utility Functions', () => {
       // Create mock data with more than 24 future hours
       const largeMockData = {
         time: Array.from({ length: 30 }, (_, i) =>
-          new Date(Date.now() + (i + 1) * 60 * 60 * 1000).toISOString()
+          new Date(Date.now() + (i + 1) * 60 * 60 * 1000).toISOString(),
         ),
         temperature_2m: Array.from({ length: 30 }, (_, i) => 70 + i),
         weathercode: Array.from({ length: 30 }, () => 0),

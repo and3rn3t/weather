@@ -83,7 +83,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         setIsVisible(true);
       }
     },
-    [disabled]
+    [disabled],
   );
 
   const handleContextMenu = useCallback(
@@ -101,7 +101,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       setPosition({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
     },
-    [disabled]
+    [disabled],
   );
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -143,7 +143,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     if (action.destructive) {
       textColor = '#FF3B30';
     } else if (action.disabled) {
-      textColor = theme.secondaryText + '60';
+      textColor = `${theme.secondaryText  }60`;
     } else {
       textColor = theme.primaryText;
     }
@@ -534,7 +534,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
   children,
 }) => {
   const [currentDetent, setCurrentDetent] = useState<'medium' | 'large'>(
-    'medium'
+    'medium',
   );
   const isDark =
     theme.appBackground.includes('28, 28, 30') ||
@@ -686,7 +686,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     const deltaX = touch.clientX - containerRect.left - containerRect.width / 2;
     const clampedOffset = Math.max(
       -maxSwipeDistance,
-      Math.min(maxSwipeDistance, deltaX)
+      Math.min(maxSwipeDistance, deltaX),
     );
     setSwipeOffset(clampedOffset);
   };

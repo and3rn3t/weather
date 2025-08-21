@@ -86,7 +86,7 @@ describe('Haptic Feedback System', () => {
 
     it('should respect rate limiting', async () => {
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: true })
+        useHapticFeedback({ respectSystemSettings: true }),
       );
 
       act(() => {
@@ -99,7 +99,7 @@ describe('Haptic Feedback System', () => {
 
     it('should handle disabled state', () => {
       const { result } = renderHook(() =>
-        useHapticFeedback({ enabled: false })
+        useHapticFeedback({ enabled: false }),
       );
 
       act(() => {
@@ -152,7 +152,7 @@ describe('Haptic Feedback System', () => {
       });
 
       const { result } = renderHook(() =>
-        useHapticFeedback({ debugMode: true })
+        useHapticFeedback({ debugMode: true }),
       );
 
       expect(() => {
@@ -229,7 +229,7 @@ describe('Haptic Feedback System', () => {
   describe('Haptic Patterns', () => {
     it('should trigger navigation haptic correctly', () => {
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: false })
+        useHapticFeedback({ respectSystemSettings: false }),
       );
 
       act(() => {
@@ -242,7 +242,7 @@ describe('Haptic Feedback System', () => {
     it('should trigger refresh haptic correctly', () => {
       vi.advanceTimersByTime(100); // Ensure rate limiting doesn't interfere
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: false })
+        useHapticFeedback({ respectSystemSettings: false }),
       );
 
       act(() => {
@@ -255,7 +255,7 @@ describe('Haptic Feedback System', () => {
     it('should trigger notification haptic correctly', () => {
       vi.advanceTimersByTime(100);
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: false })
+        useHapticFeedback({ respectSystemSettings: false }),
       );
 
       act(() => {
@@ -268,7 +268,7 @@ describe('Haptic Feedback System', () => {
     it('should trigger selection haptic correctly', () => {
       vi.advanceTimersByTime(100);
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: false })
+        useHapticFeedback({ respectSystemSettings: false }),
       );
 
       act(() => {
@@ -281,7 +281,7 @@ describe('Haptic Feedback System', () => {
     it('should trigger long press haptic correctly', () => {
       vi.advanceTimersByTime(100);
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: false })
+        useHapticFeedback({ respectSystemSettings: false }),
       );
 
       act(() => {

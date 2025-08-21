@@ -31,7 +31,7 @@ class PackageStreamliner {
 
   private log(
     message: string,
-    type: 'info' | 'success' | 'warning' | 'error' = 'info'
+    type: 'info' | 'success' | 'warning' | 'error' = 'info',
   ) {
     const icons = {
       info: 'ℹ️',
@@ -119,7 +119,7 @@ class PackageStreamliner {
     const essentialScripts = this.getEssentialScripts();
 
     const redundantScripts = Object.keys(currentScripts).filter(
-      script => !Object.prototype.hasOwnProperty.call(essentialScripts, script)
+      script => !Object.prototype.hasOwnProperty.call(essentialScripts, script),
     );
 
     return {
@@ -136,7 +136,7 @@ class PackageStreamliner {
       writeFileSync(backupPath, packageContent);
       this.log(
         'Current package.json backed up to package.json.backup',
-        'success'
+        'success',
       );
     }
   }
@@ -157,12 +157,12 @@ class PackageStreamliner {
       writeFileSync(this.packagePath, JSON.stringify(packageJson, null, 2));
       this.log(
         `Scripts streamlined: ${originalCount} → ${Object.keys(essentialScripts).length}`,
-        'success'
+        'success',
       );
     } else {
       this.log(
         `DRY RUN: Would streamline ${originalCount} → ${Object.keys(essentialScripts).length} scripts`,
-        'info'
+        'info',
       );
     }
   }
@@ -243,7 +243,7 @@ class PackageStreamliner {
       if (!this.options.force && !this.options.dryRun) {
         this.log(
           `This will remove ${analysis.redundant.length} scripts. Use --force to proceed or --dry-run to preview`,
-          'warning'
+          'warning',
         );
         return;
       }

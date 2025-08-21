@@ -52,7 +52,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
     render(
       <ThemeProvider>
         <TestComponent />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByTestId('theme-mode')).toHaveTextContent('light');
@@ -64,7 +64,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
     render(
       <ThemeProvider>
         <TestComponent />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     // Start with light theme
@@ -83,7 +83,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
     render(
       <ThemeProvider>
         <TestComponent />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     // Toggle to dark theme
@@ -92,7 +92,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
     // Check that localStorage was called
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       'weather-app-theme',
-      'dark'
+      'dark',
     );
   });
 
@@ -103,7 +103,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
     render(
       <ThemeProvider>
         <TestComponent />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     // Should start with dark theme
@@ -122,7 +122,7 @@ describe('Theme Context and Hook - Simple Tests', () => {
     render(
       <ThemeProvider>
         <ThemeCapture />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     // Check that theme has key properties

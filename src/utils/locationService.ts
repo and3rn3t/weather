@@ -74,7 +74,7 @@ export class EnhancedLocationService {
       throw this.createError(
         'NOT_SUPPORTED',
         'Geolocation not supported',
-        'Your browser does not support location services. Please search for your city manually.'
+        'Your browser does not support location services. Please search for your city manually.',
       );
     }
 
@@ -84,7 +84,7 @@ export class EnhancedLocationService {
       throw this.createError(
         'PERMISSION_DENIED',
         'Permission denied',
-        'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.'
+        'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.',
       );
     }
 
@@ -107,7 +107,7 @@ export class EnhancedLocationService {
       try {
         const cityName = await this.getCityNameFromCoordinates(
           result.latitude,
-          result.longitude
+          result.longitude,
         );
         result.cityName = cityName;
       } catch (cityError) {
@@ -123,32 +123,32 @@ export class EnhancedLocationService {
             throw this.createError(
               'PERMISSION_DENIED',
               'Permission denied',
-              'Location access was denied. Please enable location permissions and try again.'
+              'Location access was denied. Please enable location permissions and try again.',
             );
           case GeolocationPositionError.POSITION_UNAVAILABLE:
             throw this.createError(
               'POSITION_UNAVAILABLE',
               'Position unavailable',
-              'Your location could not be determined. Please check your device settings or try searching for your city.'
+              'Your location could not be determined. Please check your device settings or try searching for your city.',
             );
           case GeolocationPositionError.TIMEOUT:
             throw this.createError(
               'TIMEOUT',
               'Request timeout',
-              'Location request timed out. Please try again or search for your city manually.'
+              'Location request timed out. Please try again or search for your city manually.',
             );
           default:
             throw this.createError(
               'POSITION_UNAVAILABLE',
               'Unknown geolocation error',
-              'An error occurred while getting your location. Please try again.'
+              'An error occurred while getting your location. Please try again.',
             );
         }
       }
       throw this.createError(
         'POSITION_UNAVAILABLE',
         'Location failed',
-        'Failed to get your location. Please try again or search for your city manually.'
+        'Failed to get your location. Please try again or search for your city manually.',
       );
     }
   }
@@ -157,7 +157,7 @@ export class EnhancedLocationService {
    * Get position using Promise wrapper
    */
   private getPositionAsync(
-    options: PositionOptions
+    options: PositionOptions,
   ): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, options);
@@ -169,7 +169,7 @@ export class EnhancedLocationService {
    */
   private async getCityNameFromCoordinates(
     latitude: number,
-    longitude: number
+    longitude: number,
   ): Promise<string> {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
@@ -177,7 +177,7 @@ export class EnhancedLocationService {
         headers: {
           'User-Agent': 'PremiumWeatherApp/1.0 (weather.andernet.dev)',
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -202,7 +202,7 @@ export class EnhancedLocationService {
   private createError(
     code: LocationError['code'],
     message: string,
-    userMessage: string
+    userMessage: string,
   ): LocationError {
     return {
       code,

@@ -176,7 +176,7 @@ export const horrorWeatherQuotes: Record<string, HorrorQuote[]> = {
 // Map weather codes to quote categories
 export const getHorrorQuoteCategory = (
   code: number,
-  isDay: boolean = true
+  isDay: boolean = true,
 ): string => {
   if (!isDay) return 'night';
 
@@ -222,7 +222,7 @@ const getSecureRandomIndex = (maxValue: number): number => {
 // Get a random horror quote for the weather condition
 export const getRandomHorrorQuote = (
   code: number,
-  isDay: boolean = true
+  isDay: boolean = true,
 ): HorrorQuote => {
   const category = getHorrorQuoteCategory(code, isDay);
   const quotes = horrorWeatherQuotes[category] || horrorWeatherQuotes.general;

@@ -60,7 +60,7 @@ describe('Enhanced Swipe Gestures', () => {
         onSwipeLeft,
         onSwipeRight,
         true,
-        true
+        true,
       );
 
       expect(handlers).toHaveProperty('onTouchStart');
@@ -76,7 +76,7 @@ describe('Enhanced Swipe Gestures', () => {
         useSwipeGestures({
           threshold: 50,
           enableHaptic: false,
-        })
+        }),
       );
 
       const onSwipeLeft = vi.fn();
@@ -86,7 +86,7 @@ describe('Enhanced Swipe Gestures', () => {
         onSwipeLeft,
         onSwipeRight,
         true,
-        true
+        true,
       );
 
       act(() => {
@@ -104,7 +104,7 @@ describe('Enhanced Swipe Gestures', () => {
         useSwipeGestures({
           threshold: 50,
           enableHaptic: false,
-        })
+        }),
       );
 
       const onSwipeLeft = vi.fn();
@@ -114,7 +114,7 @@ describe('Enhanced Swipe Gestures', () => {
         onSwipeLeft,
         onSwipeRight,
         true,
-        true
+        true,
       );
 
       act(() => {
@@ -132,7 +132,7 @@ describe('Enhanced Swipe Gestures', () => {
         useSwipeGestures({
           threshold: 100,
           enableHaptic: false,
-        })
+        }),
       );
 
       const onSwipeLeft = vi.fn();
@@ -142,7 +142,7 @@ describe('Enhanced Swipe Gestures', () => {
         onSwipeLeft,
         onSwipeRight,
         true,
-        true
+        true,
       );
 
       act(() => {
@@ -160,7 +160,7 @@ describe('Enhanced Swipe Gestures', () => {
         useSwipeGestures({
           threshold: 50,
           enableHaptic: false,
-        })
+        }),
       );
 
       const onSwipeLeft = vi.fn();
@@ -171,7 +171,7 @@ describe('Enhanced Swipe Gestures', () => {
         onSwipeLeft,
         onSwipeRight,
         false, // canSwipeLeft = false
-        true // canSwipeRight = true
+        true, // canSwipeRight = true
       );
 
       // Try left swipe (should be blocked)
@@ -208,7 +208,7 @@ describe('Enhanced Swipe Gestures', () => {
 
     it('should return correct config for WeatherDetails screen', () => {
       const { result } = renderHook(() =>
-        useScreenSwipeConfig('WeatherDetails')
+        useScreenSwipeConfig('WeatherDetails'),
       );
 
       expect(result.current).toEqual({
@@ -221,7 +221,7 @@ describe('Enhanced Swipe Gestures', () => {
 
     it('should return disabled config for unknown screen', () => {
       const { result } = renderHook(() =>
-        useScreenSwipeConfig('UnknownScreen')
+        useScreenSwipeConfig('UnknownScreen'),
       );
 
       expect(result.current).toEqual({

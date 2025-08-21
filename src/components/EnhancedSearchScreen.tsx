@@ -134,7 +134,7 @@ function EnhancedSearchScreen({
     try {
       // Primary API: OpenStreetMap Nominatim
       const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        query
+        query,
       )}&format=json&limit=25&addressdetails=1&extratags=1`;
 
       const controller = new AbortController();
@@ -152,7 +152,7 @@ function EnhancedSearchScreen({
 
       if (!response.ok) {
         throw new Error(
-          `Search API returned ${response.status}: ${response.statusText}`
+          `Search API returned ${response.status}: ${response.statusText}`,
         );
       }
 
@@ -237,14 +237,14 @@ function EnhancedSearchScreen({
 
       if (error.name === 'AbortError') {
         setError(
-          'Search timed out. Please check your internet connection and try again.'
+          'Search timed out. Please check your internet connection and try again.',
         );
       } else if (
         error.message?.includes('Failed to fetch') ||
         error.message?.includes('NetworkError')
       ) {
         setError(
-          'Network error. Please check your internet connection and try again.'
+          'Network error. Please check your internet connection and try again.',
         );
       } else {
         setError('Search failed. Please try again in a moment.');
@@ -304,7 +304,7 @@ function EnhancedSearchScreen({
       const newRecent = [
         searchResult,
         ...recentSearches.filter(
-          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon
+          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon,
         ),
       ].slice(0, 5);
 
@@ -313,7 +313,7 @@ function EnhancedSearchScreen({
       try {
         localStorage.setItem(
           'weather-recent-searches',
-          JSON.stringify(newRecent)
+          JSON.stringify(newRecent),
         );
       } catch (error) {
         logError('Error saving recent searches:', error);
@@ -321,7 +321,7 @@ function EnhancedSearchScreen({
 
       onLocationSelect(cityName, latitude, longitude);
     },
-    [haptic, onLocationSelect, recentSearches]
+    [haptic, onLocationSelect, recentSearches],
   );
 
   // Handle recent search selection
@@ -332,7 +332,7 @@ function EnhancedSearchScreen({
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect]
+    [haptic, onLocationSelect],
   );
 
   // Get current location with enhanced error handling
@@ -346,7 +346,7 @@ function EnhancedSearchScreen({
       if (!locationService.isSecureContext()) {
         haptic.error();
         setError(
-          'Location services require a secure connection (HTTPS). This feature may not work on non-secure websites.'
+          'Location services require a secure connection (HTTPS). This feature may not work on non-secure websites.',
         );
         return;
       }
@@ -355,7 +355,7 @@ function EnhancedSearchScreen({
       if (!locationService.isSupported()) {
         haptic.error();
         setError(
-          'Geolocation is not supported by this browser. Please search for your city manually.'
+          'Geolocation is not supported by this browser. Please search for your city manually.',
         );
         return;
       }
@@ -367,7 +367,7 @@ function EnhancedSearchScreen({
       if (permissionState === 'denied') {
         haptic.error();
         setError(
-          'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.'
+          'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.',
         );
         return;
       }
@@ -383,7 +383,7 @@ function EnhancedSearchScreen({
       onLocationSelect(
         cityName,
         locationResult.latitude,
-        locationResult.longitude
+        locationResult.longitude,
       );
     } catch (locationError: any) {
       haptic.error();
@@ -394,7 +394,7 @@ function EnhancedSearchScreen({
         setError(locationError.userMessage);
       } else {
         setError(
-          'Failed to get your location. Please try again or search for your city manually.'
+          'Failed to get your location. Please try again or search for your city manually.',
         );
       }
 

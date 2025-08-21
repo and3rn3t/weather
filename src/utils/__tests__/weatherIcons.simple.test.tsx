@@ -18,7 +18,7 @@ describe('WeatherIcon Component - Simple Tests', () => {
 
   test('renders animated weather icon', () => {
     const { container } = render(
-      <WeatherIcon code={0} size={64} animated={true} />
+      <WeatherIcon code={0} size={64} animated={true} />,
     );
     const svgElement = container.querySelector('svg');
     expect(svgElement).toHaveClass('weather-icon-animated');
@@ -26,10 +26,10 @@ describe('WeatherIcon Component - Simple Tests', () => {
 
   test('renders different icons for different weather codes', () => {
     const { container: container1 } = render(
-      <WeatherIcon code={0} size={64} />
+      <WeatherIcon code={0} size={64} />,
     );
     const { container: container2 } = render(
-      <WeatherIcon code={61} size={64} />
+      <WeatherIcon code={61} size={64} />,
     );
 
     const svg1 = container1.querySelector('svg');

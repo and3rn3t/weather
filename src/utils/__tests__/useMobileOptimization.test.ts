@@ -194,7 +194,7 @@ describe('Mobile Optimization Hooks', () => {
 
       const swipeHandlers = result.current.createSwipeHandler(
         mockSwipeLeft,
-        mockSwipeRight
+        mockSwipeRight,
       );
 
       expect(swipeHandlers).toHaveProperty('onTouchStart');
@@ -262,7 +262,7 @@ describe('Mobile Optimization Hooks', () => {
       expect(capabilities.result.current.hasHover).toBe(true);
       // Note: Touch detection may still be true in test environment, that's ok
       expect(performance.result.current.enableTouchOptimizations).toBe(
-        capabilities.result.current.hasTouch
+        capabilities.result.current.hasTouch,
       );
     });
   });

@@ -367,7 +367,7 @@ describe('Native Platform Integration', () => {
   it('should fallback to web haptics if native fails', async () => {
     const { Haptics } = await import('@capacitor/haptics');
     vi.mocked(Haptics.impact).mockRejectedValue(
-      new Error('Native haptics failed')
+      new Error('Native haptics failed'),
     );
 
     // Ensure mockVibrate returns true for fallback

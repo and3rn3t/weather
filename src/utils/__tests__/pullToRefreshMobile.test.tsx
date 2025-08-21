@@ -82,7 +82,7 @@ const TestComponent: React.FC<{
 
 function handleLoadingRefresh(
   setIsRefreshing: React.Dispatch<React.SetStateAction<boolean>>,
-  slowRefresh: () => Promise<void>
+  slowRefresh: () => Promise<void>,
 ) {
   return async () => {
     setIsRefreshing(true);
@@ -190,7 +190,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
           <PullToRefresh onRefresh={refreshCallback}>
             <div data-testid="content">Content</div>
           </PullToRefresh>
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const container = screen.getByTestId('content').parentElement;
@@ -225,7 +225,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
           <PullToRefresh onRefresh={refreshCallback}>
             <div data-testid="android-content">Android content</div>
           </PullToRefresh>
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const container = screen.getByTestId('android-content').parentElement;
@@ -254,7 +254,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
           <PullToRefresh onRefresh={refreshCallback}>
             <AndroidTestContent />
           </PullToRefresh>
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const container =
@@ -279,7 +279,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       render(
         <TestWrapper>
           <HookTestComponent onRefresh={refreshCallback} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('pull-distance')).toHaveTextContent('0');
@@ -291,7 +291,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       render(
         <TestWrapper>
           <HookTestComponent onRefresh={refreshCallback} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const resetButton = screen.getByTestId('reset-button');
@@ -307,7 +307,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       render(
         <TestWrapper>
           <HookTestComponent onRefresh={slowRefresh} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Test that initial state is correct
@@ -322,7 +322,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
       render(
         <TestWrapper>
           <HookTestComponent onRefresh={refreshCallback} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const container = screen.getByTestId('hook-container');
@@ -354,7 +354,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
           <PullToRefresh onRefresh={failingRefresh}>
             <div data-testid="content">Content</div>
           </PullToRefresh>
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByTestId('content')).toBeInTheDocument();
@@ -366,7 +366,7 @@ describe('Pull-to-Refresh Mobile Tests', () => {
           <PullToRefresh onRefresh={refreshCallback} disabled={true}>
             <div data-testid="disabled-content">Disabled content</div>
           </PullToRefresh>
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const container = screen.getByTestId('disabled-content');

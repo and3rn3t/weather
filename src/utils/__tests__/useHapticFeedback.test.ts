@@ -40,7 +40,7 @@ describe('useHapticFeedback', () => {
 
     it('should detect when haptics are disabled', () => {
       const { result } = renderHook(() =>
-        useHapticFeedback({ enabled: false })
+        useHapticFeedback({ enabled: false }),
       );
 
       const capabilities = result.current.getCapabilities();
@@ -145,7 +145,7 @@ describe('useHapticFeedback', () => {
   describe('Rate Limiting', () => {
     it('should respect rate limiting between vibrations', async () => {
       const { result } = renderHook(() =>
-        useHapticFeedback({ respectSystemSettings: true })
+        useHapticFeedback({ respectSystemSettings: true }),
       );
 
       // First vibration should work
@@ -188,7 +188,7 @@ describe('useHapticFeedback', () => {
       });
 
       const { result } = renderHook(() =>
-        useHapticFeedback({ debugMode: true })
+        useHapticFeedback({ debugMode: true }),
       );
 
       // Should not throw error

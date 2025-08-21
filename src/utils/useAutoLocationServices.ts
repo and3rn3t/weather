@@ -112,7 +112,7 @@ const isLocationCacheValid = (cache: CachedLocation | null): boolean => {
 export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
   const mergedConfig = useMemo(
     () => ({ ...DEFAULT_CONFIG, ...config }),
-    [config]
+    [config],
   );
   const haptic = useHaptic();
 
@@ -138,7 +138,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
 
   // Cached location management
   const [cachedLocation, setCachedLocation] = useState<CachedLocation | null>(
-    loadFromStorage('cached-location')
+    loadFromStorage('cached-location'),
   );
 
   // Background update timer
@@ -219,7 +219,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
       mergedConfig.cacheExpiration,
       mergedConfig.enableBackgroundUpdates,
       mergedConfig.updateInterval,
-    ]
+    ],
   );
 
   // ============================================================================
@@ -250,7 +250,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
         autoState.batteryLevel < 0.2
       ) {
         logInfo(
-          'Battery optimization: skipping location request due to low battery'
+          'Battery optimization: skipping location request due to low battery',
         );
         return;
       }
@@ -286,7 +286,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
       updateLocationCache,
       haptic,
       mergedConfig,
-    ]
+    ],
   );
 
   // ============================================================================
@@ -313,7 +313,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
     }, intervalMs);
 
     logInfo(
-      `🔄 Background location updates enabled (${mergedConfig.updateInterval} min intervals)`
+      `🔄 Background location updates enabled (${mergedConfig.updateInterval} min intervals)`,
     );
   }, [
     mergedConfig.enableBackgroundUpdates,
@@ -402,7 +402,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
         requestAutoLocation('auto');
       }
     },
-    [requestAutoLocation]
+    [requestAutoLocation],
   );
 
   const toggleBackgroundUpdates = useCallback(
@@ -415,7 +415,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
         backgroundTimer.current = null;
       }
     },
-    [setupBackgroundUpdates]
+    [setupBackgroundUpdates],
   );
 
   return {

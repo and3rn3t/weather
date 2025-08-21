@@ -41,7 +41,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
 
   // Touch state for gestures
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
-    null
+    null,
   );
   const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
 

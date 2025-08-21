@@ -38,20 +38,20 @@ describe('usePullToRefresh', () => {
     expect(result.current.pullToRefreshHandlers).toHaveProperty('onTouchMove');
     expect(result.current.pullToRefreshHandlers).toHaveProperty('onTouchEnd');
     expect(typeof result.current.pullToRefreshHandlers.onTouchStart).toBe(
-      'function'
+      'function',
     );
     expect(typeof result.current.pullToRefreshHandlers.onTouchMove).toBe(
-      'function'
+      'function',
     );
     expect(typeof result.current.pullToRefreshHandlers.onTouchEnd).toBe(
-      'function'
+      'function',
     );
   });
 
   it('should calculate pull progress correctly', () => {
     const mockRefresh = vi.fn().mockResolvedValue(undefined);
     const { result } = renderHook(() =>
-      usePullToRefresh(mockRefresh, { refreshThreshold: 60 })
+      usePullToRefresh(mockRefresh, { refreshThreshold: 60 }),
     );
 
     // Progress should be calculated based on pullDistance / refreshThreshold
@@ -79,7 +79,7 @@ describe('usePullToRefresh', () => {
   it('should handle disabled state', () => {
     const mockRefresh = vi.fn().mockResolvedValue(undefined);
     const { result } = renderHook(() =>
-      usePullToRefresh(mockRefresh, { disabled: true })
+      usePullToRefresh(mockRefresh, { disabled: true }),
     );
 
     // When disabled, pull handlers should exist but not trigger state changes
