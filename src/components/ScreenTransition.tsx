@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ThemeColors } from '../utils/themeConfig';
 import { useSwipeGestures } from '../utils/useSwipeGestures';
 
@@ -117,7 +117,7 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
     right: 0,
     bottom: 0,
     width: '100%',
-    height: '100%',
+    height: 'calc(100dvh - 80px)', // Account for navigation bar
     transform: getTransformValue(),
     opacity: getOpacity(),
     transition: `all ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
@@ -205,7 +205,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
           onSwipeLeft || (() => {}),
           onSwipeRight || (() => {}),
           !!onSwipeLeft,
-          !!onSwipeRight,
+          !!onSwipeRight
         )
       : {};
 
@@ -215,7 +215,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
 
   const getDirection = (
     from: string | null,
-    to: string,
+    to: string
   ): TransitionDirection => {
     if (!from || transitionDirection !== 'slide-left') {
       return transitionDirection;
@@ -236,7 +236,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   const containerStyle: React.CSSProperties = {
     position: 'relative',
     width: '100%',
-    height: '100%',
+    height: 'calc(100dvh - 80px)', // Account for navigation bar
     overflow: 'hidden',
 
     // Ensure container takes full space

@@ -216,7 +216,7 @@ export const useEnhancedSearch = () => {
             result =>
               result.lat !== '0' &&
               result.lon !== '0' &&
-              result.display_name !== 'Unknown Location'
+              result.display_name !== 'Unknown Location',
           )
           .slice(0, SEARCH_CONFIG.MAX_RESULTS);
 
@@ -257,7 +257,7 @@ export const useEnhancedSearch = () => {
         }));
       }
     },
-    [offlineSearch, searchState.isOffline, offlineState.cacheStatus.hitRate]
+    [offlineSearch, searchState.isOffline, offlineState.cacheStatus.hitRate],
   );
 
   /**
@@ -273,7 +273,7 @@ export const useEnhancedSearch = () => {
         performEnhancedSearch(query);
       }, SEARCH_CONFIG.DEBOUNCE_DELAY);
     },
-    [performEnhancedSearch]
+    [performEnhancedSearch],
   );
 
   /**
@@ -281,7 +281,7 @@ export const useEnhancedSearch = () => {
    */
   const calculateRelevanceScore = (
     query: string,
-    result: EnhancedSearchResult
+    result: EnhancedSearchResult,
   ): number => {
     const queryLower = query.toLowerCase();
     const nameLower = result.name.toLowerCase();
