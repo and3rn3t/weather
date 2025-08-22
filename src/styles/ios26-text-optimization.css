@@ -1,0 +1,240 @@
+/**
+ * iOS26 Text Optimization - HIG Compliant Typography
+ *
+ * Optimized text hierarchy following Apple's iOS26 Human Interface Guidelines:
+ * - Reduced visual noise and emoji clutter
+ * - Clean, scannable information architecture
+ * - Proper typographic hierarchy
+ * - Enhanced readability and visual appeal
+ */
+
+/* === IMPROVED WEATHER CARD TEXT HIERARCHY === */
+
+.ios26-weather-card {
+  /* Cleaner spacing for better readability */
+  padding: 20px;
+  line-height: 1.4;
+}
+
+.ios26-weather-location {
+  /* Clean location display without emoji clutter */
+  margin-bottom: 8px;
+}
+
+.ios26-weather-location .ios-headline {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ios26-weather-condition {
+  /* Better spacing and hierarchy for weather condition */
+  margin-top: 8px;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.ios26-feels-like {
+  /* Subtle feels-like temperature */
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+/* === OPTIMIZED WIDGET TITLES === */
+
+.ios26-widget-title-optimized {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ios26-text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.ios26-widget-subtitle-optimized {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ios26-text-secondary);
+  margin-bottom: 8px;
+}
+
+/* === CLEAN FORECAST SECTIONS === */
+
+.ios26-forecast-title {
+  /* Clean forecast section headers */
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ios26-text-primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.ios26-forecast-item-optimized {
+  /* Better spacing for forecast items */
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: var(--ios26-card-background);
+}
+
+.ios26-forecast-time-clean {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ios26-text-secondary);
+  margin-bottom: 4px;
+}
+
+.ios26-forecast-temp-clean {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ios26-text-primary);
+}
+
+/* === CLEANER WEATHER METRICS === */
+
+.ios26-weather-metric-clean {
+  text-align: center;
+  padding: 16px 12px;
+}
+
+.ios26-weather-metric-label-clean {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ios26-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.ios26-weather-metric-value-clean {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ios26-text-primary);
+  margin-bottom: 2px;
+}
+
+.ios26-weather-metric-unit-clean {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ios26-text-secondary);
+}
+
+/* === SIMPLIFIED STATUS BADGES === */
+
+.ios26-status-badge-clean {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ios26-status-badge-clean.success {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34c759;
+}
+
+.ios26-status-badge-clean.warning {
+  background: rgba(255, 149, 0, 0.15);
+  color: #ff9500;
+}
+
+.ios26-status-badge-clean.info {
+  background: rgba(0, 122, 255, 0.15);
+  color: #007aff;
+}
+
+/* === OPTIMIZED LOADING STATES === */
+
+.ios26-loading-text-clean {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ios26-text-secondary);
+  margin-top: 8px;
+}
+
+/* === CLEAN SECTION HEADERS === */
+
+.ios26-section-header-clean {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ios26-text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.ios26-section-subheader-clean {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ios26-text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+/* === RESPONSIVE TEXT SCALING === */
+
+@media (max-width: 768px) {
+  .ios26-forecast-title {
+    font-size: 18px;
+  }
+
+  .ios26-section-header-clean {
+    font-size: 16px;
+  }
+
+  .ios26-weather-metric-value-clean {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ios26-forecast-title {
+    font-size: 16px;
+  }
+
+  .ios26-section-header-clean {
+    font-size: 15px;
+  }
+
+  .ios26-weather-metric-value-clean {
+    font-size: 15px;
+  }
+}
+
+/* === ACCESSIBILITY ENHANCEMENTS === */
+
+@media (prefers-reduced-motion: reduce) {
+  .ios26-weather-card,
+  .ios26-forecast-item-optimized,
+  .ios26-weather-metric-clean {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .ios26-weather-metric-label-clean,
+  .ios26-forecast-time-clean,
+  .ios26-section-subheader-clean {
+    color: var(--ios26-text-primary);
+    opacity: 0.7;
+  }
+
+  .ios26-status-badge-clean {
+    border: 1px solid currentColor;
+  }
+}
+
+/* === DARK MODE OPTIMIZATIONS === */
+
+@media (prefers-color-scheme: dark) {
+  .ios26-weather-metric-label-clean {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .ios26-forecast-time-clean {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .ios26-section-subheader-clean {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}

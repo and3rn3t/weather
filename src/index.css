@@ -18,6 +18,12 @@
 /* NEW: iOS Human Interface Guidelines Enhancements */
 @import './styles/ios-hig-enhancements.css';
 
+/* NEW: iOS26 Text Optimization - HIG Compliant Typography */
+@import './styles/ios26-text-optimization.css';
+
+/* NEW: iOS26 Weather Details Fix - Enhanced Mobile Layout & Scrolling */
+@import './styles/ios26-weather-details-fix.css';
+
 /* NEW: Responsive Layout System - CONSOLIDATED */
 @import './styles/responsive-layout-consolidated.css';
 

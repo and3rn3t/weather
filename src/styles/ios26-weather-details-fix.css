@@ -1,0 +1,252 @@
+/**
+ * iOS26 Weather Details - Enhanced Mobile Layout & Scrolling Fix
+ *
+ * Fixes for w/* Enhanced forecast scroll containers */
+.ios26-forecast-scroll {
+  display: flex;
+  gap: var(--ios26-spacing-3);
+  overflow-x: auto;
+  padding: var(--ios26-spacing-2) 0 var(--ios26-spacing-6) 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  /* Hide scrollbars completely on all devices */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Ensure proper touch scrolling */
+  overscroll-behavior-x: contain;
+  /* Add extra bottom padding to ensure last items are visible */
+  margin-bottom: var(--ios26-spacing-4);
+}
+
+/* === MOBILE SCROLLING & LAYOUT FIXES === */
+
+/* Remove all scrollbars on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Enhanced main content container for weather details */
+.ios26-weather-details-container {
+  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height */
+  padding-bottom: calc(var(--ios26-spacing-6) + env(safe-area-inset-bottom, 20px));
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* Ensure content is fully scrollable */
+  position: relative;
+}
+
+/* Fix for main weather interface container */
+.ios26-weather-interface {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ios26-spacing-4);
+  padding: var(--ios26-spacing-4);
+  min-height: auto;
+  /* Ensure proper spacing at bottom */
+  padding-bottom: calc(var(--ios26-spacing-8) + env(safe-area-inset-bottom, 40px));
+}
+
+/* Enhanced weather widget grid for better mobile layout */
+.ios26-widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--ios26-spacing-3);
+  margin-bottom: var(--ios26-spacing-4);
+  /* Ensure grid doesn't cause horizontal overflow */
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Mobile-optimized widget grid */
+@media (max-width: 768px) {
+  .ios26-widget-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ios26-spacing-2);
+  }
+
+  /* Stack widgets vertically on very small screens */
+  @media (max-width: 480px) {
+    .ios26-widget-grid {
+      grid-template-columns: 1fr;
+      gap: var(--ios26-spacing-3);
+    }
+  }
+}
+
+/* Enhanced forecast sections with proper scrolling */
+.ios26-forecast-section {
+  margin-bottom: var(--ios26-spacing-6);
+  /* Ensure section doesn't cause layout issues */
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.ios26-forecast-section:last-child {
+  margin-bottom: var(--ios26-spacing-8);
+}
+
+/* Enhanced forecast items */
+.ios26-forecast-item {
+  flex: 0 0 auto;
+  min-width: 80px;
+  padding: var(--ios26-spacing-3);
+  background: var(--ios26-background-secondary);
+  border-radius: var(--ios26-radius-lg);
+  transition: all 0.2s var(--ios26-ease-out);
+  scroll-snap-align: start;
+  /* Ensure items are properly sized */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ios26-spacing-2);
+}
+
+/* Fix for main mobile container to prevent scroll issues */
+.main-content-area {
+  /* Remove any height restrictions that might cause scroll issues */
+  min-height: auto;
+  height: auto;
+  /* Ensure proper overflow handling */
+  overflow: visible;
+  /* Remove any padding that might interfere with scrolling */
+  padding-bottom: 0;
+}
+
+/* Enhanced mobile container specifically for weather details */
+.mobile-container.main-content-area {
+  padding-bottom: calc(var(--ios26-spacing-6) + env(safe-area-inset-bottom, 20px));
+  /* Ensure full height is usable */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Pull-to-refresh container fixes */
+.ios26-w-full {
+  width: 100%;
+  max-width: 100%;
+  /* Ensure PTR doesn't interfere with scrolling */
+  overflow: visible;
+}
+
+/* Enhanced segmented control spacing */
+.ios26-mb-4 {
+  margin-bottom: var(--ios26-spacing-4);
+}
+
+/* Quick actions container improvements */
+.ios26-quick-actions {
+  display: flex;
+  gap: var(--ios26-spacing-3);
+  flex-wrap: wrap;
+  margin-top: var(--ios26-spacing-3);
+  /* Ensure proper alignment and spacing */
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@media (max-width: 480px) {
+  .ios26-quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ios26-spacing-2);
+  }
+}
+
+/* Fix for iOS26 container padding issues */
+.ios26-container.ios26-p-0 {
+  padding: 0;
+  /* Ensure container doesn't restrict content */
+  overflow: visible;
+  min-height: auto;
+}
+
+/* Enhanced weather card layout */
+.ios26-weather-card {
+  margin-bottom: var(--ios26-spacing-4);
+  /* Ensure cards don't cause horizontal scroll */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Better spacing for weather sections */
+.ios26-text-title {
+  margin-bottom: var(--ios26-spacing-3);
+  /* Ensure titles don't cause layout shifts */
+  line-height: 1.2;
+}
+
+/* Enhanced interactive widget sizing */
+.interactive-widget {
+  /* Ensure widgets size properly on mobile */
+  width: 100%;
+  min-height: 120px;
+  box-sizing: border-box;
+}
+
+/* Fix for modal sheet positioning */
+.modal-sheet {
+  /* Ensure modal doesn't interfere with main content scrolling */
+  z-index: 1000;
+  position: fixed;
+}
+
+/* Accessibility improvements for scrollable content */
+@media (prefers-reduced-motion: reduce) {
+  .ios26-forecast-scroll {
+    scroll-behavior: auto;
+  }
+
+  .ios26-forecast-item {
+    transition: none;
+  }
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  .ios26-forecast-item {
+    border: 1px solid var(--ios26-border-primary);
+  }
+}
+
+/* Dark mode scrolling optimizations */
+@media (prefers-color-scheme: dark) {
+  .ios26-weather-details-container {
+    background: var(--ios26-background-primary);
+  }
+}
+
+/* Safe area handling for devices with notches/home indicators */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .ios26-weather-interface {
+    padding-bottom: calc(var(--ios26-spacing-8) + env(safe-area-inset-bottom));
+  }
+
+  .mobile-container.main-content-area {
+    padding-bottom: calc(var(--ios26-spacing-6) + env(safe-area-inset-bottom));
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ios26-widget-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ios26-spacing-2);
+  }
+
+  .ios26-weather-interface {
+    padding: var(--ios26-spacing-3);
+    gap: var(--ios26-spacing-3);
+  }
+}

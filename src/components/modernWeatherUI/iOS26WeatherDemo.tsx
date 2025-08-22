@@ -7,7 +7,10 @@
  * - Interactive Widgets with real-time updates
  * - Modal Sheets with detents
  * - Swipe Actions for enhanced interactions
- * - Enhanced Search with advanced filtering
+         <h2 style={titleStyle}>Locations</h2>
+        <p style={{ color: theme.secondaryText, marginBottom: '16px' }}>
+          Tap and hold for options. Swipe for quick actions.
+        </p>nhanced Search with advanced filtering
  */
 
 import React, { useEffect, useState } from 'react';
@@ -204,7 +207,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     <div style={containerStyle}>
       {/* Header with Segmented Control */}
       <div style={sectionStyle}>
-        <h1 style={titleStyle}>🌤️ Weather Dashboard</h1>
+        <h1 style={titleStyle}>Weather</h1>
         <SegmentedControl
           segments={['Today', 'Weekly', 'Radar', 'Settings']}
           selectedIndex={selectedView}
@@ -229,11 +232,11 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Interactive Widgets Grid */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>🌡️ Weather Details</h2>
+        <h2 style={titleStyle}>Details</h2>
         <div style={gridStyle}>
           {/* Current Weather Widget */}
           <InteractiveWidget
-            title="Current Weather"
+            title="Now"
             size="medium"
             theme={theme}
             isLoading={isUpdating}
@@ -289,7 +292,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
           </InteractiveWidget>
 
           {/* UV Index Widget */}
-          <InteractiveWidget title="UV Index" size="small" theme={theme}>
+          <InteractiveWidget title="UV" size="small" theme={theme}>
             <div style={{ textAlign: 'center' }}>
               <div
                 style={{
@@ -377,7 +380,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Loading States Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>⏳ Loading Status</h2>
+        <h2 style={titleStyle}>Status</h2>
         <div
           style={{
             display: 'flex',
@@ -403,16 +406,12 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Status Badges Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>⚠️ Weather Alerts</h2>
+        <h2 style={titleStyle}>Alerts</h2>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <StatusBadge
-            text="Good Air Quality"
-            variant="success"
-            theme={theme}
-          />
-          <StatusBadge text="UV Warning" variant="warning" theme={theme} />
-          <StatusBadge text="Severe Weather" variant="error" theme={theme} />
-          <StatusBadge text="Weather Alert" variant="info" theme={theme} />
+          <StatusBadge text="Good Air" variant="success" theme={theme} />
+          <StatusBadge text="UV Alert" variant="warning" theme={theme} />
+          <StatusBadge text="Storm Alert" variant="error" theme={theme} />
+          <StatusBadge text="Info" variant="info" theme={theme} />
         </div>
       </div>
 
@@ -442,7 +441,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          Open Weather Settings
+          Open Settings
         </button>
       </div>
 
