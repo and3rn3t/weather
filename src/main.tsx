@@ -24,7 +24,7 @@ if ('serviceWorker' in navigator) {
       .then(registration => {
         // eslint-disable-next-line no-console
         console.log(
-          '🌤️ Weather App PWA: Service Worker registered successfully'
+          '🌤️ Weather App PWA: Service Worker registered successfully',
         );
         // eslint-disable-next-line no-console
         console.log('📱 PWA features now available:', {
@@ -49,5 +49,5 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

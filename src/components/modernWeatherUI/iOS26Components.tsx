@@ -84,7 +84,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         setIsVisible(true);
       }
     },
-    [disabled]
+    [disabled],
   );
 
   const handleContextMenu = useCallback(
@@ -102,7 +102,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       setPosition({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
     },
-    [disabled]
+    [disabled],
   );
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -543,7 +543,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
   children,
 }) => {
   const [currentDetent, setCurrentDetent] = useState<'medium' | 'large'>(
-    'medium'
+    'medium',
   );
   const telemetry = useDash0Telemetry();
 
@@ -783,7 +783,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     const deltaX = touch.clientX - containerRect.left - containerRect.width / 2;
     const clampedOffset = Math.max(
       -maxSwipeDistance,
-      Math.min(maxSwipeDistance, deltaX)
+      Math.min(maxSwipeDistance, deltaX),
     );
     setSwipeOffset(clampedOffset);
   };

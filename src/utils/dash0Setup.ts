@@ -62,7 +62,7 @@ export class WeatherAppTelemetry {
    */
   public trackWeatherApiCall(
     city: string,
-    apiType: 'weather' | 'geocoding'
+    apiType: 'weather' | 'geocoding',
   ): void {
     if (!this.isInitialized) return;
 
@@ -74,7 +74,7 @@ export class WeatherAppTelemetry {
    */
   public trackUserInteraction(
     action: string,
-    details?: Record<string, string | number>
+    details?: Record<string, string | number>,
   ): void {
     if (!this.isInitialized) return;
 
@@ -96,12 +96,12 @@ export class WeatherAppTelemetry {
   public trackPerformance(
     metricName: string,
     value: number,
-    unit?: string
+    unit?: string,
   ): void {
     if (!this.isInitialized) return;
 
     console.log(
-      `[Dash0] Performance metric: ${metricName} = ${value}${unit || 'ms'}`
+      `[Dash0] Performance metric: ${metricName} = ${value}${unit || 'ms'}`,
     );
   }
 
@@ -111,7 +111,7 @@ export class WeatherAppTelemetry {
   public async trackOperation<T>(
     operationName: string,
     operation: () => Promise<T>,
-    _attributes?: Record<string, string | number>
+    _attributes?: Record<string, string | number>,
   ): Promise<T> {
     if (!this.isInitialized) {
       return operation();
@@ -123,14 +123,14 @@ export class WeatherAppTelemetry {
       const result = await operation();
       const duration = Date.now() - startTime;
       console.log(
-        `[Dash0] Operation ${operationName} completed in ${duration}ms`
+        `[Dash0] Operation ${operationName} completed in ${duration}ms`,
       );
       return result;
     } catch (error) {
       const duration = Date.now() - startTime;
       console.error(
         `[Dash0] Operation ${operationName} failed after ${duration}ms:`,
-        error
+        error,
       );
       throw error;
     }

@@ -1,12 +1,12 @@
 /**
- * Enhanced Search Bar with US Location Optimization
+ * Enhanced Search Bar with Advanced US Location Optimization
  *
- * This component significantly improves location search for US-based users by:
- * 1. Prioritizing US cities and towns in search results
- * 2. Supporting state abbreviations (e.g., "LA" for Louisiana cities)
- * 3. Enhanced local database of popular US locations
- * 4. Improved search algorithms for better matching
- * 5. Fallback to global search when needed
+ * This component provides superior location search with:
+ * 1. Comprehensive US cities database (including Quad Cities area)
+ * 2. Advanced filtering for administrative boundaries
+ * 3. Improved search algorithms for better matching
+ * 4. Smart fallback to global search when needed
+ * 5. Real-time suggestions and instant results
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -93,7 +93,7 @@ export function EnhancedSearchBar({
         }));
 
         logInfo(
-          `Enhanced search for "${searchQuery}" returned ${results.length} results`,
+          `Enhanced search for "${searchQuery}" returned ${results.length} results`
         );
       } catch (error) {
         logError('Enhanced search error:', error);
@@ -107,7 +107,7 @@ export function EnhancedSearchBar({
         }));
       }
     },
-    [prioritizeUS],
+    [prioritizeUS]
   );
 
   // Debounced search
@@ -126,14 +126,14 @@ export function EnhancedSearchBar({
         performSearch(value);
       }, 200); // Faster response time for better UX
     },
-    [performSearch],
+    [performSearch]
   );
 
   // Handle result selection
   const handleResultSelect = useCallback(
     (result: EnhancedUSSearchResult) => {
       logInfo(
-        `Selected location: ${result.name}, ${result.state} (${result.lat}, ${result.lon})`,
+        `Selected location: ${result.name}, ${result.state} (${result.lat}, ${result.lon})`
       );
       onLocationSelect(result.name, result.lat, result.lon);
 
@@ -144,7 +144,7 @@ export function EnhancedSearchBar({
         selectedIndex: -1,
       }));
     },
-    [onLocationSelect],
+    [onLocationSelect]
   );
 
   // Keyboard navigation
@@ -159,7 +159,7 @@ export function EnhancedSearchBar({
             ...prev,
             selectedIndex: Math.min(
               prev.selectedIndex + 1,
-              prev.results.length - 1,
+              prev.results.length - 1
             ),
           }));
           break;
@@ -185,7 +185,7 @@ export function EnhancedSearchBar({
           break;
       }
     },
-    [state.isOpen, state.results, state.selectedIndex, handleResultSelect],
+    [state.isOpen, state.results, state.selectedIndex, handleResultSelect]
   );
 
   // Clear search

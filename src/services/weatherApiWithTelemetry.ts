@@ -60,28 +60,28 @@ export function useWeatherApiWithTelemetry() {
           async () => {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-                city
+                city,
               )}&format=json&limit=1`,
               {
                 headers: {
                   'User-Agent': 'Premium Weather App 1.0.0 (dash0-enabled)',
                 },
-              }
+              },
             );
 
             if (!response.ok) {
               throw new Error(
-                `Geocoding failed: ${response.status} ${response.statusText}`
+                `Geocoding failed: ${response.status} ${response.statusText}`,
               );
             }
 
             return response.json();
-          }
+          },
         );
 
         if (!geocodingResult || geocodingResult.length === 0) {
           throw new Error(
-            'City not found. Please check the spelling and try again.'
+            'City not found. Please check the spelling and try again.',
           );
         }
 
@@ -107,12 +107,12 @@ export function useWeatherApiWithTelemetry() {
 
             if (!response.ok) {
               throw new Error(
-                `Weather API failed: ${response.status} ${response.statusText}`
+                `Weather API failed: ${response.status} ${response.statusText}`,
               );
             }
 
             return response.json();
-          }
+          },
         );
 
         // Track successful weather data retrieval
@@ -126,7 +126,7 @@ export function useWeatherApiWithTelemetry() {
           weatherData,
           cityName,
           latitude,
-          longitude
+          longitude,
         );
 
         // Track data transformation performance
@@ -141,7 +141,7 @@ export function useWeatherApiWithTelemetry() {
       {
         city,
         coordinates: 'pending_geocoding',
-      }
+      },
     );
   };
 
@@ -166,12 +166,12 @@ export function useWeatherApiWithTelemetry() {
 
             if (!response.ok) {
               throw new Error(
-                `Weather API failed: ${response.status} ${response.statusText}`
+                `Weather API failed: ${response.status} ${response.statusText}`,
               );
             }
 
             return response.json();
-          }
+          },
         );
 
         // Get city name from coordinates
@@ -179,7 +179,7 @@ export function useWeatherApiWithTelemetry() {
 
         return transformWeatherData(weatherData, cityName, lat, lon);
       },
-      { latitude: lat, longitude: lon }
+      { latitude: lat, longitude: lon },
     );
   };
 
@@ -196,7 +196,7 @@ export function useWeatherApiWithTelemetry() {
             headers: {
               'User-Agent': 'Premium Weather App 1.0.0 (dash0-enabled)',
             },
-          }
+          },
         );
 
         if (!response.ok) {
@@ -214,7 +214,7 @@ export function useWeatherApiWithTelemetry() {
           'Unknown Location'
         );
       },
-      { latitude: lat, longitude: lon }
+      { latitude: lat, longitude: lon },
     );
   };
 
@@ -232,7 +232,7 @@ function transformWeatherData(
   weatherData: WeatherResponse,
   cityName: string,
   lat: number,
-  lon: number
+  lon: number,
 ) {
   return {
     current: {
@@ -262,7 +262,7 @@ function transformWeatherData(
  * Transform hourly forecast data
  */
 function transformHourlyData(
-  hourlyData: NonNullable<WeatherResponse['hourly']>
+  hourlyData: NonNullable<WeatherResponse['hourly']>,
 ) {
   return (
     hourlyData.time?.slice(0, 24).map((time: string, index: number) => ({

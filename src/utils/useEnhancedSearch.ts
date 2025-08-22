@@ -41,17 +41,19 @@ interface UseEnhancedSearchReturn {
 }
 
 interface APIResult {
+  display_name: string;
+  lat: string;
+  lon: string;
   type: string;
   class: string;
+  importance?: number;
   address?: {
     city?: string;
     town?: string;
     village?: string;
+    hamlet?: string;
     country?: string;
   };
-  display_name: string;
-  lat: string;
-  lon: string;
 }
 
 /**
@@ -110,6 +112,148 @@ export function useEnhancedSearch(
     }, [enableGeolocation]);
 
   /**
+   * Helper function to filter API results
+   */
+  const filterValidLocations = useCallback(
+    (result: {
+      type: string;
+      class: string;
+      importance?: number;
+      display_name?: string;
+    }) => {
+      const isValidType =
+        result.type === 'city' ||
+        result.type === 'town' ||
+        result.type === 'village' ||
+        result.type === 'hamlet' ||
+        result.type === 'administrative' ||
+        result.class === 'place';
+
+      const hasGoodImportance = !result.importance || result.importance > 0.1;
+      const isUSLocation =
+        result.display_name?.includes('United States') ||
+        result.display_name?.includes(', US') ||
+        result.display_name?.includes('USA');
+
+      return isValidType && hasGoodImportance && isUSLocation;
+    },
+    [],
+  );
+
+  /**
+   * Helper function to transform API result to enhanced format
+   */
+  const transformToEnhancedResult = useCallback(
+    (result: APIResult): EnhancedCityResult => {
+      const cityName =
+        result.address?.city ||
+        result.address?.town ||
+        result.address?.village ||
+        result.address?.hamlet ||
+        result.display_name.split(',')[0];
+
+      const isPopular = popularCitiesCache
+        .getPopularCities()
+        .some(
+          popular =>
+            popular.name.toLowerCase() === cityName.toLowerCase() &&
+            popular.country
+              .toLowerCase()
+              .includes((result.address?.country || '').toLowerCase()),
+        );
+
+      return {
+        name: cityName,
+        display_name: result.display_name,
+        lat: parseFloat(result.lat),
+        lon: parseFloat(result.lon),
+        country: result.address?.country || '',
+        isPopular,
+        searchPriority: isPopular ? 8 : 5,
+      };
+    },
+    [],
+  );
+
+  /**
+   * Helper function for global search fallback
+   */
+  const performGlobalSearch = useCallback(
+    async (
+      searchQuery: string,
+      existingResults: EnhancedCityResult[],
+    ): Promise<EnhancedCityResult[]> => {
+      const globalSearchParams = new URLSearchParams({
+        q: searchQuery,
+        format: 'json',
+        addressdetails: '1',
+        limit: '10',
+        'accept-language': 'en-US,en',
+        dedupe: '1',
+      });
+
+      const globalResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?${globalSearchParams}`,
+        {
+          headers: {
+            'User-Agent': 'PremiumWeatherApp/2.0 (Global Search)',
+          },
+          signal: abortControllerRef.current?.signal,
+          cache: 'default',
+        },
+      );
+
+      if (!globalResponse.ok) return existingResults;
+
+      const globalResults = await globalResponse.json();
+      const additionalResults = globalResults
+        .filter(
+          (result: { type: string; class: string; importance?: number }) => {
+            const isValidType =
+              result.type === 'city' ||
+              result.type === 'town' ||
+              result.type === 'village' ||
+              result.type === 'hamlet' ||
+              result.type === 'administrative' ||
+              result.class === 'place';
+            const hasGoodImportance =
+              !result.importance || result.importance > 0.1;
+            return isValidType && hasGoodImportance;
+          },
+        )
+        .map((result: APIResult) => ({
+          name:
+            result.address?.city ||
+            result.address?.town ||
+            result.address?.village ||
+            result.address?.hamlet ||
+            result.display_name.split(',')[0],
+          display_name: result.display_name,
+          lat: parseFloat(result.lat),
+          lon: parseFloat(result.lon),
+          country: result.address?.country || '',
+          isPopular: false,
+          searchPriority: 3,
+        }));
+
+      // Merge results, avoiding duplicates
+      const allResults = [...existingResults];
+      for (const newResult of additionalResults) {
+        const isDuplicate = allResults.some(
+          existing =>
+            Math.abs(existing.lat - newResult.lat) < 0.01 &&
+            Math.abs(existing.lon - newResult.lon) < 0.01,
+        );
+        if (!isDuplicate && allResults.length < maxResults) {
+          allResults.push(newResult);
+        }
+      }
+      return allResults;
+    },
+    [maxResults],
+  );
+
+  /**
    * Search popular cities instantly
    */
   const searchPopularCities = useCallback(
@@ -146,11 +290,15 @@ export function useEnhancedSearch(
           q: searchQuery,
           format: 'json',
           addressdetails: '1',
-          limit: '10',
-          'accept-language': 'en',
+          limit: '15', // Increased for better coverage
+          'accept-language': 'en-US,en', // US preference
           dedupe: '1',
-          extratags: '0',
-          namedetails: '0',
+          extratags: '1',
+          namedetails: '1',
+          // US-focused parameters
+          countrycodes: 'us', // Prioritize US results
+          viewbox: '-125,49,-66,24', // US bounding box
+          bounded: '1',
         });
 
         const response = await fetch(
@@ -170,43 +318,10 @@ export function useEnhancedSearch(
 
         const apiResults = await response.json();
 
-        // Transform API results to enhanced format
+        // Transform API results to enhanced format with improved filtering
         const enhancedResults: EnhancedCityResult[] = apiResults
-          .filter(
-            (result: { type: string; class: string }) =>
-              result.type === 'city' ||
-              result.type === 'town' ||
-              result.type === 'village' ||
-              result.class === 'place',
-          )
-          .map((result: APIResult) => {
-            const cityName =
-              result.address?.city ||
-              result.address?.town ||
-              result.address?.village ||
-              result.display_name.split(',')[0];
-
-            // Check if this is a popular city
-            const isPopular = popularCitiesCache
-              .getPopularCities()
-              .some(
-                popular =>
-                  popular.name.toLowerCase() === cityName.toLowerCase() &&
-                  popular.country
-                    .toLowerCase()
-                    .includes((result.address?.country || '').toLowerCase()),
-              );
-
-            return {
-              name: cityName,
-              display_name: result.display_name,
-              lat: parseFloat(result.lat),
-              lon: parseFloat(result.lon),
-              country: result.address?.country || '',
-              isPopular,
-              searchPriority: isPopular ? 8 : 5,
-            };
-          })
+          .filter(filterValidLocations)
+          .map(transformToEnhancedResult)
           .sort((a: EnhancedCityResult, b: EnhancedCityResult) => {
             // Sort popular cities first if enabled
             if (popularCitiesFirst) {
@@ -219,8 +334,14 @@ export function useEnhancedSearch(
           })
           .slice(0, maxResults);
 
+        // If we don't have enough results, try a broader search without US restriction
+        const finalResults =
+          enhancedResults.length < 3
+            ? await performGlobalSearch(searchQuery, enhancedResults)
+            : enhancedResults;
+
         // Cache results
-        searchCacheRef.current.set(cacheKey, enhancedResults);
+        searchCacheRef.current.set(cacheKey, finalResults);
 
         // Limit cache size
         if (searchCacheRef.current.size > 50) {
@@ -230,7 +351,7 @@ export function useEnhancedSearch(
           }
         }
 
-        return enhancedResults;
+        return finalResults;
       } catch (err) {
         if (err instanceof Error && err.name !== 'AbortError') {
           throw err;
@@ -238,7 +359,13 @@ export function useEnhancedSearch(
         return [];
       }
     },
-    [maxResults, popularCitiesFirst],
+    [
+      maxResults,
+      popularCitiesFirst,
+      filterValidLocations,
+      transformToEnhancedResult,
+      performGlobalSearch,
+    ],
   );
 
   /**

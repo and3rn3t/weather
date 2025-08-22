@@ -24,16 +24,16 @@ export function WeatherSearchWithTelemetry() {
           // Your existing geocoding API call
           const response = await fetch(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-              city
+              city,
             )}&format=json&limit=1`,
             {
               headers: {
                 'User-Agent': 'Premium Weather App 1.0.0',
               },
-            }
+            },
           );
           return response.json();
-        }
+        },
       );
 
       if (geocodingResult.length === 0) {
@@ -49,10 +49,10 @@ export function WeatherSearchWithTelemetry() {
         async () => {
           // Your existing weather API call
           const response = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit`
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit`,
           );
           return response.json();
-        }
+        },
       );
 
       // Track successful completion
@@ -67,7 +67,7 @@ export function WeatherSearchWithTelemetry() {
       // You can also track additional context if needed
       telemetry.trackError(
         error instanceof Error ? error : new Error(String(error)),
-        `Weather search for ${city}`
+        `Weather search for ${city}`,
       );
       throw error;
     }
@@ -89,16 +89,16 @@ export function WeatherSearchWithTelemetry() {
           error => {
             telemetry.trackError(
               new Error(error.message),
-              'Geolocation request'
+              'Geolocation request',
             );
             reject(error);
-          }
+          },
         );
       });
     } catch (error) {
       telemetry.trackError(
         error instanceof Error ? error : new Error(String(error)),
-        'Geolocation request'
+        'Geolocation request',
       );
       throw error;
     }
@@ -182,7 +182,7 @@ export class WeatherErrorBoundaryWithTelemetry extends React.Component<
       const telemetry = useDash0Telemetry();
       telemetry.trackError(
         error,
-        `React Error Boundary: ${errorInfo.componentStack}`
+        `React Error Boundary: ${errorInfo.componentStack}`,
       );
     });
   }
@@ -243,7 +243,7 @@ export function AppNavigatorWithTelemetry() {
       {
         operation_type: 'background_refresh',
         user_initiated: 'false',
-      }
+      },
     );
   };
 
