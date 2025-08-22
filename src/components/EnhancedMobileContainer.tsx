@@ -10,8 +10,9 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useTheme } from '../utils/useTheme';
+import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
 import '../styles/mobileEnhancements.css';
+import { useTheme } from '../utils/useTheme';
 
 interface EnhancedMobileContainerProps {
   children: React.ReactNode;
@@ -35,13 +36,14 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
   onSwipeRight,
 }) => {
   const { theme } = useTheme();
+  const telemetry = useDash0Telemetry();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullProgress, setPullProgress] = useState(0);
 
   // Touch state for gestures
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
-    null,
+    null
   );
   const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -58,6 +60,17 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       if (container.scrollTop === 0) {
         startY = e.touches[0].clientY;
         isPulling = true;
+        
+        // Track pull-to-refresh initiation
+        telemetry.trackUserInteraction({
+          action: 'pull_to_refresh_started',
+          component: 'EnhancedMobileContainer',
+          metadata: {
+            scrollPosition: container.scrollTop,
+            startY: Math.round(startY),
+            hasRefreshHandler: !!onRefresh
+          }
+        });
       }
     };
 
@@ -73,20 +86,67 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
 
       if (pullDistance > 0) {
         e.preventDefault();
-        container.style.transform = `translateY(${Math.min(pullDistance * 0.5, 60)}px)`;
+        container.style.transform = `translateY(${Math.min(
+          pullDistance * 0.5,
+          60
+        )}px)`;
       }
     };
 
     const handleTouchEnd = async () => {
       if (!isPulling) return;
 
+      const pullTriggered = pullProgress >= 0.6;
+      
+      // Track pull-to-refresh completion
+      telemetry.trackUserInteraction({
+        action: 'pull_to_refresh_completed',
+        component: 'EnhancedMobileContainer',
+        metadata: {
+          pullProgress: Math.round(pullProgress * 100),
+          triggered: pullTriggered,
+          hasRefreshHandler: !!onRefresh,
+          wasRefreshing: isRefreshing
+        }
+      });
+
+      if (pullTriggered) {
+        telemetry.trackMetric({
+          name: 'pull_to_refresh_trigger',
+          value: 1,
+          tags: {
+            progress: String(Math.round(pullProgress * 100)),
+            has_handler: String(!!onRefresh)
+          }
+        });
+      }
+
       isPulling = false;
       container.style.transform = '';
 
-      if (pullProgress >= 0.6 && onRefresh && !isRefreshing) {
+      if (pullTriggered && onRefresh && !isRefreshing) {
         setIsRefreshing(true);
+        const refreshStartTime = performance.now();
+        
         try {
           await onRefresh();
+          
+          // Track successful refresh
+          const refreshDuration = performance.now() - refreshStartTime;
+          telemetry.trackMetric({
+            name: 'pull_to_refresh_success',
+            value: 1,
+            tags: {
+              duration_ms: String(Math.round(refreshDuration)),
+              method: 'pull_gesture'
+            }
+          });
+        } catch (error) {
+          // Track refresh error
+          telemetry.trackError(error as Error, {
+            context: 'pull_to_refresh_error',
+            metadata: { method: 'pull_gesture' }
+          });
         } finally {
           setIsRefreshing(false);
         }
@@ -147,16 +207,73 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       const maxSwipeTime = 300;
       const maxVerticalMovement = 100;
 
-      if (
+      const isValidSwipe = 
         Math.abs(deltaX) > minSwipeDistance &&
         deltaY < maxVerticalMovement &&
-        deltaTime < maxSwipeTime
-      ) {
+        deltaTime < maxSwipeTime;
+
+      // Track swipe attempt
+      telemetry.trackUserInteraction({
+        action: 'swipe_gesture_attempt',
+        component: 'EnhancedMobileContainer',
+        metadata: {
+          deltaX: Math.round(deltaX),
+          deltaY: Math.round(deltaY),
+          deltaTime,
+          isValidSwipe,
+          direction: deltaX > 0 ? 'right' : 'left',
+          hasHandlers: { left: !!onSwipeLeft, right: !!onSwipeRight }
+        }
+      });
+
+      if (isValidSwipe) {
+        const direction = deltaX > 0 ? 'right' : 'left';
+        const hasHandler = direction === 'right' ? !!onSwipeRight : !!onSwipeLeft;
+        
+        // Track successful swipe
+        telemetry.trackUserInteraction({
+          action: 'swipe_gesture_success',
+          component: 'EnhancedMobileContainer',
+          metadata: {
+            direction,
+            distance: Math.round(Math.abs(deltaX)),
+            speed: Math.round(Math.abs(deltaX) / deltaTime * 1000), // pixels per second
+            hasHandler
+          }
+        });
+
+        telemetry.trackMetric({
+          name: 'swipe_gesture',
+          value: 1,
+          tags: {
+            direction,
+            distance_bucket: Math.abs(deltaX) > 100 ? 'long' : 'short',
+            speed_bucket: (Math.abs(deltaX) / deltaTime * 1000) > 500 ? 'fast' : 'slow'
+          }
+        });
+
         if (deltaX > 0 && onSwipeRight) {
           onSwipeRight();
         } else if (deltaX < 0 && onSwipeLeft) {
           onSwipeLeft();
         }
+      } else {
+        // Track failed swipe attempt
+        let failureReason = 'unknown';
+        if (Math.abs(deltaX) <= minSwipeDistance) failureReason = 'insufficient_distance';
+        else if (deltaY >= maxVerticalMovement) failureReason = 'too_vertical';
+        else if (deltaTime >= maxSwipeTime) failureReason = 'too_slow';
+
+        telemetry.trackUserInteraction({
+          action: 'swipe_gesture_failed',
+          component: 'EnhancedMobileContainer',
+          metadata: {
+            reason: failureReason,
+            deltaX: Math.round(deltaX),
+            deltaY: Math.round(deltaY),
+            deltaTime
+          }
+        });
       }
 
       touchStartRef.current = null;

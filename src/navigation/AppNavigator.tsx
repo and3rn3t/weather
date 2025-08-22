@@ -22,6 +22,13 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+// Dash0 Telemetry Integration
+import {
+  Dash0ErrorBoundary,
+  usePerformanceMonitor,
+} from '../components/Dash0ErrorBoundary';
+import { useDash0Telemetry } from '../hooks/useDash0Telemetry';
+
 // Unified Type Definitions - Phase 2B: Type System Unification
 import type {
   DailyForecast,
@@ -789,7 +796,7 @@ function WeatherDetailsScreen({
                   onAction: () => {
                     haptic.buttonPress();
                     const shareText = `Weather in ${city}: ${Math.round(
-                      weather.main.temp,
+                      weather.main.temp
                     )}°F - ${weather.weather[0].description}`;
                     if (navigator.share) {
                       navigator.share({
@@ -900,7 +907,7 @@ function WeatherDetailsScreen({
               <div className="ios26-mb-4">
                 <TemperatureTrend
                   hourlyData={transformHourlyDataForChart(
-                    memoizedHourlyForecast,
+                    memoizedHourlyForecast
                   )}
                   className="ios26-temperature-trend"
                 />
@@ -1273,7 +1280,7 @@ const WeatherMainCard = React.memo(
         </div>
       </ContextMenu>
     );
-  },
+  }
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1347,7 +1354,7 @@ const HourlyForecastSection = React.memo(
       );
     }
     return null;
-  },
+  }
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1386,7 +1393,7 @@ const DailyForecastSection = React.memo(
             {dailyForecast.map((day, index) => {
               const { dayName, dateStr, isToday } = formatDayInfo(
                 day.date,
-                index,
+                index
               );
               return (
                 <div
@@ -1441,13 +1448,23 @@ const DailyForecastSection = React.memo(
       );
     }
     return null;
-  },
+  }
 );
 
 const AppNavigator = () => {
+  // Dash0 Telemetry Integration
+  const telemetry = useDash0Telemetry();
+  const performanceMonitor = usePerformanceMonitor({
+    componentName: 'AppNavigator',
+    trackRender: true,
+    trackMount: true,
+    trackUnmount: true,
+    trackInteractions: true,
+  });
+
   // Screen information and responsive detection
   const [screenInfo, setScreenInfo] = useState<ScreenInfo>(() =>
-    getScreenInfo(),
+    getScreenInfo()
   );
 
   // Phase 3A: Loading state management for weather operations
@@ -1478,11 +1495,11 @@ const AppNavigator = () => {
         } catch (error) {
           logWarn(
             'Failed to load Crystal Lake data, user will need to search manually:',
-            error,
+            error
           );
           // Gracefully degrade - user can still search for weather manually
           setError(
-            'Default location unavailable. Please search for your city.',
+            'Default location unavailable. Please search for your city.'
           );
         }
       }
@@ -1496,15 +1513,15 @@ const AppNavigator = () => {
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
     () => getAdaptiveFontSizes(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
   const adaptiveSpacing = useMemo(
     () => getAdaptiveSpacing(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
   const adaptiveBorders = useMemo(
     () => getAdaptiveBorderRadius(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
 
   // Theme and mobile detection (updated to use screenInfo)
@@ -1517,9 +1534,9 @@ const AppNavigator = () => {
         theme,
         screenInfo,
         isPrimary ? 'primary' : 'secondary',
-        size,
+        size
       ),
-    [theme, screenInfo],
+    [theme, screenInfo]
   );
 
   const haptic = useHaptic();
@@ -1587,7 +1604,7 @@ const AppNavigator = () => {
   // Phase 3: Progressive Loading Hook Integration
   const progressiveWeatherData = useProgressiveWeatherLoading(
     currentCoordinates?.latitude || 0,
-    currentCoordinates?.longitude || 0,
+    currentCoordinates?.longitude || 0
   );
 
   // Enable progressive loading when coordinates are available
@@ -1611,7 +1628,7 @@ const AppNavigator = () => {
         return 'evening' as const;
       })(),
     }),
-    [weather, weatherCode, weatherAlert],
+    [weather, weatherCode, weatherAlert]
   );
 
   const smartContent = useSmartContentPriority(weatherContext);
@@ -1619,13 +1636,34 @@ const AppNavigator = () => {
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(
     () => hourlyForecast,
-    [hourlyForecast],
+    [hourlyForecast]
   );
   const memoizedDailyForecast = useMemo(() => dailyForecast, [dailyForecast]);
 
   // Location detection handler - must be defined early for use in JSX
   const handleLocationDetected = useCallback(
     (cityName: string, latitude: number, longitude: number) => {
+      // Track location detection with telemetry
+      telemetry.trackUserInteraction({
+        action: 'location_detected',
+        component: 'AppNavigator',
+        metadata: {
+          cityName,
+          hasCoordinates: !!(latitude && longitude),
+          accuracy: 'high', // GPS detected locations have high accuracy
+        },
+      });
+
+      telemetry.trackMetric({
+        name: 'location_detection_success',
+        value: 1,
+        tags: {
+          method: 'gps',
+          city: cityName,
+          hasValidCoords: String(!!(latitude && longitude)),
+        },
+      });
+
       // Show verification dialog for GPS-detected locations
       setPendingLocationData({
         latitude,
@@ -1634,7 +1672,7 @@ const AppNavigator = () => {
         address: { city: cityName, display: cityName },
       });
     },
-    [],
+    [telemetry]
   );
 
   // Get swipe configuration for current screen
@@ -1643,10 +1681,23 @@ const AppNavigator = () => {
   // Mobile navigation handler
   const handleMobileNavigation = useCallback(
     (screen: NavigationScreen) => {
+      const previousScreen = currentScreen;
+
+      // Track navigation with telemetry
+      telemetry.trackUserInteraction({
+        action: 'mobile_navigation',
+        component: 'AppNavigator',
+      });
+
+      performanceMonitor.trackInteraction('navigation', {
+        from: previousScreen,
+        to: screen,
+      });
+
       haptic.buttonPress();
       setCurrentScreen(screen);
     },
-    [haptic],
+    [haptic, currentScreen, telemetry, performanceMonitor]
   );
 
   // Legacy navigation function for backward compatibility
@@ -1668,7 +1719,7 @@ const AppNavigator = () => {
     await interactionFeedback.onButtonPress();
     await weatherAnnouncements.announceNavigation(
       `${mappedScreen.toLowerCase()}-screen`,
-      false,
+      false
     );
 
     // Special handling for iOS Demo
@@ -1683,16 +1734,62 @@ const AppNavigator = () => {
   // Enhanced swipe navigation handlers with haptic feedback
   const handleSwipeLeft = () => {
     if (currentScreen === 'Home') {
+      // Track swipe navigation
+      telemetry.trackUserInteraction({
+        action: 'swipe_navigation',
+        component: 'AppNavigator',
+        metadata: {
+          direction: 'left',
+          from: currentScreen,
+          to: 'Weather',
+          gestureType: 'swipe',
+        },
+      });
+
       haptic.triggerHaptic('navigation');
       navigate('Weather'); // Use new screen name
+    } else {
+      // Track invalid swipe attempt
+      telemetry.trackUserInteraction({
+        action: 'invalid_swipe',
+        component: 'AppNavigator',
+        metadata: {
+          direction: 'left',
+          currentScreen,
+          reason: 'no_valid_target',
+        },
+      });
     }
   };
 
   const handleSwipeRight = () => {
     if (currentScreen === 'Weather') {
+      // Track swipe navigation
+      telemetry.trackUserInteraction({
+        action: 'swipe_navigation',
+        component: 'AppNavigator',
+        metadata: {
+          direction: 'right',
+          from: currentScreen,
+          to: 'Home',
+          gestureType: 'swipe',
+        },
+      });
+
       haptic.triggerHaptic('navigation');
       navigate('Home');
     } else {
+      // Track invalid swipe with telemetry
+      telemetry.trackUserInteraction({
+        action: 'invalid_swipe',
+        component: 'AppNavigator',
+        metadata: {
+          direction: 'right',
+          currentScreen,
+          reason: 'no_valid_target',
+        },
+      });
+
       // Subtle error feedback for invalid swipe
       haptic.triggerHaptic('light');
     }
@@ -1711,222 +1808,335 @@ const AppNavigator = () => {
       if (weatherCode >= 51 && weatherCode <= 57) return 'light-rain';
       return null;
     },
-    [],
+    []
   );
 
   // Common weather data fetching logic with optimization
   const fetchWeatherData = useCallback(
     async (lat: number, lon: number) => {
-      try {
-        // Start loading state
-        weatherLoading.setLoading(true, 0);
+      const operationId = `weather-fetch-${lat}-${lon}-${Date.now()}`;
 
-        const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
-        const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
+      return telemetry.trackOperation(
+        'weather_data_fetch',
+        async () => {
+          try {
+            // Start loading state
+            weatherLoading.setLoading(true, 0);
 
-        // Update progress
-        weatherLoading.setLoading(true, 25);
+            // Track API call initiation
+            telemetry.trackUserInteraction({
+              action: 'weather_api_call_started',
+              component: 'AppNavigator',
+            });
 
-        const cacheKey = `weather-${lat}-${lon}`;
-        const weatherResponse = await optimizedFetch(
-          weatherUrl,
-          {
-            headers: {
-              'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
-            },
-          },
-          cacheKey,
-        );
+            const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+            const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
 
-        // Update progress after fetch
-        weatherLoading.setLoading(true, 50);
+            // Update progress
+            weatherLoading.setLoading(true, 25);
 
-        if (!weatherResponse.ok) {
-          throw new Error(`Weather API failed: ${weatherResponse.status}`);
-        }
+            const cacheKey = `weather-${lat}-${lon}`;
+            const startTime = performance.now();
 
-        const weatherData = await weatherResponse.json();
-
-        // Update progress after data parsing
-        weatherLoading.setLoading(true, 75);
-
-        // Use optimized transform for weather data processing
-        const transformedData = optimizedTransform(
-          weatherData,
-          data => {
-            const currentWeatherCode = data.current_weather?.weathercode || 0;
-            setWeatherCode(currentWeatherCode);
-            const currentHour = new Date().getHours();
-            const hourlyData = data.hourly;
-
-            return {
-              main: {
-                temp: data.current_weather?.temperature || 0,
-                feels_like:
-                  hourlyData?.apparent_temperature?.[currentHour] ||
-                  data.current_weather?.temperature ||
-                  0,
-                humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-                pressure: hourlyData?.surface_pressure?.[currentHour] || 1013,
-              },
-              weather: [
-                {
-                  description: getWeatherDescription(currentWeatherCode),
-                  main: getWeatherMainCategory(currentWeatherCode),
+            const weatherResponse = await optimizedFetch(
+              weatherUrl,
+              {
+                headers: {
+                  'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
                 },
-              ],
-              wind: {
-                speed: data.current_weather?.windspeed || 0,
-                deg: data.current_weather?.winddirection || 0,
               },
-              uv_index: hourlyData?.uv_index?.[currentHour] || 0,
-              visibility: hourlyData?.visibility?.[currentHour] || 0,
-            };
-          },
-          `transform-${lat}-${lon}-${Date.now()}`,
-        );
+              cacheKey
+            );
 
-        setWeather(transformedData);
-        setHourlyForecast(
-          processHourlyForecast(weatherData.hourly as HourlyData),
-        );
-        setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
+            // Track API response time
+            const apiResponseTime = performance.now() - startTime;
+            telemetry.trackPerformance({
+              name: 'weather_api_response_time',
+              value: apiResponseTime,
+              unit: 'milliseconds',
+            });
 
-        // iOS26 Phase 3C: Multi-Sensory Weather Experience
-        const weatherCondition =
-          getWeatherConditionFromCode(currentWeatherCode);
-        if (weatherCondition) {
-          // Play immersive weather experience with spatial audio and haptic feedback
-          await multiSensory.playWeatherExperience(weatherCondition, 0.8);
+            // Update progress after fetch
+            weatherLoading.setLoading(true, 50);
 
-          // Announce weather with accessibility features
-          await weatherAnnouncements.announceWeather(
-            weatherCondition,
-            transformedData.main.temp,
-            city,
-          );
+            if (!weatherResponse.ok) {
+              const error = new Error(
+                `Weather API failed: ${weatherResponse.status}`
+              );
+              telemetry.trackError(error, 'weather_api_error');
+              throw error;
+            }
+
+            const weatherData = await weatherResponse.json();
+
+            // Update progress after data parsing
+            weatherLoading.setLoading(true, 75);
+
+            // Use optimized transform for weather data processing
+            const transformStartTime = performance.now();
+            const transformedData = optimizedTransform(
+              weatherData,
+              data => {
+                const currentWeatherCode =
+                  data.current_weather?.weathercode || 0;
+                setWeatherCode(currentWeatherCode);
+                const currentHour = new Date().getHours();
+                const hourlyData = data.hourly;
+
+                return {
+                  main: {
+                    temp: data.current_weather?.temperature || 0,
+                    feels_like:
+                      hourlyData?.apparent_temperature?.[currentHour] ||
+                      data.current_weather?.temperature ||
+                      0,
+                    humidity:
+                      hourlyData?.relative_humidity_2m?.[currentHour] || 50,
+                    pressure:
+                      hourlyData?.surface_pressure?.[currentHour] || 1013,
+                  },
+                  weather: [
+                    {
+                      description: getWeatherDescription(currentWeatherCode),
+                      main: getWeatherMainCategory(currentWeatherCode),
+                    },
+                  ],
+                  wind: {
+                    speed: data.current_weather?.windspeed || 0,
+                    deg: data.current_weather?.winddirection || 0,
+                  },
+                  uv_index: hourlyData?.uv_index?.[currentHour] || 0,
+                  visibility: hourlyData?.visibility?.[currentHour] || 0,
+                };
+              },
+              `transform-${lat}-${lon}-${Date.now()}`
+            );
+
+            // Track data transformation performance
+            const transformTime = performance.now() - transformStartTime;
+            telemetry.trackPerformance({
+              name: 'weather_data_transform_time',
+              value: transformTime,
+              unit: 'milliseconds',
+            });
+
+            setWeather(transformedData);
+            setHourlyForecast(
+              processHourlyForecast(weatherData.hourly as HourlyData)
+            );
+            setDailyForecast(
+              processDailyForecast(weatherData.daily as DailyData)
+            );
+
+            // Track successful weather data load
+            telemetry.trackUserInteraction({
+              action: 'weather_data_loaded_successfully',
+              component: 'AppNavigator',
+            });
+
+            // Track weather data metrics
+            telemetry.trackPerformance({
+              name: 'current_temperature',
+              value: transformedData.main.temp,
+              unit: 'fahrenheit',
+            });
+
+            // iOS26 Phase 3C: Multi-Sensory Weather Experience
+            const weatherCondition =
+              getWeatherConditionFromCode(currentWeatherCode);
+            if (weatherCondition) {
+              // Play immersive weather experience with spatial audio and haptic feedback
+              await multiSensory.playWeatherExperience(weatherCondition, 0.8);
+
+              // Announce weather with accessibility features
+              await weatherAnnouncements.announceWeather(
+                weatherCondition,
+                transformedData.main.temp,
+                city
+              );
+            }
+
+            // Update progress to completion
+            weatherLoading.setLoading(true, 100);
+
+            // iOS26 Feature: Trigger Live Activity for weather updates
+            setShowLiveActivity(true);
+            setTimeout(() => setShowLiveActivity(false), 4000);
+
+            // iOS26 Feature: Check for weather alerts
+            const currentTemp = transformedData.main.temp;
+            const windSpeed = transformedData.wind.speed;
+            const weatherCode =
+              transformedData.weather[0].description.toLowerCase();
+
+            if (currentTemp > 95) {
+              const alertData = {
+                title: 'Extreme Heat Warning',
+                message: `Temperature is ${Math.round(
+                  currentTemp
+                )}°F. Stay hydrated and avoid outdoor activities.`,
+                severity: 'severe' as const,
+              };
+              setWeatherAlert(alertData);
+
+              // iOS26 Phase 3C: Multi-sensory severe weather alert
+              await multiSensory.playWeatherAlert('severe', alertData.message);
+            } else if (currentTemp < 20) {
+              const alertData = {
+                title: 'Extreme Cold Warning',
+                message: `Temperature is ${Math.round(
+                  currentTemp
+                )}°F. Dress warmly and limit outdoor exposure.`,
+                severity: 'severe' as const,
+              };
+              setWeatherAlert(alertData);
+
+              // iOS26 Phase 3C: Multi-sensory severe weather alert
+              await multiSensory.playWeatherAlert('severe', alertData.message);
+            } else if (windSpeed > 35) {
+              const alertData = {
+                title: 'High Wind Advisory',
+                message: `Wind speeds of ${Math.round(
+                  windSpeed
+                )} mph. Secure loose objects and drive carefully.`,
+                severity: 'warning' as const,
+              };
+              setWeatherAlert(alertData);
+
+              // iOS26 Phase 3C: Multi-sensory wind warning alert
+              await multiSensory.playWeatherAlert('warning', alertData.message);
+            } else if (
+              weatherCode.includes('thunderstorm') ||
+              weatherCode.includes('storm')
+            ) {
+              const alertData = {
+                title: 'Storm Alert',
+                message: 'Thunderstorms in the area. Seek indoor shelter.',
+                severity: 'warning' as const,
+              };
+              setWeatherAlert(alertData);
+
+              // iOS26 Phase 3C: Multi-sensory storm alert
+              await multiSensory.playWeatherAlert('warning', alertData.message);
+            } else {
+              setWeatherAlert(null);
+            }
+
+            // Complete loading
+            weatherLoading.setLoading(false);
+            return transformedData;
+          } catch (error) {
+            // Handle errors with telemetry
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : 'Failed to fetch weather data';
+            telemetry.trackError(
+              error instanceof Error ? error : new Error(errorMessage),
+              'weather_fetch_error'
+            );
+
+            weatherLoading.setError(errorMessage);
+            throw error;
+          }
+        },
+        {
+          latitude: lat,
+          longitude: lon,
+          coordinates: `${lat},${lon}`,
         }
-
-        // Update progress to completion
-        weatherLoading.setLoading(true, 100);
-
-        // iOS26 Feature: Trigger Live Activity for weather updates
-        setShowLiveActivity(true);
-        setTimeout(() => setShowLiveActivity(false), 4000);
-
-        // iOS26 Feature: Check for weather alerts
-        const currentTemp = transformedData.main.temp;
-        const windSpeed = transformedData.wind.speed;
-        const weatherCode =
-          transformedData.weather[0].description.toLowerCase();
-
-        if (currentTemp > 95) {
-          const alertData = {
-            title: 'Extreme Heat Warning',
-            message: `Temperature is ${Math.round(
-              currentTemp,
-            )}°F. Stay hydrated and avoid outdoor activities.`,
-            severity: 'severe' as const,
-          };
-          setWeatherAlert(alertData);
-
-          // iOS26 Phase 3C: Multi-sensory severe weather alert
-          await multiSensory.playWeatherAlert('severe', alertData.message);
-        } else if (currentTemp < 20) {
-          const alertData = {
-            title: 'Extreme Cold Warning',
-            message: `Temperature is ${Math.round(
-              currentTemp,
-            )}°F. Dress warmly and limit outdoor exposure.`,
-            severity: 'severe' as const,
-          };
-          setWeatherAlert(alertData);
-
-          // iOS26 Phase 3C: Multi-sensory severe weather alert
-          await multiSensory.playWeatherAlert('severe', alertData.message);
-        } else if (windSpeed > 35) {
-          const alertData = {
-            title: 'High Wind Advisory',
-            message: `Wind speeds of ${Math.round(
-              windSpeed,
-            )} mph. Secure loose objects and drive carefully.`,
-            severity: 'warning' as const,
-          };
-          setWeatherAlert(alertData);
-
-          // iOS26 Phase 3C: Multi-sensory wind warning alert
-          await multiSensory.playWeatherAlert('warning', alertData.message);
-        } else if (
-          weatherCode.includes('thunderstorm') ||
-          weatherCode.includes('storm')
-        ) {
-          const alertData = {
-            title: 'Storm Alert',
-            message: 'Thunderstorms in the area. Seek indoor shelter.',
-            severity: 'warning' as const,
-          };
-          setWeatherAlert(alertData);
-
-          // iOS26 Phase 3C: Multi-sensory storm alert
-          await multiSensory.playWeatherAlert('warning', alertData.message);
-        } else {
-          setWeatherAlert(null);
-        }
-
-        // Complete loading
-        weatherLoading.setLoading(false);
-      } catch (error) {
-        // Handle errors
-        weatherLoading.setError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to fetch weather data',
-        );
-      }
+      );
     },
-    [optimizedFetch, optimizedTransform, weatherLoading],
+    [optimizedFetch, optimizedTransform, weatherLoading, telemetry]
   );
 
   const getWeather = useCallback(async () => {
-    if (!city.trim()) {
-      setError('Please enter a city name');
-      haptic.searchError(); // Haptic feedback for input validation error
-      return;
-    }
-    setLoading(true);
-    setError('');
-    haptic.dataLoad(); // Light haptic feedback when starting search
-    try {
-      const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
-      const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-        city,
-      )}&format=json&limit=1`;
-      const geoResponse = await optimizedFetch(
-        geoUrl,
-        {
-          headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
-        },
-        `geocoding-${city}`,
-      );
-      if (!geoResponse.ok)
-        throw new Error(`Geocoding failed: ${geoResponse.status}`);
-      const geoData = await geoResponse.json();
-      if (!geoData || geoData.length === 0)
-        throw new Error(
-          'City not found. Please check the spelling and try again.',
-        );
-      const { lat, lon } = geoData[0];
-      await fetchWeatherData(lat, lon);
-      haptic.searchSuccess(); // Haptic feedback for successful weather fetch
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      setError(`Failed to fetch weather data: ${errorMessage}`);
-      haptic.searchError(); // Haptic feedback for search error
-    } finally {
-      setLoading(false);
-    }
-  }, [city, haptic, fetchWeatherData, optimizedFetch]);
+    return telemetry.trackOperation(
+      'city_weather_search',
+      async () => {
+        if (!city.trim()) {
+          const error = new Error('Please enter a city name');
+          telemetry.trackError(error, 'empty_city_search');
+          setError('Please enter a city name');
+          haptic.searchError(); // Haptic feedback for input validation error
+          return;
+        }
+
+        setLoading(true);
+        setError('');
+        haptic.dataLoad(); // Light haptic feedback when starting search
+
+        telemetry.trackUserInteraction({
+          action: 'city_search_initiated',
+          component: 'AppNavigator',
+        });
+
+        try {
+          const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
+          const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
+            city
+          )}&format=json&limit=1`;
+
+          const geocodingStartTime = performance.now();
+          const geoResponse = await optimizedFetch(
+            geoUrl,
+            {
+              headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
+            },
+            `geocoding-${city}`
+          );
+
+          const geocodingTime = performance.now() - geocodingStartTime;
+          telemetry.trackPerformance({
+            name: 'geocoding_api_response_time',
+            value: geocodingTime,
+            unit: 'milliseconds',
+          });
+
+          if (!geoResponse.ok) {
+            const error = new Error(`Geocoding failed: ${geoResponse.status}`);
+            telemetry.trackError(error, 'geocoding_api_error');
+            throw error;
+          }
+
+          const geoData = await geoResponse.json();
+          if (!geoData || geoData.length === 0) {
+            const error = new Error(
+              'City not found. Please check the spelling and try again.'
+            );
+            telemetry.trackError(error, 'city_not_found');
+            throw error;
+          }
+
+          const { lat, lon } = geoData[0];
+          await fetchWeatherData(lat, lon);
+
+          telemetry.trackUserInteraction({
+            action: 'city_search_successful',
+            component: 'AppNavigator',
+          });
+
+          haptic.searchSuccess(); // Haptic feedback for successful weather fetch
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error occurred';
+
+          telemetry.trackError(
+            error instanceof Error ? error : new Error(errorMessage),
+            'city_search_error'
+          );
+
+          setError(`Failed to fetch weather data: ${errorMessage}`);
+          haptic.searchError(); // Haptic feedback for search error
+        } finally {
+          setLoading(false);
+        }
+      },
+      {
+        city: city.substring(0, 50), // Limit PII in telemetry
+      }
+    );
+  }, [city, haptic, fetchWeatherData, optimizedFetch, telemetry]);
 
   // Direct weather fetching (from autocomplete, city selector, etc.)
   const getWeatherByLocation = useCallback(
@@ -1950,14 +2160,14 @@ const AppNavigator = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred';
         setError(
-          `Failed to fetch weather data for your location: ${errorMessage}`,
+          `Failed to fetch weather data for your location: ${errorMessage}`
         );
         haptic.searchError(); // Haptic feedback for location-based search error
       } finally {
         setLoading(false);
       }
     },
-    [haptic, fetchWeatherData, setCurrentCity, addToRecent],
+    [haptic, fetchWeatherData, setCurrentCity, addToRecent]
   );
 
   // Background refresh for weather data with native app lifecycle integration
@@ -1971,7 +2181,7 @@ const AppNavigator = () => {
           // For now, we'll use the city search approach
           const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
           const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-            city,
+            city
           )}&format=json&limit=1`;
           const geoResponse = await fetch(geoUrl, {
             headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
@@ -2002,12 +2212,12 @@ const AppNavigator = () => {
       forceRefreshThreshold: 30, // 30 minutes for stale data
       enabled: true,
     }),
-    [],
+    []
   );
 
   const backgroundRefresh = useWeatherBackgroundRefresh(
     refreshWeatherData,
-    backgroundRefreshConfig.enabled,
+    backgroundRefreshConfig.enabled
   );
 
   // Handle verification confirmation
@@ -2016,7 +2226,7 @@ const AppNavigator = () => {
       setPendingLocationData(null);
       getWeatherByLocation(cityName, latitude, longitude);
     },
-    [getWeatherByLocation],
+    [getWeatherByLocation]
   );
 
   // Handle verification cancel
@@ -2027,6 +2237,19 @@ const AppNavigator = () => {
   // Pull-to-refresh handler - refreshes current weather data
   const handleRefresh = useCallback(async () => {
     if (city.trim() && weather) {
+      const refreshStartTime = performance.now();
+
+      // Track refresh initiation
+      telemetry.trackUserInteraction({
+        action: 'manual_refresh',
+        component: 'AppNavigator',
+        metadata: {
+          method: 'pull_to_refresh',
+          city,
+          hasWeatherData: !!weather,
+        },
+      });
+
       haptic.weatherRefresh(); // Haptic feedback for pull-to-refresh
 
       // iOS26 Phase 3C: Enhanced pull-to-refresh with multi-sensory feedback
@@ -2038,88 +2261,224 @@ const AppNavigator = () => {
         await backgroundRefresh.manualRefresh();
         logInfo('Manual refresh completed via background refresh service');
 
+        // Track successful refresh
+        const refreshDuration = performance.now() - refreshStartTime;
+        telemetry.trackMetric({
+          name: 'manual_refresh_success',
+          value: 1,
+          tags: {
+            method: 'background_refresh',
+            duration_ms: String(Math.round(refreshDuration)),
+            city,
+          },
+        });
+
         // Play success feedback for successful refresh
         await interactionFeedback.onSuccess();
       } catch (error) {
+        // Track fallback refresh
+        telemetry.trackError(error as Error, {
+          context: 'manual_refresh_fallback',
+          metadata: { city, method: 'background_refresh' },
+        });
+
         // Fallback to traditional refresh
         logInfo('Falling back to traditional refresh:', error);
         await new Promise(resolve => setTimeout(resolve, 500));
         await getWeather();
 
+        const refreshDuration = performance.now() - refreshStartTime;
+        telemetry.trackMetric({
+          name: 'manual_refresh_fallback',
+          value: 1,
+          tags: {
+            method: 'traditional_refresh',
+            duration_ms: String(Math.round(refreshDuration)),
+            city,
+          },
+        });
+
         // Still play success feedback for fallback refresh
         await interactionFeedback.onSuccess();
       }
     }
-  }, [city, weather, backgroundRefresh, haptic, getWeather]);
+  }, [city, weather, backgroundRefresh, haptic, getWeather, telemetry]);
 
   return (
-    <LoadingProvider>
-      <EnhancedMobileContainer
-        enablePullToRefresh={true}
-        onRefresh={handleRefresh}
-        enableSwipeGestures={screenInfo.width < 768}
-        onSwipeLeft={handleSwipeLeft}
-        onSwipeRight={handleSwipeRight}
-        className="safe-area-container"
-        style={{
-          ...getMobileOptimizedContainer(theme, screenInfo),
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        }}
-      >
-        {/* Native API Status Display - Shows native capabilities when on mobile */}
-        <NativeStatusDisplay theme={theme} isMobile={screenInfo.width < 768} />
-
-        {/* Enhanced Auto Location Manager - Phase F-2 */}
-        <LocationManager
-          onLocationReceived={(detectedCity, lat, lon) => {
-            logInfo(
-              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`,
-            );
-            setCity(detectedCity);
-            getWeatherByLocation(detectedCity, lat, lon);
-            haptic.triggerHaptic('light');
+    <Dash0ErrorBoundary
+      fallback={<div>Something went wrong with weather data</div>}
+    >
+      <LoadingProvider>
+        <EnhancedMobileContainer
+          enablePullToRefresh={true}
+          onRefresh={handleRefresh}
+          enableSwipeGestures={screenInfo.width < 768}
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+          className="safe-area-container"
+          style={{
+            ...getMobileOptimizedContainer(theme, screenInfo),
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           }}
-          onError={errorMessage => {
-            logWarn('📍 Auto location failed:', errorMessage);
-            // Don't show error to user for automatic detection, just log it
-          }}
-          enableAutoDetection={true}
-          enableBackgroundUpdates={false} // Disabled for battery optimization
-        />
-
-        {/* DEBUG: Location Tester - Development only */}
-        {import.meta.env.DEV && <LocationTester />}
-
-        {/* Background Refresh Status - Development info */}
-        {backgroundRefresh.isInitialized && (
-          <div className="ios26-dev-status">
-            🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} |
-            📊 {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
-            {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
-            {backgroundRefresh.stats.lastRefreshTime > 0 && (
-              <div>
-                Last:{' '}
-                {new Date(
-                  backgroundRefresh.stats.lastRefreshTime,
-                ).toLocaleTimeString()}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Modern Mobile Navigation System - Only for mobile devices */}
-        {screenInfo.width < 768 && (
-          <ScreenContainer
-            currentScreen={currentScreen}
-            transitionDirection="slide-left"
-            transitionDuration={300}
+        >
+          {/* Native API Status Display - Shows native capabilities when on mobile */}
+          <NativeStatusDisplay
             theme={theme}
-            onSwipeLeft={handleSwipeLeft}
-            onSwipeRight={handleSwipeRight}
-            enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
-            screens={{
-              Home: (
+            isMobile={screenInfo.width < 768}
+          />
+
+          {/* Enhanced Auto Location Manager - Phase F-2 */}
+          <LocationManager
+            onLocationReceived={(detectedCity, lat, lon) => {
+              logInfo(
+                `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
+              );
+              setCity(detectedCity);
+              getWeatherByLocation(detectedCity, lat, lon);
+              haptic.triggerHaptic('light');
+            }}
+            onError={errorMessage => {
+              logWarn('📍 Auto location failed:', errorMessage);
+              // Don't show error to user for automatic detection, just log it
+            }}
+            enableAutoDetection={true}
+            enableBackgroundUpdates={false} // Disabled for battery optimization
+          />
+
+          {/* DEBUG: Location Tester - Development only */}
+          {import.meta.env.DEV && <LocationTester />}
+
+          {/* Background Refresh Status - Development info */}
+          {backgroundRefresh.isInitialized && (
+            <div className="ios26-dev-status">
+              🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} |
+              📊 {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
+              {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
+              {backgroundRefresh.stats.lastRefreshTime > 0 && (
+                <div>
+                  Last:{' '}
+                  {new Date(
+                    backgroundRefresh.stats.lastRefreshTime
+                  ).toLocaleTimeString()}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Modern Mobile Navigation System - Only for mobile devices */}
+          {screenInfo.width < 768 && (
+            <ScreenContainer
+              currentScreen={currentScreen}
+              transitionDirection="slide-left"
+              transitionDuration={300}
+              theme={theme}
+              onSwipeLeft={handleSwipeLeft}
+              onSwipeRight={handleSwipeRight}
+              enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
+              screens={{
+                Home: (
+                  <HomeScreen
+                    theme={theme}
+                    screenInfo={screenInfo}
+                    adaptiveFonts={adaptiveFonts}
+                    adaptiveSpacing={adaptiveSpacing}
+                    adaptiveBorders={adaptiveBorders}
+                    navigate={navigate}
+                    haptic={haptic}
+                  />
+                ),
+                Weather: (
+                  <WeatherDetailsScreen
+                    theme={theme}
+                    screenInfo={screenInfo}
+                    adaptiveFonts={adaptiveFonts}
+                    adaptiveSpacing={adaptiveSpacing}
+                    adaptiveBorders={adaptiveBorders}
+                    navigate={navigate}
+                    createMobileButton={createMobileButton}
+                    city={city}
+                    loading={loading}
+                    error={error}
+                    setError={setError}
+                    weather={weather}
+                    hourlyForecast={memoizedHourlyForecast}
+                    dailyForecast={memoizedDailyForecast}
+                    weatherCode={weatherCode}
+                    getWeather={getWeather}
+                    getWeatherByLocation={getWeatherByLocation}
+                    onRefresh={handleRefresh}
+                    haptic={haptic}
+                    handleLocationDetected={handleLocationDetected}
+                    selectedView={selectedView}
+                    setSelectedView={setSelectedView}
+                    showActionSheet={showActionSheet}
+                    setShowActionSheet={setShowActionSheet}
+                    themeName={themeName}
+                    showLiveActivity={showLiveActivity}
+                    weatherAlert={weatherAlert}
+                    showWeatherSettingsModal={showWeatherSettingsModal}
+                    setShowWeatherSettingsModal={setShowWeatherSettingsModal}
+                  />
+                ),
+                Search: (
+                  <SearchScreen
+                    theme={theme}
+                    onBack={() => navigate('Home')}
+                    onLocationSelect={(cityName, latitude, longitude) => {
+                      getWeatherByLocation(cityName, latitude, longitude);
+                      navigate('Weather');
+                    }}
+                  />
+                ),
+                Settings: (
+                  <SettingsScreen
+                    theme={theme}
+                    screenInfo={screenInfo}
+                    onBack={() => navigate('Home')}
+                  />
+                ),
+                Favorites: (
+                  <FavoritesScreen
+                    theme={theme}
+                    onBack={() => navigate('Home')}
+                    onCitySelect={(cityName, latitude, longitude) => {
+                      getWeatherByLocation(cityName, latitude, longitude);
+                      setCity(cityName);
+                      navigate('Weather');
+                      haptic.triggerHaptic('light');
+                    }}
+                    onAddFavorite={() => navigate('Search')}
+                    currentCity={city}
+                  />
+                ),
+              }}
+            />
+          )}
+
+          {/* Mobile Bottom Navigation */}
+          {screenInfo.width < 768 && (
+            <MobileNavigation
+              currentScreen={currentScreen}
+              onNavigate={handleMobileNavigation}
+            />
+          )}
+
+          {/* Desktop/Legacy Navigation (for larger screens) */}
+          {screenInfo.width >= 768 && (
+            <SwipeNavigationContainer
+              currentScreen={currentScreen}
+              onSwipeLeft={handleSwipeLeft}
+              onSwipeRight={handleSwipeRight}
+              canSwipeLeft={swipeConfig.canSwipeLeft}
+              canSwipeRight={swipeConfig.canSwipeRight}
+              theme={theme}
+              isMobile={false}
+              swipeThreshold={80}
+              enableDesktopSupport={true}
+            >
+              {/* Legacy screen rendering for desktop */}
+              {currentScreen === 'Home' && (
                 <HomeScreen
                   theme={theme}
                   screenInfo={screenInfo}
@@ -2129,8 +2488,9 @@ const AppNavigator = () => {
                   navigate={navigate}
                   haptic={haptic}
                 />
-              ),
-              Weather: (
+              )}
+
+              {currentScreen === 'Weather' && (
                 <WeatherDetailsScreen
                   theme={theme}
                   screenInfo={screenInfo}
@@ -2162,216 +2522,115 @@ const AppNavigator = () => {
                   showWeatherSettingsModal={showWeatherSettingsModal}
                   setShowWeatherSettingsModal={setShowWeatherSettingsModal}
                 />
-              ),
-              Search: (
-                <SearchScreen
-                  theme={theme}
-                  onBack={() => navigate('Home')}
-                  onLocationSelect={(cityName, latitude, longitude) => {
-                    getWeatherByLocation(cityName, latitude, longitude);
-                    navigate('Weather');
-                  }}
-                />
-              ),
-              Settings: (
-                <SettingsScreen
-                  theme={theme}
-                  screenInfo={screenInfo}
-                  onBack={() => navigate('Home')}
-                />
-              ),
-              Favorites: (
-                <FavoritesScreen
-                  theme={theme}
-                  onBack={() => navigate('Home')}
-                  onCitySelect={(cityName, latitude, longitude) => {
-                    getWeatherByLocation(cityName, latitude, longitude);
-                    setCity(cityName);
-                    navigate('Weather');
-                    haptic.triggerHaptic('light');
-                  }}
-                  onAddFavorite={() => navigate('Search')}
-                  currentCity={city}
-                />
-              ),
+              )}
+            </SwipeNavigationContainer>
+          )}
+
+          {/* Deployment Status Indicator - Only show in production */}
+          {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
+            <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
+          )}
+
+          {/* Geolocation Verification Modal - Temporarily disabled */}
+          <GeolocationVerification
+            isOpen={false}
+            locationData={pendingLocationData}
+            theme={theme}
+            isMobile={screenInfo.width < 768}
+            onConfirm={handleVerificationConfirm}
+            onCancel={handleVerificationCancel}
+          />
+
+          {/* Performance Monitor - Development only - Temporarily disabled */}
+          {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
+
+          {/* Mobile Debug - Development only - Temporarily disabled */}
+          <MobileDebug enabled={false} position="bottom-right" />
+
+          {/* iOS 26 Live Activity - Weather Alerts and Updates */}
+          <LiveActivity
+            isVisible={showLiveActivity || !!weatherAlert}
+            title={
+              weatherAlert?.title ||
+              (weather
+                ? `${Math.round(weather.main.temp)}°F in ${city}`
+                : 'Weather Update')
+            }
+            subtitle={
+              weatherAlert?.message ||
+              (weather
+                ? `${weather.weather[0].description} • Updated now`
+                : undefined)
+            }
+            icon={
+              weatherAlert ? (
+                <span className="ios-body">
+                  {weatherAlert.severity === 'severe'
+                    ? '⚠️'
+                    : weatherAlert.severity === 'warning'
+                    ? '🌩️'
+                    : 'ℹ️'}
+                </span>
+              ) : (
+                <WeatherIcon code={weatherCode} size={20} animated={true} />
+              )
+            }
+            progress={dataUpdateProgress > 0 ? dataUpdateProgress : undefined}
+            theme={theme}
+            onTap={() => {
+              haptic.buttonPress();
+              if (weatherAlert) {
+                setWeatherAlert(null);
+              }
+              setShowLiveActivity(false);
+              navigate('Weather');
+            }}
+            duration={weatherAlert ? 8000 : 4000}
+          />
+
+          {/* PWA Status - Shows installation, updates, and offline capabilities */}
+          <PWAStatus
+            pwaInstall={pwaInstall}
+            serviceWorker={serviceWorker}
+            isOnline={isOnline}
+            updateAvailable={updateAvailable}
+            applyUpdate={applyUpdate}
+            enabled={true}
+            position="top-right"
+          />
+
+          {/* iOS Component Showcase - Overlay */}
+          {showIOSDemo && (
+            <div className="ios26-overlay">
+              <IOSComponentShowcase
+                theme={theme}
+                themeName={themeName}
+                onBack={() => setShowIOSDemo(false)}
+              />
+            </div>
+          )}
+
+          {/* Horror Theme Activator - Easy horror mode activation */}
+          <HorrorThemeActivator />
+
+          {/* PWA Install Prompt - Appears when app can be installed */}
+          <PWAInstallPrompt
+            canInstall={pwaInstall.canInstall}
+            onInstall={pwaInstall.install}
+            onDismiss={() => {
+              // User dismissed the install prompt
+              // Could store preference to not show again for some time
             }}
           />
-        )}
 
-        {/* Mobile Bottom Navigation */}
-        {screenInfo.width < 768 && (
-          <MobileNavigation
-            currentScreen={currentScreen}
-            onNavigate={handleMobileNavigation}
+          {/* Performance Dashboard - Development monitoring */}
+          <PerformanceDashboard
+            enabled={process.env.NODE_ENV === 'development'}
+            position="bottom-left"
           />
-        )}
-
-        {/* Desktop/Legacy Navigation (for larger screens) */}
-        {screenInfo.width >= 768 && (
-          <SwipeNavigationContainer
-            currentScreen={currentScreen}
-            onSwipeLeft={handleSwipeLeft}
-            onSwipeRight={handleSwipeRight}
-            canSwipeLeft={swipeConfig.canSwipeLeft}
-            canSwipeRight={swipeConfig.canSwipeRight}
-            theme={theme}
-            isMobile={false}
-            swipeThreshold={80}
-            enableDesktopSupport={true}
-          >
-            {/* Legacy screen rendering for desktop */}
-            {currentScreen === 'Home' && (
-              <HomeScreen
-                theme={theme}
-                screenInfo={screenInfo}
-                adaptiveFonts={adaptiveFonts}
-                adaptiveSpacing={adaptiveSpacing}
-                adaptiveBorders={adaptiveBorders}
-                navigate={navigate}
-                haptic={haptic}
-              />
-            )}
-
-            {currentScreen === 'Weather' && (
-              <WeatherDetailsScreen
-                theme={theme}
-                screenInfo={screenInfo}
-                adaptiveFonts={adaptiveFonts}
-                adaptiveSpacing={adaptiveSpacing}
-                adaptiveBorders={adaptiveBorders}
-                navigate={navigate}
-                createMobileButton={createMobileButton}
-                city={city}
-                loading={loading}
-                error={error}
-                setError={setError}
-                weather={weather}
-                hourlyForecast={memoizedHourlyForecast}
-                dailyForecast={memoizedDailyForecast}
-                weatherCode={weatherCode}
-                getWeather={getWeather}
-                getWeatherByLocation={getWeatherByLocation}
-                onRefresh={handleRefresh}
-                haptic={haptic}
-                handleLocationDetected={handleLocationDetected}
-                selectedView={selectedView}
-                setSelectedView={setSelectedView}
-                showActionSheet={showActionSheet}
-                setShowActionSheet={setShowActionSheet}
-                themeName={themeName}
-                showLiveActivity={showLiveActivity}
-                weatherAlert={weatherAlert}
-                showWeatherSettingsModal={showWeatherSettingsModal}
-                setShowWeatherSettingsModal={setShowWeatherSettingsModal}
-              />
-            )}
-          </SwipeNavigationContainer>
-        )}
-
-        {/* Deployment Status Indicator - Only show in production */}
-        {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
-          <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
-        )}
-
-        {/* Geolocation Verification Modal - Temporarily disabled */}
-        <GeolocationVerification
-          isOpen={false}
-          locationData={pendingLocationData}
-          theme={theme}
-          isMobile={screenInfo.width < 768}
-          onConfirm={handleVerificationConfirm}
-          onCancel={handleVerificationCancel}
-        />
-
-        {/* Performance Monitor - Development only - Temporarily disabled */}
-        {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
-
-        {/* Mobile Debug - Development only - Temporarily disabled */}
-        <MobileDebug enabled={false} position="bottom-right" />
-
-        {/* iOS 26 Live Activity - Weather Alerts and Updates */}
-        <LiveActivity
-          isVisible={showLiveActivity || !!weatherAlert}
-          title={
-            weatherAlert?.title ||
-            (weather
-              ? `${Math.round(weather.main.temp)}°F in ${city}`
-              : 'Weather Update')
-          }
-          subtitle={
-            weatherAlert?.message ||
-            (weather
-              ? `${weather.weather[0].description} • Updated now`
-              : undefined)
-          }
-          icon={
-            weatherAlert ? (
-              <span className="ios-body">
-                {weatherAlert.severity === 'severe'
-                  ? '⚠️'
-                  : weatherAlert.severity === 'warning'
-                  ? '🌩️'
-                  : 'ℹ️'}
-              </span>
-            ) : (
-              <WeatherIcon code={weatherCode} size={20} animated={true} />
-            )
-          }
-          progress={dataUpdateProgress > 0 ? dataUpdateProgress : undefined}
-          theme={theme}
-          onTap={() => {
-            haptic.buttonPress();
-            if (weatherAlert) {
-              setWeatherAlert(null);
-            }
-            setShowLiveActivity(false);
-            navigate('Weather');
-          }}
-          duration={weatherAlert ? 8000 : 4000}
-        />
-
-        {/* PWA Status - Shows installation, updates, and offline capabilities */}
-        <PWAStatus
-          pwaInstall={pwaInstall}
-          serviceWorker={serviceWorker}
-          isOnline={isOnline}
-          updateAvailable={updateAvailable}
-          applyUpdate={applyUpdate}
-          enabled={true}
-          position="top-right"
-        />
-
-        {/* iOS Component Showcase - Overlay */}
-        {showIOSDemo && (
-          <div className="ios26-overlay">
-            <IOSComponentShowcase
-              theme={theme}
-              themeName={themeName}
-              onBack={() => setShowIOSDemo(false)}
-            />
-          </div>
-        )}
-
-        {/* Horror Theme Activator - Easy horror mode activation */}
-        <HorrorThemeActivator />
-
-        {/* PWA Install Prompt - Appears when app can be installed */}
-        <PWAInstallPrompt
-          canInstall={pwaInstall.canInstall}
-          onInstall={pwaInstall.install}
-          onDismiss={() => {
-            // User dismissed the install prompt
-            // Could store preference to not show again for some time
-          }}
-        />
-
-        {/* Performance Dashboard - Development monitoring */}
-        <PerformanceDashboard
-          enabled={process.env.NODE_ENV === 'development'}
-          position="bottom-left"
-        />
-      </EnhancedMobileContainer>
-    </LoadingProvider>
+        </EnhancedMobileContainer>
+      </LoadingProvider>
+    </Dash0ErrorBoundary>
   );
 };
 

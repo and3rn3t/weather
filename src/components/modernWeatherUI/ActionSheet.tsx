@@ -11,6 +11,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
+import { useDash0Telemetry } from '../../dash0/hooks/useDash0Telemetry';
 import type { ThemeColors } from '../../utils/themeConfig';
 
 interface ActionSheetAction {
@@ -43,9 +44,22 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
   isDark = false,
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const telemetry = useDash0Telemetry();
 
   useEffect(() => {
     if (isVisible) {
+      // Track action sheet display
+      telemetry.trackUserInteraction({
+        action: 'action_sheet_opened',
+        component: 'ActionSheet',
+        metadata: {
+          title: title || 'untitled',
+          actionCount: actions.length,
+          hasMessage: !!message,
+          isDarkMode: isDark,
+        },
+      });
+
       document.body.style.overflow = 'hidden';
       // Add haptic feedback if available
       if ('vibrate' in navigator) {
@@ -58,7 +72,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isVisible]);
+  }, [isVisible, title, message, actions.length, isDark, telemetry]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -176,8 +190,40 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
 
   const handleActionPress = (action: ActionSheetAction) => {
     if (!action.disabled) {
+      // Track action selection
+      telemetry.trackUserInteraction({
+        action: 'action_sheet_selection',
+        component: 'ActionSheet',
+        metadata: {
+          actionTitle: action.title,
+          isDestructive: !!action.destructive,
+          hasIcon: !!action.icon,
+          sheetTitle: title || 'untitled',
+        },
+      });
+
+      telemetry.trackMetric({
+        name: 'action_sheet_interaction',
+        value: 1,
+        tags: {
+          action: action.title,
+          destructive: String(!!action.destructive),
+          sheet_title: title || 'untitled',
+        },
+      });
+
       action.onPress();
       onClose();
+    } else {
+      // Track disabled action attempt
+      telemetry.trackUserInteraction({
+        action: 'action_sheet_disabled_attempt',
+        component: 'ActionSheet',
+        metadata: {
+          actionTitle: action.title,
+          reason: 'action_disabled',
+        },
+      });
     }
   };
 

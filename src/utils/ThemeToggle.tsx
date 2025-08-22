@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react';
+import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
 import { useHaptic } from './hapticHooks';
 import {
   useInteractionFeedback,
@@ -13,12 +14,26 @@ interface ThemeToggleProps {
 const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
   const { isDark, themeName, toggleTheme } = useTheme();
   const haptic = useHaptic();
+  const telemetry = useDash0Telemetry();
 
   // iOS26 Phase 3C: Multi-sensory theme switching
   const interactionFeedback = useInteractionFeedback();
   const weatherAnnouncements = useWeatherAnnouncements();
 
   const handleThemeToggle = async () => {
+    const previousTheme = themeName;
+
+    // Track theme toggle interaction
+    telemetry.trackUserInteraction({
+      action: 'theme_toggle',
+      component: 'ThemeToggle',
+      metadata: {
+        fromTheme: previousTheme,
+        direction: 'forward', // Always cycles forward through themes
+        method: 'button_click',
+      },
+    });
+
     haptic.settingsChange(); // Haptic feedback for theme change
 
     // Enhanced multi-sensory feedback for theme switching
@@ -36,10 +51,21 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
       nextTheme = 'light';
     }
 
+    // Track successful theme change
+    telemetry.trackMetric({
+      name: 'theme_change_success',
+      value: 1,
+      tags: {
+        fromTheme: previousTheme,
+        toTheme: nextTheme,
+        hasMultiSensoryFeedback: 'true',
+      },
+    });
+
     // Announce theme change for accessibility
     await weatherAnnouncements.announceStateChange(
       'theme-changed',
-      `Switched to ${nextTheme} theme`,
+      `Switched to ${nextTheme} theme`
     );
   };
 
