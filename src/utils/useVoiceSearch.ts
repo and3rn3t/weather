@@ -3,6 +3,11 @@
  *
  * Provides hands-free city search using Web Speech API with intelligent
  * voice recognition, popular cities optimization, and mobile-first design.
+ *
+ * PRIVACY & UX CONFIGURATION:
+ * - Voice navigation is DISABLED BY DEFAULT for privacy and user experience
+ * - Users must explicitly enable voice search if desired
+ * - No automatic listening or voice data collection without user consent
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -46,15 +51,6 @@ interface SpeechRecognitionAlternative {
   confidence: number;
 }
 
-// Voice recognition result interface
-interface VoiceSearchResult {
-  transcript: string;
-  confidence: number;
-  isFinal: boolean;
-  recognizedCity?: string;
-  alternatives?: string[];
-}
-
 // Voice search configuration
 interface VoiceSearchConfig {
   language?: string;
@@ -62,7 +58,7 @@ interface VoiceSearchConfig {
   interimResults?: boolean;
   maxAlternatives?: number;
   timeout?: number;
-  autoStart?: boolean;
+  autoStart?: boolean; // Voice navigation disabled by default - users must manually enable
 }
 
 // Voice search hook return type
@@ -77,6 +73,18 @@ interface UseVoiceSearchReturn {
   resetTranscript: () => void;
   voiceSearchCity: (onCityFound: (city: string) => void) => Promise<void>;
 }
+
+/**
+ * Default voice search configuration - voice navigation disabled by default
+ */
+export const DEFAULT_VOICE_SEARCH_CONFIG: VoiceSearchConfig = {
+  language: 'en-US',
+  continuous: false,
+  interimResults: true,
+  maxAlternatives: 3,
+  timeout: 10000,
+  autoStart: false, // Voice navigation disabled by default for privacy and user experience
+};
 
 /**
  * Popular city names for voice recognition optimization
@@ -163,14 +171,17 @@ const VOICE_OPTIMIZED_CITIES = {
 export function useVoiceSearch(
   config: VoiceSearchConfig = {},
 ): UseVoiceSearchReturn {
+  // Merge with default configuration to ensure voice navigation is disabled by default
+  const finalConfig = { ...DEFAULT_VOICE_SEARCH_CONFIG, ...config };
+
   const {
-    language = 'en-US',
-    continuous = false,
-    interimResults = true,
-    maxAlternatives = 3,
-    timeout = 10000,
-    autoStart = false,
-  } = config;
+    language,
+    continuous,
+    interimResults,
+    maxAlternatives,
+    timeout,
+    autoStart, // Voice navigation disabled by default for privacy and UX
+  } = finalConfig;
 
   // State management
   const [isListening, setIsListening] = useState(false);
@@ -191,15 +202,24 @@ export function useVoiceSearch(
   const initializeSpeechRecognition = useCallback(() => {
     if (!isSupported) return null;
 
+    // Type assertion for browser speech recognition APIs
+    const windowWithSpeech = window as Window & {
+      SpeechRecognition?: new () => SpeechRecognitionInterface;
+      webkitSpeechRecognition?: new () => SpeechRecognitionInterface;
+    };
+
     const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+      windowWithSpeech.SpeechRecognition ||
+      windowWithSpeech.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) return null;
+
     const recognition = new SpeechRecognition();
 
-    recognition.continuous = continuous;
-    recognition.interimResults = interimResults;
-    recognition.lang = language;
-    recognition.maxAlternatives = maxAlternatives;
+    recognition.continuous = continuous ?? false;
+    recognition.interimResults = interimResults ?? true;
+    recognition.lang = language ?? 'en-US';
+    recognition.maxAlternatives = maxAlternatives ?? 3;
 
     recognition.onstart = () => {
       setIsListening(true);
@@ -496,9 +516,8 @@ export function useVoiceSearchButton(onCitySelect: (city: string) => void) {
     error,
     voiceSearchCity,
   } = useVoiceSearch({
-    language: 'en-US',
-    timeout: 8000,
-    interimResults: true,
+    ...DEFAULT_VOICE_SEARCH_CONFIG, // Use default config with voice navigation disabled
+    timeout: 8000, // Override timeout for button-triggered searches
   });
 
   const handleVoiceSearch = useCallback(async () => {
@@ -552,4 +571,18 @@ export function useVoiceSearchAccessibility() {
     announcements,
     announce,
   };
+}
+
+/**
+ * Check if voice search is enabled in the given configuration
+ */
+export function isVoiceSearchEnabled(config: VoiceSearchConfig = {}): boolean {
+  return config.autoStart === true;
+}
+
+/**
+ * Check if voice search is supported by the browser
+ */
+export function isVoiceSearchSupported(): boolean {
+  return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 }

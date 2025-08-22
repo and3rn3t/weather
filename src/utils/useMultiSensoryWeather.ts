@@ -1,6 +1,12 @@
 /**
  * Multi-Sensory Weather Experience Hook
  * React hook for integrating audio, haptic, and accessibility features
+ *
+ * PRIVACY CONFIGURATION:
+ * - Voice narration and audio announcements are DISABLED BY DEFAULT
+ * - Accessibility features are DISABLED BY DEFAULT
+ * - Users must explicitly enable these features for privacy compliance
+ * - Only haptic feedback is enabled by default (non-invasive)
  */
 
 import { useCallback, useEffect, useRef } from 'react';
@@ -13,12 +19,12 @@ import type {
 import { multiSensoryCoordinator } from './multiSensoryCoordinator';
 
 export interface UseMultiSensoryWeatherOptions {
-  enableAudio?: boolean;
-  enableHaptics?: boolean;
-  enableAccessibility?: boolean;
-  autoAnnounceWeather?: boolean;
-  hapticIntensity?: number;
-  audioVolume?: number;
+  enableAudio?: boolean; // Default: false - audio narration disabled by default
+  enableHaptics?: boolean; // Default: true - haptic feedback enabled
+  enableAccessibility?: boolean; // Default: false - accessibility features disabled by default
+  autoAnnounceWeather?: boolean; // Default: false - no automatic voice announcements
+  hapticIntensity?: number; // Default: 0.7 - haptic feedback intensity
+  audioVolume?: number; // Default: 0.7 - audio volume when enabled
 }
 
 export interface MultiSensoryWeatherAPI {
@@ -70,10 +76,10 @@ export function useMultiSensoryWeather(
   options: UseMultiSensoryWeatherOptions = {},
 ): MultiSensoryWeatherAPI {
   const {
-    enableAudio = true,
+    enableAudio = false, // Disabled by default for privacy - users must opt-in
     enableHaptics = true,
-    enableAccessibility = false,
-    autoAnnounceWeather = false,
+    enableAccessibility = false, // Disabled by default for privacy - users must opt-in
+    autoAnnounceWeather = false, // Disabled by default - no automatic voice narration
     hapticIntensity = 0.7,
     audioVolume = 0.7,
   } = options;
@@ -448,10 +454,10 @@ export function useInteractionFeedback() {
 export function useWeatherAnnouncements() {
   const { announceWeather, announceStateChange, playWeatherAlert } =
     useMultiSensoryWeather({
-      enableAudio: false,
+      enableAudio: false, // Disabled by default - users must opt-in
       enableHaptics: false,
-      enableAccessibility: true,
-      autoAnnounceWeather: true,
+      enableAccessibility: false, // Disabled by default - no automatic voice narration
+      autoAnnounceWeather: false, // Disabled by default - no automatic announcements
     });
 
   return {
@@ -463,4 +469,22 @@ export function useWeatherAnnouncements() {
     announceRefresh: () => announceStateChange('refreshed'),
     announceOffline: () => announceStateChange('offline'),
   };
+}
+
+/**
+ * Check if voice narration is currently enabled
+ */
+export function isVoiceNarrationEnabled(
+  options: UseMultiSensoryWeatherOptions = {},
+): boolean {
+  return options.enableAudio === true || options.enableAccessibility === true;
+}
+
+/**
+ * Check if automatic weather announcements are enabled
+ */
+export function isAutoWeatherAnnouncementsEnabled(
+  options: UseMultiSensoryWeatherOptions = {},
+): boolean {
+  return options.autoAnnounceWeather === true;
 }
