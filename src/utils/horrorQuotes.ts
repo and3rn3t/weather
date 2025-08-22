@@ -1,4 +1,4 @@
-import { logWarn } from './logger';
+// Horror weather quotes for dramatic effect
 
 /**
  * Horror Weather Quotes
@@ -202,17 +202,8 @@ const getSecureRandomIndex = (maxValue: number): number => {
     window.crypto.getRandomValues(array);
     return array[0] % maxValue;
   } else if (typeof require !== 'undefined') {
-    // Node.js environment
-    try {
-      const crypto = require('crypto');
-      const randomBytes = crypto.randomBytes(4);
-      const randomValue = randomBytes.readUInt32BE(0);
-      return randomValue % maxValue;
-    } catch (error) {
-      // Fallback to Math.random if crypto is not available
-      logWarn('Crypto module not available, falling back to Math.random');
-      return Math.floor(Math.random() * maxValue);
-    }
+    // Node.js environment - fallback to Math.random for browser compatibility
+    return Math.floor(Math.random() * maxValue);
   } else {
     // Fallback for environments without crypto
     return Math.floor(Math.random() * maxValue);
