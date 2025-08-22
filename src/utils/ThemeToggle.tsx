@@ -1,5 +1,9 @@
 import type { MouseEvent } from 'react';
 import { useHaptic } from './hapticHooks';
+import {
+  useInteractionFeedback,
+  useWeatherAnnouncements,
+} from './useMultiSensoryWeather';
 import { useTheme } from './useTheme';
 
 interface ThemeToggleProps {
@@ -10,9 +14,33 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
   const { isDark, themeName, toggleTheme } = useTheme();
   const haptic = useHaptic();
 
-  const handleThemeToggle = () => {
+  // iOS26 Phase 3C: Multi-sensory theme switching
+  const interactionFeedback = useInteractionFeedback();
+  const weatherAnnouncements = useWeatherAnnouncements();
+
+  const handleThemeToggle = async () => {
     haptic.settingsChange(); // Haptic feedback for theme change
+
+    // Enhanced multi-sensory feedback for theme switching
+    await interactionFeedback.onButtonPress();
+
     toggleTheme();
+
+    // Determine next theme for announcement
+    let nextTheme: string;
+    if (themeName === 'light') {
+      nextTheme = 'dark';
+    } else if (themeName === 'dark') {
+      nextTheme = 'horror';
+    } else {
+      nextTheme = 'light';
+    }
+
+    // Announce theme change for accessibility
+    await weatherAnnouncements.announceStateChange(
+      'theme-changed',
+      `Switched to ${nextTheme} theme`
+    );
   };
 
   // Get appropriate icon and title based on current theme
@@ -57,7 +85,7 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     <button
       onClick={handleThemeToggle}
       className={`theme-toggle-btn ${getThemeClass()}${
-        className ? ` ${  className}` : ''
+        className ? ` ${className}` : ''
       }`}
       title={getThemeTitle()}
       onMouseEnter={(e: MouseEvent<HTMLButtonElement>) => {

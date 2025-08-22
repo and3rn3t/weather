@@ -8,6 +8,10 @@ import React, {
 import { useHaptic } from '../utils/hapticHooks';
 import { logError, logInfo } from '../utils/logger';
 import type { ThemeColors } from '../utils/themeConfig';
+import {
+  useInteractionFeedback,
+  useWeatherAnnouncements,
+} from '../utils/useMultiSensoryWeather';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -54,6 +58,11 @@ interface NominatimResult {
  */
 function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
   const haptic = useHaptic();
+
+  // iOS26 Phase 3C: Multi-sensory search experience
+  const interactionFeedback = useInteractionFeedback();
+  const weatherAnnouncements = useWeatherAnnouncements();
+
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
@@ -113,7 +122,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
       try {
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          searchQuery,
+          searchQuery
         )}&format=json&limit=20&addressdetails=1&extratags=1`;
 
         const response = await fetch(url, {
@@ -185,7 +194,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         setIsLoading(false);
       }
     },
-    [formatCityDisplay],
+    [formatCityDisplay]
   );
 
   // Debounced search
@@ -204,13 +213,20 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         performSearch(value);
       }, 300);
     },
-    [performSearch],
+    [performSearch]
   );
 
   // Handle city selection
   const handleCitySelection = useCallback(
-    (city: SearchResult) => {
+    async (city: SearchResult) => {
       haptic.selection();
+
+      // iOS26 Phase 3C: Enhanced location selection with multi-sensory feedback
+      await interactionFeedback.onSuccess();
+      await weatherAnnouncements.announceStateChange(
+        'location-changed',
+        `Selected location: ${city.name}`
+      );
 
       const latitude = parseFloat(city.lat);
       const longitude = parseFloat(city.lon);
@@ -224,24 +240,38 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       setRecentSearches(newRecent);
       localStorage.setItem(
         'weather-recent-searches',
-        JSON.stringify(newRecent),
+        JSON.stringify(newRecent)
       );
 
       logInfo(`Selected city: ${city.name} (${latitude}, ${longitude})`);
       onLocationSelect(city.name, latitude, longitude);
     },
-    [haptic, onLocationSelect, recentSearches],
+    [
+      haptic,
+      onLocationSelect,
+      recentSearches,
+      interactionFeedback,
+      weatherAnnouncements,
+    ]
   );
 
   // Handle recent search selection
   const handleRecentSelect = useCallback(
-    (result: SearchResult) => {
+    async (result: SearchResult) => {
       haptic.selection();
+
+      // iOS26 Phase 3C: Enhanced recent selection with multi-sensory feedback
+      await interactionFeedback.onSuccess();
+      await weatherAnnouncements.announceStateChange(
+        'location-changed',
+        `Selected recent location: ${result.name}`
+      );
+
       const latitude = parseFloat(result.lat);
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect],
+    [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements]
   );
 
   // Get current location
@@ -264,7 +294,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         onLocationSelect(
           'Current Location',
           position.coords.latitude,
-          position.coords.longitude,
+          position.coords.longitude
         );
       },
       error => {
@@ -277,7 +307,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 300000,
-      },
+      }
     );
   }, [haptic, onLocationSelect]);
 
@@ -299,7 +329,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: theme.appBackground,
       color: theme.primaryText,
     }),
-    [theme],
+    [theme]
   );
 
   const searchContainerStyles = useMemo(
@@ -307,14 +337,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: `${theme.primaryGradient}10`,
       borderColor: `${theme.primaryGradient}30`,
     }),
-    [theme],
+    [theme]
   );
 
   const resultItemStyles = useMemo(
     () => ({
       borderColor: `${theme.primaryGradient}20`,
     }),
-    [theme],
+    [theme]
   );
 
   return (

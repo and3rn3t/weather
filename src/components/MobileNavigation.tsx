@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import '../styles/mobileEnhancements.css';
 import { useHaptic } from '../utils/hapticHooks';
+import {
+  useInteractionFeedback,
+  useWeatherAnnouncements,
+} from '../utils/useMultiSensoryWeather';
 
 export type NavigationScreen =
   | 'Home'
@@ -46,6 +50,8 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   className = '',
 }) => {
   const haptic = useHaptic();
+  const interactionFeedback = useInteractionFeedback();
+  const weatherAnnouncements = useWeatherAnnouncements();
   const [activeTab, setActiveTab] = useState<NavigationScreen>(currentScreen);
 
   // Update active tab when currentScreen changes
@@ -54,7 +60,10 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   }, [currentScreen]);
 
   const handleTabPress = useCallback(
-    (tabId: NavigationScreen, event?: React.MouseEvent | React.TouchEvent) => {
+    async (
+      tabId: NavigationScreen,
+      event?: React.MouseEvent | React.TouchEvent
+    ) => {
       // Prevent any default browser behavior that might cause styling
       if (event) {
         event.preventDefault();
@@ -64,11 +73,18 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       if (tabId === activeTab) {
         // Double tap on active tab - could trigger scroll to top or refresh
         haptic.buttonPress();
+        await interactionFeedback.onSuccess();
         return;
       }
 
-      // Haptic feedback for navigation
+      // Multi-sensory feedback for navigation
       haptic.buttonPress();
+      await interactionFeedback.onSuccess();
+
+      // Announce navigation change
+      await weatherAnnouncements.announceStateChange(
+        `Navigated to ${tabId} screen`
+      );
 
       // Update active state immediately for visual feedback
       setActiveTab(tabId);
@@ -76,7 +92,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       // Navigate to new screen
       onNavigate(tabId);
     },
-    [activeTab, onNavigate, haptic],
+    [activeTab, onNavigate, haptic, interactionFeedback, weatherAnnouncements]
   );
 
   return (
@@ -90,11 +106,10 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
 
         return (
-          <div
+          <button
             key={tab.id}
             className={`nav-tab ${isActive ? 'active' : ''}`}
-            role="button"
-            tabIndex={0}
+            type="button"
             aria-label={`Navigate to ${tab.label}`}
             aria-current={isActive ? 'page' : undefined}
             onClick={e => handleTabPress(tab.id, e)}
@@ -115,7 +130,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           >
             <div className="nav-icon">{displayIcon}</div>
             <span className="nav-label">{tab.label}</span>
-          </div>
+          </button>
         );
       })}
     </nav>

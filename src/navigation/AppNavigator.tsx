@@ -122,6 +122,13 @@ import {
   useServiceWorker,
 } from '../utils/pwaUtils';
 
+// iOS26 Phase 3C: Multi-Sensory Weather Experience
+import {
+  useInteractionFeedback,
+  useMultiSensoryWeather,
+  useWeatherAnnouncements,
+} from '../utils/useMultiSensoryWeather';
+
 /**
  * OpenMeteo API response interfaces
  */
@@ -1398,6 +1405,19 @@ const AppNavigator = () => {
   const pwaInstall = usePWAInstall();
   const serviceWorker = useServiceWorker();
   const { isOnline } = useNetworkStatus();
+
+  // iOS26 Phase 3C: Multi-Sensory Weather Experience Integration
+  const multiSensory = useMultiSensoryWeather({
+    enableAudio: true,
+    enableHaptics: true,
+    enableAccessibility: true,
+    autoAnnounceWeather: true,
+    hapticIntensity: 0.7,
+    audioVolume: 0.6,
+  });
+
+  const interactionFeedback = useInteractionFeedback();
+  const weatherAnnouncements = useWeatherAnnouncements();
   const { updateAvailable, applyUpdate } = usePWAUpdate();
 
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
@@ -1466,7 +1486,7 @@ const AppNavigator = () => {
   );
 
   // Legacy navigation function for backward compatibility
-  const navigate = (screenName: string) => {
+  const navigate = async (screenName: string) => {
     // Map old screen names to new NavigationScreen types
     const screenMap: Record<string, NavigationScreen> = {
       Home: 'Home',
@@ -1479,6 +1499,13 @@ const AppNavigator = () => {
     };
 
     const mappedScreen = screenMap[screenName] || 'Home';
+
+    // iOS26 Phase 3C: Enhanced navigation with multi-sensory feedback
+    await interactionFeedback.onButtonPress();
+    await weatherAnnouncements.announceNavigation(
+      `${mappedScreen.toLowerCase()}-screen`,
+      false
+    );
 
     // Special handling for iOS Demo
     if (screenName === 'IOSDemo') {
@@ -1506,6 +1533,22 @@ const AppNavigator = () => {
       haptic.triggerHaptic('light');
     }
   };
+
+  // iOS26 Phase 3C: Weather condition mapping for multi-sensory experience
+  const getWeatherConditionFromCode = useCallback(
+    (weatherCode: number): string | null => {
+      // Map OpenMeteo weather codes to our multi-sensory experience conditions
+      if (weatherCode >= 80 && weatherCode <= 82) return 'light-rain';
+      if (weatherCode >= 61 && weatherCode <= 67) return 'heavy-rain';
+      if (weatherCode >= 95 && weatherCode <= 99) return 'thunderstorm';
+      if (weatherCode >= 71 && weatherCode <= 77) return 'snow';
+      if (weatherCode >= 1 && weatherCode <= 3) return 'cloudy';
+      if (weatherCode === 0) return 'clear-sunny';
+      if (weatherCode >= 51 && weatherCode <= 57) return 'light-rain';
+      return null;
+    },
+    []
+  );
 
   // Common weather data fetching logic with optimization
   const fetchWeatherData = useCallback(
@@ -1582,6 +1625,21 @@ const AppNavigator = () => {
         );
         setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
 
+        // iOS26 Phase 3C: Multi-Sensory Weather Experience
+        const weatherCondition =
+          getWeatherConditionFromCode(currentWeatherCode);
+        if (weatherCondition) {
+          // Play immersive weather experience with spatial audio and haptic feedback
+          await multiSensory.playWeatherExperience(weatherCondition, 0.8);
+
+          // Announce weather with accessibility features
+          await weatherAnnouncements.announceWeather(
+            weatherCondition,
+            transformedData.main.temp,
+            city
+          );
+        }
+
         // Update progress to completion
         weatherLoading.setLoading(true, 100);
 
@@ -1596,38 +1654,54 @@ const AppNavigator = () => {
           transformedData.weather[0].description.toLowerCase();
 
         if (currentTemp > 95) {
-          setWeatherAlert({
+          const alertData = {
             title: 'Extreme Heat Warning',
             message: `Temperature is ${Math.round(
               currentTemp
             )}°F. Stay hydrated and avoid outdoor activities.`,
-            severity: 'severe',
-          });
+            severity: 'severe' as const,
+          };
+          setWeatherAlert(alertData);
+
+          // iOS26 Phase 3C: Multi-sensory severe weather alert
+          await multiSensory.playWeatherAlert('severe', alertData.message);
         } else if (currentTemp < 20) {
-          setWeatherAlert({
+          const alertData = {
             title: 'Extreme Cold Warning',
             message: `Temperature is ${Math.round(
               currentTemp
             )}°F. Dress warmly and limit outdoor exposure.`,
-            severity: 'severe',
-          });
+            severity: 'severe' as const,
+          };
+          setWeatherAlert(alertData);
+
+          // iOS26 Phase 3C: Multi-sensory severe weather alert
+          await multiSensory.playWeatherAlert('severe', alertData.message);
         } else if (windSpeed > 35) {
-          setWeatherAlert({
+          const alertData = {
             title: 'High Wind Advisory',
             message: `Wind speeds of ${Math.round(
               windSpeed
             )} mph. Secure loose objects and drive carefully.`,
-            severity: 'warning',
-          });
+            severity: 'warning' as const,
+          };
+          setWeatherAlert(alertData);
+
+          // iOS26 Phase 3C: Multi-sensory wind warning alert
+          await multiSensory.playWeatherAlert('warning', alertData.message);
         } else if (
           weatherCode.includes('thunderstorm') ||
           weatherCode.includes('storm')
         ) {
-          setWeatherAlert({
+          const alertData = {
             title: 'Storm Alert',
             message: 'Thunderstorms in the area. Seek indoor shelter.',
-            severity: 'warning',
-          });
+            severity: 'warning' as const,
+          };
+          setWeatherAlert(alertData);
+
+          // iOS26 Phase 3C: Multi-sensory storm alert
+          await multiSensory.playWeatherAlert('warning', alertData.message);
         } else {
           setWeatherAlert(null);
         }
@@ -1785,15 +1859,25 @@ const AppNavigator = () => {
     if (city.trim() && weather) {
       haptic.weatherRefresh(); // Haptic feedback for pull-to-refresh
 
+      // iOS26 Phase 3C: Enhanced pull-to-refresh with multi-sensory feedback
+      await interactionFeedback.onPullToRefresh();
+      await weatherAnnouncements.announceRefresh();
+
       // Use background refresh for manual refresh with enhanced capabilities
       try {
         await backgroundRefresh.manualRefresh();
         logInfo('Manual refresh completed via background refresh service');
+
+        // Play success feedback for successful refresh
+        await interactionFeedback.onSuccess();
       } catch (error) {
         // Fallback to traditional refresh
         logInfo('Falling back to traditional refresh:', error);
         await new Promise(resolve => setTimeout(resolve, 500));
         await getWeather();
+
+        // Still play success feedback for fallback refresh
+        await interactionFeedback.onSuccess();
       }
     }
   }, [city, weather, backgroundRefresh, haptic, getWeather]);
