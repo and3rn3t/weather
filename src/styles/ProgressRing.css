@@ -1,0 +1,202 @@
+/* Progress Ring Component Styles */
+.progress-ring {
+  position: relative;
+  display: inline-block;
+}
+
+.progress-ring-svg {
+  display: block;
+}
+
+.progress-ring-progress {
+  transition: stroke-dashoffset 0.3s ease-in-out;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.progress-ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.progress-ring-text--small {
+  font-size: 10px;
+}
+
+.progress-ring-text--normal {
+  font-size: 12px;
+}
+
+/* Hidden accessibility elements */
+.progress-ring-hidden-progress {
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.spinner-hidden-output {
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Spinner Component Styles */
+.spinner {
+  position: relative;
+  display: inline-block;
+}
+
+.spinner-svg {
+  display: block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-circle {
+  animation: spin 1s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+/* Loading state variants */
+.progress-ring--primary .progress-ring-progress {
+  stroke: #007AFF;
+}
+
+.progress-ring--primary .progress-ring-text {
+  color: #007AFF;
+}
+
+.progress-ring--secondary .progress-ring-progress {
+  stroke: #8E8E93;
+}
+
+.progress-ring--secondary .progress-ring-text {
+  color: #8E8E93;
+}
+
+.progress-ring--success .progress-ring-progress {
+  stroke: #34C759;
+}
+
+.progress-ring--success .progress-ring-text {
+  color: #34C759;
+}
+
+.progress-ring--warning .progress-ring-progress {
+  stroke: #FF9500;
+}
+
+.progress-ring--warning .progress-ring-text {
+  color: #FF9500;
+}
+
+.progress-ring--error .progress-ring-progress {
+  stroke: #FF3B30;
+}
+
+.progress-ring--error .progress-ring-text {
+  color: #FF3B30;
+}
+
+/* Dark theme variants */
+.dark .progress-ring-background {
+  stroke: #3A3A3C;
+}
+
+.dark .progress-ring--primary .progress-ring-progress {
+  stroke: #0A84FF;
+}
+
+.dark .progress-ring--primary .progress-ring-text {
+  color: #0A84FF;
+}
+
+.dark .progress-ring--secondary .progress-ring-progress {
+  stroke: #98989D;
+}
+
+.dark .progress-ring--secondary .progress-ring-text {
+  color: #98989D;
+}
+
+/* Spinner variants */
+.spinner--primary .spinner-circle {
+  stroke: #007AFF;
+}
+
+.spinner--secondary .spinner-circle {
+  stroke: #8E8E93;
+}
+
+.dark .spinner--primary .spinner-circle {
+  stroke: #0A84FF;
+}
+
+.dark .spinner--secondary .spinner-circle {
+  stroke: #98989D;
+}
+
+/* Size utility classes */
+.progress-ring--size-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.progress-ring--size-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.progress-ring--size-48 {
+  width: 48px;
+  height: 48px;
+}
+
+.progress-ring--size-64 {
+  width: 64px;
+  height: 64px;
+}
+
+.progress-ring--size-72 {
+  width: 72px;
+  height: 72px;
+}
+
+.spinner--size-16 {
+  width: 16px;
+  height: 16px;
+}
+
+.spinner--size-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.spinner--size-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.spinner--size-32 {
+  width: 32px;
+  height: 32px;
+}
