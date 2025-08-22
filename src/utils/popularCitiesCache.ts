@@ -334,6 +334,102 @@ export const POPULAR_CITIES: PopularCity[] = [
     category: 'major_city',
     searchPriority: 6,
   },
+  {
+    name: 'Atlanta',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 33.749,
+    lon: -84.388,
+    population: 499_000,
+    continent: 'North America',
+    timezone: 'America/New_York',
+    category: 'business_hub',
+    searchPriority: 6,
+  },
+  {
+    name: 'Phoenix',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 33.4484,
+    lon: -112.074,
+    population: 1_608_000,
+    continent: 'North America',
+    timezone: 'America/Phoenix',
+    category: 'major_city',
+    searchPriority: 6,
+  },
+  {
+    name: 'Philadelphia',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 39.9526,
+    lon: -75.1652,
+    population: 1_584_000,
+    continent: 'North America',
+    timezone: 'America/New_York',
+    category: 'major_city',
+    searchPriority: 6,
+  },
+  {
+    name: 'San Diego',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 32.7157,
+    lon: -117.1611,
+    population: 1_423_000,
+    continent: 'North America',
+    timezone: 'America/Los_Angeles',
+    category: 'major_city',
+    searchPriority: 6,
+  },
+  {
+    name: 'Dallas',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 32.7767,
+    lon: -96.797,
+    population: 1_344_000,
+    continent: 'North America',
+    timezone: 'America/Chicago',
+    category: 'business_hub',
+    searchPriority: 6,
+  },
+  {
+    name: 'San Antonio',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 29.4241,
+    lon: -98.4936,
+    population: 1_547_000,
+    continent: 'North America',
+    timezone: 'America/Chicago',
+    category: 'major_city',
+    searchPriority: 6,
+  },
+  {
+    name: 'Houston',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 29.7604,
+    lon: -95.3698,
+    population: 2_320_000,
+    continent: 'North America',
+    timezone: 'America/Chicago',
+    category: 'major_city',
+    searchPriority: 6,
+  },
+  {
+    name: 'Austin',
+    country: 'United States',
+    countryCode: 'US',
+    lat: 30.2672,
+    lon: -97.7431,
+    population: 965_000,
+    continent: 'North America',
+    timezone: 'America/Chicago',
+    category: 'business_hub',
+    searchPriority: 6,
+  },
 
   // European Cities (Priority 6-7)
   {
@@ -672,7 +768,7 @@ export const POPULAR_CITIES: PopularCity[] = [
  * Popular Cities Cache Management
  */
 export class PopularCitiesCache {
-  private cache = new Map<string, PopularCity[]>();
+  private readonly cache = new Map<string, PopularCity[]>();
   private lastUpdated = 0;
   private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -681,7 +777,7 @@ export class PopularCitiesCache {
    */
   getPopularCities(
     query: string = '',
-    userLocation?: { lat: number; lon: number },
+    userLocation?: { lat: number; lon: number }
   ): PopularCity[] {
     const cacheKey = `${query.toLowerCase()}_${userLocation?.lat || 0}_${
       userLocation?.lon || 0
@@ -703,7 +799,7 @@ export class PopularCitiesCache {
       results = results.filter(
         city =>
           city.name.toLowerCase().includes(queryLower) ||
-          city.country.toLowerCase().includes(queryLower),
+          city.country.toLowerCase().includes(queryLower)
       );
     }
 
@@ -716,7 +812,7 @@ export class PopularCitiesCache {
             userLocation.lat,
             userLocation.lon,
             city.lat,
-            city.lon,
+            city.lon
           ),
         }))
         .sort((a, b) => {
@@ -750,7 +846,7 @@ export class PopularCitiesCache {
    */
   getCitiesByCategory(
     category: PopularCity['category'],
-    maxResults = 10,
+    maxResults = 10
   ): PopularCity[] {
     return POPULAR_CITIES.filter(city => city.category === category)
       .sort((a, b) => b.searchPriority - a.searchPriority)
@@ -773,7 +869,7 @@ export class PopularCitiesCache {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number,
+    lon2: number
   ): number {
     const R = 6371; // Earth's radius in kilometers
     const dLat = this.degreesToRadians(lat2 - lat1);
@@ -807,11 +903,11 @@ export class PopularCitiesCache {
     try {
       localStorage.setItem(
         'weather-popular-cities',
-        JSON.stringify(POPULAR_CITIES),
+        JSON.stringify(POPULAR_CITIES)
       );
       localStorage.setItem(
         'weather-popular-cities-timestamp',
-        Date.now().toString(),
+        Date.now().toString()
       );
     } catch {
       // Storage not available or quota exceeded - continue silently
@@ -826,7 +922,7 @@ export class PopularCitiesCache {
     try {
       const stored = localStorage.getItem('weather-popular-cities');
       const timestamp = localStorage.getItem(
-        'weather-popular-cities-timestamp',
+        'weather-popular-cities-timestamp'
       );
 
       if (stored && timestamp) {

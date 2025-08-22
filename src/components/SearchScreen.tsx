@@ -43,6 +43,14 @@ interface NominatimResult {
   type: string;
   class: string;
   importance?: number;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    hamlet?: string;
+    state?: string;
+    country?: string;
+  };
 }
 
 /**
@@ -106,7 +114,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
     };
   }, []);
 
-  // Enhanced search with better filtering and scoring
+  // Enhanced search with US location optimization
   const performSearch = useCallback(
     async (searchQuery: string) => {
       if (!searchQuery.trim() || searchQuery.length < 2) {
@@ -121,15 +129,30 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       setShowResults(true);
 
       try {
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          searchQuery,
-        )}&format=json&limit=20&addressdetails=1&extratags=1`;
-
-        const response = await fetch(url, {
-          headers: {
-            'User-Agent': 'WeatherApp/2.0 (Weather Search)',
-          },
+        // Enhanced search parameters with US prioritization
+        const searchParams = new URLSearchParams({
+          q: searchQuery,
+          format: 'json',
+          addressdetails: '1',
+          limit: '15', // Increased limit for better US coverage
+          'accept-language': 'en-US,en', // US English preference
+          dedupe: '1',
+          extratags: '1',
+          namedetails: '1',
+          // US-focused parameters
+          countrycodes: 'us,ca,mx', // North America focus
+          viewbox: '-125,49,-66,24', // US bounding box
+          bounded: '1',
         });
+
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?${searchParams}`,
+          {
+            headers: {
+              'User-Agent': 'EnhancedWeatherApp/2.0 (US Location Search)',
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Search failed: ${response.status}`);
@@ -137,20 +160,27 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
         const data: NominatimResult[] = await response.json();
 
-        // Enhanced filtering for better city results
+        // Enhanced filtering with better US location support
         const cityResults = data
           .filter((item: NominatimResult) => {
-            const isCity =
+            const isValidLocation =
               item.type === 'city' ||
               item.type === 'town' ||
               item.type === 'village' ||
-              item.class === 'place' ||
-              item.type === 'administrative';
+              item.type === 'hamlet' ||
+              item.type === 'administrative' ||
+              item.class === 'place';
 
-            // Filter out very low importance results
-            const hasGoodImportance = !item.importance || item.importance > 0.1;
+            // Improved importance threshold for US locations
+            const hasGoodImportance =
+              !item.importance || item.importance > 0.15;
 
-            return isCity && hasGoodImportance;
+            // Prioritize US locations
+            const isUSLocation =
+              item.display_name?.includes('United States') ||
+              item.address?.country === 'United States';
+
+            return isValidLocation && (hasGoodImportance || isUSLocation);
           })
           .map((item, index) => ({
             id: `${item.place_id}-${index}`,
@@ -164,19 +194,21 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
             importance: item.importance || 0,
           }))
           .sort((a, b) => {
-            // Sort by importance and relevance
-            const aRelevance = a.name
-              .toLowerCase()
-              .startsWith(searchQuery.toLowerCase())
-              ? 1
-              : 0;
-            const bRelevance = b.name
-              .toLowerCase()
-              .startsWith(searchQuery.toLowerCase())
-              ? 1
-              : 0;
+            // Enhanced sorting for US locations
+            const aIsUS = a.display_name.includes('United States');
+            const bIsUS = b.display_name.includes('United States');
 
-            if (aRelevance !== bRelevance) return bRelevance - aRelevance;
+            // US locations first
+            if (aIsUS && !bIsUS) return -1;
+            if (bIsUS && !aIsUS) return 1;
+
+            // Exact name matches
+            const searchLower = searchQuery.toLowerCase();
+            const aExact = a.name.toLowerCase().startsWith(searchLower) ? 1 : 0;
+            const bExact = b.name.toLowerCase().startsWith(searchLower) ? 1 : 0;
+            if (aExact !== bExact) return bExact - aExact;
+
+            // Then by importance
             return (b.importance || 0) - (a.importance || 0);
           })
           .slice(0, 8); // Limit to 8 results for better UX
@@ -184,17 +216,60 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         setResults(cityResults);
 
         if (cityResults.length === 0) {
-          setError('No cities found. Try a different search term.');
+          // If no results with US focus, try global search
+          const globalResponse = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+              searchQuery
+            )}&format=json&limit=10&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'EnhancedWeatherApp/2.0 (Global Search)',
+              },
+            }
+          );
+
+          if (globalResponse.ok) {
+            const globalData: NominatimResult[] = await globalResponse.json();
+            const globalResults = globalData
+              .filter((item: NominatimResult) => {
+                const isCity =
+                  item.type === 'city' ||
+                  item.type === 'town' ||
+                  item.type === 'village' ||
+                  item.class === 'place';
+                return isCity && (!item.importance || item.importance > 0.1);
+              })
+              .map((item, index) => ({
+                id: `global-${item.place_id}-${index}`,
+                name: formatCityDisplay(item.display_name).name,
+                display_name: item.display_name,
+                lat: item.lat,
+                lon: item.lon,
+                country: formatCityDisplay(item.display_name).country,
+                state: formatCityDisplay(item.display_name).region,
+                type: item.type,
+                importance: item.importance || 0,
+              }))
+              .slice(0, 5);
+
+            setResults(globalResults);
+          }
+
+          if (cityResults.length === 0) {
+            setError(
+              'No cities found. Try a different search term or check spelling.'
+            );
+          }
         }
       } catch (error) {
-        logError('Search error:', error);
+        logError('Enhanced search error:', error);
         setError('Search failed. Please check your connection and try again.');
         setResults([]);
       } finally {
         setIsLoading(false);
       }
     },
-    [formatCityDisplay],
+    [formatCityDisplay]
   );
 
   // Debounced search
@@ -213,7 +288,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         performSearch(value);
       }, 300);
     },
-    [performSearch],
+    [performSearch]
   );
 
   // Handle city selection
@@ -225,7 +300,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       await interactionFeedback.onSuccess();
       await weatherAnnouncements.announceStateChange(
         'location-changed',
-        `Selected location: ${city.name}`,
+        `Selected location: ${city.name}`
       );
 
       const latitude = parseFloat(city.lat);
@@ -240,7 +315,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       setRecentSearches(newRecent);
       localStorage.setItem(
         'weather-recent-searches',
-        JSON.stringify(newRecent),
+        JSON.stringify(newRecent)
       );
 
       logInfo(`Selected city: ${city.name} (${latitude}, ${longitude})`);
@@ -252,7 +327,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       recentSearches,
       interactionFeedback,
       weatherAnnouncements,
-    ],
+    ]
   );
 
   // Handle recent search selection
@@ -264,14 +339,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       await interactionFeedback.onSuccess();
       await weatherAnnouncements.announceStateChange(
         'location-changed',
-        `Selected recent location: ${result.name}`,
+        `Selected recent location: ${result.name}`
       );
 
       const latitude = parseFloat(result.lat);
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements],
+    [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements]
   );
 
   // Get current location
@@ -294,7 +369,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         onLocationSelect(
           'Current Location',
           position.coords.latitude,
-          position.coords.longitude,
+          position.coords.longitude
         );
       },
       error => {
@@ -307,7 +382,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 300000,
-      },
+      }
     );
   }, [haptic, onLocationSelect]);
 
@@ -329,7 +404,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: theme.appBackground,
       color: theme.primaryText,
     }),
-    [theme],
+    [theme]
   );
 
   const searchContainerStyles = useMemo(
@@ -337,14 +412,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: `${theme.primaryGradient}10`,
       borderColor: `${theme.primaryGradient}30`,
     }),
-    [theme],
+    [theme]
   );
 
   const resultItemStyles = useMemo(
     () => ({
       borderColor: `${theme.primaryGradient}20`,
     }),
-    [theme],
+    [theme]
   );
 
   return (
