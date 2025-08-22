@@ -158,7 +158,7 @@ export class NetworkResilienceManager {
       maxRetries?: number;
       timeout?: number;
       source?: 'user' | 'system' | 'background';
-    } = {}
+    } = {},
   ): Promise<Response> {
     const request: NetworkRequest = {
       id: this.generateRequestId(),
@@ -205,7 +205,7 @@ export class NetworkResilienceManager {
     for (let i = 0; i < this.requestQueue.length; i++) {
       const queuePriorityIndex = priorityOrder.indexOf(
         // @ts-expect-error - Priority type mismatch
-        this.requestQueue[i].priority
+        this.requestQueue[i].priority,
       );
       if (requestPriorityIndex < queuePriorityIndex) {
         insertIndex = i;
@@ -353,7 +353,7 @@ export class NetworkResilienceManager {
           Math.min(retryCount - 1, NETWORK_CONFIG.RETRY_DELAYS.length - 1)
         ],
         NETWORK_CONFIG.RETRY_DELAYS[NETWORK_CONFIG.RETRY_DELAYS.length - 1] *
-          Math.pow(2, retryCount - NETWORK_CONFIG.RETRY_DELAYS.length)
+          Math.pow(2, retryCount - NETWORK_CONFIG.RETRY_DELAYS.length),
       );
     } else {
       delay =
@@ -515,7 +515,7 @@ export class NetworkResilienceManager {
 
     // Remove aborted requests from queue
     this.requestQueue = this.requestQueue.filter(
-      request => request.priority === NETWORK_CONFIG.PRIORITY_LEVELS.CRITICAL
+      request => request.priority === NETWORK_CONFIG.PRIORITY_LEVELS.CRITICAL,
     );
 
     // Notify handlers
@@ -613,7 +613,7 @@ export class NetworkResilienceManager {
         ([host, breaker]) => ({
           host,
           state: breaker.state,
-        })
+        }),
       ),
     };
   }

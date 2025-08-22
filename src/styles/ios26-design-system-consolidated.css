@@ -20,8 +20,17 @@
 
 :root {
   /* iOS 26 Typography - SF Pro Display/Text */
-  --ios26-font-family-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  --ios26-font-family-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --ios26-font-family-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui,
+    sans-serif /* Text utility classes */ .ios26-text-warning {
+    color: #ff9500 !important;
+  }
+
+  .ios26-mt-6 {
+    margin-top: 24px;
+  }
+
+  /* Dark mode enhancements for widgets */
+  ios26-font-family-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
   --ios26-font-family-mono: 'SF Mono', Consolas, 'Monaco', monospace;
   --ios26-font-family: var(--ios26-font-family-text);
 
@@ -916,6 +925,69 @@
 
 [data-theme='dark'] .enhanced-weather-display {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   SECTION 12: iOS26 INTERACTIVE WIDGET STYLES
+   ============================================================================ */
+
+/* Widget Grid Layout */
+.ios26-widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Widget Content Styles */
+.ios26-widget-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.ios26-widget-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ios26-colors-label);
+  line-height: 1.2;
+}
+
+.ios26-widget-value-small {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ios26-colors-label);
+  line-height: 1.2;
+}
+
+.ios26-widget-main-value {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--ios26-colors-label);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.ios26-widget-secondary-text {
+  font-size: 14px;
+  color: var(--ios26-colors-secondary-label);
+  margin-top: 4px;
+}
+
+/* Text utility classes */
+.ios26-text-warning {
+  color: #ff9500 !important;
+}
+
+/* Dark mode enhancements for widgets */
+[data-theme='dark'] .ios26-widget-value,
+[data-theme='dark'] .ios26-widget-value-small,
+[data-theme='dark'] .ios26-widget-main-value {
+  color: var(--ios26-colors-label);
+}
+
+[data-theme='dark'] .ios26-widget-secondary-text {
+  color: var(--ios26-colors-secondary-label);
 }
 
 /* ============================================================================

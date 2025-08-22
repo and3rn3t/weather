@@ -76,7 +76,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       // Navigate to new screen
       onNavigate(tabId);
     },
-    [activeTab, onNavigate, haptic]
+    [activeTab, onNavigate, haptic],
   );
 
   return (

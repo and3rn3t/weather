@@ -59,15 +59,19 @@ import WeatherIcon from '../utils/weatherIcons';
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
 // iOS 26 Modern UI Components - Complete Suite
 import {
-  QuickActionsPanel,
-  WeatherMetricsGrid,
-} from '../components/modernWeatherUI/iOS26MainScreen';
+  ContextMenu,
+  InteractiveWidget,
+  LiveActivity,
+  ModalSheet,
+} from '../components/modernWeatherUI/iOS26Components';
+import { QuickActionsPanel } from '../components/modernWeatherUI/iOS26MainScreen';
 import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
 import '../styles/iOS26.css';
 // Horror Theme Components
 import HorrorThemeActivator from '../components/HorrorThemeActivator';
 // iOS HIG Components
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
+import { StatusBadge } from '../components/modernWeatherUI/IOSComponents';
 import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShowcase';
 import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
 import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
@@ -400,6 +404,10 @@ function WeatherDetailsScreen({
   showActionSheet,
   setShowActionSheet,
   themeName,
+  showLiveActivity,
+  weatherAlert,
+  showWeatherSettingsModal,
+  setShowWeatherSettingsModal,
 }: Readonly<{
   theme: ThemeColors;
   screenInfo: ScreenInfo;
@@ -437,6 +445,14 @@ function WeatherDetailsScreen({
   showActionSheet: boolean;
   setShowActionSheet: (show: boolean) => void;
   themeName: string;
+  showLiveActivity: boolean;
+  weatherAlert: {
+    title: string;
+    message: string;
+    severity: 'info' | 'warning' | 'severe';
+  } | null;
+  showWeatherSettingsModal: boolean;
+  setShowWeatherSettingsModal: (show: boolean) => void;
 }>) {
   return (
     <div className="mobile-container main-content-area">
@@ -455,6 +471,39 @@ function WeatherDetailsScreen({
         theme={theme}
         isDark={themeName === 'dark'}
       />
+
+      {/* iOS26 Live Activity for Weather Updates */}
+      {(showLiveActivity || weatherAlert) && (
+        <LiveActivity
+          title={weatherAlert ? weatherAlert.title : 'Weather Updated'}
+          subtitle={
+            weatherAlert
+              ? weatherAlert.message
+              : `${
+                  weather
+                    ? `${Math.round(weather.main.temp)}°F - ${
+                        weather.weather[0].description
+                      }`
+                    : 'Loading...'
+                }`
+          }
+          icon={
+            <span className="ios26-widget-icon">
+              {weatherAlert?.severity === 'severe'
+                ? '⚠️'
+                : weatherAlert?.severity === 'warning'
+                ? '🟡'
+                : '🌤️'}
+            </span>
+          }
+          theme={theme}
+          isVisible={true}
+          onTap={() => {
+            haptic.buttonPress();
+            logInfo('Live Activity tapped');
+          }}
+        />
+      )}
 
       <ThemeToggle />
       <PullToRefresh
@@ -510,18 +559,81 @@ function WeatherDetailsScreen({
           {/* Error Display */}
           {error && <SimpleStatusBadge text={error} variant="error" />}
 
-          {/* Weather Status Indicators */}
+          {/* iOS26 Enhanced Status Badges */}
           {weather && (
             <div className="ios26-quick-actions">
-              <SimpleStatusBadge text="Live Data" variant="success" />
-              {weather.main.temp > 90 && (
-                <SimpleStatusBadge text="Heat Advisory" variant="warning" />
+              <StatusBadge text="Live Data" variant="success" theme={theme} />
+              {weather.main.temp > 95 && (
+                <StatusBadge
+                  text="🔥 Extreme Heat"
+                  variant="error"
+                  theme={theme}
+                />
               )}
-              {weather.main.temp < 32 && (
-                <SimpleStatusBadge text="Freeze Warning" variant="warning" />
+              {weather.main.temp > 90 && weather.main.temp <= 95 && (
+                <StatusBadge
+                  text="🌡️ Heat Advisory"
+                  variant="warning"
+                  theme={theme}
+                />
               )}
-              {weather.wind.speed > 25 && (
-                <SimpleStatusBadge text="Windy Conditions" variant="info" />
+              {weather.main.temp < 20 && (
+                <StatusBadge
+                  text="🥶 Extreme Cold"
+                  variant="error"
+                  theme={theme}
+                />
+              )}
+              {weather.main.temp >= 20 && weather.main.temp < 32 && (
+                <StatusBadge
+                  text="❄️ Freeze Warning"
+                  variant="warning"
+                  theme={theme}
+                />
+              )}
+              {weather.wind.speed > 35 && (
+                <StatusBadge
+                  text="💨 High Winds"
+                  variant="error"
+                  theme={theme}
+                />
+              )}
+              {weather.wind.speed > 25 && weather.wind.speed <= 35 && (
+                <StatusBadge
+                  text="🌬️ Windy Conditions"
+                  variant="warning"
+                  theme={theme}
+                />
+              )}
+              {weather.main.humidity < 30 && (
+                <StatusBadge
+                  text="🏜️ Low Humidity"
+                  variant="info"
+                  theme={theme}
+                />
+              )}
+              {weather.main.humidity > 80 && (
+                <StatusBadge
+                  text="💧 High Humidity"
+                  variant="info"
+                  theme={theme}
+                />
+              )}
+              {(weather.uv_index || 0) > 8 && (
+                <StatusBadge
+                  text="☀️ Very High UV"
+                  variant="warning"
+                  theme={theme}
+                />
+              )}
+              {weather.weather[0].description
+                .toLowerCase()
+                .includes('storm') && (
+                <StatusBadge
+                  text="⛈️ Storm Alert"
+                  variant="error"
+                  theme={theme}
+                />
               )}
             </div>
           )}
@@ -539,74 +651,205 @@ function WeatherDetailsScreen({
             </SimpleCard>
           )}
           {weather && (
-            <div className="ios26-weather-card">
-              <div className="ios26-text-title ios26-text-primary">
-                {Math.round(weather.main.temp)}°
-              </div>
-              <div className="ios26-text-body ios26-text-secondary">
-                {weather.weather[0].description} in {city}
-              </div>
-              <button
-                className="ios26-button ios26-button-primary"
-                onClick={async () => {
-                  haptic.buttonPress();
-                  await onRefresh();
-                }}
-              >
-                Refresh
-              </button>
-            </div>
-          )}
-
-          {/* Weather Metrics */}
-          {weather && selectedView === 0 && (
-            <WeatherMetricsGrid
-              theme={theme}
-              metrics={[
+            <ContextMenu
+              actions={[
                 {
-                  id: 'humidity',
-                  icon: '💧',
-                  label: 'Humidity',
-                  value: `${weather.main.humidity}`,
-                  unit: '%',
+                  id: 'refresh',
+                  title: 'Refresh Weather',
+                  icon: '🔄',
+                  onAction: async () => {
+                    haptic.buttonPress();
+                    await onRefresh();
+                  },
                 },
                 {
-                  id: 'pressure',
-                  icon: '🌡️',
-                  label: 'Pressure',
-                  value: `${weather.main.pressure}`,
-                  unit: 'hPa',
+                  id: 'share',
+                  title: 'Share Weather',
+                  icon: '📤',
+                  onAction: () => {
+                    haptic.buttonPress();
+                    const shareText = `Weather in ${city}: ${Math.round(
+                      weather.main.temp
+                    )}°F - ${weather.weather[0].description}`;
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Weather Update',
+                        text: shareText,
+                      });
+                    } else {
+                      // Fallback: copy to clipboard
+                      navigator.clipboard.writeText(shareText);
+                      logInfo('Weather data copied to clipboard');
+                    }
+                  },
                 },
                 {
-                  id: 'wind',
-                  icon: '💨',
-                  label: 'Wind Speed',
-                  value: `${Math.round(weather.wind.speed)}`,
-                  unit: 'mph',
+                  id: 'favorite',
+                  title: 'Add to Favorites',
+                  icon: '⭐',
+                  onAction: () => {
+                    haptic.buttonPress();
+                    logInfo(`Added ${city} to favorites`);
+                    // Future: implement favorites functionality
+                  },
                 },
                 {
-                  id: 'uv',
-                  icon: '☀️',
-                  label: 'UV Index',
-                  value: `${Math.round(weather.uv_index || 0)}`,
-                  unit: '',
-                },
-                {
-                  id: 'visibility',
-                  icon: '👁️',
-                  label: 'Visibility',
-                  value: `${Math.round((weather.visibility || 0) / 1000)}`,
-                  unit: 'km',
-                },
-                {
-                  id: 'feels-like',
-                  icon: '🌡️',
-                  label: 'Feels Like',
-                  value: `${Math.round(weather.main.feels_like)}`,
-                  unit: '°F',
+                  id: 'alerts',
+                  title: 'Weather Settings',
+                  icon: '⚙️',
+                  onAction: () => {
+                    haptic.buttonPress();
+                    setShowWeatherSettingsModal(true);
+                  },
                 },
               ]}
-            />
+              theme={theme}
+            >
+              <div className="ios26-weather-card">
+                <div className="ios26-text-title ios26-text-primary">
+                  {Math.round(weather.main.temp)}°
+                </div>
+                <div className="ios26-text-body ios26-text-secondary">
+                  {weather.weather[0].description} in {city}
+                </div>
+                <button
+                  className="ios26-button ios26-button-primary"
+                  onClick={async () => {
+                    haptic.buttonPress();
+                    await onRefresh();
+                  }}
+                >
+                  Refresh
+                </button>
+              </div>
+            </ContextMenu>
+          )}
+
+          {/* iOS26 Enhanced: Interactive Weather Widgets */}
+          {weather && selectedView === 0 && (
+            <div className="ios26-forecast-section">
+              <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
+                🌡️ Weather Details
+              </h3>
+              <div className="ios26-widget-grid">
+                {/* Temperature Widget */}
+                <InteractiveWidget
+                  title="Current Temperature"
+                  size="medium"
+                  theme={theme}
+                  onTap={() => {
+                    haptic.buttonPress();
+                    logInfo('Temperature details tapped');
+                  }}
+                >
+                  <div className="ios26-text-center">
+                    <div className="ios26-widget-main-value">
+                      {Math.round(weather.main.temp)}°F
+                    </div>
+                    <div className="ios26-widget-secondary-text">
+                      Feels like {Math.round(weather.main.feels_like)}°F
+                    </div>
+                  </div>
+                </InteractiveWidget>
+
+                {/* Humidity Widget */}
+                <InteractiveWidget
+                  title="Humidity"
+                  size="small"
+                  theme={theme}
+                  onTap={() => {
+                    haptic.buttonPress();
+                    logInfo('Humidity details tapped');
+                  }}
+                >
+                  <div className="ios26-text-center">
+                    <div className="ios26-widget-icon">💧</div>
+                    <div className="ios26-widget-value">
+                      {weather.main.humidity}%
+                    </div>
+                  </div>
+                </InteractiveWidget>
+
+                {/* Wind Widget */}
+                <InteractiveWidget
+                  title="Wind Speed"
+                  size="small"
+                  theme={theme}
+                  onTap={() => {
+                    haptic.buttonPress();
+                    logInfo('Wind details tapped');
+                  }}
+                >
+                  <div className="ios26-text-center">
+                    <div className="ios26-widget-icon">💨</div>
+                    <div className="ios26-widget-value">
+                      {Math.round(weather.wind.speed)} mph
+                    </div>
+                  </div>
+                </InteractiveWidget>
+
+                {/* Pressure Widget */}
+                <InteractiveWidget
+                  title="Pressure"
+                  size="small"
+                  theme={theme}
+                  onTap={() => {
+                    haptic.buttonPress();
+                    logInfo('Pressure details tapped');
+                  }}
+                >
+                  <div className="ios26-text-center">
+                    <div className="ios26-widget-icon">🌡️</div>
+                    <div className="ios26-widget-value-small">
+                      {weather.main.pressure} hPa
+                    </div>
+                  </div>
+                </InteractiveWidget>
+
+                {/* UV Index Widget */}
+                <InteractiveWidget
+                  title="UV Index"
+                  size="small"
+                  theme={theme}
+                  onTap={() => {
+                    haptic.buttonPress();
+                    logInfo('UV Index details tapped');
+                  }}
+                >
+                  <div className="ios26-text-center">
+                    <div className="ios26-widget-icon">☀️</div>
+                    <div
+                      className={`ios26-widget-value ${
+                        weather.uv_index > 6 ? 'ios26-text-warning' : ''
+                      }`}
+                    >
+                      {Math.round(weather.uv_index || 0)}
+                    </div>
+                    <div className="ios26-widget-secondary-text">
+                      {weather.uv_index > 6 ? 'High' : 'Moderate'}
+                    </div>
+                  </div>
+                </InteractiveWidget>
+
+                {/* Visibility Widget */}
+                <InteractiveWidget
+                  title="Visibility"
+                  size="small"
+                  theme={theme}
+                  onTap={() => {
+                    haptic.buttonPress();
+                    logInfo('Visibility details tapped');
+                  }}
+                >
+                  <div className="ios26-text-center">
+                    <div className="ios26-widget-icon">👁️</div>
+                    <div className="ios26-widget-value-small">
+                      {Math.round((weather.visibility || 0) / 1000)} km
+                    </div>
+                  </div>
+                </InteractiveWidget>
+              </div>
+            </div>
           )}
 
           {/* iOS 26 Weather Interface - Enhanced Forecast */}
@@ -622,6 +865,100 @@ function WeatherDetailsScreen({
           ) : null}
         </div>
       </PullToRefresh>
+
+      {/* iOS26 Modal Sheet for Weather Settings */}
+      <ModalSheet
+        isVisible={showWeatherSettingsModal}
+        onClose={() => setShowWeatherSettingsModal(false)}
+        title="Weather Settings"
+        detents={['medium', 'large']}
+        theme={theme}
+      >
+        <div className="ios26-forecast-section">
+          <div className="ios26-text-body ios26-text-secondary ios26-mb-4">
+            Customize your weather experience
+          </div>
+
+          <div className="ios26-widget-grid">
+            <InteractiveWidget
+              title="Temperature Unit"
+              size="small"
+              theme={theme}
+              onTap={() => {
+                haptic.buttonPress();
+                logInfo('Temperature unit settings');
+              }}
+            >
+              <div className="ios26-text-center">
+                <div className="ios26-widget-icon">🌡️</div>
+                <div className="ios26-widget-value">°F</div>
+                <div className="ios26-widget-secondary-text">Fahrenheit</div>
+              </div>
+            </InteractiveWidget>
+
+            <InteractiveWidget
+              title="Weather Alerts"
+              size="small"
+              theme={theme}
+              onTap={() => {
+                haptic.buttonPress();
+                logInfo('Weather alerts settings');
+              }}
+            >
+              <div className="ios26-text-center">
+                <div className="ios26-widget-icon">🚨</div>
+                <div className="ios26-widget-value">On</div>
+                <div className="ios26-widget-secondary-text">Enabled</div>
+              </div>
+            </InteractiveWidget>
+
+            <InteractiveWidget
+              title="Auto Refresh"
+              size="small"
+              theme={theme}
+              onTap={() => {
+                haptic.buttonPress();
+                logInfo('Auto refresh settings');
+              }}
+            >
+              <div className="ios26-text-center">
+                <div className="ios26-widget-icon">🔄</div>
+                <div className="ios26-widget-value">15m</div>
+                <div className="ios26-widget-secondary-text">Every 15 min</div>
+              </div>
+            </InteractiveWidget>
+
+            <InteractiveWidget
+              title="Location Services"
+              size="small"
+              theme={theme}
+              onTap={() => {
+                haptic.buttonPress();
+                logInfo('Location services settings');
+              }}
+            >
+              <div className="ios26-text-center">
+                <div className="ios26-widget-icon">📍</div>
+                <div className="ios26-widget-value">Always</div>
+                <div className="ios26-widget-secondary-text">Enabled</div>
+              </div>
+            </InteractiveWidget>
+          </div>
+
+          <div className="ios26-text-center ios26-mt-6">
+            <button
+              className="ios26-button ios26-button-primary"
+              onClick={() => {
+                haptic.buttonPress();
+                setShowWeatherSettingsModal(false);
+                logInfo('Weather settings saved');
+              }}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </ModalSheet>
 
       {/* Action Sheet for Weather Options */}
       <ActionSheet
@@ -1031,6 +1368,17 @@ const AppNavigator = () => {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [showIOSDemo, setShowIOSDemo] = useState(false);
 
+  // iOS26 Enhanced Features State
+  const [showLiveActivity, setShowLiveActivity] = useState(false);
+  const [weatherAlert, setWeatherAlert] = useState<{
+    title: string;
+    message: string;
+    severity: 'info' | 'warning' | 'severe';
+  } | null>(null);
+  const [dataUpdateProgress, setDataUpdateProgress] = useState(0);
+  const [showWeatherSettingsModal, setShowWeatherSettingsModal] =
+    useState(false);
+
   const [pendingLocationData, setPendingLocationData] = useState<{
     latitude: number;
     longitude: number;
@@ -1174,6 +1522,52 @@ const AppNavigator = () => {
         processHourlyForecast(weatherData.hourly as HourlyData)
       );
       setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
+
+      // iOS26 Feature: Trigger Live Activity for weather updates
+      setShowLiveActivity(true);
+      setTimeout(() => setShowLiveActivity(false), 4000);
+
+      // iOS26 Feature: Check for weather alerts
+      const currentTemp = transformedData.main.temp;
+      const windSpeed = transformedData.wind.speed;
+      const weatherCode = transformedData.weather[0].description.toLowerCase();
+
+      if (currentTemp > 95) {
+        setWeatherAlert({
+          title: 'Extreme Heat Warning',
+          message: `Temperature is ${Math.round(
+            currentTemp
+          )}°F. Stay hydrated and avoid outdoor activities.`,
+          severity: 'severe',
+        });
+      } else if (currentTemp < 20) {
+        setWeatherAlert({
+          title: 'Extreme Cold Warning',
+          message: `Temperature is ${Math.round(
+            currentTemp
+          )}°F. Dress warmly and limit outdoor exposure.`,
+          severity: 'severe',
+        });
+      } else if (windSpeed > 35) {
+        setWeatherAlert({
+          title: 'High Wind Advisory',
+          message: `Wind speeds of ${Math.round(
+            windSpeed
+          )} mph. Secure loose objects and drive carefully.`,
+          severity: 'warning',
+        });
+      } else if (
+        weatherCode.includes('thunderstorm') ||
+        weatherCode.includes('storm')
+      ) {
+        setWeatherAlert({
+          title: 'Storm Alert',
+          message: 'Thunderstorms in the area. Seek indoor shelter.',
+          severity: 'warning',
+        });
+      } else {
+        setWeatherAlert(null);
+      }
     },
     [optimizedFetch, optimizedTransform]
   );
@@ -1434,6 +1828,10 @@ const AppNavigator = () => {
                 showActionSheet={showActionSheet}
                 setShowActionSheet={setShowActionSheet}
                 themeName={themeName}
+                showLiveActivity={showLiveActivity}
+                weatherAlert={weatherAlert}
+                showWeatherSettingsModal={showWeatherSettingsModal}
+                setShowWeatherSettingsModal={setShowWeatherSettingsModal}
               />
             ),
             Search: (
@@ -1532,6 +1930,10 @@ const AppNavigator = () => {
               showActionSheet={showActionSheet}
               setShowActionSheet={setShowActionSheet}
               themeName={themeName}
+              showLiveActivity={showLiveActivity}
+              weatherAlert={weatherAlert}
+              showWeatherSettingsModal={showWeatherSettingsModal}
+              setShowWeatherSettingsModal={setShowWeatherSettingsModal}
             />
           )}
         </SwipeNavigationContainer>

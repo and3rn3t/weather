@@ -182,7 +182,7 @@ export class PerformanceMonitor {
   startSearchOperation(
     operationId: string,
     type: string,
-    details?: Record<string, unknown>
+    details?: Record<string, unknown>,
   ): void {
     const startTime = performance.now();
     this.activeOperations.set(operationId, startTime);
@@ -208,7 +208,7 @@ export class PerformanceMonitor {
   endSearchOperation(
     operationId: string,
     type: string,
-    data: Partial<SearchPerformanceData>
+    data: Partial<SearchPerformanceData>,
   ): number {
     const endTime = performance.now();
     const startTime = this.activeOperations.get(operationId);
@@ -260,7 +260,7 @@ export class PerformanceMonitor {
   recordSearchError(
     type: string,
     error: Error,
-    details?: Record<string, unknown>
+    details?: Record<string, unknown>,
   ): void {
     this.errorCount++;
 
@@ -345,7 +345,7 @@ export class PerformanceMonitor {
     // Limit stored memory metrics
     if (this.memoryMetrics.length > PERFORMANCE_CONFIG.MAX_MEMORY_SAMPLES) {
       this.memoryMetrics = this.memoryMetrics.slice(
-        -PERFORMANCE_CONFIG.MAX_MEMORY_SAMPLES
+        -PERFORMANCE_CONFIG.MAX_MEMORY_SAMPLES,
       );
     }
 
@@ -431,7 +431,7 @@ export class PerformanceMonitor {
    * Extract additional details from performance entries
    */
   private extractPerformanceDetails(
-    entry: PerformanceEntry
+    entry: PerformanceEntry,
   ): Record<string, unknown> {
     const details: Record<string, unknown> = {};
 
@@ -529,7 +529,7 @@ export class PerformanceMonitor {
     // Search time penalty (0-30 points)
     const searchTimePenalty = Math.min(
       30,
-      (metrics.averageSearchTime / 1000) * 10
+      (metrics.averageSearchTime / 1000) * 10,
     );
     score -= searchTimePenalty;
 
@@ -561,19 +561,19 @@ export class PerformanceMonitor {
 
     if (metrics.averageSearchTime > 500) {
       recommendations.push(
-        'Consider optimizing search algorithms or implementing better caching'
+        'Consider optimizing search algorithms or implementing better caching',
       );
     }
 
     if (metrics.cacheHitRate < 0.5) {
       recommendations.push(
-        'Improve cache strategy to increase hit rate above 50%'
+        'Improve cache strategy to increase hit rate above 50%',
       );
     }
 
     if (metrics.errorRate > 0.05) {
       recommendations.push(
-        'Investigate and fix search errors (>5% error rate detected)'
+        'Investigate and fix search errors (>5% error rate detected)',
       );
     }
 
@@ -586,7 +586,7 @@ export class PerformanceMonitor {
 
     if (recommendations.length === 0) {
       recommendations.push(
-        'Performance is optimal - no immediate improvements needed'
+        'Performance is optimal - no immediate improvements needed',
       );
     }
 
@@ -609,21 +609,21 @@ export class PerformanceMonitor {
 
     this.metrics = this.metrics.filter(metric => metric.timestamp >= cutoff);
     this.memoryMetrics = this.memoryMetrics.filter(
-      metric => metric.timestamp >= cutoff
+      metric => metric.timestamp >= cutoff,
     );
 
     // Clear old search cache entries
     const oldOperations = Array.from(this.searchCache.entries())
       .filter(
         ([, data]) =>
-          Date.now() - data.duration > PERFORMANCE_CONFIG.METRICS_TTL
+          Date.now() - data.duration > PERFORMANCE_CONFIG.METRICS_TTL,
       )
       .map(([id]) => id);
 
     oldOperations.forEach(id => this.searchCache.delete(id));
 
     console.log(
-      `🧹 Cleaned up ${oldOperations.length} old performance metrics`
+      `🧹 Cleaned up ${oldOperations.length} old performance metrics`,
     );
   }
 
@@ -652,13 +652,13 @@ export class PerformanceMonitor {
       filtered = filtered.filter(
         m =>
           m.timestamp >= filter.timeRange!.start &&
-          m.timestamp <= filter.timeRange!.end
+          m.timestamp <= filter.timeRange!.end,
       );
     }
 
     if (filter?.tags && filter.tags.length > 0) {
       filtered = filtered.filter(m =>
-        m.tags?.some(tag => filter.tags!.includes(tag))
+        m.tags?.some(tag => filter.tags!.includes(tag)),
       );
     }
 
