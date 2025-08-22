@@ -29,11 +29,17 @@ export const AnimatedWeatherCard: React.FC<AnimatedWeatherCardProps> = ({
 
   // Animation systems
   const { morphTo, isTransitioning } = useWeatherIconMorpher(
-    iconRef,
-    weatherType,
+    iconRef as React.RefObject<HTMLElement>,
+    weatherType
   );
-  const cardFeedback = useInteractionFeedback(cardRef, 'card');
-  const buttonFeedback = useInteractionFeedback(refreshButtonRef, 'button');
+  const _cardFeedback = useInteractionFeedback(
+    cardRef as React.RefObject<HTMLElement>,
+    'card'
+  );
+  const _buttonFeedback = useInteractionFeedback(
+    refreshButtonRef as React.RefObject<HTMLElement>,
+    'button'
+  );
   const { addElement, choreograph, clearElements } =
     usePageTransitionChoreographer();
   const temperatureAnimation = useSpringAnimation();
@@ -80,16 +86,18 @@ export const AnimatedWeatherCard: React.FC<AnimatedWeatherCardProps> = ({
       const currentTemp = parseInt(temperatureRef.current.textContent || '0');
       if (currentTemp !== temperature) {
         // Spring animation for temperature counter
-        temperatureAnimation.animate({
-          from: currentTemp,
-          to: temperature,
-          config: { mass: 1, tension: 150, friction: 15 },
-          onUpdate: value => {
+        temperatureAnimation
+          .animate({
+            from: currentTemp,
+            to: temperature,
+            config: { mass: 1, tension: 150, friction: 15 },
+          })
+          .then(() => {
+            // Animation completed
             if (temperatureRef.current) {
-              temperatureRef.current.textContent = Math.round(value).toString();
+              temperatureRef.current.textContent = temperature.toString();
             }
-          },
-        });
+          });
       }
     }
   }, [temperature, temperatureAnimation]);
@@ -262,8 +270,14 @@ const WeatherIconGridItem: React.FC<{ weatherType: string }> = ({
   const itemRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
-  const { morphTo } = useWeatherIconMorpher(iconRef, weatherType);
-  const { isInteracting } = useInteractionFeedback(itemRef, 'button');
+  const { morphTo } = useWeatherIconMorpher(
+    iconRef as React.RefObject<HTMLElement>,
+    weatherType
+  );
+  const { isInteracting } = useInteractionFeedback(
+    itemRef as React.RefObject<HTMLElement>,
+    'button'
+  );
 
   const handlePress = () => {
     // Trigger icon change for demo

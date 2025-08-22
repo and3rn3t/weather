@@ -17,6 +17,8 @@ import {
 import { useDash0Telemetry } from '../hooks/useDash0Telemetry';
 import { useWeatherApiWithTelemetry } from '../services/weatherApiWithTelemetry';
 
+import type { WeatherData } from '../types/weather';
+
 /**
  * Enhanced Weather Component with Dash0 Integration
  * This replaces/enhances your existing weather components
@@ -25,7 +27,7 @@ function WeatherAppWithDash0() {
   // State management
   const [currentScreen, setCurrentScreen] = useState('home');
   const [previousScreen, setPreviousScreen] = useState<string>('');
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [isDarkMode, setIsDarkMode] = useState(false);
