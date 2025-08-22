@@ -23,11 +23,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Dash0 Telemetry Integration
-import {
-  Dash0ErrorBoundary,
-  usePerformanceMonitor,
-} from '../components/Dash0ErrorBoundary';
-import { useDash0Telemetry } from '../hooks/useDash0Telemetry';
+import { Dash0ErrorBoundary } from '../dash0/components/Dash0ErrorBoundary';
+import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
 
 // Unified Type Definitions - Phase 2B: Type System Unification
 import type {
@@ -1816,326 +1813,331 @@ const AppNavigator = () => {
     async (lat: number, lon: number) => {
       const operationId = `weather-fetch-${lat}-${lon}-${Date.now()}`;
 
-      return telemetry.trackOperation(
-        'weather_data_fetch',
-        async () => {
-          try {
-            // Start loading state
-            weatherLoading.setLoading(true, 0);
+      return telemetry.trackOperation('weather_data_fetch', async () => {
+        try {
+          // Start loading state
+          weatherLoading.setLoading(true, 0);
 
-            // Track API call initiation
-            telemetry.trackUserInteraction({
-              action: 'weather_api_call_started',
-              component: 'AppNavigator',
-            });
+          // Track API call initiation
+          telemetry.trackUserInteraction({
+            action: 'weather_api_call_started',
+            component: 'AppNavigator',
+          });
 
-            const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
-            const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
+          const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+          const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
 
-            // Update progress
-            weatherLoading.setLoading(true, 25);
+          // Update progress
+          weatherLoading.setLoading(true, 25);
 
-            const cacheKey = `weather-${lat}-${lon}`;
-            const startTime = performance.now();
+          const cacheKey = `weather-${lat}-${lon}`;
+          const startTime = performance.now();
 
-            const weatherResponse = await optimizedFetch(
-              weatherUrl,
-              {
-                headers: {
-                  'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
-                },
+          const weatherResponse = await optimizedFetch(
+            weatherUrl,
+            {
+              headers: {
+                'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
               },
-              cacheKey
-            );
+            },
+            cacheKey
+          );
 
-            // Track API response time
-            const apiResponseTime = performance.now() - startTime;
-            telemetry.trackPerformance({
-              name: 'weather_api_response_time',
-              value: apiResponseTime,
-              unit: 'milliseconds',
+          // Track API response time
+          const apiResponseTime = performance.now() - startTime;
+          telemetry.trackPerformance({
+            name: 'weather_api_response_time',
+            value: apiResponseTime,
+            tags: { unit: 'milliseconds', city },
+          });
+
+          // Update progress after fetch
+          weatherLoading.setLoading(true, 50);
+
+          if (!weatherResponse.ok) {
+            const error = new Error(
+              `Weather API failed: ${weatherResponse.status}`
+            );
+            telemetry.trackError(error, {
+              context: 'weather_api_error',
+              metadata: { status: weatherResponse.status },
             });
-
-            // Update progress after fetch
-            weatherLoading.setLoading(true, 50);
-
-            if (!weatherResponse.ok) {
-              const error = new Error(
-                `Weather API failed: ${weatherResponse.status}`
-              );
-              telemetry.trackError(error, 'weather_api_error');
-              throw error;
-            }
-
-            const weatherData = await weatherResponse.json();
-
-            // Update progress after data parsing
-            weatherLoading.setLoading(true, 75);
-
-            // Use optimized transform for weather data processing
-            const transformStartTime = performance.now();
-            const transformedData = optimizedTransform(
-              weatherData,
-              data => {
-                const currentWeatherCode =
-                  data.current_weather?.weathercode || 0;
-                setWeatherCode(currentWeatherCode);
-                const currentHour = new Date().getHours();
-                const hourlyData = data.hourly;
-
-                return {
-                  main: {
-                    temp: data.current_weather?.temperature || 0,
-                    feels_like:
-                      hourlyData?.apparent_temperature?.[currentHour] ||
-                      data.current_weather?.temperature ||
-                      0,
-                    humidity:
-                      hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-                    pressure:
-                      hourlyData?.surface_pressure?.[currentHour] || 1013,
-                  },
-                  weather: [
-                    {
-                      description: getWeatherDescription(currentWeatherCode),
-                      main: getWeatherMainCategory(currentWeatherCode),
-                    },
-                  ],
-                  wind: {
-                    speed: data.current_weather?.windspeed || 0,
-                    deg: data.current_weather?.winddirection || 0,
-                  },
-                  uv_index: hourlyData?.uv_index?.[currentHour] || 0,
-                  visibility: hourlyData?.visibility?.[currentHour] || 0,
-                };
-              },
-              `transform-${lat}-${lon}-${Date.now()}`
-            );
-
-            // Track data transformation performance
-            const transformTime = performance.now() - transformStartTime;
-            telemetry.trackPerformance({
-              name: 'weather_data_transform_time',
-              value: transformTime,
-              unit: 'milliseconds',
-            });
-
-            setWeather(transformedData);
-            setHourlyForecast(
-              processHourlyForecast(weatherData.hourly as HourlyData)
-            );
-            setDailyForecast(
-              processDailyForecast(weatherData.daily as DailyData)
-            );
-
-            // Track successful weather data load
-            telemetry.trackUserInteraction({
-              action: 'weather_data_loaded_successfully',
-              component: 'AppNavigator',
-            });
-
-            // Track weather data metrics
-            telemetry.trackPerformance({
-              name: 'current_temperature',
-              value: transformedData.main.temp,
-              unit: 'fahrenheit',
-            });
-
-            // iOS26 Phase 3C: Multi-Sensory Weather Experience
-            const weatherCondition =
-              getWeatherConditionFromCode(currentWeatherCode);
-            if (weatherCondition) {
-              // Play immersive weather experience with spatial audio and haptic feedback
-              await multiSensory.playWeatherExperience(weatherCondition, 0.8);
-
-              // Announce weather with accessibility features
-              await weatherAnnouncements.announceWeather(
-                weatherCondition,
-                transformedData.main.temp,
-                city
-              );
-            }
-
-            // Update progress to completion
-            weatherLoading.setLoading(true, 100);
-
-            // iOS26 Feature: Trigger Live Activity for weather updates
-            setShowLiveActivity(true);
-            setTimeout(() => setShowLiveActivity(false), 4000);
-
-            // iOS26 Feature: Check for weather alerts
-            const currentTemp = transformedData.main.temp;
-            const windSpeed = transformedData.wind.speed;
-            const weatherCode =
-              transformedData.weather[0].description.toLowerCase();
-
-            if (currentTemp > 95) {
-              const alertData = {
-                title: 'Extreme Heat Warning',
-                message: `Temperature is ${Math.round(
-                  currentTemp
-                )}°F. Stay hydrated and avoid outdoor activities.`,
-                severity: 'severe' as const,
-              };
-              setWeatherAlert(alertData);
-
-              // iOS26 Phase 3C: Multi-sensory severe weather alert
-              await multiSensory.playWeatherAlert('severe', alertData.message);
-            } else if (currentTemp < 20) {
-              const alertData = {
-                title: 'Extreme Cold Warning',
-                message: `Temperature is ${Math.round(
-                  currentTemp
-                )}°F. Dress warmly and limit outdoor exposure.`,
-                severity: 'severe' as const,
-              };
-              setWeatherAlert(alertData);
-
-              // iOS26 Phase 3C: Multi-sensory severe weather alert
-              await multiSensory.playWeatherAlert('severe', alertData.message);
-            } else if (windSpeed > 35) {
-              const alertData = {
-                title: 'High Wind Advisory',
-                message: `Wind speeds of ${Math.round(
-                  windSpeed
-                )} mph. Secure loose objects and drive carefully.`,
-                severity: 'warning' as const,
-              };
-              setWeatherAlert(alertData);
-
-              // iOS26 Phase 3C: Multi-sensory wind warning alert
-              await multiSensory.playWeatherAlert('warning', alertData.message);
-            } else if (
-              weatherCode.includes('thunderstorm') ||
-              weatherCode.includes('storm')
-            ) {
-              const alertData = {
-                title: 'Storm Alert',
-                message: 'Thunderstorms in the area. Seek indoor shelter.',
-                severity: 'warning' as const,
-              };
-              setWeatherAlert(alertData);
-
-              // iOS26 Phase 3C: Multi-sensory storm alert
-              await multiSensory.playWeatherAlert('warning', alertData.message);
-            } else {
-              setWeatherAlert(null);
-            }
-
-            // Complete loading
-            weatherLoading.setLoading(false);
-            return transformedData;
-          } catch (error) {
-            // Handle errors with telemetry
-            const errorMessage =
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch weather data';
-            telemetry.trackError(
-              error instanceof Error ? error : new Error(errorMessage),
-              'weather_fetch_error'
-            );
-
-            weatherLoading.setError(errorMessage);
             throw error;
           }
-        },
-        {
-          latitude: lat,
-          longitude: lon,
-          coordinates: `${lat},${lon}`,
+
+          const weatherData = await weatherResponse.json();
+
+          // Update progress after data parsing
+          weatherLoading.setLoading(true, 75);
+
+          // Use optimized transform for weather data processing
+          const transformStartTime = performance.now();
+          const transformedData = optimizedTransform(
+            weatherData,
+            data => {
+              const currentWeatherCode = data.current_weather?.weathercode || 0;
+              setWeatherCode(currentWeatherCode);
+              const currentHour = new Date().getHours();
+              const hourlyData = data.hourly;
+
+              return {
+                main: {
+                  temp: data.current_weather?.temperature || 0,
+                  feels_like:
+                    hourlyData?.apparent_temperature?.[currentHour] ||
+                    data.current_weather?.temperature ||
+                    0,
+                  humidity:
+                    hourlyData?.relative_humidity_2m?.[currentHour] || 50,
+                  pressure: hourlyData?.surface_pressure?.[currentHour] || 1013,
+                },
+                weather: [
+                  {
+                    description: getWeatherDescription(currentWeatherCode),
+                    main: getWeatherMainCategory(currentWeatherCode),
+                  },
+                ],
+                wind: {
+                  speed: data.current_weather?.windspeed || 0,
+                  deg: data.current_weather?.winddirection || 0,
+                },
+                uv_index: hourlyData?.uv_index?.[currentHour] || 0,
+                visibility: hourlyData?.visibility?.[currentHour] || 0,
+              };
+            },
+            `transform-${lat}-${lon}-${Date.now()}`
+          );
+
+          // Track data transformation performance
+          const transformTime = performance.now() - transformStartTime;
+          telemetry.trackPerformance({
+            name: 'weather_data_transform_time',
+            value: transformTime,
+            tags: { unit: 'milliseconds', operation: 'data_transform' },
+          });
+
+          setWeather(transformedData);
+          setHourlyForecast(
+            processHourlyForecast(weatherData.hourly as HourlyData)
+          );
+          setDailyForecast(
+            processDailyForecast(weatherData.daily as DailyData)
+          );
+
+          // Track successful weather data load
+          telemetry.trackUserInteraction({
+            action: 'weather_data_loaded_successfully',
+            component: 'AppNavigator',
+          });
+
+          // Track weather data metrics
+          telemetry.trackPerformance({
+            name: 'current_temperature',
+            value: transformedData.main.temp,
+            tags: {
+              unit: 'fahrenheit',
+              weather_type: transformedData.weather[0]?.main || 'unknown',
+            },
+          });
+
+          // iOS26 Phase 3C: Multi-Sensory Weather Experience
+          const weatherCondition =
+            getWeatherConditionFromCode(currentWeatherCode);
+          if (weatherCondition) {
+            // Play immersive weather experience with spatial audio and haptic feedback
+            await multiSensory.playWeatherExperience(weatherCondition, 0.8);
+
+            // Announce weather with accessibility features
+            await weatherAnnouncements.announceWeather(
+              weatherCondition,
+              transformedData.main.temp,
+              city
+            );
+          }
+
+          // Update progress to completion
+          weatherLoading.setLoading(true, 100);
+
+          // iOS26 Feature: Trigger Live Activity for weather updates
+          setShowLiveActivity(true);
+          setTimeout(() => setShowLiveActivity(false), 4000);
+
+          // iOS26 Feature: Check for weather alerts
+          const currentTemp = transformedData.main.temp;
+          const windSpeed = transformedData.wind.speed;
+          const weatherCode =
+            transformedData.weather[0].description.toLowerCase();
+
+          if (currentTemp > 95) {
+            const alertData = {
+              title: 'Extreme Heat Warning',
+              message: `Temperature is ${Math.round(
+                currentTemp
+              )}°F. Stay hydrated and avoid outdoor activities.`,
+              severity: 'severe' as const,
+            };
+            setWeatherAlert(alertData);
+
+            // iOS26 Phase 3C: Multi-sensory severe weather alert
+            await multiSensory.playWeatherAlert('severe', alertData.message);
+          } else if (currentTemp < 20) {
+            const alertData = {
+              title: 'Extreme Cold Warning',
+              message: `Temperature is ${Math.round(
+                currentTemp
+              )}°F. Dress warmly and limit outdoor exposure.`,
+              severity: 'severe' as const,
+            };
+            setWeatherAlert(alertData);
+
+            // iOS26 Phase 3C: Multi-sensory severe weather alert
+            await multiSensory.playWeatherAlert('severe', alertData.message);
+          } else if (windSpeed > 35) {
+            const alertData = {
+              title: 'High Wind Advisory',
+              message: `Wind speeds of ${Math.round(
+                windSpeed
+              )} mph. Secure loose objects and drive carefully.`,
+              severity: 'warning' as const,
+            };
+            setWeatherAlert(alertData);
+
+            // iOS26 Phase 3C: Multi-sensory wind warning alert
+            await multiSensory.playWeatherAlert('warning', alertData.message);
+          } else if (
+            weatherCode.includes('thunderstorm') ||
+            weatherCode.includes('storm')
+          ) {
+            const alertData = {
+              title: 'Storm Alert',
+              message: 'Thunderstorms in the area. Seek indoor shelter.',
+              severity: 'warning' as const,
+            };
+            setWeatherAlert(alertData);
+
+            // iOS26 Phase 3C: Multi-sensory storm alert
+            await multiSensory.playWeatherAlert('warning', alertData.message);
+          } else {
+            setWeatherAlert(null);
+          }
+
+          // Complete loading
+          weatherLoading.setLoading(false);
+          return transformedData;
+        } catch (error) {
+          // Handle errors with telemetry
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Failed to fetch weather data';
+          telemetry.trackError(
+            error instanceof Error ? error : new Error(errorMessage),
+            {
+              context: 'weather_fetch_error',
+              metadata: { city, operation: 'fetchWeatherData' },
+            }
+          );
+
+          weatherLoading.setError(errorMessage);
+          throw error;
         }
-      );
+      });
     },
     [optimizedFetch, optimizedTransform, weatherLoading, telemetry]
   );
 
   const getWeather = useCallback(async () => {
-    return telemetry.trackOperation(
-      'city_weather_search',
-      async () => {
-        if (!city.trim()) {
-          const error = new Error('Please enter a city name');
-          telemetry.trackError(error, 'empty_city_search');
-          setError('Please enter a city name');
-          haptic.searchError(); // Haptic feedback for input validation error
-          return;
+    return telemetry.trackOperation('city_weather_search', async () => {
+      if (!city.trim()) {
+        const error = new Error('Please enter a city name');
+        telemetry.trackError(error, {
+          context: 'empty_city_search',
+          metadata: { operation: 'city_weather_search' },
+        });
+        setError('Please enter a city name');
+        haptic.searchError(); // Haptic feedback for input validation error
+        return;
+      }
+
+      setLoading(true);
+      setError('');
+      haptic.dataLoad(); // Light haptic feedback when starting search
+
+      telemetry.trackUserInteraction({
+        action: 'city_search_initiated',
+        component: 'AppNavigator',
+      });
+
+      try {
+        const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
+        const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
+          city
+        )}&format=json&limit=1`;
+
+        const geocodingStartTime = performance.now();
+        const geoResponse = await optimizedFetch(
+          geoUrl,
+          {
+            headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
+          },
+          `geocoding-${city}`
+        );
+
+        const geocodingTime = performance.now() - geocodingStartTime;
+        telemetry.trackPerformance({
+          name: 'geocoding_api_response_time',
+          value: geocodingTime,
+          tags: { unit: 'milliseconds', city },
+        });
+
+        if (!geoResponse.ok) {
+          const error = new Error(`Geocoding failed: ${geoResponse.status}`);
+          telemetry.trackError(error, {
+            context: 'geocoding_api_error',
+            metadata: { status: geoResponse.status, city },
+          });
+          throw error;
         }
 
-        setLoading(true);
-        setError('');
-        haptic.dataLoad(); // Light haptic feedback when starting search
+        const geoData = await geoResponse.json();
+        if (!geoData || geoData.length === 0) {
+          const error = new Error(
+            'City not found. Please check the spelling and try again.'
+          );
+          telemetry.trackError(error, {
+            context: 'city_not_found',
+            metadata: { city, searchAttempt: 'geocoding' },
+          });
+          throw error;
+        }
+
+        const { lat, lon } = geoData[0];
+        await fetchWeatherData(lat, lon);
 
         telemetry.trackUserInteraction({
-          action: 'city_search_initiated',
+          action: 'city_search_successful',
           component: 'AppNavigator',
         });
 
-        try {
-          const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
-          const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-            city
-          )}&format=json&limit=1`;
+        haptic.searchSuccess(); // Haptic feedback for successful weather fetch
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error occurred';
 
-          const geocodingStartTime = performance.now();
-          const geoResponse = await optimizedFetch(
-            geoUrl,
-            {
-              headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
-            },
-            `geocoding-${city}`
-          );
-
-          const geocodingTime = performance.now() - geocodingStartTime;
-          telemetry.trackPerformance({
-            name: 'geocoding_api_response_time',
-            value: geocodingTime,
-            unit: 'milliseconds',
-          });
-
-          if (!geoResponse.ok) {
-            const error = new Error(`Geocoding failed: ${geoResponse.status}`);
-            telemetry.trackError(error, 'geocoding_api_error');
-            throw error;
+        telemetry.trackError(
+          error instanceof Error ? error : new Error(errorMessage),
+          {
+            context: 'city_search_error',
+            metadata: { city, operation: 'getWeather' },
           }
+        );
 
-          const geoData = await geoResponse.json();
-          if (!geoData || geoData.length === 0) {
-            const error = new Error(
-              'City not found. Please check the spelling and try again.'
-            );
-            telemetry.trackError(error, 'city_not_found');
-            throw error;
-          }
-
-          const { lat, lon } = geoData[0];
-          await fetchWeatherData(lat, lon);
-
-          telemetry.trackUserInteraction({
-            action: 'city_search_successful',
-            component: 'AppNavigator',
-          });
-
-          haptic.searchSuccess(); // Haptic feedback for successful weather fetch
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'Unknown error occurred';
-
-          telemetry.trackError(
-            error instanceof Error ? error : new Error(errorMessage),
-            'city_search_error'
-          );
-
-          setError(`Failed to fetch weather data: ${errorMessage}`);
-          haptic.searchError(); // Haptic feedback for search error
-        } finally {
-          setLoading(false);
-        }
-      },
-      {
-        city: city.substring(0, 50), // Limit PII in telemetry
+        setError(`Failed to fetch weather data: ${errorMessage}`);
+        haptic.searchError(); // Haptic feedback for search error
+      } finally {
+        setLoading(false);
       }
-    );
+    });
   }, [city, haptic, fetchWeatherData, optimizedFetch, telemetry]);
 
   // Direct weather fetching (from autocomplete, city selector, etc.)

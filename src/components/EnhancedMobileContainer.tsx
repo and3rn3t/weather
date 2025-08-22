@@ -60,7 +60,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       if (container.scrollTop === 0) {
         startY = e.touches[0].clientY;
         isPulling = true;
-        
+
         // Track pull-to-refresh initiation
         telemetry.trackUserInteraction({
           action: 'pull_to_refresh_started',
@@ -68,8 +68,8 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           metadata: {
             scrollPosition: container.scrollTop,
             startY: Math.round(startY),
-            hasRefreshHandler: !!onRefresh
-          }
+            hasRefreshHandler: !!onRefresh,
+          },
         });
       }
     };
@@ -97,7 +97,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       if (!isPulling) return;
 
       const pullTriggered = pullProgress >= 0.6;
-      
+
       // Track pull-to-refresh completion
       telemetry.trackUserInteraction({
         action: 'pull_to_refresh_completed',
@@ -106,8 +106,8 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           pullProgress: Math.round(pullProgress * 100),
           triggered: pullTriggered,
           hasRefreshHandler: !!onRefresh,
-          wasRefreshing: isRefreshing
-        }
+          wasRefreshing: isRefreshing,
+        },
       });
 
       if (pullTriggered) {
@@ -116,8 +116,8 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           value: 1,
           tags: {
             progress: String(Math.round(pullProgress * 100)),
-            has_handler: String(!!onRefresh)
-          }
+            has_handler: String(!!onRefresh),
+          },
         });
       }
 
@@ -127,10 +127,10 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       if (pullTriggered && onRefresh && !isRefreshing) {
         setIsRefreshing(true);
         const refreshStartTime = performance.now();
-        
+
         try {
           await onRefresh();
-          
+
           // Track successful refresh
           const refreshDuration = performance.now() - refreshStartTime;
           telemetry.trackMetric({
@@ -138,14 +138,14 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
             value: 1,
             tags: {
               duration_ms: String(Math.round(refreshDuration)),
-              method: 'pull_gesture'
-            }
+              method: 'pull_gesture',
+            },
           });
         } catch (error) {
           // Track refresh error
           telemetry.trackError(error as Error, {
             context: 'pull_to_refresh_error',
-            metadata: { method: 'pull_gesture' }
+            metadata: { method: 'pull_gesture' },
           });
         } finally {
           setIsRefreshing(false);
@@ -207,7 +207,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       const maxSwipeTime = 300;
       const maxVerticalMovement = 100;
 
-      const isValidSwipe = 
+      const isValidSwipe =
         Math.abs(deltaX) > minSwipeDistance &&
         deltaY < maxVerticalMovement &&
         deltaTime < maxSwipeTime;
@@ -222,14 +222,15 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           deltaTime,
           isValidSwipe,
           direction: deltaX > 0 ? 'right' : 'left',
-          hasHandlers: { left: !!onSwipeLeft, right: !!onSwipeRight }
-        }
+          hasHandlers: { left: !!onSwipeLeft, right: !!onSwipeRight },
+        },
       });
 
       if (isValidSwipe) {
         const direction = deltaX > 0 ? 'right' : 'left';
-        const hasHandler = direction === 'right' ? !!onSwipeRight : !!onSwipeLeft;
-        
+        const hasHandler =
+          direction === 'right' ? !!onSwipeRight : !!onSwipeLeft;
+
         // Track successful swipe
         telemetry.trackUserInteraction({
           action: 'swipe_gesture_success',
@@ -237,9 +238,9 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           metadata: {
             direction,
             distance: Math.round(Math.abs(deltaX)),
-            speed: Math.round(Math.abs(deltaX) / deltaTime * 1000), // pixels per second
-            hasHandler
-          }
+            speed: Math.round((Math.abs(deltaX) / deltaTime) * 1000), // pixels per second
+            hasHandler,
+          },
         });
 
         telemetry.trackMetric({
@@ -248,8 +249,9 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
           tags: {
             direction,
             distance_bucket: Math.abs(deltaX) > 100 ? 'long' : 'short',
-            speed_bucket: (Math.abs(deltaX) / deltaTime * 1000) > 500 ? 'fast' : 'slow'
-          }
+            speed_bucket:
+              (Math.abs(deltaX) / deltaTime) * 1000 > 500 ? 'fast' : 'slow',
+          },
         });
 
         if (deltaX > 0 && onSwipeRight) {
@@ -260,7 +262,8 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       } else {
         // Track failed swipe attempt
         let failureReason = 'unknown';
-        if (Math.abs(deltaX) <= minSwipeDistance) failureReason = 'insufficient_distance';
+        if (Math.abs(deltaX) <= minSwipeDistance)
+          failureReason = 'insufficient_distance';
         else if (deltaY >= maxVerticalMovement) failureReason = 'too_vertical';
         else if (deltaTime >= maxSwipeTime) failureReason = 'too_slow';
 
@@ -271,8 +274,8 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
             reason: failureReason,
             deltaX: Math.round(deltaX),
             deltaY: Math.round(deltaY),
-            deltaTime
-          }
+            deltaTime,
+          },
         });
       }
 
