@@ -26,6 +26,7 @@ import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
 } from '../components/MobileNavigation';
+import PerformanceDashboard from '../components/PerformanceDashboard';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import PWAStatus from '../components/PWAStatus';
 import { ScreenContainer } from '../components/ScreenTransition';
@@ -2067,6 +2068,12 @@ const AppNavigator = () => {
             // User dismissed the install prompt
             // Could store preference to not show again for some time
           }}
+        />
+
+        {/* Performance Dashboard - Development monitoring */}
+        <PerformanceDashboard
+          enabled={process.env.NODE_ENV === 'development'}
+          position="bottom-left"
         />
       </EnhancedMobileContainer>
     </LoadingProvider>
