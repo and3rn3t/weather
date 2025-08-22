@@ -15,6 +15,9 @@
 /* NEW: iOS 26 Design System - CONSOLIDATED (Phase 4) */
 @import './styles/ios26-design-system-consolidated.css';
 
+/* NEW: iOS Human Interface Guidelines Enhancements */
+@import './styles/ios-hig-enhancements.css';
+
 /* NEW: Responsive Layout System - CONSOLIDATED */
 @import './styles/responsive-layout-consolidated.css';
 
