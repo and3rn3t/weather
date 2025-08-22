@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import EnhancedSearchScreen from './components/EnhancedSearchScreen';
+import { OfflineStatusIndicator } from './components/mobile/OfflineStatusIndicator';
 import MobileNavigation, {
   type NavigationScreen,
 } from './components/MobileNavigation';
@@ -122,8 +123,8 @@ const SimpleWeatherApp: React.FC = () => {
       // Step 1: Get coordinates from city name
       const geoResponse = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          city,
-        )}&format=json&limit=1`,
+          city
+        )}&format=json&limit=1`
       );
       const geoData = await geoResponse.json();
 
@@ -135,7 +136,7 @@ const SimpleWeatherApp: React.FC = () => {
 
       // Step 2: Get weather data with hourly and daily forecasts
       const weatherResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
       );
 
       const weatherData = await weatherResponse.json();
@@ -160,7 +161,7 @@ const SimpleWeatherApp: React.FC = () => {
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
         visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34,
+          (weatherData.current.visibility || 10000) / 1609.34
         ), // Convert meters to miles
       };
 
@@ -189,7 +190,7 @@ const SimpleWeatherApp: React.FC = () => {
           tempMax: Math.round(weatherData.daily.temperature_2m_max[index]),
           tempMin: Math.round(weatherData.daily.temperature_2m_min[index]),
           precipitation: weatherData.daily.precipitation_sum[index] || 0,
-        }),
+        })
       );
 
       setWeather(currentWeather);
@@ -198,7 +199,7 @@ const SimpleWeatherApp: React.FC = () => {
       generateWeatherAlerts(currentWeather);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to fetch weather data',
+        err instanceof Error ? err.message : 'Failed to fetch weather data'
       );
     } finally {
       setLoading(false);
@@ -222,7 +223,7 @@ const SimpleWeatherApp: React.FC = () => {
             timeout: 10000,
             maximumAge: 300000,
           });
-        },
+        }
       );
 
       const { latitude, longitude } = position.coords;
@@ -230,7 +231,7 @@ const SimpleWeatherApp: React.FC = () => {
       // Get city name from coordinates
       const geoResponse = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-        { headers: { 'User-Agent': 'WeatherApp/1.0' } },
+        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
       );
       const geoData = await geoResponse.json();
 
@@ -243,7 +244,7 @@ const SimpleWeatherApp: React.FC = () => {
 
       // Get weather data directly with forecasts
       const weatherResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
       );
 
       const weatherData = await weatherResponse.json();
@@ -268,7 +269,7 @@ const SimpleWeatherApp: React.FC = () => {
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
         visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34,
+          (weatherData.current.visibility || 10000) / 1609.34
         ), // Convert meters to miles
       };
 
@@ -297,7 +298,7 @@ const SimpleWeatherApp: React.FC = () => {
           tempMax: Math.round(weatherData.daily.temperature_2m_max[index]),
           tempMin: Math.round(weatherData.daily.temperature_2m_min[index]),
           precipitation: weatherData.daily.precipitation_sum[index] || 0,
-        }),
+        })
       );
 
       setWeather(currentWeather);
@@ -309,7 +310,7 @@ const SimpleWeatherApp: React.FC = () => {
         switch (err.code) {
           case err.PERMISSION_DENIED:
             setError(
-              'Location access denied. Please enable location services.',
+              'Location access denied. Please enable location services.'
             );
             break;
           case err.POSITION_UNAVAILABLE:
@@ -324,7 +325,7 @@ const SimpleWeatherApp: React.FC = () => {
         }
       } else {
         setError(
-          err instanceof Error ? err.message : 'Failed to get current location',
+          err instanceof Error ? err.message : 'Failed to get current location'
         );
       }
     } finally {
@@ -436,9 +437,9 @@ const SimpleWeatherApp: React.FC = () => {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          searchTerm,
+          searchTerm
         )}&format=json&limit=5&addressdetails=1`,
-        { headers: { 'User-Agent': 'WeatherApp/1.0' } },
+        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
       );
       const data = await response.json();
 
@@ -485,7 +486,7 @@ const SimpleWeatherApp: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
       );
       const weatherData = await response.json();
 
@@ -508,7 +509,7 @@ const SimpleWeatherApp: React.FC = () => {
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
         visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34,
+          (weatherData.current.visibility || 10000) / 1609.34
         ),
       };
 
@@ -516,7 +517,7 @@ const SimpleWeatherApp: React.FC = () => {
       generateWeatherAlerts(currentWeather);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to fetch weather data',
+        err instanceof Error ? err.message : 'Failed to fetch weather data'
       );
       logError('Weather fetch error:', err);
     } finally {
@@ -1588,6 +1589,15 @@ const SimpleWeatherApp: React.FC = () => {
 
       {/* Theme Toggle Button */}
       <ThemeToggle />
+
+      {/* Offline Status Indicator */}
+      <OfflineStatusIndicator
+        variant="minimal"
+        position="top"
+        autoHide={true}
+        autoHideDelay={4000}
+        showCacheInfo={true}
+      />
 
       {/* Screen Content */}
       {renderScreen()}
