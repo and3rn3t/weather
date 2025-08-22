@@ -107,7 +107,7 @@ export class MemoryMonitor {
       window.dispatchEvent(
         new CustomEvent('memory-pressure', {
           detail: { action: 'cleanup' },
-        })
+        }),
       );
     }
   }
@@ -135,13 +135,13 @@ export class CacheOptimizer {
    */
   static optimizeLRU<T>(
     cache: Map<string, T & { lastAccess: number; accessCount: number }>,
-    maxSize: number
+    maxSize: number,
   ): number {
     if (cache.size <= maxSize) return 0;
 
     // Sort by least recently used
     const entries = Array.from(cache.entries()).sort(
-      ([, a], [, b]) => a.lastAccess - b.lastAccess
+      ([, a], [, b]) => a.lastAccess - b.lastAccess,
     );
 
     const itemsToRemove = cache.size - maxSize;
@@ -160,7 +160,7 @@ export class CacheOptimizer {
    */
   static removeExpired<T>(
     cache: Map<string, T & { timestamp: number }>,
-    maxAge: number = CLEANUP_THRESHOLDS.maxAge
+    maxAge: number = CLEANUP_THRESHOLDS.maxAge,
   ): number {
     const now = Date.now();
     let removed = 0;
@@ -183,7 +183,7 @@ export class CacheOptimizer {
       string,
       T & { priority?: 'low' | 'medium' | 'high'; accessCount: number }
     >,
-    minAccessCount: number = 2
+    minAccessCount: number = 2,
   ): number {
     let removed = 0;
 

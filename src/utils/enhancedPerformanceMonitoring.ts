@@ -184,7 +184,7 @@ class EnhancedPerformanceMonitor {
   public trackCSSChunkLoad(
     chunkName: string,
     loadTime: number,
-    fromCache: boolean
+    fromCache: boolean,
   ): void {
     this.metrics.cssLoadTimes[chunkName] = loadTime;
     this.metrics.optimizationStats.cssChunksLoaded++;
@@ -249,7 +249,7 @@ class EnhancedPerformanceMonitor {
     // Simplified TTI calculation
     return Math.max(
       this.metrics.renderTimes.firstContentfulPaint,
-      this.metrics.renderTimes.largestContentfulPaint
+      this.metrics.renderTimes.largestContentfulPaint,
     );
   }
 
@@ -298,13 +298,13 @@ class EnhancedPerformanceMonitor {
   private logCSSLoadEvent(
     fileName: string,
     duration: number,
-    fromCache: boolean
+    fromCache: boolean,
   ): void {
     // eslint-disable-next-line no-console
     console.log(
       `📊 CSS Load: ${fileName} - ${duration.toFixed(2)}ms ${
         fromCache ? '(cached)' : '(network)'
-      }`
+      }`,
     );
   }
 

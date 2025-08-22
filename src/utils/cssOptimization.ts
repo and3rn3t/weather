@@ -126,13 +126,13 @@ export const getCSSLoadingStatus = (): {
   const totalModules = 4; // horror-theme, enhanced-mobile, ios-advanced, layout-enhancements
   const loadedCount = loadedCSSModules.size;
   const savingsPercent = Math.round(
-    ((totalModules - loadedCount) / totalModules) * 100
+    ((totalModules - loadedCount) / totalModules) * 100,
   );
 
   return {
     loadedModules: Array.from(loadedCSSModules),
     estimatedSavings: `${savingsPercent}% CSS not loaded (estimated ${Math.round(
-      127 * (savingsPercent / 100)
+      127 * (savingsPercent / 100),
     )}KB saved)`,
   };
 };

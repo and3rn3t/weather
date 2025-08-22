@@ -774,7 +774,7 @@ function WeatherDetailsScreen({
                   onAction: () => {
                     haptic.buttonPress();
                     const shareText = `Weather in ${city}: ${Math.round(
-                      weather.main.temp
+                      weather.main.temp,
                     )}°F - ${weather.weather[0].description}`;
                     if (navigator.share) {
                       navigator.share({
@@ -1264,7 +1264,7 @@ const WeatherMainCard = React.memo(
         </div>
       </ContextMenu>
     );
-  }
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1338,7 +1338,7 @@ const HourlyForecastSection = React.memo(
       );
     }
     return null;
-  }
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1377,7 +1377,7 @@ const DailyForecastSection = React.memo(
             {dailyForecast.map((day, index) => {
               const { dayName, dateStr, isToday } = formatDayInfo(
                 day.date,
-                index
+                index,
               );
               return (
                 <div
@@ -1432,7 +1432,7 @@ const DailyForecastSection = React.memo(
       );
     }
     return null;
-  }
+  },
 );
 
 const AppNavigator = () => {
@@ -1458,7 +1458,7 @@ const AppNavigator = () => {
 
   // Screen information and responsive detection
   const [screenInfo, setScreenInfo] = useState<ScreenInfo>(() =>
-    getScreenInfo()
+    getScreenInfo(),
   );
 
   // Phase 3A: Loading state management for weather operations
@@ -1489,11 +1489,11 @@ const AppNavigator = () => {
         } catch (error) {
           logWarn(
             'Failed to load Crystal Lake data, user will need to search manually:',
-            error
+            error,
           );
           // Gracefully degrade - user can still search for weather manually
           setError(
-            'Default location unavailable. Please search for your city.'
+            'Default location unavailable. Please search for your city.',
           );
         }
       }
@@ -1507,15 +1507,15 @@ const AppNavigator = () => {
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
     () => getAdaptiveFontSizes(screenInfo),
-    [screenInfo]
+    [screenInfo],
   );
   const adaptiveSpacing = useMemo(
     () => getAdaptiveSpacing(screenInfo),
-    [screenInfo]
+    [screenInfo],
   );
   const adaptiveBorders = useMemo(
     () => getAdaptiveBorderRadius(screenInfo),
-    [screenInfo]
+    [screenInfo],
   );
 
   // Theme and mobile detection (updated to use screenInfo)
@@ -1528,9 +1528,9 @@ const AppNavigator = () => {
         theme,
         screenInfo,
         isPrimary ? 'primary' : 'secondary',
-        size
+        size,
       ),
-    [theme, screenInfo]
+    [theme, screenInfo],
   );
 
   const haptic = useHaptic();
@@ -1598,7 +1598,7 @@ const AppNavigator = () => {
   // Phase 3: Progressive Loading Hook Integration
   const progressiveWeatherData = useProgressiveWeatherLoading(
     currentCoordinates?.latitude || 0,
-    currentCoordinates?.longitude || 0
+    currentCoordinates?.longitude || 0,
   );
 
   // Enable progressive loading when coordinates are available
@@ -1622,7 +1622,7 @@ const AppNavigator = () => {
         return 'evening' as const;
       })(),
     }),
-    [weather, weatherCode, weatherAlert]
+    [weather, weatherCode, weatherAlert],
   );
 
   const smartContent = useSmartContentPriority(weatherContext);
@@ -1630,7 +1630,7 @@ const AppNavigator = () => {
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(
     () => hourlyForecast,
-    [hourlyForecast]
+    [hourlyForecast],
   );
   const memoizedDailyForecast = useMemo(() => dailyForecast, [dailyForecast]);
 
@@ -1666,7 +1666,7 @@ const AppNavigator = () => {
         address: { city: cityName, display: cityName },
       });
     },
-    [telemetry]
+    [telemetry],
   );
 
   // Get swipe configuration for current screen
@@ -1691,7 +1691,7 @@ const AppNavigator = () => {
       haptic.buttonPress();
       setCurrentScreen(screen);
     },
-    [haptic, currentScreen, telemetry, performanceMonitor]
+    [haptic, currentScreen, telemetry, performanceMonitor],
   );
 
   // Legacy navigation function for backward compatibility
@@ -1713,7 +1713,7 @@ const AppNavigator = () => {
     await interactionFeedback.onButtonPress();
     await weatherAnnouncements.announceStateChange(
       `Navigating to ${mappedScreen.toLowerCase()}`,
-      'Navigation updated'
+      'Navigation updated',
     );
 
     // Special handling for iOS Demo
@@ -1802,7 +1802,7 @@ const AppNavigator = () => {
       if (weatherCode >= 51 && weatherCode <= 57) return 'light-rain';
       return null;
     },
-    []
+    [],
   );
 
   // Common weather data fetching logic with optimization
@@ -1837,7 +1837,7 @@ const AppNavigator = () => {
                 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
               },
             },
-            cacheKey
+            cacheKey,
           );
 
           // Track API response time
@@ -1853,7 +1853,7 @@ const AppNavigator = () => {
 
           if (!weatherResponse.ok) {
             const error = new Error(
-              `Weather API failed: ${weatherResponse.status}`
+              `Weather API failed: ${weatherResponse.status}`,
             );
             telemetry.trackError(error, {
               context: 'weather_api_error',
@@ -1902,7 +1902,7 @@ const AppNavigator = () => {
                 visibility: hourlyData?.visibility?.[currentHour] || 0,
               };
             },
-            `transform-${lat}-${lon}-${Date.now()}`
+            `transform-${lat}-${lon}-${Date.now()}`,
           );
 
           // Track data transformation performance
@@ -1915,10 +1915,10 @@ const AppNavigator = () => {
 
           setWeather(transformedData);
           setHourlyForecast(
-            processHourlyForecast(weatherData.hourly as HourlyData)
+            processHourlyForecast(weatherData.hourly as HourlyData),
           );
           setDailyForecast(
-            processDailyForecast(weatherData.daily as DailyData)
+            processDailyForecast(weatherData.daily as DailyData),
           );
 
           // Track successful weather data load
@@ -1950,7 +1950,7 @@ const AppNavigator = () => {
             await weatherAnnouncements.announceWeather(
               weatherCondition,
               transformedData.main.temp,
-              city
+              city,
             );
           }
 
@@ -1971,7 +1971,7 @@ const AppNavigator = () => {
             const alertData = {
               title: 'Extreme Heat Warning',
               message: `Temperature is ${Math.round(
-                currentTemp
+                currentTemp,
               )}°F. Stay hydrated and avoid outdoor activities.`,
               severity: 'severe' as const,
             };
@@ -1983,7 +1983,7 @@ const AppNavigator = () => {
             const alertData = {
               title: 'Extreme Cold Warning',
               message: `Temperature is ${Math.round(
-                currentTemp
+                currentTemp,
               )}°F. Dress warmly and limit outdoor exposure.`,
               severity: 'severe' as const,
             };
@@ -1995,7 +1995,7 @@ const AppNavigator = () => {
             const alertData = {
               title: 'High Wind Advisory',
               message: `Wind speeds of ${Math.round(
-                windSpeed
+                windSpeed,
               )} mph. Secure loose objects and drive carefully.`,
               severity: 'warning' as const,
             };
@@ -2034,7 +2034,7 @@ const AppNavigator = () => {
             {
               context: 'weather_fetch_error',
               metadata: { city, operation: 'fetchWeatherData' },
-            }
+            },
           );
 
           weatherLoading.setError(errorMessage);
@@ -2051,7 +2051,7 @@ const AppNavigator = () => {
       getWeatherConditionFromCode,
       multiSensory,
       weatherAnnouncements,
-    ]
+    ],
   );
 
   const getWeather = useCallback(async () => {
@@ -2079,7 +2079,7 @@ const AppNavigator = () => {
       try {
         const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
         const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-          city
+          city,
         )}&format=json&limit=1`;
 
         const geocodingStartTime = performance.now();
@@ -2088,7 +2088,7 @@ const AppNavigator = () => {
           {
             headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
           },
-          `geocoding-${city}`
+          `geocoding-${city}`,
         );
 
         const geocodingTime = performance.now() - geocodingStartTime;
@@ -2110,7 +2110,7 @@ const AppNavigator = () => {
         const geoData = await geoResponse.json();
         if (!geoData || geoData.length === 0) {
           const error = new Error(
-            'City not found. Please check the spelling and try again.'
+            'City not found. Please check the spelling and try again.',
           );
           telemetry.trackError(error, {
             context: 'city_not_found',
@@ -2137,7 +2137,7 @@ const AppNavigator = () => {
           {
             context: 'city_search_error',
             metadata: { city, operation: 'getWeather' },
-          }
+          },
         );
 
         setError(`Failed to fetch weather data: ${errorMessage}`);
@@ -2170,14 +2170,14 @@ const AppNavigator = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred';
         setError(
-          `Failed to fetch weather data for your location: ${errorMessage}`
+          `Failed to fetch weather data for your location: ${errorMessage}`,
         );
         haptic.searchError(); // Haptic feedback for location-based search error
       } finally {
         setLoading(false);
       }
     },
-    [haptic, fetchWeatherData, setCurrentCity, addToRecent]
+    [haptic, fetchWeatherData, setCurrentCity, addToRecent],
   );
 
   // Background refresh for weather data with native app lifecycle integration
@@ -2191,7 +2191,7 @@ const AppNavigator = () => {
           // For now, we'll use the city search approach
           const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
           const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-            city
+            city,
           )}&format=json&limit=1`;
           const geoResponse = await fetch(geoUrl, {
             headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
@@ -2222,12 +2222,12 @@ const AppNavigator = () => {
       forceRefreshThreshold: 30, // 30 minutes for stale data
       enabled: true,
     }),
-    []
+    [],
   );
 
   const backgroundRefresh = useWeatherBackgroundRefresh(
     refreshWeatherData,
-    backgroundRefreshConfig.enabled
+    backgroundRefreshConfig.enabled,
   );
 
   // Handle verification confirmation
@@ -2236,7 +2236,7 @@ const AppNavigator = () => {
       setPendingLocationData(null);
       getWeatherByLocation(cityName, latitude, longitude);
     },
-    [getWeatherByLocation]
+    [getWeatherByLocation],
   );
 
   // Handle verification cancel
@@ -2350,7 +2350,7 @@ const AppNavigator = () => {
           <LocationManager
             onLocationReceived={(detectedCity, lat, lon) => {
               logInfo(
-                `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
+                `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`,
               );
               setCity(detectedCity);
               getWeatherByLocation(detectedCity, lat, lon);
@@ -2377,7 +2377,7 @@ const AppNavigator = () => {
                 <div>
                   Last:{' '}
                   {new Date(
-                    backgroundRefresh.stats.lastRefreshTime
+                    backgroundRefresh.stats.lastRefreshTime,
                   ).toLocaleTimeString()}
                 </div>
               )}

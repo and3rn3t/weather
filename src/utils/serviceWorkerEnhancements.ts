@@ -135,7 +135,7 @@ export const cacheCSSchunk = async (chunkUrl: string): Promise<boolean> => {
 export const getCacheStatusReport = async (): Promise<CacheStatusReport> => {
   try {
     const stats = (await sendMessageToServiceWorker(
-      'GET_ENHANCED_CACHE_STATUS'
+      'GET_ENHANCED_CACHE_STATUS',
     )) as {
       coreCSSCached?: boolean;
       conditionalCSSCached?: number;
@@ -191,7 +191,7 @@ function handleCachePerformanceStats(stats: any): void {
     totalCaches: Object.keys(stats).length,
     totalEntries: Object.values(stats).reduce(
       (sum: number, cache: any) => sum + cache.entryCount,
-      0
+      0,
     ),
     timestamp: new Date().toLocaleTimeString(),
   });
@@ -205,7 +205,7 @@ function handleCSSChunkCached(payload: {
   size: number;
 }): void {
   console.log(
-    `✅ CSS chunk cached: ${payload.chunkName} (${payload.size} bytes)`
+    `✅ CSS chunk cached: ${payload.chunkName} (${payload.size} bytes)`,
   );
 
   // Update UI if CSS chunk caching UI exists
@@ -223,7 +223,7 @@ function handleCacheUpdateAvailable(payload: { chunkName: string }): void {
   // Could trigger a background update or notify user
   if (window.weatherApp?.notifications) {
     window.weatherApp.notifications.showCacheUpdateNotification(
-      payload.chunkName
+      payload.chunkName,
     );
   }
 }
@@ -255,7 +255,7 @@ function skipWaitingAndActivate(serviceWorker: ServiceWorker): void {
  */
 function sendMessageToServiceWorker(
   type: string,
-  payload?: unknown
+  payload?: unknown,
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     if (!navigator.serviceWorker.controller) {
@@ -308,8 +308,8 @@ function monitorCacheEffectiveness(): void {
         const hitRate = (cacheHits / totalRequests) * 100;
         console.log(
           `📈 Cache Hit Rate: ${hitRate.toFixed(
-            1
-          )}% (${cacheHits}/${totalRequests})`
+            1,
+          )}% (${cacheHits}/${totalRequests})`,
         );
       }
     });

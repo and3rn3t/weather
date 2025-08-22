@@ -30,15 +30,15 @@ export const AnimatedWeatherCard: React.FC<AnimatedWeatherCardProps> = ({
   // Animation systems
   const { morphTo, isTransitioning } = useWeatherIconMorpher(
     iconRef as React.RefObject<HTMLElement>,
-    weatherType
+    weatherType,
   );
   const _cardFeedback = useInteractionFeedback(
     cardRef as React.RefObject<HTMLElement>,
-    'card'
+    'card',
   );
   const _buttonFeedback = useInteractionFeedback(
     refreshButtonRef as React.RefObject<HTMLElement>,
-    'button'
+    'button',
   );
   const { addElement, choreograph, clearElements } =
     usePageTransitionChoreographer();
@@ -272,11 +272,11 @@ const WeatherIconGridItem: React.FC<{ weatherType: string }> = ({
 
   const { morphTo } = useWeatherIconMorpher(
     iconRef as React.RefObject<HTMLElement>,
-    weatherType
+    weatherType,
   );
   const { isInteracting } = useInteractionFeedback(
     itemRef as React.RefObject<HTMLElement>,
-    'button'
+    'button',
   );
 
   const handlePress = () => {

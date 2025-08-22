@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index-core.css'; // Use optimized core CSS instead of full index.css
 
+// Phase 4A: Bundle Optimization Integration
+import { bundleOptimizer } from './utils/bundleOptimizationClean';
+
 // Dash0 Telemetry Initialization - Initialize early for complete app coverage
 import { initializeDash0 } from './dash0/config/dash0ConfigReal';
 import { initializeCSSOptimization } from './utils/cssOptimization';
@@ -19,6 +22,12 @@ if (dash0Result.enabled) {
   console.log('📊 Dash0 telemetry in fallback mode:', dash0Result.reason);
 }
 
+// Phase 4A: Initialize Bundle Optimization
+bundleOptimizer.initializeBundleOptimization().catch((error: unknown) => {
+  // eslint-disable-next-line no-console
+  console.error('Failed to initialize bundle optimization:', error);
+});
+
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -27,7 +36,7 @@ if ('serviceWorker' in navigator) {
       .then(registration => {
         // eslint-disable-next-line no-console
         console.log(
-          '🌤️ Weather App PWA: Service Worker registered successfully'
+          '🌤️ Weather App PWA: Service Worker registered successfully',
         );
         // eslint-disable-next-line no-console
         console.log('📱 PWA features now available:', {
@@ -64,5 +73,5 @@ initializePerformanceMonitoring();
 createRoot(rootElement).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
