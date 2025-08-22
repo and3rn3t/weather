@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useTheme } from '../utils/useTheme';
 import { useHaptic } from '../utils/hapticHooks';
-import type { ThemeColors } from '../utils/themeConfig';
 import type { ScreenInfo } from '../utils/mobileScreenOptimization';
+import type { ThemeColors } from '../utils/themeConfig';
+import { useTheme } from '../utils/useTheme';
 
 interface SettingsScreenProps {
   theme: ThemeColors;
@@ -275,7 +275,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const renderSelection = (
     value: string,
     options: string[],
-    onChange: (value: string) => void,
+    onChange: (value: string) => void
   ) => (
     <select
       value={value}
@@ -367,14 +367,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   <div style={{ marginLeft: '16px' }}>
                     {item.type === 'toggle' &&
                       renderToggle(item.value as boolean, value =>
-                        handleToggleChange(item.id, value),
+                        handleToggleChange(item.id, value)
                       )}
                     {item.type === 'selection' &&
                       item.options &&
                       renderSelection(
                         item.value as string,
                         item.options,
-                        value => handleSelectionChange(item.id, value),
+                        value => handleSelectionChange(item.id, value)
                       )}
                     {item.type === 'action' && (
                       <div
