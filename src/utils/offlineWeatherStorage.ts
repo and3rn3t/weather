@@ -154,7 +154,7 @@ export class OfflineWeatherStorage {
       const totalBytes = weatherDataSize + citiesSize;
 
       const oldestEntry = Object.values(weatherData).sort(
-        (a, b) => a.timestamp - b.timestamp
+        (a, b) => a.timestamp - b.timestamp,
       )[0];
 
       return {

@@ -10,7 +10,7 @@ if ('serviceWorker' in navigator) {
       .register('/sw.js')
       .then(registration => {
         console.log(
-          '🌤️ Weather App PWA: Service Worker registered successfully'
+          '🌤️ Weather App PWA: Service Worker registered successfully',
         );
         console.log('📱 PWA features now available:', {
           scope: registration.scope,
@@ -28,5 +28,5 @@ if ('serviceWorker' in navigator) {
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

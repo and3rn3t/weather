@@ -30,7 +30,7 @@ export const AnimatedWeatherCard: React.FC<AnimatedWeatherCardProps> = ({
   // Animation systems
   const { morphTo, isTransitioning } = useWeatherIconMorpher(
     iconRef,
-    weatherType
+    weatherType,
   );
   const cardFeedback = useInteractionFeedback(cardRef, 'card');
   const buttonFeedback = useInteractionFeedback(refreshButtonRef, 'button');

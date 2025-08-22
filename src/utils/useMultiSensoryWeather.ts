@@ -67,7 +67,7 @@ export interface MultiSensoryWeatherAPI {
  * Multi-sensory weather experience hook
  */
 export function useMultiSensoryWeather(
-  options: UseMultiSensoryWeatherOptions = {}
+  options: UseMultiSensoryWeatherOptions = {},
 ): MultiSensoryWeatherAPI {
   const {
     enableAudio = true,
@@ -167,11 +167,11 @@ export function useMultiSensoryWeather(
       } catch (error) {
         logger.warn(
           `Failed to play weather experience for ${weatherCondition}:`,
-          error
+          error,
         );
       }
     },
-    []
+    [],
   );
 
   // Announce weather with accessibility features
@@ -183,14 +183,14 @@ export function useMultiSensoryWeather(
         await accessibilityAudioManager.announceWeatherCondition(
           condition,
           temperature,
-          location
+          location,
         );
         logger.debug(`Announced weather: ${condition}`);
       } catch (error) {
         logger.warn(`Failed to announce weather for ${condition}:`, error);
       }
     },
-    [enableAccessibility]
+    [enableAccessibility],
   );
 
   // Play interaction feedback
@@ -213,11 +213,11 @@ export function useMultiSensoryWeather(
       } catch (error) {
         logger.warn(
           `Failed to play interaction feedback for ${interactionType}:`,
-          error
+          error,
         );
       }
     },
-    []
+    [],
   );
 
   // Announce navigation element
@@ -228,21 +228,21 @@ export function useMultiSensoryWeather(
       try {
         await accessibilityAudioManager.announceNavigationElement(
           elementId,
-          includeInstructions
+          includeInstructions,
         );
         logger.debug(`Announced navigation: ${elementId}`);
       } catch (error) {
         logger.warn(`Failed to announce navigation for ${elementId}:`, error);
       }
     },
-    [enableAccessibility]
+    [enableAccessibility],
   );
 
   // Play weather alert with coordinated feedback
   const playWeatherAlert = useCallback(
     async (
       level: 'info' | 'warning' | 'severe' | 'emergency',
-      message: string
+      message: string,
     ) => {
       if (!isInitialized.current) return;
 
@@ -270,7 +270,7 @@ export function useMultiSensoryWeather(
         logger.warn(`Failed to play weather alert: ${level}`, error);
       }
     },
-    [enableAccessibility]
+    [enableAccessibility],
   );
 
   // Announce app state changes
@@ -285,7 +285,7 @@ export function useMultiSensoryWeather(
         logger.warn(`Failed to announce state change: ${state}`, error);
       }
     },
-    [enableAccessibility]
+    [enableAccessibility],
   );
 
   // Update configuration
@@ -310,7 +310,7 @@ export function useMultiSensoryWeather(
         logger.warn('Failed to update multi-sensory configuration:', error);
       }
     },
-    [enableAccessibility, audioVolume]
+    [enableAccessibility, audioVolume],
   );
 
   // Enable/disable accessibility features

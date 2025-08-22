@@ -97,7 +97,7 @@ class PushNotificationManager {
    * Send weather alert notification
    */
   async sendWeatherAlert(
-    alert: Omit<WeatherAlert, 'id' | 'timestamp'>
+    alert: Omit<WeatherAlert, 'id' | 'timestamp'>,
   ): Promise<boolean> {
     if (!this.isNotificationAvailable()) {
       logWarn('Notifications not available or not permitted');
@@ -174,7 +174,7 @@ class PushNotificationManager {
    */
   async scheduleDailyForecast(
     weatherData: WeatherData,
-    cityName: string
+    cityName: string,
   ): Promise<boolean> {
     const tomorrow = weatherData.daily;
     if (
@@ -206,7 +206,7 @@ class PushNotificationManager {
    */
   async checkAndSendSevereWeatherAlerts(
     weatherData: WeatherData,
-    cityName: string
+    cityName: string,
   ): Promise<WeatherAlert[]> {
     const alerts: WeatherAlert[] = [];
     const current = weatherData.current_weather;
@@ -223,7 +223,7 @@ class PushNotificationManager {
         type: 'temperature-extreme',
         title: '🌡️ Extreme Heat Warning',
         message: `Dangerous heat in ${cityName}: ${Math.round(
-          temp
+          temp,
         )}°F. Stay hydrated and seek shade.`,
         icon: '/icons/icon-192x192.png',
         priority: 'high',
@@ -247,7 +247,7 @@ class PushNotificationManager {
         type: 'temperature-extreme',
         title: '🧊 Extreme Cold Warning',
         message: `Dangerous cold in ${cityName}: ${Math.round(
-          temp
+          temp,
         )}°F. Dress warmly and limit exposure.`,
         icon: '/icons/icon-192x192.png',
         priority: 'high',
@@ -272,7 +272,7 @@ class PushNotificationManager {
         type: 'severe-weather',
         title: '💨 High Wind Warning',
         message: `Strong winds in ${cityName}: ${Math.round(
-          windSpeed
+          windSpeed,
         )} mph. Avoid outdoor activities.`,
         icon: '/icons/icon-192x192.png',
         priority: 'high',
@@ -396,7 +396,7 @@ class PushNotificationManager {
    */
   private shouldSendAlert(
     type: WeatherAlert['type'],
-    settings: NotificationSettings
+    settings: NotificationSettings,
   ): boolean {
     switch (type) {
       case 'severe-weather':
@@ -542,13 +542,13 @@ class PushNotificationManager {
       alertHistory: {
         total: history.length,
         last24h: history.filter(
-          alert => Date.now() - alert.timestamp < 24 * 60 * 60 * 1000
+          alert => Date.now() - alert.timestamp < 24 * 60 * 60 * 1000,
         ).length,
         byType: {
           severe: history.filter(alert => alert.type === 'severe-weather')
             .length,
           temperature: history.filter(
-            alert => alert.type === 'temperature-extreme'
+            alert => alert.type === 'temperature-extreme',
           ).length,
           forecast: history.filter(alert => alert.type === 'daily-forecast')
             .length,

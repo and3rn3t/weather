@@ -186,7 +186,7 @@ export class WeatherAudioManager {
         document.addEventListener(
           'touchstart',
           this.resumeAudioContext.bind(this),
-          { once: true }
+          { once: true },
         );
       }
 
@@ -235,7 +235,7 @@ export class WeatherAudioManager {
    */
   private async loadAudioBuffer(
     id: string,
-    url: string
+    url: string,
   ): Promise<AudioBuffer | null> {
     const existingBuffer = this.audioBuffers.get(id);
     if (existingBuffer) {
@@ -271,7 +271,7 @@ export class WeatherAudioManager {
       const buffer = this.audioContext.createBuffer(
         2,
         this.audioContext.sampleRate * 2,
-        this.audioContext.sampleRate
+        this.audioContext.sampleRate,
       );
       this.audioBuffers.set(id, buffer);
     } catch (error) {
@@ -284,7 +284,7 @@ export class WeatherAudioManager {
    */
   async playWeatherSound(
     weatherCondition: string,
-    config?: Partial<WeatherAudioConfig>
+    config?: Partial<WeatherAudioConfig>,
   ): Promise<void> {
     if (!this.audioEnabled || !this.isInitialized) return;
 
@@ -300,7 +300,7 @@ export class WeatherAudioManager {
    */
   async playInteractionSound(
     soundId: keyof typeof InteractionSounds,
-    config?: Partial<WeatherAudioConfig>
+    config?: Partial<WeatherAudioConfig>,
   ): Promise<void> {
     if (!this.audioEnabled || !this.isInitialized) return;
 
@@ -317,7 +317,7 @@ export class WeatherAudioManager {
   private async playSound(
     id: string,
     url: string,
-    config: WeatherAudioConfig
+    config: WeatherAudioConfig,
   ): Promise<void> {
     try {
       if (!this.audioContext || !config.enabled) return;
@@ -340,7 +340,7 @@ export class WeatherAudioManager {
       gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
       gainNode.gain.linearRampToValueAtTime(
         config.volume * this.masterVolume,
-        this.audioContext.currentTime + config.fadeInDuration / 1000
+        this.audioContext.currentTime + config.fadeInDuration / 1000,
       );
 
       // Setup spatial audio if position specified
@@ -349,15 +349,15 @@ export class WeatherAudioManager {
         pannerNode.panningModel = 'HRTF';
         pannerNode.positionX.setValueAtTime(
           config.spatialPosition.x,
-          this.audioContext.currentTime
+          this.audioContext.currentTime,
         );
         pannerNode.positionY.setValueAtTime(
           config.spatialPosition.y,
-          this.audioContext.currentTime
+          this.audioContext.currentTime,
         );
         pannerNode.positionZ.setValueAtTime(
           config.spatialPosition.z,
-          this.audioContext.currentTime
+          this.audioContext.currentTime,
         );
 
         gainNode.connect(pannerNode);
@@ -400,7 +400,7 @@ export class WeatherAudioManager {
 
       gainNode.gain.linearRampToValueAtTime(
         0,
-        this.audioContext.currentTime + fadeOutDuration / 1000
+        this.audioContext.currentTime + fadeOutDuration / 1000,
       );
 
       setTimeout(() => {
@@ -427,22 +427,22 @@ export class WeatherAudioManager {
    */
   updateSpatialPosition(
     id: string,
-    position: { x: number; y: number; z: number }
+    position: { x: number; y: number; z: number },
   ): void {
     const pannerNode = this.pannerNodes.get(id);
     if (!pannerNode || !this.audioContext) return;
 
     pannerNode.positionX.setValueAtTime(
       position.x,
-      this.audioContext.currentTime
+      this.audioContext.currentTime,
     );
     pannerNode.positionY.setValueAtTime(
       position.y,
-      this.audioContext.currentTime
+      this.audioContext.currentTime,
     );
     pannerNode.positionZ.setValueAtTime(
       position.z,
-      this.audioContext.currentTime
+      this.audioContext.currentTime,
     );
   }
 
@@ -458,7 +458,7 @@ export class WeatherAudioManager {
       if (track && this.audioContext) {
         gainNode.gain.setValueAtTime(
           track.defaultConfig.volume * this.masterVolume,
-          this.audioContext.currentTime
+          this.audioContext.currentTime,
         );
       }
     });
@@ -495,11 +495,11 @@ export class WeatherAudioManager {
    * Find track for weather condition
    */
   private findTrackForWeather(
-    weatherCondition: string
+    weatherCondition: string,
   ): WeatherSoundTrack | null {
     return (
       Object.values(WeatherSoundTracks).find(track =>
-        track.weatherConditions.includes(weatherCondition)
+        track.weatherConditions.includes(weatherCondition),
       ) || null
     );
   }
@@ -510,7 +510,7 @@ export class WeatherAudioManager {
   private findTrackById(id: string): WeatherSoundTrack | null {
     return (
       Object.values({ ...WeatherSoundTracks, ...InteractionSounds }).find(
-        track => track.id === id
+        track => track.id === id,
       ) || null
     );
   }
