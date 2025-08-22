@@ -6,6 +6,8 @@ import './index-core.css'; // Use optimized core CSS instead of full index.css
 // Dash0 Telemetry Initialization - Initialize early for complete app coverage
 import { initializeDash0 } from './dash0/config/dash0ConfigReal';
 import { initializeCSSOptimization } from './utils/cssOptimization';
+import { initializePerformanceMonitoring } from './utils/enhancedPerformanceMonitoring';
+import { initializeServiceWorkerEnhancements } from './utils/serviceWorkerEnhancements';
 
 // Initialize Dash0 SDK before app starts
 const dash0Result = initializeDash0();
@@ -52,6 +54,12 @@ initializeCSSOptimization().catch((error: unknown) => {
   // eslint-disable-next-line no-console
   console.error('Failed to initialize CSS optimization:', error);
 });
+
+// Initialize enhanced service worker
+initializeServiceWorkerEnhancements();
+
+// Initialize performance monitoring
+initializePerformanceMonitoring();
 
 createRoot(rootElement).render(
   <React.StrictMode>
