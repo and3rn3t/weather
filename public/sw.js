@@ -15,7 +15,25 @@ const CACHE_NAMES = {
 };
 
 // URLs to cache during install
-const STATIC_CACHE_URLS = ['/', '/index.html', '/manifest.json', '/vite.svg'];
+const STATIC_CACHE_URLS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/vite.svg',
+  // App icons for offline availability
+  '/icons/icon-72x72.png',
+  '/icons/icon-96x96.png',
+  '/icons/icon-128x128.png',
+  '/icons/icon-144x144.png',
+  '/icons/icon-152x152.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-256x256.png',
+  '/icons/icon-384x384.png',
+  '/icons/icon-512x512.png',
+  '/icons/shortcut-current.png',
+  '/icons/shortcut-forecast.png',
+  // CSS and JS assets (will be added by Vite build)
+];
 
 // API endpoints patterns
 const API_PATTERNS = {

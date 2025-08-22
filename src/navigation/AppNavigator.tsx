@@ -26,6 +26,8 @@ import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
 } from '../components/MobileNavigation';
+import PWAInstallPrompt from '../components/PWAInstallPrompt';
+import PWAStatus from '../components/PWAStatus';
 import { ScreenContainer } from '../components/ScreenTransition';
 import SearchScreen from '../components/SearchScreen';
 import SettingsScreen from '../components/SettingsScreen';
@@ -111,8 +113,13 @@ import {
   getTouchOptimizedButton,
   handleOrientationChange,
 } from '../utils/mobileScreenOptimization';
-// PWA utilities available but not imported yet - will be added when needed
-// import { usePWAInstall, useServiceWorker, useNetworkStatus, usePWAUpdate } from '../utils/pwaUtils';
+// PWA utilities - NOW ACTIVE for full PWA functionality
+import {
+  useNetworkStatus,
+  usePWAInstall,
+  usePWAUpdate,
+  useServiceWorker,
+} from '../utils/pwaUtils';
 
 /**
  * OpenMeteo API response interfaces
@@ -699,7 +706,7 @@ function WeatherDetailsScreen({
                   onAction: () => {
                     haptic.buttonPress();
                     const shareText = `Weather in ${city}: ${Math.round(
-                      weather.main.temp,
+                      weather.main.temp
                     )}°F - ${weather.weather[0].description}`;
                     if (navigator.share) {
                       navigator.share({
@@ -1142,7 +1149,7 @@ const WeatherMainCard = React.memo(
         <div className="ios26-pull-indicator"></div>
       </div>
     );
-  },
+  }
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1211,7 +1218,7 @@ const HourlyForecastSection = React.memo(
       );
     }
     return null;
-  },
+  }
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1245,7 +1252,7 @@ const DailyForecastSection = React.memo(
             {dailyForecast.map((day, index) => {
               const { dayName, dateStr, isToday } = formatDayInfo(
                 day.date,
-                index,
+                index
               );
               return (
                 <div
@@ -1300,13 +1307,13 @@ const DailyForecastSection = React.memo(
       );
     }
     return null;
-  },
+  }
 );
 
 const AppNavigator = () => {
   // Screen information and responsive detection
   const [screenInfo, setScreenInfo] = useState<ScreenInfo>(() =>
-    getScreenInfo(),
+    getScreenInfo()
   );
 
   // Phase 3A: Loading state management for weather operations
@@ -1337,11 +1344,11 @@ const AppNavigator = () => {
         } catch (error) {
           logWarn(
             'Failed to load Crystal Lake data, user will need to search manually:',
-            error,
+            error
           );
           // Gracefully degrade - user can still search for weather manually
           setError(
-            'Default location unavailable. Please search for your city.',
+            'Default location unavailable. Please search for your city.'
           );
         }
       }
@@ -1355,15 +1362,15 @@ const AppNavigator = () => {
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
     () => getAdaptiveFontSizes(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
   const adaptiveSpacing = useMemo(
     () => getAdaptiveSpacing(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
   const adaptiveBorders = useMemo(
     () => getAdaptiveBorderRadius(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
 
   // Theme and mobile detection (updated to use screenInfo)
@@ -1376,9 +1383,9 @@ const AppNavigator = () => {
         theme,
         screenInfo,
         isPrimary ? 'primary' : 'secondary',
-        size,
+        size
       ),
-    [theme, screenInfo],
+    [theme, screenInfo]
   );
 
   const haptic = useHaptic();
@@ -1386,11 +1393,11 @@ const AppNavigator = () => {
   const { optimizedFetch } = useWeatherAPIOptimization();
   const { optimizedTransform } = useWeatherDataTransform();
 
-  // PWA functionality will be added here when needed
-  // const pwaInstall = usePWAInstall();
-  // const serviceWorker = useServiceWorker();
-  // const { isOnline } = useNetworkStatus();
-  // const { updateAvailable, applyUpdate } = usePWAUpdate();
+  // PWA functionality - NOW ACTIVE for full offline and installation support
+  const pwaInstall = usePWAInstall();
+  const serviceWorker = useServiceWorker();
+  const { isOnline } = useNetworkStatus();
+  const { updateAvailable, applyUpdate } = usePWAUpdate();
 
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
   const [city, setCity] = useState('Crystal Lake, NJ'); // Default to horror movie location
@@ -1427,7 +1434,7 @@ const AppNavigator = () => {
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(
     () => hourlyForecast,
-    [hourlyForecast],
+    [hourlyForecast]
   );
   const memoizedDailyForecast = useMemo(() => dailyForecast, [dailyForecast]);
 
@@ -1442,7 +1449,7 @@ const AppNavigator = () => {
         address: { city: cityName, display: cityName },
       });
     },
-    [],
+    []
   );
 
   // Get swipe configuration for current screen
@@ -1454,7 +1461,7 @@ const AppNavigator = () => {
       haptic.buttonPress();
       setCurrentScreen(screen);
     },
-    [haptic],
+    [haptic]
   );
 
   // Legacy navigation function for backward compatibility
@@ -1520,7 +1527,7 @@ const AppNavigator = () => {
               'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
             },
           },
-          cacheKey,
+          cacheKey
         );
 
         // Update progress after fetch
@@ -1565,12 +1572,12 @@ const AppNavigator = () => {
               visibility: hourlyData?.visibility?.[currentHour] || 0,
             };
           },
-          `transform-${lat}-${lon}-${Date.now()}`,
+          `transform-${lat}-${lon}-${Date.now()}`
         );
 
         setWeather(transformedData);
         setHourlyForecast(
-          processHourlyForecast(weatherData.hourly as HourlyData),
+          processHourlyForecast(weatherData.hourly as HourlyData)
         );
         setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
 
@@ -1591,7 +1598,7 @@ const AppNavigator = () => {
           setWeatherAlert({
             title: 'Extreme Heat Warning',
             message: `Temperature is ${Math.round(
-              currentTemp,
+              currentTemp
             )}°F. Stay hydrated and avoid outdoor activities.`,
             severity: 'severe',
           });
@@ -1599,7 +1606,7 @@ const AppNavigator = () => {
           setWeatherAlert({
             title: 'Extreme Cold Warning',
             message: `Temperature is ${Math.round(
-              currentTemp,
+              currentTemp
             )}°F. Dress warmly and limit outdoor exposure.`,
             severity: 'severe',
           });
@@ -1607,7 +1614,7 @@ const AppNavigator = () => {
           setWeatherAlert({
             title: 'High Wind Advisory',
             message: `Wind speeds of ${Math.round(
-              windSpeed,
+              windSpeed
             )} mph. Secure loose objects and drive carefully.`,
             severity: 'warning',
           });
@@ -1631,11 +1638,11 @@ const AppNavigator = () => {
         weatherLoading.setError(
           error instanceof Error
             ? error.message
-            : 'Failed to fetch weather data',
+            : 'Failed to fetch weather data'
         );
       }
     },
-    [optimizedFetch, optimizedTransform, weatherLoading],
+    [optimizedFetch, optimizedTransform, weatherLoading]
   );
 
   const getWeather = useCallback(async () => {
@@ -1650,21 +1657,21 @@ const AppNavigator = () => {
     try {
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
       const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-        city,
+        city
       )}&format=json&limit=1`;
       const geoResponse = await optimizedFetch(
         geoUrl,
         {
           headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
         },
-        `geocoding-${city}`,
+        `geocoding-${city}`
       );
       if (!geoResponse.ok)
         throw new Error(`Geocoding failed: ${geoResponse.status}`);
       const geoData = await geoResponse.json();
       if (!geoData || geoData.length === 0)
         throw new Error(
-          'City not found. Please check the spelling and try again.',
+          'City not found. Please check the spelling and try again.'
         );
       const { lat, lon } = geoData[0];
       await fetchWeatherData(lat, lon);
@@ -1698,14 +1705,14 @@ const AppNavigator = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred';
         setError(
-          `Failed to fetch weather data for your location: ${errorMessage}`,
+          `Failed to fetch weather data for your location: ${errorMessage}`
         );
         haptic.searchError(); // Haptic feedback for location-based search error
       } finally {
         setLoading(false);
       }
     },
-    [haptic, fetchWeatherData, setCurrentCity, addToRecent],
+    [haptic, fetchWeatherData, setCurrentCity, addToRecent]
   );
 
   // Background refresh for weather data with native app lifecycle integration
@@ -1719,7 +1726,7 @@ const AppNavigator = () => {
           // For now, we'll use the city search approach
           const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
           const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-            city,
+            city
           )}&format=json&limit=1`;
           const geoResponse = await fetch(geoUrl, {
             headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
@@ -1750,12 +1757,12 @@ const AppNavigator = () => {
       forceRefreshThreshold: 30, // 30 minutes for stale data
       enabled: true,
     }),
-    [],
+    []
   );
 
   const backgroundRefresh = useWeatherBackgroundRefresh(
     refreshWeatherData,
-    backgroundRefreshConfig.enabled,
+    backgroundRefreshConfig.enabled
   );
 
   // Handle verification confirmation
@@ -1764,7 +1771,7 @@ const AppNavigator = () => {
       setPendingLocationData(null);
       getWeatherByLocation(cityName, latitude, longitude);
     },
-    [getWeatherByLocation],
+    [getWeatherByLocation]
   );
 
   // Handle verification cancel
@@ -1812,7 +1819,7 @@ const AppNavigator = () => {
         <LocationManager
           onLocationReceived={(detectedCity, lat, lon) => {
             logInfo(
-              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`,
+              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
             );
             setCity(detectedCity);
             getWeatherByLocation(detectedCity, lat, lon);
@@ -1839,7 +1846,7 @@ const AppNavigator = () => {
               <div>
                 Last:{' '}
                 {new Date(
-                  backgroundRefresh.stats.lastRefreshTime,
+                  backgroundRefresh.stats.lastRefreshTime
                 ).toLocaleTimeString()}
               </div>
             )}
@@ -2027,6 +2034,17 @@ const AppNavigator = () => {
         {/* Mobile Debug - Development only - Temporarily disabled */}
         <MobileDebug enabled={false} position="bottom-right" />
 
+        {/* PWA Status - Shows installation, updates, and offline capabilities */}
+        <PWAStatus
+          pwaInstall={pwaInstall}
+          serviceWorker={serviceWorker}
+          isOnline={isOnline}
+          updateAvailable={updateAvailable}
+          applyUpdate={applyUpdate}
+          enabled={true}
+          position="top-right"
+        />
+
         {/* iOS Component Showcase - Overlay */}
         {showIOSDemo && (
           <div className="ios26-overlay">
@@ -2040,6 +2058,16 @@ const AppNavigator = () => {
 
         {/* Horror Theme Activator - Easy horror mode activation */}
         <HorrorThemeActivator />
+
+        {/* PWA Install Prompt - Appears when app can be installed */}
+        <PWAInstallPrompt
+          canInstall={pwaInstall.canInstall}
+          onInstall={pwaInstall.install}
+          onDismiss={() => {
+            // User dismissed the install prompt
+            // Could store preference to not show again for some time
+          }}
+        />
       </EnhancedMobileContainer>
     </LoadingProvider>
   );
