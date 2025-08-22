@@ -5,10 +5,9 @@
  * Includes comprehensive permission handling, error states, and mobile optimization.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logError, logWarn, logInfo } from './logger';
-
+import { logError, logInfo, logWarn } from './logger';
 
 // ============================================================================
 // LOCATION SERVICE TYPES
@@ -82,11 +81,11 @@ const getLocationError = (error: GeolocationPositionError): LocationError => {
 
 const reverseGeocode = async (
   latitude: number,
-  longitude: number,
+  longitude: number
 ): Promise<{ city?: string; country?: string }> => {
   try {
     logInfo(
-      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`,
+      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`
     );
 
     const REVERSE_GEOCODING_URL = 'https://nominatim.openstreetmap.org/reverse';
@@ -100,15 +99,13 @@ const reverseGeocode = async (
       },
     });
 
-    logInfo(
-      `📡 API Response - Status: ${response.status}, OK: ${response.ok}`,
-    );
+    logInfo(`📡 API Response - Status: ${response.status}, OK: ${response.ok}`);
 
     if (!response.ok) {
       logError(
         '❌ Reverse geocoding failed:',
         response.status,
-        response.statusText,
+        response.statusText
       );
       return {};
     }
@@ -116,7 +113,7 @@ const reverseGeocode = async (
     const data = await response.json();
     logInfo(
       '🗺️ Reverse geocoding response data:',
-      JSON.stringify(data, null, 2),
+      JSON.stringify(data, null, 2)
     );
 
     const address = data?.address || {};
@@ -135,7 +132,7 @@ const reverseGeocode = async (
     const country = address.country || '';
 
     logInfo(
-      `🏙️ Final extracted location: City="${city}", Country="${country}"`,
+      `🏙️ Final extracted location: City="${city}", Country="${country}"`
     );
 
     return { city, country };
@@ -244,9 +241,9 @@ export const useLocationServices = () => {
       haptic.triggerHaptic('light'); // Light feedback when starting location request
 
       const locationOptions: PositionOptions = {
-        enableHighAccuracy: options?.enableHighAccuracy ?? true,
-        timeout: options?.timeout ?? 15000, // 15 seconds
-        maximumAge: options?.maximumAge ?? 300000, // 5 minutes
+        enableHighAccuracy: options?.enableHighAccuracy ?? false, // Changed: prioritize speed
+        timeout: options?.timeout ?? 8000, // Reduced from 15000ms
+        maximumAge: options?.maximumAge ?? 180000, // Reduced from 5 minutes to 3 minutes
       };
 
       logInfo('⚙️ Using location options:', locationOptions);
@@ -275,7 +272,7 @@ export const useLocationServices = () => {
               logInfo('🔍 Starting reverse geocoding process...');
               const addressInfo = await reverseGeocode(
                 position.coords.latitude,
-                position.coords.longitude,
+                position.coords.longitude
               );
               logInfo('🏙️ Reverse geocoding completed:', addressInfo);
 
@@ -347,12 +344,12 @@ export const useLocationServices = () => {
           navigator.geolocation.getCurrentPosition(
             successCallback,
             errorCallback,
-            locationOptions,
+            locationOptions
           );
         }, 100);
       });
     },
-    [isSupported, haptic],
+    [isSupported, haptic]
   );
 
   // Watch location for continuous updates
@@ -385,7 +382,7 @@ export const useLocationServices = () => {
         if (options?.includeAddress !== false) {
           const addressInfo = await reverseGeocode(
             position.coords.latitude,
-            position.coords.longitude,
+            position.coords.longitude
           );
           locationData.city = addressInfo.city;
           locationData.country = addressInfo.country;
@@ -407,12 +404,12 @@ export const useLocationServices = () => {
       const watchId = navigator.geolocation.watchPosition(
         successCallback,
         errorCallback,
-        locationOptions,
+        locationOptions
       );
 
       return watchId;
     },
-    [isSupported],
+    [isSupported]
   );
 
   // Stop watching location
@@ -422,7 +419,7 @@ export const useLocationServices = () => {
         navigator.geolocation.clearWatch(watchId);
       }
     },
-    [isSupported],
+    [isSupported]
   );
 
   // Clear location data and errors
@@ -466,7 +463,7 @@ export const useLocationServices = () => {
       if (!state.lastUpdate) return true;
       return Date.now() - state.lastUpdate > maxAgeMs;
     },
-    [state.lastUpdate],
+    [state.lastUpdate]
   );
 
   return {

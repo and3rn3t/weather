@@ -6,8 +6,8 @@
  */
 
 import React from 'react';
-import { useLocationServices } from './useLocationServices';
 import type { ThemeColors } from './themeConfig';
+import { useLocationServices } from './useLocationServices';
 
 interface LocationButtonProps {
   theme: ThemeColors;
@@ -47,14 +47,15 @@ const LocationButton: React.FC<LocationButtonProps> = ({
     }
   }, [error, onError]);
 
-  // Handle location button click
+  // Handle location button click with optimized settings
   const handleLocationRequest = async () => {
     if (disabled || isLoading || !isSupported) return;
 
     try {
+      // Optimized location request with faster timeout and balanced accuracy
       const locationData = await getCurrentLocation({
-        enableHighAccuracy: true,
-        timeout: 15000,
+        enableHighAccuracy: false, // Faster GPS fix for initial result
+        timeout: 8000, // Reduced from 15000ms for faster response
         includeAddress: true,
       });
 
@@ -62,14 +63,16 @@ const LocationButton: React.FC<LocationButtonProps> = ({
         onLocationReceived(
           locationData.city,
           locationData.latitude,
-          locationData.longitude,
+          locationData.longitude
         );
       } else if (locationData) {
         // Fallback to coordinates if city name unavailable
         onLocationReceived(
-          `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}`,
+          `${locationData.latitude.toFixed(
+            4
+          )}, ${locationData.longitude.toFixed(4)}`,
           locationData.latitude,
-          locationData.longitude,
+          locationData.longitude
         );
       }
     } catch (err) {
@@ -193,7 +196,9 @@ const LocationButton: React.FC<LocationButtonProps> = ({
     width: config.iconSize,
     height: config.iconSize,
     border: '2px solid rgba(255,255,255,0.3)',
-    borderTop: `2px solid ${variant === 'primary' ? theme.inverseText : theme.primaryText}`,
+    borderTop: `2px solid ${
+      variant === 'primary' ? theme.inverseText : theme.primaryText
+    }`,
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   };

@@ -561,8 +561,8 @@ export const US_CITIES_DATABASE = [
 const uniqueUSCities = US_CITIES_DATABASE.filter(
   (city, index, arr) =>
     arr.findIndex(
-      c => c.name === city.name && c.stateAbbr === city.stateAbbr
-    ) === index
+      c => c.name === city.name && c.stateAbbr === city.stateAbbr,
+    ) === index,
 );
 
 export const ENHANCED_US_CITIES = uniqueUSCities;
@@ -668,7 +668,7 @@ interface NominatimResult {
  */
 export async function searchUSLocations(
   query: string,
-  options: USSearchOptions = {}
+  options: USSearchOptions = {},
 ): Promise<EnhancedUSSearchResult[]> {
   const {
     prioritizeUS = true,
@@ -702,7 +702,7 @@ export async function searchUSLocations(
       const isDuplicate = results.some(
         r =>
           Math.abs(r.lat - apiResult.lat) < 0.01 &&
-          Math.abs(r.lon - apiResult.lon) < 0.01
+          Math.abs(r.lon - apiResult.lon) < 0.01,
       );
 
       if (!isDuplicate) {
@@ -732,7 +732,7 @@ export async function searchUSLocations(
     .slice(0, maxResults);
 
   logInfo(
-    `Enhanced US search for "${query}" returned ${sortedResults.length} results`
+    `Enhanced US search for "${query}" returned ${sortedResults.length} results`,
   );
   return sortedResults;
 }
@@ -742,7 +742,7 @@ export async function searchUSLocations(
  */
 function searchLocalUSCities(
   searchQuery: string,
-  _userLocation?: { lat: number; lon: number }
+  _userLocation?: { lat: number; lon: number },
 ): EnhancedUSSearchResult[] {
   const matches = ENHANCED_US_CITIES.filter(city => {
     const cityLower = city.name.toLowerCase();
@@ -783,7 +783,7 @@ async function searchNominatimEnhanced(
     prioritizeUS?: boolean;
     includeStates?: boolean;
     includeZipCodes?: boolean;
-  }
+  },
 ): Promise<EnhancedUSSearchResult[]> {
   const { prioritizeUS = true, includeStates = true } = options;
 
@@ -811,7 +811,7 @@ async function searchNominatimEnhanced(
       headers: {
         'User-Agent': 'EnhancedWeatherApp/2.0 (US Location Search)',
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -910,7 +910,7 @@ export function useEnhancedUSSearch() {
 
   const search = async (
     query: string,
-    options?: USSearchOptions
+    options?: USSearchOptions,
   ): Promise<EnhancedUSSearchResult[]> => {
     if (!query || query.length < 2) {
       return [];
