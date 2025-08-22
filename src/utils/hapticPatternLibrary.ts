@@ -287,7 +287,7 @@ export class HapticPatternManager {
    */
   async playWeatherHaptic(
     weatherCondition: string,
-    config?: Partial<HapticConfig>,
+    config?: Partial<HapticConfig>
   ): Promise<void> {
     if (!this.canPlayHaptic('weather')) return;
 
@@ -302,7 +302,7 @@ export class HapticPatternManager {
    */
   async playInteractionHaptic(
     interactionId: keyof typeof InteractionHapticPatterns,
-    config?: Partial<HapticConfig>,
+    config?: Partial<HapticConfig>
   ): Promise<void> {
     if (!this.canPlayHaptic('interaction')) return;
 
@@ -317,7 +317,7 @@ export class HapticPatternManager {
    */
   async playAlertHaptic(
     alertId: keyof typeof AlertHapticPatterns,
-    config?: Partial<HapticConfig>,
+    config?: Partial<HapticConfig>
   ): Promise<void> {
     if (!this.canPlayHaptic('alert')) return;
 
@@ -332,7 +332,7 @@ export class HapticPatternManager {
    */
   async playAmbientHaptic(
     ambientId: keyof typeof AmbientHapticPatterns,
-    config?: Partial<HapticConfig>,
+    config?: Partial<HapticConfig>
   ): Promise<void> {
     if (!this.canPlayHaptic('ambient')) return;
 
@@ -347,7 +347,7 @@ export class HapticPatternManager {
    */
   async playCustomPattern(
     pattern: number[],
-    intensity?: number,
+    intensity?: number
   ): Promise<void> {
     if (!this.isSupported || !this.config.enabled) return;
 
@@ -364,7 +364,7 @@ export class HapticPatternManager {
    */
   private async playPattern(
     pattern: HapticPattern,
-    config?: Partial<HapticConfig>,
+    config?: Partial<HapticConfig>
   ): Promise<void> {
     try {
       const effectiveConfig = { ...this.config, ...config };
@@ -372,7 +372,7 @@ export class HapticPatternManager {
         pattern.pattern,
         pattern.intensity
           ? pattern.intensity * effectiveConfig.intensity
-          : effectiveConfig.intensity,
+          : effectiveConfig.intensity
       );
 
       // Stop existing pattern with same ID if running
@@ -424,7 +424,7 @@ export class HapticPatternManager {
    */
   private adjustPatternIntensity(
     pattern: number[],
-    intensity?: number,
+    intensity?: number
   ): number[] {
     const effectiveIntensity = intensity || this.config.intensity;
 
@@ -464,11 +464,11 @@ export class HapticPatternManager {
    * Find haptic pattern for weather condition
    */
   private findPatternForWeather(
-    weatherCondition: string,
+    weatherCondition: string
   ): HapticPattern | null {
     return (
       Object.values(WeatherHapticPatterns).find(pattern =>
-        pattern.weatherConditions.includes(weatherCondition),
+        pattern.weatherConditions.includes(weatherCondition)
       ) || null
     );
   }
@@ -542,7 +542,12 @@ export class HapticPatternManager {
       // Temporarily enable for testing
       const originalConfig = { ...this.config };
       this.config.enabled = true;
-      this.config[`${pattern.category}Enabled` as keyof HapticConfig] = true;
+
+      // Type-safe way to enable category-specific setting
+      const categoryKey = `${pattern.category}Enabled` as const;
+      if (categoryKey in this.config) {
+        (this.config as any)[categoryKey] = true;
+      }
 
       await this.playPattern(pattern);
 

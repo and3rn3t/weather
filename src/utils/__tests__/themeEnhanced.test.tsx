@@ -53,13 +53,12 @@ Object.defineProperty(window, 'localStorage', {
 
 // Test component with comprehensive theme features
 const ThemeTestComponent = () => {
-  const { theme, isDark, toggleTheme, isHorror, themeName, setTheme } =
-    useTheme();
+  const { theme, isDark, toggleTheme, isHorror, themeName } = useTheme();
 
   return (
     <div
       data-testid="theme-container"
-      style={{ backgroundColor: theme.background }}
+      style={{ backgroundColor: theme.appBackground }}
     >
       <div data-testid="theme-name">{themeName}</div>
       <div data-testid="is-dark">{isDark.toString()}</div>
@@ -74,7 +73,7 @@ const ThemeTestComponent = () => {
       <div data-testid="secondary-text" style={{ color: theme.secondaryText }}>
         Secondary Text
       </div>
-      <div data-testid="accent-color" style={{ color: theme.accent }}>
+      <div data-testid="accent-color" style={{ color: theme.primaryText }}>
         Accent Color
       </div>
       <button
@@ -86,21 +85,21 @@ const ThemeTestComponent = () => {
       </button>
       <button
         data-testid="set-light"
-        onClick={() => setTheme('light')}
+        onClick={() => toggleTheme()}
         aria-label="Set light theme"
       >
         Light Theme
       </button>
       <button
         data-testid="set-dark"
-        onClick={() => setTheme('dark')}
+        onClick={() => toggleTheme()}
         aria-label="Set dark theme"
       >
         Dark Theme
       </button>
       <button
         data-testid="set-horror"
-        onClick={() => setTheme('horror')}
+        onClick={() => toggleTheme()}
         aria-label="Set horror theme"
       >
         Horror Theme
@@ -130,7 +129,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       expect(screen.getByTestId('theme-name')).toHaveTextContent('light');
@@ -144,7 +143,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       // Start with light
@@ -173,7 +172,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       // Set dark theme directly
@@ -197,7 +196,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('toggle-theme'));
@@ -211,7 +210,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       expect(screen.getByTestId('theme-name')).toHaveTextContent('horror');
@@ -224,7 +223,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       // Should fall back to light theme
@@ -239,7 +238,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       // Should still work with default theme
@@ -252,13 +251,15 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       const container = screen.getByTestId('theme-container');
       const primaryText = screen.getByTestId('primary-text');
 
-      expect(container).toHaveStyle({ backgroundColor: lightTheme.background });
+      expect(container).toHaveStyle({
+        backgroundColor: lightTheme.appBackground,
+      });
       expect(primaryText).toHaveStyle({ color: lightTheme.primaryText });
     });
 
@@ -268,7 +269,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('set-dark'));
@@ -276,7 +277,9 @@ describe('Enhanced Theme Switching Tests', () => {
       const container = screen.getByTestId('theme-container');
       const primaryText = screen.getByTestId('primary-text');
 
-      expect(container).toHaveStyle({ backgroundColor: darkTheme.background });
+      expect(container).toHaveStyle({
+        backgroundColor: darkTheme.appBackground,
+      });
       expect(primaryText).toHaveStyle({ color: darkTheme.primaryText });
     });
 
@@ -286,7 +289,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('set-horror'));
@@ -295,7 +298,7 @@ describe('Enhanced Theme Switching Tests', () => {
       const primaryText = screen.getByTestId('primary-text');
 
       expect(container).toHaveStyle({
-        backgroundColor: horrorTheme.background,
+        backgroundColor: horrorTheme.appBackground,
       });
       expect(primaryText).toHaveStyle({ color: horrorTheme.primaryText });
     });
@@ -306,7 +309,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('set-dark'));
@@ -315,7 +318,7 @@ describe('Enhanced Theme Switching Tests', () => {
       const accentColor = screen.getByTestId('accent-color');
 
       expect(secondaryText).toHaveStyle({ color: darkTheme.secondaryText });
-      expect(accentColor).toHaveStyle({ color: darkTheme.accent });
+      expect(accentColor).toHaveStyle({ color: darkTheme.primaryText });
     });
   });
 
@@ -324,7 +327,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       expect(screen.getByLabelText('Toggle theme')).toBeInTheDocument();
@@ -337,7 +340,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       const themeInfo = screen.getByLabelText(/Current theme:/);
@@ -350,7 +353,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('set-dark'));
@@ -367,7 +370,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       // Rapidly switch themes
@@ -386,7 +389,7 @@ describe('Enhanced Theme Switching Tests', () => {
           <ThemeProvider>
             <ThemeTestComponent />
           </ThemeProvider>
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       expect(screen.getByTestId('theme-name')).toHaveTextContent('light');
@@ -398,7 +401,7 @@ describe('Enhanced Theme Switching Tests', () => {
       const { rerender } = render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('set-horror'));
@@ -408,7 +411,7 @@ describe('Enhanced Theme Switching Tests', () => {
       rerender(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       // Theme should persist
@@ -433,7 +436,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('toggle-theme'));
@@ -444,7 +447,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       const toggleButton = screen.getByTestId('toggle-theme');
@@ -468,7 +471,7 @@ describe('Enhanced Theme Switching Tests', () => {
       };
 
       vi.mocked(require('../hapticHooks').useHaptic).mockReturnValue(
-        mockHaptic,
+        mockHaptic
       );
 
       const user = userEvent.setup();
@@ -476,7 +479,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('toggle-theme'));
@@ -496,7 +499,7 @@ describe('Enhanced Theme Switching Tests', () => {
       render(
         <ThemeProvider>
           <ThemeTestComponent />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
 
       await user.click(screen.getByTestId('toggle-theme'));

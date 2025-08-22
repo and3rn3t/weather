@@ -14,6 +14,30 @@ export const iOS26WeatherDemo = lazy(
   () => import('../components/modernWeatherUI/iOS26WeatherDemo')
 );
 
+// Core heavy weather components - using existing exports from below
+export const NativeStatusDisplay = lazy(
+  () => import('../utils/NativeStatusDisplay')
+);
+
+// Screen Components - Route-based code splitting for better performance
+export const LazyHomeScreen = lazy(() => import('../screens/LazyHomeScreen'));
+export const LazyWeatherDetailsScreen = lazy(
+  () => import('../screens/LazyWeatherDetailsScreen')
+);
+export const LazySearchScreen = lazy(
+  () => import('../screens/LazySearchScreen')
+);
+export const LazySettingsScreen = lazy(
+  () => import('../screens/LazySettingsScreen')
+);
+
+// Feature Components - Feature-based code splitting for modular loading
+export const HorrorModeFeature = lazy(() => import('../features/HorrorMode'));
+export const VoiceSearchFeature = lazy(() => import('../features/VoiceSearch'));
+export const AdvancedChartsFeature = lazy(
+  () => import('../features/AdvancedCharts')
+);
+
 // Chart and Visualization Components - Heavy calculation components
 export const PrecipitationChart = lazy(() =>
   import('../components/optimized/EnhancedWeatherVisualization').then(
@@ -58,6 +82,20 @@ export const IOSComponentShowcase = lazy(
 
 export const AnimatedWeatherCard = lazy(
   () => import('../components/AnimatedWeatherCard')
+);
+
+// Performance and Debug Components - Loaded only in development
+export const PerformanceDashboard = lazy(
+  () => import('../components/PerformanceDashboard')
+);
+
+export const MobileDebug = lazy(() => import('../utils/MobileDebug'));
+
+// PWA Components - Loaded only when PWA features are needed
+export const PWAStatus = lazy(() => import('../components/PWAStatus'));
+
+export const PWAInstallPrompt = lazy(
+  () => import('../components/PWAInstallPrompt')
 );
 
 // Horror Theme Components - Loaded only in horror mode

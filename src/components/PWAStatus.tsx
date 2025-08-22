@@ -3,15 +3,17 @@ import React from 'react';
 interface PWAStatusProps {
   pwaInstall: {
     canInstall: boolean;
-    install: () => Promise<void>;
+    promptInstall: () => Promise<boolean>;
     isInstalled: boolean;
+    isSupported: boolean;
+    checkInstallStatus: () => boolean;
   };
   serviceWorker: {
     isSupported: boolean;
     isRegistered: boolean;
-    isInstalling: boolean;
-    isWaiting: boolean;
     isControlling: boolean;
+    updateAvailable: boolean;
+    checkForUpdates: () => Promise<void>;
     skipWaiting: () => void;
   };
   isOnline: boolean;
@@ -111,7 +113,7 @@ const PWAStatus: React.FC<PWAStatusProps> = ({
       {/* Install Button */}
       {pwaInstall.canInstall && !pwaInstall.isInstalled && (
         <button
-          onClick={pwaInstall.install}
+          onClick={() => pwaInstall.promptInstall()}
           style={{
             backgroundColor: '#667eea',
             color: 'white',
@@ -149,7 +151,7 @@ const PWAStatus: React.FC<PWAStatusProps> = ({
       )}
 
       {/* Skip Waiting Button */}
-      {serviceWorker.isWaiting && (
+      {serviceWorker.updateAvailable && (
         <button
           onClick={serviceWorker.skipWaiting}
           style={{

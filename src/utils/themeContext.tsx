@@ -6,10 +6,10 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { loadThemeCSS } from './cssOptimization';
+import { logInfo } from './logger';
 import type { ThemeColors, ThemeName } from './themeConfig';
 import { themes } from './themeConfig';
-import { logInfo } from './logger';
-
 
 interface ThemeContextType {
   theme: ThemeColors;
@@ -84,7 +84,7 @@ export const ThemeProvider = ({
       // NUCLEAR FIX: Completely disable automatic background changes
       // Let the nuclear system in index.html handle all background changes
       logInfo(
-        '🚫 React theme context disabled - nuclear system handling background',
+        '🚫 React theme context disabled - nuclear system handling background'
       );
 
       // Remove all theme classes first
@@ -95,6 +95,11 @@ export const ThemeProvider = ({
         document.body.classList.add('dark-theme');
       } else if (themeName === 'horror') {
         document.body.classList.add('horror-theme');
+        // Load horror theme CSS dynamically
+        loadThemeCSS('horror').catch(error => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load horror theme CSS:', error);
+        });
       }
 
       // Store theme info for nuclear system but don't apply background
@@ -112,7 +117,7 @@ export const ThemeProvider = ({
       isDark,
       isHorror,
     }),
-    [theme, themeName, toggleTheme, isDark, isHorror],
+    [theme, themeName, toggleTheme, isDark, isHorror]
   );
 
   return (

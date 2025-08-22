@@ -25,8 +25,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 // Time Utilities
 import { formatTimeForHourly } from '../utils/timeUtils';
 
-// Optimization Systems Integration - August 2025
-import { trackLazyComponentLoad } from '../utils/lazyComponents';
+// Lazy-loaded heavy components for performance optimization
+import {
+  MobileDebug as LazyMobileDebug,
+  NativeStatusDisplay as LazyNativeStatusDisplay,
+  PerformanceDashboard as LazyPerformanceDashboard,
+  PrecipitationChart as LazyPrecipitationChart,
+  PWAStatus as LazyPWAStatus,
+  TemperatureTrend as LazyTemperatureTrend,
+  trackLazyComponentLoad,
+} from '../utils/lazyComponents';
 import { useMemoryOptimization } from '../utils/memoryOptimization';
 
 // Dash0 Telemetry Integration
@@ -48,9 +56,7 @@ import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
 } from '../components/MobileNavigation';
-import PerformanceDashboard from '../components/PerformanceDashboard';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
-import PWAStatus from '../components/PWAStatus';
 import { ScreenContainer } from '../components/ScreenTransition';
 import SearchScreen from '../components/SearchScreen';
 import SettingsScreen from '../components/SettingsScreen';
@@ -59,8 +65,6 @@ import GeolocationVerification from '../utils/GeolocationVerification';
 import { useHaptic } from '../utils/hapticHooks';
 import LocationButton from '../utils/LocationButton';
 import { LocationTester } from '../utils/LocationTester';
-import MobileDebug from '../utils/MobileDebug';
-import NativeStatusDisplay from '../utils/NativeStatusDisplay';
 // import { PerformanceMonitor } from '../utils/performanceMonitor';
 import PullToRefresh from '../utils/PullToRefresh';
 import SimpleAutocomplete from '../utils/SimpleAutocomplete';
@@ -106,10 +110,6 @@ import SmartWeatherSkeleton from '../components/optimized/SmartWeatherSkeleton';
 import { useProgressiveWeatherLoading } from '../hooks/useProgressiveWeatherLoading';
 import { useSmartContentPriority } from '../hooks/useSmartContentPriority';
 import '../styles/ios26-design-system-consolidated.css';
-import {
-  PrecipitationChart as LazyPrecipitationChart,
-  TemperatureTrend as LazyTemperatureTrend,
-} from '../utils/lazyComponents';
 // iOS26 Text Optimization - Clean, HIG-compliant typography
 import '../styles/ios26-text-optimization.css';
 // Phase 3: Progressive Loading Styles
@@ -2333,10 +2333,18 @@ const AppNavigator = () => {
           }}
         >
           {/* Native API Status Display - Shows native capabilities when on mobile */}
-          <NativeStatusDisplay
-            theme={theme}
-            isMobile={screenInfo.width < 768}
-          />
+          <React.Suspense
+            fallback={
+              <div className="optimization-loading">
+                Loading native status...
+              </div>
+            }
+          >
+            <LazyNativeStatusDisplay
+              theme={theme}
+              isMobile={screenInfo.width < 768}
+            />
+          </React.Suspense>
 
           {/* Enhanced Auto Location Manager - Phase F-2 */}
           <LocationManager
@@ -2555,7 +2563,15 @@ const AppNavigator = () => {
           {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
 
           {/* Mobile Debug - Development only - Temporarily disabled */}
-          <MobileDebug enabled={false} position="bottom-right" />
+          <React.Suspense
+            fallback={
+              <div className="optimization-loading">
+                Loading mobile debug...
+              </div>
+            }
+          >
+            <LazyMobileDebug enabled={false} position="bottom-right" />
+          </React.Suspense>
 
           {/* iOS 26 Live Activity - Weather Alerts and Updates */}
           <LiveActivity
@@ -2599,15 +2615,21 @@ const AppNavigator = () => {
           />
 
           {/* PWA Status - Shows installation, updates, and offline capabilities */}
-          <PWAStatus
-            pwaInstall={pwaInstall}
-            serviceWorker={serviceWorker}
-            isOnline={isOnline}
-            updateAvailable={updateAvailable}
-            applyUpdate={applyUpdate}
-            enabled={true}
-            position="top-right"
-          />
+          <React.Suspense
+            fallback={
+              <div className="optimization-loading">Loading PWA status...</div>
+            }
+          >
+            <LazyPWAStatus
+              pwaInstall={pwaInstall}
+              serviceWorker={serviceWorker}
+              isOnline={isOnline}
+              updateAvailable={updateAvailable}
+              applyUpdate={applyUpdate}
+              enabled={true}
+              position="top-right"
+            />
+          </React.Suspense>
 
           {/* iOS Component Showcase - Overlay */}
           {showIOSDemo && (
@@ -2626,7 +2648,9 @@ const AppNavigator = () => {
           {/* PWA Install Prompt - Appears when app can be installed */}
           <PWAInstallPrompt
             canInstall={pwaInstall.canInstall}
-            onInstall={pwaInstall.install}
+            onInstall={async () => {
+              await pwaInstall.promptInstall();
+            }}
             onDismiss={() => {
               // User dismissed the install prompt
               // Could store preference to not show again for some time
@@ -2634,10 +2658,18 @@ const AppNavigator = () => {
           />
 
           {/* Performance Dashboard - Development monitoring */}
-          <PerformanceDashboard
-            enabled={process.env.NODE_ENV === 'development'}
-            position="bottom-left"
-          />
+          <React.Suspense
+            fallback={
+              <div className="optimization-loading">
+                Loading performance dashboard...
+              </div>
+            }
+          >
+            <LazyPerformanceDashboard
+              enabled={process.env.NODE_ENV === 'development'}
+              position="bottom-left"
+            />
+          </React.Suspense>
 
           {/* Memory Optimization Display - August 2025 */}
           {process.env.NODE_ENV === 'development' &&
