@@ -39,7 +39,7 @@ export class LocationWeatherOptimizer {
   async getLocationWithWeather(): Promise<LocationWeatherResult> {
     const startTime = Date.now();
     logInfo(
-      '🚀 LocationWeatherOptimizer: Starting parallel location + weather request'
+      '🚀 LocationWeatherOptimizer: Starting parallel location + weather request',
     );
 
     try {
@@ -54,7 +54,7 @@ export class LocationWeatherOptimizer {
 
       // Step 2: Check weather cache while location was being acquired
       const cacheKey = `${Math.round(location.latitude * 100)}_${Math.round(
-        location.longitude * 100
+        location.longitude * 100,
       )}`;
       const cachedWeather = this.getWeatherFromCache(cacheKey);
 
@@ -74,12 +74,12 @@ export class LocationWeatherOptimizer {
       } else {
         // Step 3: Start weather fetch (caller will handle this separately for progressive loading)
         logInfo(
-          '🌤️ Weather data will be fetched by caller for progressive loading'
+          '🌤️ Weather data will be fetched by caller for progressive loading',
         );
       }
 
       logInfo(
-        `✅ Location+Weather optimization completed in ${result.processingTime}ms`
+        `✅ Location+Weather optimization completed in ${result.processingTime}ms`,
       );
       return result;
     } catch (error) {
@@ -139,8 +139,8 @@ export class LocationWeatherOptimizer {
             new Error(
               error instanceof Error
                 ? error.message
-                : 'Location processing failed'
-            )
+                : 'Location processing failed',
+            ),
           );
         }
       };
@@ -154,7 +154,7 @@ export class LocationWeatherOptimizer {
       navigator.geolocation.getCurrentPosition(
         successCallback,
         errorCallback,
-        options
+        options,
       );
 
       // Additional timeout as safety net
@@ -172,7 +172,7 @@ export class LocationWeatherOptimizer {
    */
   private async getReverseGeocodingAsync(
     lat: number,
-    lon: number
+    lon: number,
   ): Promise<{ city?: string }> {
     try {
       const controller = new AbortController();
@@ -185,7 +185,7 @@ export class LocationWeatherOptimizer {
             'User-Agent': 'WeatherApp/1.0 (optimized-location@weatherapp.com)',
           },
           signal: controller.signal,
-        }
+        },
       );
 
       clearTimeout(timeoutId);

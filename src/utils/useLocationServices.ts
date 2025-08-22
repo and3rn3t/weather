@@ -81,11 +81,11 @@ const getLocationError = (error: GeolocationPositionError): LocationError => {
 
 const reverseGeocode = async (
   latitude: number,
-  longitude: number
+  longitude: number,
 ): Promise<{ city?: string; country?: string }> => {
   try {
     logInfo(
-      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`
+      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`,
     );
 
     const REVERSE_GEOCODING_URL = 'https://nominatim.openstreetmap.org/reverse';
@@ -105,7 +105,7 @@ const reverseGeocode = async (
       logError(
         '❌ Reverse geocoding failed:',
         response.status,
-        response.statusText
+        response.statusText,
       );
       return {};
     }
@@ -113,7 +113,7 @@ const reverseGeocode = async (
     const data = await response.json();
     logInfo(
       '🗺️ Reverse geocoding response data:',
-      JSON.stringify(data, null, 2)
+      JSON.stringify(data, null, 2),
     );
 
     const address = data?.address || {};
@@ -132,7 +132,7 @@ const reverseGeocode = async (
     const country = address.country || '';
 
     logInfo(
-      `🏙️ Final extracted location: City="${city}", Country="${country}"`
+      `🏙️ Final extracted location: City="${city}", Country="${country}"`,
     );
 
     return { city, country };
@@ -272,7 +272,7 @@ export const useLocationServices = () => {
               logInfo('🔍 Starting reverse geocoding process...');
               const addressInfo = await reverseGeocode(
                 position.coords.latitude,
-                position.coords.longitude
+                position.coords.longitude,
               );
               logInfo('🏙️ Reverse geocoding completed:', addressInfo);
 
@@ -344,12 +344,12 @@ export const useLocationServices = () => {
           navigator.geolocation.getCurrentPosition(
             successCallback,
             errorCallback,
-            locationOptions
+            locationOptions,
           );
         }, 100);
       });
     },
-    [isSupported, haptic]
+    [isSupported, haptic],
   );
 
   // Watch location for continuous updates
@@ -382,7 +382,7 @@ export const useLocationServices = () => {
         if (options?.includeAddress !== false) {
           const addressInfo = await reverseGeocode(
             position.coords.latitude,
-            position.coords.longitude
+            position.coords.longitude,
           );
           locationData.city = addressInfo.city;
           locationData.country = addressInfo.country;
@@ -404,12 +404,12 @@ export const useLocationServices = () => {
       const watchId = navigator.geolocation.watchPosition(
         successCallback,
         errorCallback,
-        locationOptions
+        locationOptions,
       );
 
       return watchId;
     },
-    [isSupported]
+    [isSupported],
   );
 
   // Stop watching location
@@ -419,7 +419,7 @@ export const useLocationServices = () => {
         navigator.geolocation.clearWatch(watchId);
       }
     },
-    [isSupported]
+    [isSupported],
   );
 
   // Clear location data and errors
@@ -463,7 +463,7 @@ export const useLocationServices = () => {
       if (!state.lastUpdate) return true;
       return Date.now() - state.lastUpdate > maxAgeMs;
     },
-    [state.lastUpdate]
+    [state.lastUpdate],
   );
 
   return {

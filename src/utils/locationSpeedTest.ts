@@ -87,7 +87,7 @@ export async function runLocationSpeedComparison() {
     console.log(`⚡ Fast Location: ${fastTest.fastLocationTime}ms`);
     console.log(`🐌 Traditional: ${traditionalTest.traditionalTime}ms`);
     console.log(
-      `🚀 Speed Improvement: ${speedImprovement}ms (${percentImprovement}% faster)`
+      `🚀 Speed Improvement: ${speedImprovement}ms (${percentImprovement}% faster)`,
     );
 
     if (fastTest.fastLocationTime < 5000) {
@@ -108,6 +108,6 @@ export async function runLocationSpeedComparison() {
 if (typeof window !== 'undefined') {
   (window as any).testLocationSpeed = runLocationSpeedComparison;
   console.log(
-    '💡 Run testLocationSpeed() in browser console to test optimizations'
+    '💡 Run testLocationSpeed() in browser console to test optimizations',
   );
 }

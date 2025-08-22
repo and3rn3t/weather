@@ -71,7 +71,7 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
             city: locationData.city,
             accuracy: locationData.accuracy,
             fromCache: locationData.fromCache,
-          }
+          },
         );
 
         setLoadingState('completed');
@@ -79,13 +79,13 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
         const cityName =
           locationData.city ||
           `${locationData.latitude.toFixed(
-            4
+            4,
           )}, ${locationData.longitude.toFixed(4)}`;
 
         onLocationReceived(
           cityName,
           locationData.latitude,
-          locationData.longitude
+          locationData.longitude,
         );
 
         // Brief success state before reset
