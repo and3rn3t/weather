@@ -21,6 +21,14 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+// Unified Type Definitions - Phase 2B: Type System Unification
+import type {
+  DailyForecast,
+  HourlyForecast,
+  WeatherData,
+} from '../types/weather';
+
 import FavoritesScreen from '../components/FavoritesScreen';
 import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
@@ -75,17 +83,20 @@ import {
 import { QuickActionsPanel } from '../components/modernWeatherUI/iOS26MainScreen';
 import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
 // Weather Display Optimization Components - August 2025 (PROGRESSIVE ENABLEMENT)
-// import EnhancedWeatherVisualization from '../components/optimized/EnhancedWeatherVisualization';
-// import OptimizedMobileWeatherDisplay from '../components/optimized/OptimizedMobileWeatherDisplay';
+import {
+  PrecipitationChart,
+  TemperatureTrend,
+  UVIndexBar,
+  WindCompass,
+} from '../components/optimized/EnhancedWeatherVisualization';
 import SmartWeatherSkeleton from '../components/optimized/SmartWeatherSkeleton';
-// import { useProgressiveWeatherLoading } from '../hooks/useProgressiveWeatherLoading';
-// import {
-//   SmartContentWrapper,
-//   useSmartContentPriority,
-// } from '../hooks/useSmartContentPriority';
+import { useProgressiveWeatherLoading } from '../hooks/useProgressiveWeatherLoading';
+import { useSmartContentPriority } from '../hooks/useSmartContentPriority';
 import '../styles/ios26-design-system-consolidated.css';
 // iOS26 Text Optimization - Clean, HIG-compliant typography
 import '../styles/ios26-text-optimization.css';
+// Phase 3: Progressive Loading Styles
+import '../styles/progressive-loading.css';
 // Horror Theme Components
 import HorrorThemeActivator from '../components/HorrorThemeActivator';
 // Horror Theme Styles - Essential for blood drips and film flicker effects
@@ -192,48 +203,18 @@ const getWeatherDescription = (code: number): string => {
 };
 
 /**
- * WeatherData type definition for the transformed weather response
- * This structure standardizes the OpenMeteo API response for our UI components
+ * Maps OpenMeteo weather codes to main weather categories
+ * Used for unified weather type compatibility
  */
-type WeatherData = {
-  main: {
-    temp: number; // Current temperature in Fahrenheit
-    feels_like: number; // Apparent temperature in Fahrenheit
-    humidity: number; // Relative humidity percentage
-    pressure: number; // Atmospheric pressure in hPa
-  };
-  weather: {
-    description: string; // Human-readable weather condition
-  }[];
-  wind: {
-    speed: number; // Wind speed in mph
-    deg: number; // Wind direction in degrees
-  };
-  uv_index: number; // UV index (0-11+ scale)
-  visibility: number; // Visibility in meters
-};
-
-/**
- * HourlyForecast type definition for hourly weather forecast
- */
-type HourlyForecast = {
-  time: string; // ISO timestamp
-  temperature: number; // Temperature in Fahrenheit
-  weatherCode: number; // OpenMeteo weather code
-  humidity: number; // Relative humidity percentage
-  feelsLike: number; // Apparent temperature
-};
-
-/**
- * DailyForecast type definition for daily weather forecast
- */
-type DailyForecast = {
-  date: string; // ISO date
-  weatherCode: number; // OpenMeteo weather code
-  tempMax: number; // Maximum temperature in Fahrenheit
-  tempMin: number; // Minimum temperature in Fahrenheit
-  precipitation: number; // Total precipitation in mm
-  windSpeed: number; // Maximum wind speed in mph
+const getWeatherMainCategory = (code: number): string => {
+  if (code === 0 || code === 1) return 'Clear';
+  if (code >= 2 && code <= 3) return 'Clouds';
+  if (code >= 45 && code <= 48) return 'Mist';
+  if (code >= 51 && code <= 67) return 'Rain';
+  if (code >= 71 && code <= 77) return 'Snow';
+  if (code >= 80 && code <= 82) return 'Rain';
+  if (code >= 95 && code <= 99) return 'Thunderstorm';
+  return 'Clear';
 };
 
 /**
@@ -363,6 +344,34 @@ const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
   }
 
   return next7Days;
+};
+
+// Enhanced Visualization Data Transformers - Phase 2C
+/** Transform hourly forecast for TemperatureTrend visualization */
+const transformHourlyDataForChart = (hourlyForecast: HourlyForecast[]) => {
+  return hourlyForecast.slice(0, 12).map(hour => ({
+    time: formatTimeForHourly(hour.time),
+    temperature: hour.temperature,
+  }));
+};
+
+/** Generate precipitation data for PrecipitationChart */
+const generatePrecipitationData = (hourlyForecast: HourlyForecast[]) => {
+  return hourlyForecast.slice(0, 12).map(hour => ({
+    time: formatTimeForHourly(hour.time),
+    precipitation: Math.random() * 100, // Mock data - replace with real precipitation probability when available
+  }));
+};
+
+/** Calculate UV Index (mock data - replace with real when available) */
+const calculateUVIndex = (weather: WeatherData) => {
+  // Mock UV calculation based on temperature and time of day
+  const hour = new Date().getHours();
+  const baseUV =
+    hour >= 6 && hour <= 18
+      ? Math.min(10, Math.max(0, (weather.main.temp - 60) / 10))
+      : 0;
+  return Math.round(baseUV * 10) / 10;
 };
 
 function HomeScreen({
@@ -681,14 +690,83 @@ function WeatherDetailsScreen({
                 showPulse={true}
                 className="ios26-mt-4"
               />
-              <div className="ios26-mt-4">
-                <ProgressIndicator
-                  progress={75}
-                  theme={theme}
-                  size="medium"
-                  showPercentage={false}
-                />
-              </div>
+
+              {/* Phase 3: Progressive Loading Indicators */}
+              {useProgressiveMode && progressiveWeatherData && (
+                <div className="ios26-progressive-loading ios26-mt-4">
+                  <div className="ios26-text-caption ios26-text-secondary ios26-mb-2">
+                    Loading Weather Data...
+                  </div>
+                  <div className="ios26-mb-4">
+                    <ProgressIndicator
+                      progress={progressiveWeatherData.progress}
+                      theme={theme}
+                      size="medium"
+                      showPercentage={true}
+                    />
+                  </div>
+
+                  {/* Loading Stage Indicators */}
+                  <div className="ios26-loading-stages">
+                    <div
+                      className={`ios26-stage ${
+                        progressiveWeatherData.loadingStages.current
+                          ? 'ios26-stage-loading'
+                          : progressiveWeatherData.current
+                          ? 'ios26-stage-complete'
+                          : 'ios26-stage-pending'
+                      }`}
+                    >
+                      ⛅ Current Weather
+                    </div>
+                    <div
+                      className={`ios26-stage ${
+                        progressiveWeatherData.loadingStages.hourly
+                          ? 'ios26-stage-loading'
+                          : progressiveWeatherData.hourly.length > 0
+                          ? 'ios26-stage-complete'
+                          : 'ios26-stage-pending'
+                      }`}
+                    >
+                      🕐 Hourly Forecast
+                    </div>
+                    <div
+                      className={`ios26-stage ${
+                        progressiveWeatherData.loadingStages.daily
+                          ? 'ios26-stage-loading'
+                          : progressiveWeatherData.daily.length > 0
+                          ? 'ios26-stage-complete'
+                          : 'ios26-stage-pending'
+                      }`}
+                    >
+                      📅 Daily Forecast
+                    </div>
+                    <div
+                      className={`ios26-stage ${
+                        progressiveWeatherData.loadingStages.metrics
+                          ? 'ios26-stage-loading'
+                          : progressiveWeatherData.metrics
+                          ? 'ios26-stage-complete'
+                          : 'ios26-stage-pending'
+                      }`}
+                    >
+                      📊 Detailed Metrics
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Legacy Loading Indicator */}
+              {!useProgressiveMode && (
+                <div className="ios26-mt-4">
+                  <ProgressIndicator
+                    progress={75}
+                    theme={theme}
+                    size="medium"
+                    showPercentage={false}
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -711,7 +789,7 @@ function WeatherDetailsScreen({
                   onAction: () => {
                     haptic.buttonPress();
                     const shareText = `Weather in ${city}: ${Math.round(
-                      weather.main.temp,
+                      weather.main.temp
                     )}°F - ${weather.weather[0].description}`;
                     if (navigator.share) {
                       navigator.share({
@@ -748,32 +826,23 @@ function WeatherDetailsScreen({
             </ContextMenu>
           )}
 
-          {/* TODO: Re-enable optimized components after type fixes:
-          <SmartWeatherSkeleton variant="current" />
-          <OptimizedMobileWeatherDisplay weather={weather} />
-          <EnhancedWeatherVisualization.TemperatureTrend />
-          */}
-
-          {/* Legacy Weather Card - DISABLED
-          {false && weather && (
-            <ContextMenu actions={weatherActions} theme={theme}>
-              <div className="ios26-weather-card">
-                <div className="ios26-text-title ios26-text-primary">
-                  {Math.round(weather.main.temp)}°
-                </div>
-                <div className="ios26-text-body ios26-text-secondary">
-                  {weather.weather[0].description}
-                </div>
-                <button className="ios26-button ios26-button-primary" onClick={onRefresh}>
-                  Refresh
-                </button>
-              </div>
-            </ContextMenu>
-          )}
-          */}
-
-          {/* Enhanced Weather Widgets with Smart Prioritization - TEMPORARILY DISABLED */}
+          {/* Phase 2B: Optimized Mobile Weather Display - ENABLED */}
           {weather && selectedView === 0 && (
+            <div className="ios26-mb-4">
+              <OptimizedMobileWeatherDisplay
+                weather={weather}
+                hourlyForecast={memoizedHourlyForecast}
+                dailyForecast={memoizedDailyForecast}
+                locationName={city}
+                isLoading={loading}
+                onRefresh={onRefresh}
+                className="ios26-optimized-weather-display"
+              />
+            </div>
+          )}
+
+          {/* Legacy Weather Display - Kept as fallback */}
+          {weather && selectedView !== 0 && (
             <div className="ios26-forecast-section">
               <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
                 Details
@@ -820,11 +889,58 @@ function WeatherDetailsScreen({
             </div>
           )}
 
-          {/* TODO: Re-enable enhanced visualizations after type fixes:
-          <EnhancedWeatherVisualization.TemperatureTrend hourlyForecast={hourlyForecast} />
-          <EnhancedWeatherVisualization.WindCompass windSpeed={weather.wind.speed} />
-          <EnhancedWeatherVisualization.UVIndexBar uvIndex={weather.uv_index} />
-          */}
+          {/* Phase 2C: Enhanced Weather Visualizations - ENABLED */}
+          {weather && memoizedHourlyForecast.length > 0 && (
+            <div className="ios26-visualization-section ios26-mb-6">
+              <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
+                Enhanced Weather Analytics
+              </h3>
+
+              {/* Temperature Trend Chart */}
+              <div className="ios26-mb-4">
+                <TemperatureTrend
+                  hourlyData={transformHourlyDataForChart(
+                    memoizedHourlyForecast
+                  )}
+                  className="ios26-temperature-trend"
+                />
+              </div>
+
+              {/* Wind Compass */}
+              <div className="ios26-mb-4">
+                <WindCompass
+                  windSpeed={weather.wind.speed}
+                  windDirection={weather.wind.deg}
+                  className="ios26-wind-compass"
+                />
+              </div>
+
+              {/* UV Index Bar */}
+              <div className="ios26-mb-4">
+                <UVIndexBar
+                  uvIndex={calculateUVIndex(weather)}
+                  className="ios26-uv-index"
+                />
+              </div>
+
+              {/* Precipitation Chart */}
+              <div className="ios26-mb-4">
+                <PrecipitationChart
+                  hourlyData={generatePrecipitationData(memoizedHourlyForecast)}
+                  className="ios26-precipitation-chart"
+                />
+              </div>
+
+              {/* Air Quality Index */}
+              <div className="ios26-mb-4">
+                <AirQualityIndex
+                  aqi={Math.floor(Math.random() * 100) + 1} // Mock AQI data
+                  location={city}
+                  className="ios26-air-quality"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Legacy iOS26 Enhanced: Interactive Weather Widgets - DISABLED */}
           {/*
@@ -1157,7 +1273,7 @@ const WeatherMainCard = React.memo(
         </div>
       </ContextMenu>
     );
-  },
+  }
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1231,7 +1347,7 @@ const HourlyForecastSection = React.memo(
       );
     }
     return null;
-  },
+  }
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1270,7 +1386,7 @@ const DailyForecastSection = React.memo(
             {dailyForecast.map((day, index) => {
               const { dayName, dateStr, isToday } = formatDayInfo(
                 day.date,
-                index,
+                index
               );
               return (
                 <div
@@ -1325,13 +1441,13 @@ const DailyForecastSection = React.memo(
       );
     }
     return null;
-  },
+  }
 );
 
 const AppNavigator = () => {
   // Screen information and responsive detection
   const [screenInfo, setScreenInfo] = useState<ScreenInfo>(() =>
-    getScreenInfo(),
+    getScreenInfo()
   );
 
   // Phase 3A: Loading state management for weather operations
@@ -1362,11 +1478,11 @@ const AppNavigator = () => {
         } catch (error) {
           logWarn(
             'Failed to load Crystal Lake data, user will need to search manually:',
-            error,
+            error
           );
           // Gracefully degrade - user can still search for weather manually
           setError(
-            'Default location unavailable. Please search for your city.',
+            'Default location unavailable. Please search for your city.'
           );
         }
       }
@@ -1380,15 +1496,15 @@ const AppNavigator = () => {
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
     () => getAdaptiveFontSizes(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
   const adaptiveSpacing = useMemo(
     () => getAdaptiveSpacing(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
   const adaptiveBorders = useMemo(
     () => getAdaptiveBorderRadius(screenInfo),
-    [screenInfo],
+    [screenInfo]
   );
 
   // Theme and mobile detection (updated to use screenInfo)
@@ -1401,9 +1517,9 @@ const AppNavigator = () => {
         theme,
         screenInfo,
         isPrimary ? 'primary' : 'secondary',
-        size,
+        size
       ),
-    [theme, screenInfo],
+    [theme, screenInfo]
   );
 
   const haptic = useHaptic();
@@ -1437,6 +1553,12 @@ const AppNavigator = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Phase 3: Progressive Loading - Coordinate Tracking
+  const [currentCoordinates, setCurrentCoordinates] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
   // iOS HIG Component States
   const [selectedView, setSelectedView] = useState(0); // For segmented control
   const [showActionSheet, setShowActionSheet] = useState(false);
@@ -1462,10 +1584,18 @@ const AppNavigator = () => {
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
 
-  // Weather Display Optimization Hooks - August 2025 (TEMPORARILY DISABLED after state declarations)
+  // Phase 3: Progressive Loading Hook Integration
+  const progressiveWeatherData = useProgressiveWeatherLoading(
+    currentCoordinates?.latitude || 0,
+    currentCoordinates?.longitude || 0
+  );
+
+  // Enable progressive loading when coordinates are available
+  const useProgressiveMode = Boolean(currentCoordinates);
+
+  // Weather Display Optimization Hooks - August 2025 (ENABLED in Phase 2B)
   // Create weather context for smart content prioritization
-  /*
-  const weatherContext = useMemo(
+  const weatherContext: WeatherContext = useMemo(
     () => ({
       temperature: weather?.main?.temp,
       weatherCode: weatherCode,
@@ -1485,12 +1615,11 @@ const AppNavigator = () => {
   );
 
   const smartContent = useSmartContentPriority(weatherContext);
-  */
 
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(
     () => hourlyForecast,
-    [hourlyForecast],
+    [hourlyForecast]
   );
   const memoizedDailyForecast = useMemo(() => dailyForecast, [dailyForecast]);
 
@@ -1505,7 +1634,7 @@ const AppNavigator = () => {
         address: { city: cityName, display: cityName },
       });
     },
-    [],
+    []
   );
 
   // Get swipe configuration for current screen
@@ -1517,7 +1646,7 @@ const AppNavigator = () => {
       haptic.buttonPress();
       setCurrentScreen(screen);
     },
-    [haptic],
+    [haptic]
   );
 
   // Legacy navigation function for backward compatibility
@@ -1539,7 +1668,7 @@ const AppNavigator = () => {
     await interactionFeedback.onButtonPress();
     await weatherAnnouncements.announceNavigation(
       `${mappedScreen.toLowerCase()}-screen`,
-      false,
+      false
     );
 
     // Special handling for iOS Demo
@@ -1582,7 +1711,7 @@ const AppNavigator = () => {
       if (weatherCode >= 51 && weatherCode <= 57) return 'light-rain';
       return null;
     },
-    [],
+    []
   );
 
   // Common weather data fetching logic with optimization
@@ -1606,7 +1735,7 @@ const AppNavigator = () => {
               'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
             },
           },
-          cacheKey,
+          cacheKey
         );
 
         // Update progress after fetch
@@ -1641,7 +1770,10 @@ const AppNavigator = () => {
                 pressure: hourlyData?.surface_pressure?.[currentHour] || 1013,
               },
               weather: [
-                { description: getWeatherDescription(currentWeatherCode) },
+                {
+                  description: getWeatherDescription(currentWeatherCode),
+                  main: getWeatherMainCategory(currentWeatherCode),
+                },
               ],
               wind: {
                 speed: data.current_weather?.windspeed || 0,
@@ -1651,12 +1783,12 @@ const AppNavigator = () => {
               visibility: hourlyData?.visibility?.[currentHour] || 0,
             };
           },
-          `transform-${lat}-${lon}-${Date.now()}`,
+          `transform-${lat}-${lon}-${Date.now()}`
         );
 
         setWeather(transformedData);
         setHourlyForecast(
-          processHourlyForecast(weatherData.hourly as HourlyData),
+          processHourlyForecast(weatherData.hourly as HourlyData)
         );
         setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
 
@@ -1671,7 +1803,7 @@ const AppNavigator = () => {
           await weatherAnnouncements.announceWeather(
             weatherCondition,
             transformedData.main.temp,
-            city,
+            city
           );
         }
 
@@ -1692,7 +1824,7 @@ const AppNavigator = () => {
           const alertData = {
             title: 'Extreme Heat Warning',
             message: `Temperature is ${Math.round(
-              currentTemp,
+              currentTemp
             )}°F. Stay hydrated and avoid outdoor activities.`,
             severity: 'severe' as const,
           };
@@ -1704,7 +1836,7 @@ const AppNavigator = () => {
           const alertData = {
             title: 'Extreme Cold Warning',
             message: `Temperature is ${Math.round(
-              currentTemp,
+              currentTemp
             )}°F. Dress warmly and limit outdoor exposure.`,
             severity: 'severe' as const,
           };
@@ -1716,7 +1848,7 @@ const AppNavigator = () => {
           const alertData = {
             title: 'High Wind Advisory',
             message: `Wind speeds of ${Math.round(
-              windSpeed,
+              windSpeed
             )} mph. Secure loose objects and drive carefully.`,
             severity: 'warning' as const,
           };
@@ -1748,11 +1880,11 @@ const AppNavigator = () => {
         weatherLoading.setError(
           error instanceof Error
             ? error.message
-            : 'Failed to fetch weather data',
+            : 'Failed to fetch weather data'
         );
       }
     },
-    [optimizedFetch, optimizedTransform, weatherLoading],
+    [optimizedFetch, optimizedTransform, weatherLoading]
   );
 
   const getWeather = useCallback(async () => {
@@ -1767,21 +1899,21 @@ const AppNavigator = () => {
     try {
       const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
       const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-        city,
+        city
       )}&format=json&limit=1`;
       const geoResponse = await optimizedFetch(
         geoUrl,
         {
           headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
         },
-        `geocoding-${city}`,
+        `geocoding-${city}`
       );
       if (!geoResponse.ok)
         throw new Error(`Geocoding failed: ${geoResponse.status}`);
       const geoData = await geoResponse.json();
       if (!geoData || geoData.length === 0)
         throw new Error(
-          'City not found. Please check the spelling and try again.',
+          'City not found. Please check the spelling and try again.'
         );
       const { lat, lon } = geoData[0];
       await fetchWeatherData(lat, lon);
@@ -1804,6 +1936,9 @@ const AppNavigator = () => {
       setCity(locationCity); // Update city state with location name
       haptic.dataLoad(); // Light haptic feedback when starting location-based search
 
+      // Phase 3: Track coordinates for progressive loading
+      setCurrentCoordinates({ latitude: lat, longitude: lon });
+
       // Add to city management
       setCurrentCity(locationCity, lat, lon);
       addToRecent(locationCity, lat, lon);
@@ -1815,14 +1950,14 @@ const AppNavigator = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred';
         setError(
-          `Failed to fetch weather data for your location: ${errorMessage}`,
+          `Failed to fetch weather data for your location: ${errorMessage}`
         );
         haptic.searchError(); // Haptic feedback for location-based search error
       } finally {
         setLoading(false);
       }
     },
-    [haptic, fetchWeatherData, setCurrentCity, addToRecent],
+    [haptic, fetchWeatherData, setCurrentCity, addToRecent]
   );
 
   // Background refresh for weather data with native app lifecycle integration
@@ -1836,7 +1971,7 @@ const AppNavigator = () => {
           // For now, we'll use the city search approach
           const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
           const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
-            city,
+            city
           )}&format=json&limit=1`;
           const geoResponse = await fetch(geoUrl, {
             headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
@@ -1867,12 +2002,12 @@ const AppNavigator = () => {
       forceRefreshThreshold: 30, // 30 minutes for stale data
       enabled: true,
     }),
-    [],
+    []
   );
 
   const backgroundRefresh = useWeatherBackgroundRefresh(
     refreshWeatherData,
-    backgroundRefreshConfig.enabled,
+    backgroundRefreshConfig.enabled
   );
 
   // Handle verification confirmation
@@ -1881,7 +2016,7 @@ const AppNavigator = () => {
       setPendingLocationData(null);
       getWeatherByLocation(cityName, latitude, longitude);
     },
-    [getWeatherByLocation],
+    [getWeatherByLocation]
   );
 
   // Handle verification cancel
@@ -1939,7 +2074,7 @@ const AppNavigator = () => {
         <LocationManager
           onLocationReceived={(detectedCity, lat, lon) => {
             logInfo(
-              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`,
+              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
             );
             setCity(detectedCity);
             getWeatherByLocation(detectedCity, lat, lon);
@@ -1966,7 +2101,7 @@ const AppNavigator = () => {
               <div>
                 Last:{' '}
                 {new Date(
-                  backgroundRefresh.stats.lastRefreshTime,
+                  backgroundRefresh.stats.lastRefreshTime
                 ).toLocaleTimeString()}
               </div>
             )}

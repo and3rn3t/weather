@@ -12,7 +12,12 @@ import React, { Suspense, useMemo } from 'react';
 import {
   SmartContentWrapper,
   useSmartContentPriority,
-} from '../hooks/useSmartContentPriority';
+} from '../../hooks/useSmartContentPriority';
+import type {
+  DailyForecast,
+  HourlyForecast,
+  WeatherData,
+} from '../../types/weather';
 import {
   PrecipitationChart,
   TemperatureTrend,
@@ -22,38 +27,10 @@ import {
 import './OptimizedMobileWeatherDisplay.css';
 import SmartWeatherSkeleton from './SmartWeatherSkeleton';
 
-interface WeatherData {
-  main: {
-    temp: number;
-    feels_like: number;
-    humidity: number;
-    pressure: number;
-  };
-  weather: Array<{
-    description: string;
-    main: string;
-  }>;
-  wind: {
-    speed: number;
-    deg: number;
-  };
-  visibility?: number;
-  uv_index?: number;
-}
-
 interface OptimizedMobileWeatherDisplayProps {
   weather: WeatherData | null;
-  hourlyForecast: Array<{
-    time: string;
-    temperature: number;
-    weatherCode: number;
-  }>;
-  dailyForecast: Array<{
-    date: string;
-    tempMax: number;
-    tempMin: number;
-    weatherCode: number;
-  }>;
+  hourlyForecast: HourlyForecast[];
+  dailyForecast: DailyForecast[];
   locationName: string;
   isLoading: boolean;
   onRefresh: () => void;
@@ -74,7 +51,7 @@ const OptimizedMobileWeatherDisplay: React.FC<
   // Determine current context for smart prioritization
   const weatherContext = useMemo(() => {
     const currentHour = new Date().getHours();
-    const timeOfDay =
+    const timeOfDay: 'night' | 'morning' | 'afternoon' | 'evening' =
       currentHour < 6
         ? 'night'
         : currentHour < 12
@@ -104,7 +81,7 @@ const OptimizedMobileWeatherDisplay: React.FC<
         time: h.time,
         temperature: h.temperature,
       })),
-    [hourlyForecast],
+    [hourlyForecast]
   );
 
   const precipitationData = useMemo(
@@ -113,7 +90,7 @@ const OptimizedMobileWeatherDisplay: React.FC<
         time: h.time,
         precipitation: Math.random() * 5, // Mock data - would come from API
       })),
-    [hourlyForecast],
+    [hourlyForecast]
   );
 
   if (isLoading && !weather) {
@@ -218,7 +195,7 @@ const renderContentByType = (
     temperatureTrendData: any[];
     precipitationData: any[];
     layoutConfig: any;
-  },
+  }
 ) => {
   const {
     weather,
