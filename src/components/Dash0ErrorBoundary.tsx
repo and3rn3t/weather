@@ -3,7 +3,8 @@
  * This provides comprehensive error tracking and performance monitoring
  */
 
-import { Component, ErrorInfo, ReactNode } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
+import { Component } from 'react';
 import { dash0Telemetry } from '../utils/dash0Setup';
 
 // Global error tracking setup
@@ -124,9 +125,9 @@ export class Dash0ErrorBoundary extends Component<
     // Track additional context
     try {
       dash0Telemetry.trackUserInteraction('error_boundary_triggered', {
-        component_stack: errorInfo.componentStack?.substring(0, 500),
-        error_message: error.message?.substring(0, 200),
-        error_stack: error.stack?.substring(0, 500),
+        component_stack: errorInfo.componentStack?.substring(0, 500) || '',
+        error_message: error.message,
+        error_stack: error.stack?.substring(0, 500) || '',
       });
     } catch (e) {
       console.error('Failed to track error boundary context:', e);
@@ -142,7 +143,7 @@ export class Dash0ErrorBoundary extends Component<
     // Track retry attempt
     try {
       dash0Telemetry.trackUserInteraction('error_boundary_retry', {
-        error_id: this.state.errorId,
+        error_id: this.state.errorId || '',
       });
     } catch (e) {
       console.error('Failed to track retry:', e);
