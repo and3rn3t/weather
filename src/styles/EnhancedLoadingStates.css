@@ -19,7 +19,12 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   margin-bottom: 1rem;
@@ -29,7 +34,12 @@
   width: 120px;
   height: 32px;
   border-radius: 6px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   margin-bottom: 0.5rem;
@@ -39,7 +49,12 @@
   width: 80px;
   height: 16px;
   border-radius: 4px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -64,7 +79,12 @@
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   margin-bottom: 0.5rem;
@@ -74,7 +94,12 @@
   width: 48px;
   height: 16px;
   border-radius: 3px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   margin-bottom: 0.25rem;
@@ -84,7 +109,12 @@
   width: 60px;
   height: 12px;
   border-radius: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -108,7 +138,12 @@
   width: 40px;
   height: 14px;
   border-radius: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -117,7 +152,12 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -126,7 +166,12 @@
   width: 60px;
   height: 14px;
   border-radius: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -149,7 +194,7 @@
   background: rgba(0, 122, 255, 0.1);
   border-radius: 20px;
   font-size: 0.75rem;
-  color: #007AFF;
+  color: #007aff;
   position: fixed;
   top: 1rem;
   right: 1rem;
@@ -184,7 +229,7 @@
 }
 
 .error-recovery-message {
-  color: #FF3B30;
+  color: #ff3b30;
   font-size: 0.875rem;
   margin: 0 0 0.75rem 0;
   line-height: 1.4;
@@ -195,7 +240,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #FF3B30;
+  background: #ff3b30;
   color: white;
   border: none;
   border-radius: 6px;
@@ -206,7 +251,7 @@
 }
 
 .error-recovery-retry-button:hover:not(:disabled) {
-  background: #D12B20;
+  background: #d12b20;
 }
 
 .error-recovery-retry-button:disabled {
@@ -215,7 +260,7 @@
 }
 
 .error-recovery-max-retries {
-  color: #8E8E93;
+  color: #8e8e93;
   font-size: 0.75rem;
   margin: 0;
   font-style: italic;
@@ -253,19 +298,19 @@
   font-size: 1.125rem;
   font-weight: 600;
   margin: 1rem 0 0 0;
-  color: #1D1D1F;
+  color: #1d1d1f;
 }
 
 .loading-overlay-description {
   font-size: 0.875rem;
-  color: #6D6D70;
+  color: #6d6d70;
   margin: 0.5rem 0 0 0;
   line-height: 1.4;
 }
 
 .loading-overlay-progress {
   font-size: 0.75rem;
-  color: #007AFF;
+  color: #007aff;
   font-weight: 500;
   margin: 0.5rem 0 0 0;
 }
@@ -285,7 +330,7 @@
 
 .dark .background-update-indicator {
   background: rgba(10, 132, 255, 0.15);
-  color: #0A84FF;
+  color: #0a84ff;
   border-color: rgba(10, 132, 255, 0.3);
 }
 
@@ -295,7 +340,7 @@
 }
 
 .dark .error-recovery-message {
-  color: #FF453A;
+  color: #ff453a;
 }
 
 .dark .loading-overlay-content {
@@ -303,11 +348,11 @@
 }
 
 .dark .loading-overlay-title {
-  color: #F2F2F7;
+  color: #f2f2f7;
 }
 
 .dark .loading-overlay-description {
-  color: #98989D;
+  color: #98989d;
 }
 
 /* Mobile optimizations */
@@ -318,12 +363,12 @@
     right: auto;
     margin: 0.5rem 0;
   }
-  
+
   .loading-overlay-content {
     padding: 1.5rem;
     max-width: 260px;
   }
-  
+
   .weather-skeleton-metrics {
     grid-template-columns: 1fr;
   }

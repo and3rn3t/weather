@@ -59,13 +59,15 @@ import WeatherIcon from '../utils/weatherIcons';
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
 // Phase 3A: Enhanced Loading States & Progress Indicators
 import {
-  WeatherDataSkeleton,
-  OperationProgress,
   BackgroundUpdateIndicator,
   ErrorRecoveryState,
-  LoadingOverlay,
+  OperationProgress,
+  WeatherDataSkeleton,
 } from '../components/EnhancedLoadingStates';
-import { LoadingProvider, useOperationLoading } from '../utils/LoadingStateManager';
+import {
+  LoadingProvider,
+  useOperationLoading,
+} from '../utils/LoadingStateManager';
 // iOS 26 Modern UI Components - Complete Suite
 import {
   ContextMenu,
@@ -75,9 +77,12 @@ import {
 } from '../components/modernWeatherUI/iOS26Components';
 import { QuickActionsPanel } from '../components/modernWeatherUI/iOS26MainScreen';
 import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
-import '../styles/iOS26.css';
+import '../styles/ios26-design-system-consolidated.css';
 // Horror Theme Components
 import HorrorThemeActivator from '../components/HorrorThemeActivator';
+// Horror Theme Styles - Essential for blood drips and film flicker effects
+import '../styles/horror-icon-fixes.css';
+import '../styles/horrorTheme.css';
 // iOS HIG Components
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
 import { StatusBadge } from '../components/modernWeatherUI/IOSComponents';
@@ -85,15 +90,17 @@ import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShow
 import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
 import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
 import {
-  SimpleActivityIndicator,
-  SimpleCard,
   SimpleEnhancedButton,
   SimpleSegmentedControl,
   SimpleStatusBadge,
 } from '../components/modernWeatherUI/SimpleIOSComponents';
 import '../styles/iosComponents.css';
 import '../styles/modernWeatherUI.css';
+// Navigation & UI Fixes - August 21, 2025
+import '../styles/navigation-fixes.css';
 import { logError, logInfo, logWarn } from '../utils/logger';
+// Horror Effects Debug Utility
+import '../utils/horrorEffectsDebug';
 import type { ScreenInfo } from '../utils/mobileScreenOptimization';
 import {
   getAdaptiveBorderRadius,
@@ -1498,13 +1505,13 @@ const AppNavigator = () => {
       try {
         // Start loading state
         weatherLoading.setLoading(true, 0);
-        
+
         const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
         const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
 
         // Update progress
         weatherLoading.setLoading(true, 25);
-        
+
         const cacheKey = `weather-${lat}-${lon}`;
         const weatherResponse = await optimizedFetch(
           weatherUrl,
@@ -1522,106 +1529,111 @@ const AppNavigator = () => {
         if (!weatherResponse.ok) {
           throw new Error(`Weather API failed: ${weatherResponse.status}`);
         }
-        
+
         const weatherData = await weatherResponse.json();
 
         // Update progress after data parsing
         weatherLoading.setLoading(true, 75);
 
-      // Use optimized transform for weather data processing
-      const transformedData = optimizedTransform(
-        weatherData,
-        data => {
-          const currentWeatherCode = data.current_weather?.weathercode || 0;
-          setWeatherCode(currentWeatherCode);
-          const currentHour = new Date().getHours();
-          const hourlyData = data.hourly;
+        // Use optimized transform for weather data processing
+        const transformedData = optimizedTransform(
+          weatherData,
+          data => {
+            const currentWeatherCode = data.current_weather?.weathercode || 0;
+            setWeatherCode(currentWeatherCode);
+            const currentHour = new Date().getHours();
+            const hourlyData = data.hourly;
 
-          return {
-            main: {
-              temp: data.current_weather?.temperature || 0,
-              feels_like:
-                hourlyData?.apparent_temperature?.[currentHour] ||
-                data.current_weather?.temperature ||
-                0,
-              humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-              pressure: hourlyData?.surface_pressure?.[currentHour] || 1013,
-            },
-            weather: [
-              { description: getWeatherDescription(currentWeatherCode) },
-            ],
-            wind: {
-              speed: data.current_weather?.windspeed || 0,
-              deg: data.current_weather?.winddirection || 0,
-            },
-            uv_index: hourlyData?.uv_index?.[currentHour] || 0,
-            visibility: hourlyData?.visibility?.[currentHour] || 0,
-          };
-        },
-        `transform-${lat}-${lon}-${Date.now()}`,
-      );
+            return {
+              main: {
+                temp: data.current_weather?.temperature || 0,
+                feels_like:
+                  hourlyData?.apparent_temperature?.[currentHour] ||
+                  data.current_weather?.temperature ||
+                  0,
+                humidity: hourlyData?.relative_humidity_2m?.[currentHour] || 50,
+                pressure: hourlyData?.surface_pressure?.[currentHour] || 1013,
+              },
+              weather: [
+                { description: getWeatherDescription(currentWeatherCode) },
+              ],
+              wind: {
+                speed: data.current_weather?.windspeed || 0,
+                deg: data.current_weather?.winddirection || 0,
+              },
+              uv_index: hourlyData?.uv_index?.[currentHour] || 0,
+              visibility: hourlyData?.visibility?.[currentHour] || 0,
+            };
+          },
+          `transform-${lat}-${lon}-${Date.now()}`,
+        );
 
-      setWeather(transformedData);
-      setHourlyForecast(
-        processHourlyForecast(weatherData.hourly as HourlyData),
-      );
-      setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
+        setWeather(transformedData);
+        setHourlyForecast(
+          processHourlyForecast(weatherData.hourly as HourlyData),
+        );
+        setDailyForecast(processDailyForecast(weatherData.daily as DailyData));
 
-      // Update progress to completion
-      weatherLoading.setLoading(true, 100);
+        // Update progress to completion
+        weatherLoading.setLoading(true, 100);
 
-      // iOS26 Feature: Trigger Live Activity for weather updates
-      setShowLiveActivity(true);
-      setTimeout(() => setShowLiveActivity(false), 4000);
+        // iOS26 Feature: Trigger Live Activity for weather updates
+        setShowLiveActivity(true);
+        setTimeout(() => setShowLiveActivity(false), 4000);
 
-      // iOS26 Feature: Check for weather alerts
-      const currentTemp = transformedData.main.temp;
-      const windSpeed = transformedData.wind.speed;
-      const weatherCode = transformedData.weather[0].description.toLowerCase();
+        // iOS26 Feature: Check for weather alerts
+        const currentTemp = transformedData.main.temp;
+        const windSpeed = transformedData.wind.speed;
+        const weatherCode =
+          transformedData.weather[0].description.toLowerCase();
 
-      if (currentTemp > 95) {
-        setWeatherAlert({
-          title: 'Extreme Heat Warning',
-          message: `Temperature is ${Math.round(
-            currentTemp,
-          )}°F. Stay hydrated and avoid outdoor activities.`,
-          severity: 'severe',
-        });
-      } else if (currentTemp < 20) {
-        setWeatherAlert({
-          title: 'Extreme Cold Warning',
-          message: `Temperature is ${Math.round(
-            currentTemp,
-          )}°F. Dress warmly and limit outdoor exposure.`,
-          severity: 'severe',
-        });
-      } else if (windSpeed > 35) {
-        setWeatherAlert({
-          title: 'High Wind Advisory',
-          message: `Wind speeds of ${Math.round(
-            windSpeed,
-          )} mph. Secure loose objects and drive carefully.`,
-          severity: 'warning',
-        });
-      } else if (
-        weatherCode.includes('thunderstorm') ||
-        weatherCode.includes('storm')
-      ) {
-        setWeatherAlert({
-          title: 'Storm Alert',
-          message: 'Thunderstorms in the area. Seek indoor shelter.',
-          severity: 'warning',
-        });
-      } else {
-        setWeatherAlert(null);
+        if (currentTemp > 95) {
+          setWeatherAlert({
+            title: 'Extreme Heat Warning',
+            message: `Temperature is ${Math.round(
+              currentTemp,
+            )}°F. Stay hydrated and avoid outdoor activities.`,
+            severity: 'severe',
+          });
+        } else if (currentTemp < 20) {
+          setWeatherAlert({
+            title: 'Extreme Cold Warning',
+            message: `Temperature is ${Math.round(
+              currentTemp,
+            )}°F. Dress warmly and limit outdoor exposure.`,
+            severity: 'severe',
+          });
+        } else if (windSpeed > 35) {
+          setWeatherAlert({
+            title: 'High Wind Advisory',
+            message: `Wind speeds of ${Math.round(
+              windSpeed,
+            )} mph. Secure loose objects and drive carefully.`,
+            severity: 'warning',
+          });
+        } else if (
+          weatherCode.includes('thunderstorm') ||
+          weatherCode.includes('storm')
+        ) {
+          setWeatherAlert({
+            title: 'Storm Alert',
+            message: 'Thunderstorms in the area. Seek indoor shelter.',
+            severity: 'warning',
+          });
+        } else {
+          setWeatherAlert(null);
+        }
+
+        // Complete loading
+        weatherLoading.setLoading(false);
+      } catch (error) {
+        // Handle errors
+        weatherLoading.setError(
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch weather data',
+        );
       }
-
-      // Complete loading
-      weatherLoading.setLoading(false);
-    } catch (error) {
-      // Handle errors
-      weatherLoading.setError(error instanceof Error ? error.message : 'Failed to fetch weather data');
-    }
     },
     [optimizedFetch, optimizedTransform, weatherLoading],
   );
@@ -1793,59 +1805,160 @@ const AppNavigator = () => {
             '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         }}
       >
-      {/* Native API Status Display - Shows native capabilities when on mobile */}
-      <NativeStatusDisplay theme={theme} isMobile={screenInfo.width < 768} />
+        {/* Native API Status Display - Shows native capabilities when on mobile */}
+        <NativeStatusDisplay theme={theme} isMobile={screenInfo.width < 768} />
 
-      {/* Enhanced Auto Location Manager - Phase F-2 */}
-      <LocationManager
-        onLocationReceived={(detectedCity, lat, lon) => {
-          logInfo(
-            `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`,
-          );
-          setCity(detectedCity);
-          getWeatherByLocation(detectedCity, lat, lon);
-          haptic.triggerHaptic('light');
-        }}
-        onError={errorMessage => {
-          logWarn('📍 Auto location failed:', errorMessage);
-          // Don't show error to user for automatic detection, just log it
-        }}
-        enableAutoDetection={true}
-        enableBackgroundUpdates={false} // Disabled for battery optimization
-      />
+        {/* Enhanced Auto Location Manager - Phase F-2 */}
+        <LocationManager
+          onLocationReceived={(detectedCity, lat, lon) => {
+            logInfo(
+              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`,
+            );
+            setCity(detectedCity);
+            getWeatherByLocation(detectedCity, lat, lon);
+            haptic.triggerHaptic('light');
+          }}
+          onError={errorMessage => {
+            logWarn('📍 Auto location failed:', errorMessage);
+            // Don't show error to user for automatic detection, just log it
+          }}
+          enableAutoDetection={true}
+          enableBackgroundUpdates={false} // Disabled for battery optimization
+        />
 
-      {/* DEBUG: Location Tester - Development only */}
-      {import.meta.env.DEV && <LocationTester />}
+        {/* DEBUG: Location Tester - Development only */}
+        {import.meta.env.DEV && <LocationTester />}
 
-      {/* Background Refresh Status - Development info */}
-      {backgroundRefresh.isInitialized && (
-        <div className="ios26-dev-status">
-          🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} | 📊{' '}
-          {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
-          {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
-          {backgroundRefresh.stats.lastRefreshTime > 0 && (
-            <div>
-              Last:{' '}
-              {new Date(
-                backgroundRefresh.stats.lastRefreshTime,
-              ).toLocaleTimeString()}
-            </div>
-          )}
-        </div>
-      )}
+        {/* Background Refresh Status - Development info */}
+        {backgroundRefresh.isInitialized && (
+          <div className="ios26-dev-status">
+            🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} |
+            📊 {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
+            {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
+            {backgroundRefresh.stats.lastRefreshTime > 0 && (
+              <div>
+                Last:{' '}
+                {new Date(
+                  backgroundRefresh.stats.lastRefreshTime,
+                ).toLocaleTimeString()}
+              </div>
+            )}
+          </div>
+        )}
 
-      {/* Modern Mobile Navigation System - Only for mobile devices */}
-      {screenInfo.width < 768 && (
-        <ScreenContainer
-          currentScreen={currentScreen}
-          transitionDirection="slide-left"
-          transitionDuration={300}
-          theme={theme}
-          onSwipeLeft={handleSwipeLeft}
-          onSwipeRight={handleSwipeRight}
-          enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
-          screens={{
-            Home: (
+        {/* Modern Mobile Navigation System - Only for mobile devices */}
+        {screenInfo.width < 768 && (
+          <ScreenContainer
+            currentScreen={currentScreen}
+            transitionDirection="slide-left"
+            transitionDuration={300}
+            theme={theme}
+            onSwipeLeft={handleSwipeLeft}
+            onSwipeRight={handleSwipeRight}
+            enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
+            screens={{
+              Home: (
+                <HomeScreen
+                  theme={theme}
+                  screenInfo={screenInfo}
+                  adaptiveFonts={adaptiveFonts}
+                  adaptiveSpacing={adaptiveSpacing}
+                  adaptiveBorders={adaptiveBorders}
+                  navigate={navigate}
+                  haptic={haptic}
+                />
+              ),
+              Weather: (
+                <WeatherDetailsScreen
+                  theme={theme}
+                  screenInfo={screenInfo}
+                  adaptiveFonts={adaptiveFonts}
+                  adaptiveSpacing={adaptiveSpacing}
+                  adaptiveBorders={adaptiveBorders}
+                  navigate={navigate}
+                  createMobileButton={createMobileButton}
+                  city={city}
+                  loading={loading}
+                  error={error}
+                  setError={setError}
+                  weather={weather}
+                  hourlyForecast={memoizedHourlyForecast}
+                  dailyForecast={memoizedDailyForecast}
+                  weatherCode={weatherCode}
+                  getWeather={getWeather}
+                  getWeatherByLocation={getWeatherByLocation}
+                  onRefresh={handleRefresh}
+                  haptic={haptic}
+                  handleLocationDetected={handleLocationDetected}
+                  selectedView={selectedView}
+                  setSelectedView={setSelectedView}
+                  showActionSheet={showActionSheet}
+                  setShowActionSheet={setShowActionSheet}
+                  themeName={themeName}
+                  showLiveActivity={showLiveActivity}
+                  weatherAlert={weatherAlert}
+                  showWeatherSettingsModal={showWeatherSettingsModal}
+                  setShowWeatherSettingsModal={setShowWeatherSettingsModal}
+                />
+              ),
+              Search: (
+                <SearchScreen
+                  theme={theme}
+                  onBack={() => navigate('Home')}
+                  onLocationSelect={(cityName, latitude, longitude) => {
+                    getWeatherByLocation(cityName, latitude, longitude);
+                    navigate('Weather');
+                  }}
+                />
+              ),
+              Settings: (
+                <SettingsScreen
+                  theme={theme}
+                  screenInfo={screenInfo}
+                  onBack={() => navigate('Home')}
+                />
+              ),
+              Favorites: (
+                <FavoritesScreen
+                  theme={theme}
+                  onBack={() => navigate('Home')}
+                  onCitySelect={(cityName, latitude, longitude) => {
+                    getWeatherByLocation(cityName, latitude, longitude);
+                    setCity(cityName);
+                    navigate('Weather');
+                    haptic.triggerHaptic('light');
+                  }}
+                  onAddFavorite={() => navigate('Search')}
+                  currentCity={city}
+                />
+              ),
+            }}
+          />
+        )}
+
+        {/* Mobile Bottom Navigation */}
+        {screenInfo.width < 768 && (
+          <MobileNavigation
+            currentScreen={currentScreen}
+            onNavigate={handleMobileNavigation}
+          />
+        )}
+
+        {/* Desktop/Legacy Navigation (for larger screens) */}
+        {screenInfo.width >= 768 && (
+          <SwipeNavigationContainer
+            currentScreen={currentScreen}
+            onSwipeLeft={handleSwipeLeft}
+            onSwipeRight={handleSwipeRight}
+            canSwipeLeft={swipeConfig.canSwipeLeft}
+            canSwipeRight={swipeConfig.canSwipeRight}
+            theme={theme}
+            isMobile={false}
+            swipeThreshold={80}
+            enableDesktopSupport={true}
+          >
+            {/* Legacy screen rendering for desktop */}
+            {currentScreen === 'Home' && (
               <HomeScreen
                 theme={theme}
                 screenInfo={screenInfo}
@@ -1855,8 +1968,9 @@ const AppNavigator = () => {
                 navigate={navigate}
                 haptic={haptic}
               />
-            ),
-            Weather: (
+            )}
+
+            {currentScreen === 'Weather' && (
               <WeatherDetailsScreen
                 theme={theme}
                 screenInfo={screenInfo}
@@ -1888,147 +2002,45 @@ const AppNavigator = () => {
                 showWeatherSettingsModal={showWeatherSettingsModal}
                 setShowWeatherSettingsModal={setShowWeatherSettingsModal}
               />
-            ),
-            Search: (
-              <SearchScreen
-                theme={theme}
-                onBack={() => navigate('Home')}
-                onLocationSelect={(cityName, latitude, longitude) => {
-                  getWeatherByLocation(cityName, latitude, longitude);
-                  navigate('Weather');
-                }}
-              />
-            ),
-            Settings: (
-              <SettingsScreen
-                theme={theme}
-                screenInfo={screenInfo}
-                onBack={() => navigate('Home')}
-              />
-            ),
-            Favorites: (
-              <FavoritesScreen
-                theme={theme}
-                onBack={() => navigate('Home')}
-                onCitySelect={(cityName, latitude, longitude) => {
-                  getWeatherByLocation(cityName, latitude, longitude);
-                  setCity(cityName);
-                  navigate('Weather');
-                  haptic.triggerHaptic('light');
-                }}
-                onAddFavorite={() => navigate('Search')}
-                currentCity={city}
-              />
-            ),
-          }}
-        />
-      )}
+            )}
+          </SwipeNavigationContainer>
+        )}
 
-      {/* Mobile Bottom Navigation */}
-      {screenInfo.width < 768 && (
-        <MobileNavigation
-          currentScreen={currentScreen}
-          onNavigate={handleMobileNavigation}
-        />
-      )}
+        {/* Deployment Status Indicator - Only show in production */}
+        {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
+          <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
+        )}
 
-      {/* Desktop/Legacy Navigation (for larger screens) */}
-      {screenInfo.width >= 768 && (
-        <SwipeNavigationContainer
-          currentScreen={currentScreen}
-          onSwipeLeft={handleSwipeLeft}
-          onSwipeRight={handleSwipeRight}
-          canSwipeLeft={swipeConfig.canSwipeLeft}
-          canSwipeRight={swipeConfig.canSwipeRight}
+        {/* Geolocation Verification Modal - Temporarily disabled */}
+        <GeolocationVerification
+          isOpen={false}
+          locationData={pendingLocationData}
           theme={theme}
-          isMobile={false}
-          swipeThreshold={80}
-          enableDesktopSupport={true}
-        >
-          {/* Legacy screen rendering for desktop */}
-          {currentScreen === 'Home' && (
-            <HomeScreen
-              theme={theme}
-              screenInfo={screenInfo}
-              adaptiveFonts={adaptiveFonts}
-              adaptiveSpacing={adaptiveSpacing}
-              adaptiveBorders={adaptiveBorders}
-              navigate={navigate}
-              haptic={haptic}
-            />
-          )}
+          isMobile={screenInfo.width < 768}
+          onConfirm={handleVerificationConfirm}
+          onCancel={handleVerificationCancel}
+        />
 
-          {currentScreen === 'Weather' && (
-            <WeatherDetailsScreen
+        {/* Performance Monitor - Development only - Temporarily disabled */}
+        {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
+
+        {/* Mobile Debug - Development only - Temporarily disabled */}
+        <MobileDebug enabled={false} position="bottom-right" />
+
+        {/* iOS Component Showcase - Overlay */}
+        {showIOSDemo && (
+          <div className="ios26-overlay">
+            <IOSComponentShowcase
               theme={theme}
-              screenInfo={screenInfo}
-              adaptiveFonts={adaptiveFonts}
-              adaptiveSpacing={adaptiveSpacing}
-              adaptiveBorders={adaptiveBorders}
-              navigate={navigate}
-              createMobileButton={createMobileButton}
-              city={city}
-              loading={loading}
-              error={error}
-              setError={setError}
-              weather={weather}
-              hourlyForecast={memoizedHourlyForecast}
-              dailyForecast={memoizedDailyForecast}
-              weatherCode={weatherCode}
-              getWeather={getWeather}
-              getWeatherByLocation={getWeatherByLocation}
-              onRefresh={handleRefresh}
-              haptic={haptic}
-              handleLocationDetected={handleLocationDetected}
-              selectedView={selectedView}
-              setSelectedView={setSelectedView}
-              showActionSheet={showActionSheet}
-              setShowActionSheet={setShowActionSheet}
               themeName={themeName}
-              showLiveActivity={showLiveActivity}
-              weatherAlert={weatherAlert}
-              showWeatherSettingsModal={showWeatherSettingsModal}
-              setShowWeatherSettingsModal={setShowWeatherSettingsModal}
+              onBack={() => setShowIOSDemo(false)}
             />
-          )}
-        </SwipeNavigationContainer>
-      )}
+          </div>
+        )}
 
-      {/* Deployment Status Indicator - Only show in production */}
-      {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
-        <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
-      )}
-
-      {/* Geolocation Verification Modal - Temporarily disabled */}
-      <GeolocationVerification
-        isOpen={false}
-        locationData={pendingLocationData}
-        theme={theme}
-        isMobile={screenInfo.width < 768}
-        onConfirm={handleVerificationConfirm}
-        onCancel={handleVerificationCancel}
-      />
-
-      {/* Performance Monitor - Development only - Temporarily disabled */}
-      {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
-
-      {/* Mobile Debug - Development only - Temporarily disabled */}
-      <MobileDebug enabled={false} position="bottom-right" />
-
-      {/* iOS Component Showcase - Overlay */}
-      {showIOSDemo && (
-        <div className="ios26-overlay">
-          <IOSComponentShowcase
-            theme={theme}
-            themeName={themeName}
-            onBack={() => setShowIOSDemo(false)}
-          />
-        </div>
-      )}
-
-      {/* Horror Theme Activator - Easy horror mode activation */}
-      <HorrorThemeActivator />
-    </EnhancedMobileContainer>
+        {/* Horror Theme Activator - Easy horror mode activation */}
+        <HorrorThemeActivator />
+      </EnhancedMobileContainer>
     </LoadingProvider>
   );
 };

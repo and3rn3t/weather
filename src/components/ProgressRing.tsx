@@ -34,7 +34,9 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
     `progress-ring--${variant}`,
     `progress-ring--size-${size}`,
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const textClasses = [
     'progress-ring-text',
@@ -45,16 +47,21 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
 
   return (
     <div className={ringClasses} aria-label={ariaLabel}>
-      <progress 
-        value={clampedProgress} 
-        max={100} 
+      <progress
+        value={clampedProgress}
+        max={100}
         aria-label={ariaLabel}
         className="progress-ring-hidden-progress"
       >
         {Math.round(clampedProgress)}%
       </progress>
-      
-      <svg width={size} height={size} className="progress-ring-svg" aria-hidden="true">
+
+      <svg
+        width={size}
+        height={size}
+        className="progress-ring-svg"
+        aria-hidden="true"
+      >
         {/* Background circle */}
         <circle
           cx={size / 2}
@@ -65,7 +72,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
           fill="transparent"
           className="progress-ring-background"
         />
-        
+
         {/* Progress circle */}
         <circle
           cx={size / 2}
@@ -80,7 +87,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
           className="progress-ring-progress"
         />
       </svg>
-      
+
       {showPercentage && (
         <div className={textClasses} aria-hidden="true">
           {Math.round(clampedProgress)}%
@@ -116,15 +123,22 @@ export const Spinner: React.FC<SpinnerProps> = ({
     `spinner--${variant}`,
     `spinner--size-${size}`,
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={spinnerClasses} aria-label={ariaLabel}>
       <output className="spinner-hidden-output" aria-live="polite">
         {ariaLabel}
       </output>
-      
-      <svg width={size} height={size} className="spinner-svg" aria-hidden="true">
+
+      <svg
+        width={size}
+        height={size}
+        className="spinner-svg"
+        aria-hidden="true"
+      >
         <circle
           cx={size / 2}
           cy={size / 2}

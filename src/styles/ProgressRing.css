@@ -78,81 +78,81 @@
 
 /* Loading state variants */
 .progress-ring--primary .progress-ring-progress {
-  stroke: #007AFF;
+  stroke: #007aff;
 }
 
 .progress-ring--primary .progress-ring-text {
-  color: #007AFF;
+  color: #007aff;
 }
 
 .progress-ring--secondary .progress-ring-progress {
-  stroke: #8E8E93;
+  stroke: #8e8e93;
 }
 
 .progress-ring--secondary .progress-ring-text {
-  color: #8E8E93;
+  color: #8e8e93;
 }
 
 .progress-ring--success .progress-ring-progress {
-  stroke: #34C759;
+  stroke: #34c759;
 }
 
 .progress-ring--success .progress-ring-text {
-  color: #34C759;
+  color: #34c759;
 }
 
 .progress-ring--warning .progress-ring-progress {
-  stroke: #FF9500;
+  stroke: #ff9500;
 }
 
 .progress-ring--warning .progress-ring-text {
-  color: #FF9500;
+  color: #ff9500;
 }
 
 .progress-ring--error .progress-ring-progress {
-  stroke: #FF3B30;
+  stroke: #ff3b30;
 }
 
 .progress-ring--error .progress-ring-text {
-  color: #FF3B30;
+  color: #ff3b30;
 }
 
 /* Dark theme variants */
 .dark .progress-ring-background {
-  stroke: #3A3A3C;
+  stroke: #3a3a3c;
 }
 
 .dark .progress-ring--primary .progress-ring-progress {
-  stroke: #0A84FF;
+  stroke: #0a84ff;
 }
 
 .dark .progress-ring--primary .progress-ring-text {
-  color: #0A84FF;
+  color: #0a84ff;
 }
 
 .dark .progress-ring--secondary .progress-ring-progress {
-  stroke: #98989D;
+  stroke: #98989d;
 }
 
 .dark .progress-ring--secondary .progress-ring-text {
-  color: #98989D;
+  color: #98989d;
 }
 
 /* Spinner variants */
 .spinner--primary .spinner-circle {
-  stroke: #007AFF;
+  stroke: #007aff;
 }
 
 .spinner--secondary .spinner-circle {
-  stroke: #8E8E93;
+  stroke: #8e8e93;
 }
 
 .dark .spinner--primary .spinner-circle {
-  stroke: #0A84FF;
+  stroke: #0a84ff;
 }
 
 .dark .spinner--secondary .spinner-circle {
-  stroke: #98989D;
+  stroke: #98989d;
 }
 
 /* Size utility classes */

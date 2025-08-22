@@ -1,7 +1,10 @@
 import React from 'react';
-import { ProgressRing, Spinner } from './ProgressRing';
-import { useOperationLoading, type LoadingOperation } from '../utils/LoadingStateManager';
 import '../styles/EnhancedLoadingStates.css';
+import {
+  useOperationLoading,
+  type LoadingOperation,
+} from '../utils/LoadingStateManager';
+import { ProgressRing, Spinner } from './ProgressRing';
 
 // Enhanced loading skeleton for weather data
 export interface WeatherSkeletonProps {
@@ -23,11 +26,11 @@ export const WeatherDataSkeleton: React.FC<WeatherSkeletonProps> = ({
         <div className="weather-skeleton-temp" />
         <div className="weather-skeleton-desc" />
       </div>
-      
+
       {/* Weather metrics skeleton */}
       {showMetrics && (
         <div className="weather-skeleton-metrics">
-          {['humidity', 'pressure', 'wind', 'visibility'].map((metric) => (
+          {['humidity', 'pressure', 'wind', 'visibility'].map(metric => (
             <div key={metric} className="weather-skeleton-metric">
               <div className="weather-skeleton-metric-icon" />
               <div className="weather-skeleton-metric-value" />
@@ -36,11 +39,11 @@ export const WeatherDataSkeleton: React.FC<WeatherSkeletonProps> = ({
           ))}
         </div>
       )}
-      
+
       {/* Forecast skeleton */}
       {showForecast && (
         <div className="weather-skeleton-forecast">
-          {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => (
+          {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(day => (
             <div key={day} className="weather-skeleton-forecast-item">
               <div className="weather-skeleton-forecast-day" />
               <div className="weather-skeleton-forecast-icon" />
@@ -87,14 +90,17 @@ export const OperationProgress: React.FC<OperationProgressProps> = ({
         variant={variant}
         showPercentage={size >= 48}
         className={className}
-        ariaLabel={`${operation} progress: ${Math.round(loadingState.progress || 0)}%`}
+        ariaLabel={`${operation} progress: ${Math.round(
+          loadingState.progress || 0,
+        )}%`}
       />
     );
   }
 
   if (showSpinner) {
-    const spinnerVariant = variant === 'primary' || variant === 'secondary' ? variant : 'primary';
-    
+    const spinnerVariant =
+      variant === 'primary' || variant === 'secondary' ? variant : 'primary';
+
     return (
       <Spinner
         size={size <= 32 ? (size as 16 | 20 | 24 | 32) : 32}
@@ -114,10 +120,9 @@ export interface BackgroundUpdateIndicatorProps {
   className?: string;
 }
 
-export const BackgroundUpdateIndicator: React.FC<BackgroundUpdateIndicatorProps> = ({
-  operation,
-  className = '',
-}) => {
+export const BackgroundUpdateIndicator: React.FC<
+  BackgroundUpdateIndicatorProps
+> = ({ operation, className = '' }) => {
   const { loadingState } = useOperationLoading(operation);
 
   if (!loadingState?.isLoading || operation !== 'background-refresh') {
@@ -228,22 +233,20 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
             size={64}
             variant="primary"
             showPercentage
-            ariaLabel={`${title} progress: ${Math.round(loadingState.progress || 0)}%`}
+            ariaLabel={`${title} progress: ${Math.round(
+              loadingState.progress || 0,
+            )}%`}
           />
         ) : (
-          <Spinner
-            size={32}
-            variant="primary"
-            ariaLabel={`Loading ${title}`}
-          />
+          <Spinner size={32} variant="primary" ariaLabel={`Loading ${title}`} />
         )}
-        
+
         <h2 className="loading-overlay-title">{title}</h2>
-        
+
         {description && (
           <p className="loading-overlay-description">{description}</p>
         )}
-        
+
         {hasProgress && (
           <p className="loading-overlay-progress">
             {Math.round(loadingState.progress || 0)}% complete

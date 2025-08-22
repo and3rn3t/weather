@@ -1,11 +1,17 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 
 // Loading state types for different operations
-export type LoadingOperation = 
-  | 'weatherData' 
-  | 'forecast' 
-  | 'location' 
+export type LoadingOperation =
+  | 'weatherData'
+  | 'forecast'
+  | 'location'
   | 'background-refresh'
   | 'search'
   | 'settings';
@@ -20,10 +26,17 @@ export interface LoadingState {
 
 export interface LoadingContextType {
   loadingStates: Map<LoadingOperation, LoadingState>;
-  setLoading: (operation: LoadingOperation, isLoading: boolean, progress?: number) => void;
+  setLoading: (
+    operation: LoadingOperation,
+    isLoading: boolean,
+    progress?: number
+  ) => void;
   setError: (operation: LoadingOperation, error: string) => void;
   clearError: (operation: LoadingOperation) => void;
-  retry: (operation: LoadingOperation, retryFn: () => Promise<void>) => Promise<void>;
+  retry: (
+    operation: LoadingOperation,
+    retryFn: () => Promise<void>
+  ) => Promise<void>;
   isAnyLoading: boolean;
   getLoadingState: (operation: LoadingOperation) => LoadingState | undefined;
 }
@@ -42,39 +55,50 @@ interface LoadingProviderProps {
   children: ReactNode;
 }
 
-export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) => {
-  const [loadingStates, setLoadingStates] = useState<Map<LoadingOperation, LoadingState>>(
-    new Map(),
-  );
+export const LoadingProvider: React.FC<LoadingProviderProps> = ({
+  children,
+}) => {
+  const [loadingStates, setLoadingStates] = useState<
+    Map<LoadingOperation, LoadingState>
+  >(new Map());
 
-  const setLoading = useCallback((operation: LoadingOperation, isLoading: boolean, progress?: number) => {
-    setLoadingStates(prev => {
-      const newStates = new Map(prev);
-      const currentState = newStates.get(operation) || { operation, isLoading: false };
-      
-      newStates.set(operation, {
-        ...currentState,
-        isLoading,
-        progress,
-        error: isLoading ? undefined : currentState.error, // Clear error when starting new operation
+  const setLoading = useCallback(
+    (operation: LoadingOperation, isLoading: boolean, progress?: number) => {
+      setLoadingStates(prev => {
+        const newStates = new Map(prev);
+        const currentState = newStates.get(operation) || {
+          operation,
+          isLoading: false,
+        };
+
+        newStates.set(operation, {
+          ...currentState,
+          isLoading,
+          progress,
+          error: isLoading ? undefined : currentState.error, // Clear error when starting new operation
+        });
+
+        return newStates;
       });
-      
-      return newStates;
-    });
-  }, []);
+    },
+    [],
+  );
 
   const setError = useCallback((operation: LoadingOperation, error: string) => {
     setLoadingStates(prev => {
       const newStates = new Map(prev);
-      const currentState = newStates.get(operation) || { operation, isLoading: false };
-      
+      const currentState = newStates.get(operation) || {
+        operation,
+        isLoading: false,
+      };
+
       newStates.set(operation, {
         ...currentState,
         isLoading: false,
         error,
         retryCount: (currentState.retryCount || 0) + 1,
       });
-      
+
       return newStates;
     });
   }, []);
@@ -83,7 +107,7 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
     setLoadingStates(prev => {
       const newStates = new Map(prev);
       const currentState = newStates.get(operation);
-      
+
       if (currentState) {
         newStates.set(operation, {
           ...currentState,
@@ -91,47 +115,72 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
           retryCount: 0,
         });
       }
-      
+
       return newStates;
     });
   }, []);
 
-  const retry = useCallback(async (operation: LoadingOperation, retryFn: () => Promise<void>) => {
-    const currentState = loadingStates.get(operation);
-    const retryCount = currentState?.retryCount || 0;
-    
-    // Limit retry attempts
-    if (retryCount >= 3) {
-      setError(operation, 'Maximum retry attempts reached. Please try again later.');
-      return;
-    }
+  const retry = useCallback(
+    async (operation: LoadingOperation, retryFn: () => Promise<void>) => {
+      const currentState = loadingStates.get(operation);
+      const retryCount = currentState?.retryCount || 0;
 
-    clearError(operation);
-    setLoading(operation, true);
-    
-    try {
-      await retryFn();
-      setLoading(operation, false);
-    } catch (error) {
-      setError(operation, error instanceof Error ? error.message : 'Operation failed');
-    }
-  }, [loadingStates, setLoading, setError, clearError]);
+      // Limit retry attempts
+      if (retryCount >= 3) {
+        setError(
+          operation,
+          'Maximum retry attempts reached. Please try again later.',
+        );
+        return;
+      }
 
-  const isAnyLoading = Array.from(loadingStates.values()).some(state => state.isLoading);
+      clearError(operation);
+      setLoading(operation, true);
 
-  const getLoadingState = useCallback((operation: LoadingOperation) => {
-    return loadingStates.get(operation);
-  }, [loadingStates]);
+      try {
+        await retryFn();
+        setLoading(operation, false);
+      } catch (error) {
+        setError(
+          operation,
+          error instanceof Error ? error.message : 'Operation failed',
+        );
+      }
+    },
+    [loadingStates, setLoading, setError, clearError],
+  );
 
-  const contextValue: LoadingContextType = useMemo(() => ({
-    loadingStates,
-    setLoading,
-    setError,
-    clearError,
-    retry,
-    isAnyLoading,
-    getLoadingState,
-  }), [loadingStates, setLoading, setError, clearError, retry, isAnyLoading, getLoadingState]);
+  const isAnyLoading = Array.from(loadingStates.values()).some(
+    state => state.isLoading,
+  );
+
+  const getLoadingState = useCallback(
+    (operation: LoadingOperation) => {
+      return loadingStates.get(operation);
+    },
+    [loadingStates],
+  );
+
+  const contextValue: LoadingContextType = useMemo(
+    () => ({
+      loadingStates,
+      setLoading,
+      setError,
+      clearError,
+      retry,
+      isAnyLoading,
+      getLoadingState,
+    }),
+    [
+      loadingStates,
+      setLoading,
+      setError,
+      clearError,
+      retry,
+      isAnyLoading,
+      getLoadingState,
+    ],
+  );
 
   return (
     <LoadingContext.Provider value={contextValue}>
@@ -142,11 +191,13 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
 
 // Hook for specific operation loading state
 export const useOperationLoading = (operation: LoadingOperation) => {
-  const { getLoadingState, setLoading, setError, clearError, retry } = useLoading();
-  
+  const { getLoadingState, setLoading, setError, clearError, retry } =
+    useLoading();
+
   return {
     loadingState: getLoadingState(operation),
-    setLoading: (isLoading: boolean, progress?: number) => setLoading(operation, isLoading, progress),
+    setLoading: (isLoading: boolean, progress?: number) =>
+      setLoading(operation, isLoading, progress),
     setError: (error: string) => setError(operation, error),
     clearError: () => clearError(operation),
     retry: (retryFn: () => Promise<void>) => retry(operation, retryFn),
