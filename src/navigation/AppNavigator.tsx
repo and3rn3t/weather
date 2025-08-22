@@ -74,6 +74,15 @@ import {
 } from '../components/modernWeatherUI/iOS26Components';
 import { QuickActionsPanel } from '../components/modernWeatherUI/iOS26MainScreen';
 import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
+// Weather Display Optimization Components - August 2025 (PROGRESSIVE ENABLEMENT)
+// import EnhancedWeatherVisualization from '../components/optimized/EnhancedWeatherVisualization';
+// import OptimizedMobileWeatherDisplay from '../components/optimized/OptimizedMobileWeatherDisplay';
+import SmartWeatherSkeleton from '../components/optimized/SmartWeatherSkeleton';
+// import { useProgressiveWeatherLoading } from '../hooks/useProgressiveWeatherLoading';
+// import {
+//   SmartContentWrapper,
+//   useSmartContentPriority,
+// } from '../hooks/useSmartContentPriority';
 import '../styles/ios26-design-system-consolidated.css';
 // iOS26 Text Optimization - Clean, HIG-compliant typography
 import '../styles/ios26-text-optimization.css';
@@ -85,8 +94,6 @@ import '../styles/horrorTheme.css';
 // iOS HIG Components
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
 import {
-  ActivityIndicator,
-  ProgressIndicator,
   SegmentedControl,
   StatusBadge,
 } from '../components/modernWeatherUI/IOSComponents';
@@ -666,13 +673,13 @@ function WeatherDetailsScreen({
             </div>
           )}
 
-          {/* Main Weather Card */}
+          {/* Smart Weather Loading with Optimized Skeleton - August 2025 */}
           {loading && !weather && (
             <div className="ios26-text-center ios26-p-4">
-              <ActivityIndicator
-                size="large"
-                theme={theme}
-                text="Loading weather data..."
+              <SmartWeatherSkeleton
+                variant="current"
+                showPulse={true}
+                className="ios26-mt-4"
               />
               <div className="ios26-mt-4">
                 <ProgressIndicator
@@ -684,6 +691,7 @@ function WeatherDetailsScreen({
               </div>
             </div>
           )}
+
           {weather && (
             <ContextMenu
               actions={[
@@ -717,25 +725,6 @@ function WeatherDetailsScreen({
                     }
                   },
                 },
-                {
-                  id: 'favorite',
-                  title: 'Add Favorite',
-                  icon: '⭐',
-                  onAction: () => {
-                    haptic.buttonPress();
-                    logInfo(`Added ${city} to favorites`);
-                    // Future: implement favorites functionality
-                  },
-                },
-                {
-                  id: 'alerts',
-                  title: 'Settings',
-                  icon: '⚙️',
-                  onAction: () => {
-                    haptic.buttonPress();
-                    setShowWeatherSettingsModal(true);
-                  },
-                },
               ]}
               theme={theme}
             >
@@ -759,7 +748,31 @@ function WeatherDetailsScreen({
             </ContextMenu>
           )}
 
-          {/* iOS26 Enhanced: Interactive Weather Widgets */}
+          {/* TODO: Re-enable optimized components after type fixes:
+          <SmartWeatherSkeleton variant="current" />
+          <OptimizedMobileWeatherDisplay weather={weather} />
+          <EnhancedWeatherVisualization.TemperatureTrend />
+          */}
+
+          {/* Legacy Weather Card - DISABLED
+          {false && weather && (
+            <ContextMenu actions={weatherActions} theme={theme}>
+              <div className="ios26-weather-card">
+                <div className="ios26-text-title ios26-text-primary">
+                  {Math.round(weather.main.temp)}°
+                </div>
+                <div className="ios26-text-body ios26-text-secondary">
+                  {weather.weather[0].description}
+                </div>
+                <button className="ios26-button ios26-button-primary" onClick={onRefresh}>
+                  Refresh
+                </button>
+              </div>
+            </ContextMenu>
+          )}
+          */}
+
+          {/* Enhanced Weather Widgets with Smart Prioritization - TEMPORARILY DISABLED */}
           {weather && selectedView === 0 && (
             <div className="ios26-forecast-section">
               <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
@@ -803,88 +816,31 @@ function WeatherDetailsScreen({
                     </div>
                   </div>
                 </InteractiveWidget>
+              </div>
+            </div>
+          )}
 
-                {/* Wind Widget */}
-                <InteractiveWidget
-                  title="Wind"
-                  size="small"
-                  theme={theme}
-                  onTap={() => {
-                    haptic.buttonPress();
-                    logInfo('Wind details tapped');
-                  }}
-                >
-                  <div className="ios26-text-center">
-                    <div className="ios26-widget-icon">💨</div>
-                    <div className="ios26-widget-value">
-                      {Math.round(weather.wind.speed)} mph
-                    </div>
-                  </div>
-                </InteractiveWidget>
+          {/* TODO: Re-enable enhanced visualizations after type fixes:
+          <EnhancedWeatherVisualization.TemperatureTrend hourlyForecast={hourlyForecast} />
+          <EnhancedWeatherVisualization.WindCompass windSpeed={weather.wind.speed} />
+          <EnhancedWeatherVisualization.UVIndexBar uvIndex={weather.uv_index} />
+          */}
 
-                {/* Pressure Widget */}
-                <InteractiveWidget
-                  title="Pressure"
-                  size="small"
-                  theme={theme}
-                  onTap={() => {
-                    haptic.buttonPress();
-                    logInfo('Pressure details tapped');
-                  }}
-                >
-                  <div className="ios26-text-center">
-                    <div className="ios26-widget-icon">🌡️</div>
-                    <div className="ios26-widget-value-small">
-                      {weather.main.pressure} hPa
-                    </div>
-                  </div>
-                </InteractiveWidget>
-
-                {/* UV Index Widget */}
-                <InteractiveWidget
-                  title="UV"
-                  size="small"
-                  theme={theme}
-                  onTap={() => {
-                    haptic.buttonPress();
-                    logInfo('UV Index details tapped');
-                  }}
-                >
-                  <div className="ios26-text-center">
-                    <div className="ios26-widget-icon">☀️</div>
-                    <div
-                      className={`ios26-widget-value ${
-                        weather.uv_index > 6 ? 'ios26-text-warning' : ''
-                      }`}
-                    >
-                      {Math.round(weather.uv_index || 0)}
-                    </div>
-                    <div className="ios26-widget-secondary-text">
-                      {weather.uv_index > 6 ? 'High' : 'Low'}
-                    </div>
-                  </div>
-                </InteractiveWidget>
-
-                {/* Visibility Widget */}
-                <InteractiveWidget
-                  title="Visibility"
-                  size="small"
-                  theme={theme}
-                  onTap={() => {
-                    haptic.buttonPress();
-                    logInfo('Visibility details tapped');
-                  }}
-                >
-                  <div className="ios26-text-center">
-                    <div className="ios26-widget-icon">👁️</div>
-                    <div className="ios26-widget-value-small">
-                      {Math.round((weather.visibility || 0) / 1000)} km
-                    </div>
-                  </div>
+          {/* Legacy iOS26 Enhanced: Interactive Weather Widgets - DISABLED */}
+          {/*
+          {false && weather && selectedView === 0 && (
+            <div className="ios26-forecast-section">
+              <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
+                Details
+              </h3>
+              <div className="ios26-widget-grid">
+                <InteractiveWidget title="Temperature" size="medium" theme={theme}>
+                  Legacy widget content...
                 </InteractiveWidget>
               </div>
             </div>
           )}
+          */}
 
           {/* iOS 26 Weather Interface - Enhanced Forecast */}
           {selectedView === 1 || selectedView === 2 ? (
@@ -1223,9 +1179,12 @@ const HourlyForecastSection = React.memo(
           <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
             Hourly
           </div>
-          <div className="ios26-text-center ios26-p-4">
-            <ActivityIndicator size="medium" theme={theme} text="Loading..." />
-          </div>
+          <SmartWeatherSkeleton
+            variant="hourly"
+            count={8}
+            showPulse={true}
+            className="ios26-p-2"
+          />
         </div>
       );
     }
@@ -1292,9 +1251,12 @@ const DailyForecastSection = React.memo(
           <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
             Daily
           </div>
-          <div className="ios26-text-center ios26-p-4">
-            <ActivityIndicator size="medium" theme={theme} text="Loading..." />
-          </div>
+          <SmartWeatherSkeleton
+            variant="daily"
+            count={7}
+            showPulse={true}
+            className="ios26-p-2"
+          />
         </div>
       );
     }
@@ -1499,6 +1461,31 @@ const AppNavigator = () => {
   } | null>(null);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
+
+  // Weather Display Optimization Hooks - August 2025 (TEMPORARILY DISABLED after state declarations)
+  // Create weather context for smart content prioritization
+  /*
+  const weatherContext = useMemo(
+    () => ({
+      temperature: weather?.main?.temp,
+      weatherCode: weatherCode,
+      isExtreme: weather
+        ? weather.main.temp > 95 || weather.main.temp < 20
+        : false,
+      hasAlerts: weatherAlert !== null,
+      timeOfDay: (() => {
+        const hour = new Date().getHours();
+        if (hour < 6) return 'night' as const;
+        if (hour < 12) return 'morning' as const;
+        if (hour < 18) return 'afternoon' as const;
+        return 'evening' as const;
+      })(),
+    }),
+    [weather, weatherCode, weatherAlert]
+  );
+
+  const smartContent = useSmartContentPriority(weatherContext);
+  */
 
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(

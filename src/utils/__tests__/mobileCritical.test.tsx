@@ -134,12 +134,12 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       await waitFor(() => {
         expect(screen.getByTestId('current-breakpoint')).toHaveTextContent(
-          'mobile'
+          'mobile',
         );
         expect(screen.getByTestId('is-mobile')).toHaveTextContent('true');
         expect(screen.getByTestId('is-tablet')).toHaveTextContent('false');
@@ -153,12 +153,12 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       await waitFor(() => {
         expect(screen.getByTestId('current-breakpoint')).toHaveTextContent(
-          'tablet'
+          'tablet',
         );
         expect(screen.getByTestId('is-mobile')).toHaveTextContent('false');
         expect(screen.getByTestId('is-tablet')).toHaveTextContent('true');
@@ -172,12 +172,12 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       await waitFor(() => {
         expect(screen.getByTestId('current-breakpoint')).toHaveTextContent(
-          'desktop'
+          'desktop',
         );
         expect(screen.getByTestId('is-mobile')).toHaveTextContent('false');
         expect(screen.getByTestId('is-tablet')).toHaveTextContent('false');
@@ -189,12 +189,12 @@ describe('Enhanced Mobile Features Test Suite', () => {
       const { rerender } = render(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // Start with mobile
       expect(screen.getByTestId('current-breakpoint')).toHaveTextContent(
-        'mobile'
+        'mobile',
       );
 
       // Resize to tablet
@@ -203,16 +203,16 @@ describe('Enhanced Mobile Features Test Suite', () => {
       rerender(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       await waitFor(
         () => {
           expect(screen.getByTestId('current-breakpoint')).toHaveTextContent(
-            'tablet'
+            'tablet',
           );
         },
-        { timeout: 2000 }
+        { timeout: 2000 },
       );
     });
   });
@@ -228,7 +228,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <InteractionTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       expect(screen.getByTestId('has-touch')).toHaveTextContent('true');
@@ -245,7 +245,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <InteractionTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // Note: Has hover detection depends on media queries which are hard to mock
@@ -262,7 +262,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <InteractionTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       expect(screen.getByTestId('is-retina')).toHaveTextContent('true');
@@ -287,7 +287,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <InteractionTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       expect(screen.getByTestId('reduced-motion')).toHaveTextContent('true');
@@ -299,7 +299,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <HapticTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       expect(screen.getByTestId('haptic-supported')).toHaveTextContent('true');
@@ -317,7 +317,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <HapticTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       await user.click(screen.getByTestId('haptic-button'));
@@ -335,7 +335,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <HapticTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // Should still render without error
@@ -348,7 +348,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <PullToRefreshTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       expect(screen.getByTestId('pull-activated')).toHaveTextContent('false');
@@ -360,7 +360,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <PullToRefreshTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       const container = screen.getByTestId('pullable-container');
@@ -392,7 +392,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <PullToRefreshTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       const container = screen.getByTestId('pullable-container');
@@ -416,7 +416,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       const { rerender } = render(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // Rapid viewport changes
@@ -425,7 +425,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
         rerender(
           <MobileTestWrapper>
             <BreakpointTestComponent />
-          </MobileTestWrapper>
+          </MobileTestWrapper>,
         );
       }
 
@@ -450,7 +450,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
         render(
           <MobileTestWrapper>
             <InteractionTestComponent />
-          </MobileTestWrapper>
+          </MobileTestWrapper>,
         );
       }).not.toThrow();
 
@@ -458,7 +458,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
         render(
           <MobileTestWrapper>
             <HapticTestComponent />
-          </MobileTestWrapper>
+          </MobileTestWrapper>,
         );
       }).not.toThrow();
     });
@@ -467,7 +467,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
       render(
         <MobileTestWrapper>
           <BreakpointTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // Simulate orientation change
@@ -489,7 +489,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
             <BreakpointTestComponent />
             <InteractionTestComponent />
           </div>
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // Should render with theme applied
@@ -505,7 +505,7 @@ describe('Enhanced Mobile Features Test Suite', () => {
           <InteractionTestComponent />
           <HapticTestComponent />
           <PullToRefreshTestComponent />
-        </MobileTestWrapper>
+        </MobileTestWrapper>,
       );
 
       // All components should render successfully

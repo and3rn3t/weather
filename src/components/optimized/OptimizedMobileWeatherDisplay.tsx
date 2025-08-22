@@ -104,7 +104,7 @@ const OptimizedMobileWeatherDisplay: React.FC<
         time: h.time,
         temperature: h.temperature,
       })),
-    [hourlyForecast]
+    [hourlyForecast],
   );
 
   const precipitationData = useMemo(
@@ -113,7 +113,7 @@ const OptimizedMobileWeatherDisplay: React.FC<
         time: h.time,
         precipitation: Math.random() * 5, // Mock data - would come from API
       })),
-    [hourlyForecast]
+    [hourlyForecast],
   );
 
   if (isLoading && !weather) {
@@ -218,7 +218,7 @@ const renderContentByType = (
     temperatureTrendData: any[];
     precipitationData: any[];
     layoutConfig: any;
-  }
+  },
 ) => {
   const {
     weather,
