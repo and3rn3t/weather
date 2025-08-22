@@ -39,7 +39,7 @@ export class SmartCacheManager {
   private readonly METADATA_KEY = 'cache-metadata';
   private readonly STATS_KEY = 'cache-stats';
 
-  private config: CacheConfig = {
+  private readonly config: CacheConfig = {
     maxSize: 10, // 10MB default
     maxEntries: 500,
     defaultTTL: 30 * 60 * 1000, // 30 minutes
@@ -109,7 +109,7 @@ export class SmartCacheManager {
   /**
    * Retrieve data from cache with access tracking
    */
-  async get(key: string): Promise<unknown | null> {
+  async get(key: string): Promise<unknown> {
     try {
       const entry = await this.getEntry(key);
 
@@ -241,7 +241,8 @@ export class SmartCacheManager {
       entriesAfter.length > this.config.maxEntries
     ) {
       // Use LRU with priority weighting for cleanup
-      const sortedEntries = entriesAfter.sort((a, b) => {
+      const entriesToSort = [...entriesAfter];
+      entriesToSort.sort((a, b) => {
         const priorityWeight =
           this.getPriorityWeight(a.priority) -
           this.getPriorityWeight(b.priority);
@@ -249,6 +250,7 @@ export class SmartCacheManager {
 
         return a.lastAccessed - b.lastAccessed; // LRU
       });
+      const sortedEntries = entriesToSort;
 
       // Remove entries until we're under limits
       while (

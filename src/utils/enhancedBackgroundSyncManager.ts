@@ -40,7 +40,7 @@ export class EnhancedBackgroundSyncManager {
     lastSyncAt: null,
     averageLatency: 0,
   };
-  private smartCacheManager: SmartCacheManager;
+  private readonly smartCacheManager: SmartCacheManager;
   private syncIntervalId: number | null = null;
 
   private constructor() {
