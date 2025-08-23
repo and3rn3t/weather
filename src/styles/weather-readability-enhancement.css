@@ -1,0 +1,243 @@
+/* ============================================================================
+   WEATHER READABILITY OPTIMIZATION
+   Enhanced typography and layout for better weather data readability
+   ============================================================================ */
+
+/* Enhanced Weather Metrics - Larger, more readable typography */
+.ios26-weather-metric-value.enhanced-readability {
+  font-size: 1.5rem !important; /* 24pt - Much larger than original 22pt */
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 4px !important;
+}
+
+.ios26-weather-metric-label.enhanced-readability {
+  font-size: 0.875rem !important; /* 14pt - Larger than original 13pt */
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0.2px !important;
+}
+
+.ios26-weather-metric-subtitle.enhanced-readability {
+  font-size: 0.75rem !important; /* 12pt - Larger than original 11pt */
+  font-weight: 400 !important;
+  margin-top: 3px !important;
+}
+
+/* Enhanced Weather Metric Cards - Better spacing and contrast */
+.ios26-weather-metric.enhanced-readability {
+  padding: 1.2rem !important; /* Increased from 1rem */
+  min-height: 110px !important;
+  display: flex !important;
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ios26-weather-metric.enhanced-readability:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Enhanced Weather Metric Content Layout */
+.ios26-weather-metric-content.enhanced-readability {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  width: 100% !important;
+}
+
+.ios26-weather-metric-text.enhanced-readability {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+/* Enhanced Weather Metric Icons */
+.ios26-weather-metric-icon.enhanced-readability {
+  font-size: 1.5rem !important; /* 24pt - Larger icons */
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Enhanced Main Temperature Display */
+.ios26-temperature-main.enhanced-readability {
+  font-size: clamp(3.5rem, 15vw, 5rem) !important; /* Much larger temperature */
+  font-weight: 200 !important;
+  line-height: 0.9 !important;
+  letter-spacing: -2px !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.ios26-temperature-unit.enhanced-readability {
+  font-size: 1.75rem !important; /* Larger unit display */
+  font-weight: 400 !important;
+  margin-left: 4px !important;
+}
+
+/* Enhanced Feels Like Temperature */
+.ios26-feels-like.enhanced-readability {
+  font-size: 1.125rem !important; /* 18pt - Much larger */
+  font-weight: 500 !important;
+  margin-bottom: 0.75rem !important;
+  opacity: 0.9 !important;
+}
+
+/* Enhanced Weather Condition Text */
+.ios26-weather-condition.enhanced-readability {
+  font-size: 1.375rem !important; /* 22pt - Larger condition text */
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  text-transform: capitalize !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Enhanced Forecast Items - Better readability */
+.ios26-forecast-item.enhanced-readability {
+  min-width: 90px !important;
+  padding: 1rem !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.ios26-forecast-time.enhanced-readability {
+  font-size: 0.875rem !important; /* 14pt */
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+}
+
+.ios26-forecast-temperature.enhanced-readability {
+  font-size: 1.125rem !important; /* 18pt - Much larger forecast temps */
+  font-weight: 700 !important;
+  margin-top: 8px !important;
+}
+
+.ios26-forecast-precipitation.enhanced-readability {
+  font-size: 0.875rem !important; /* 14pt */
+  font-weight: 500 !important;
+  margin-top: 4px !important;
+}
+
+/* Enhanced Weather Metrics Grid - Better mobile layout */
+.ios26-weather-metrics-grid.enhanced-readability {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+  gap: 1rem !important;
+  margin-top: 1.5rem !important;
+}
+
+/* Enhanced Forecast Section */
+.ios26-forecast-section.enhanced-readability {
+  padding: 1.5rem !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  margin-top: 1.5rem !important;
+}
+
+.ios26-forecast-title.enhanced-readability {
+  font-size: 1.25rem !important; /* 20pt */
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  color: var(--ios26-text-primary) !important;
+}
+
+.ios26-forecast-scroll.enhanced-readability {
+  gap: 1rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+/* Dark Theme Enhancements for Better Contrast */
+[data-theme='dark'] .ios26-weather-metric.enhanced-readability {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme='dark'] .ios26-weather-metric.enhanced-readability:hover {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme='dark'] .ios26-weather-metric-icon.enhanced-readability {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme='dark'] .ios26-forecast-item.enhanced-readability {
+  background: rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme='dark'] .ios26-forecast-section.enhanced-readability {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Mobile-Specific Readability Enhancements */
+@media (max-width: 768px) {
+  .ios26-weather-metrics-grid.enhanced-readability {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .ios26-weather-metric.enhanced-readability {
+    padding: 1rem !important;
+    min-height: 100px !important;
+  }
+
+  .ios26-weather-metric-value.enhanced-readability {
+    font-size: 1.375rem !important; /* 22pt on mobile */
+  }
+
+  .ios26-forecast-item.enhanced-readability {
+    min-width: 80px !important;
+    padding: 0.875rem !important;
+  }
+
+  .ios26-forecast-scroll.enhanced-readability {
+    gap: 0.75rem !important;
+  }
+}
+
+/* Extra Small Mobile Devices */
+@media (max-width: 480px) {
+  .ios26-temperature-main.enhanced-readability {
+    font-size: clamp(3rem, 12vw, 4rem) !important;
+  }
+
+  .ios26-weather-metric-value.enhanced-readability {
+    font-size: 1.25rem !important; /* 20pt on small mobile */
+  }
+
+  .ios26-weather-condition.enhanced-readability {
+    font-size: 1.125rem !important; /* 18pt */
+  }
+
+  .ios26-feels-like.enhanced-readability {
+    font-size: 1rem !important; /* 16pt */
+  }
+}
+
+/* High Contrast Mode for Better Accessibility */
+.enhanced-readability.high-contrast .ios26-weather-metric-value {
+  color: #000 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme='dark'] .enhanced-readability.high-contrast .ios26-weather-metric-value {
+  color: #fff !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Focus States for Better Accessibility */
+.ios26-weather-metric.enhanced-readability:focus,
+.ios26-forecast-item.enhanced-readability:focus {
+  outline: 2px solid var(--ios26-color-primary) !important;
+  outline-offset: 2px !important;
+}

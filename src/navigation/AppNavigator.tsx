@@ -1195,34 +1195,41 @@ const WeatherMainCard = React.memo(
             </div>
 
             <div className="ios26-temperature-display">
-              <span className="ios-large-title ios26-temperature-value">
+              <span className="ios-large-title ios26-temperature-value ios26-temperature-main enhanced-readability">
                 {Math.round(weather.main.temp)}°
               </span>
-              <span className="ios-title3 ios26-temperature-unit">F</span>
+              <span className="ios-title3 ios26-temperature-unit enhanced-readability">
+                F
+              </span>
             </div>
 
-            <div className="ios-callout ios26-text-secondary ios26-feels-like">
+            <div className="ios-callout ios26-text-secondary ios26-feels-like enhanced-readability">
               Feels like {Math.round(weather.main.feels_like)}°
             </div>
 
-            <div className="ios-title3 ios26-text-primary ios26-text-medium ios26-weather-condition">
+            <div className="ios-title3 ios26-text-primary ios26-text-medium ios26-weather-condition enhanced-readability">
               {weather.weather[0].description}
             </div>
           </div>
-          <div className="ios26-weather-metrics-grid">
+          <div className="ios26-weather-metrics-grid enhanced-readability">
             {weatherDetailItems.map(item => (
-              <div key={item.key} className="ios26-weather-metric">
-                <div className="ios26-weather-metric-content">
-                  <div className="ios26-weather-metric-icon">{item.icon}</div>
-                  <div className="ios26-weather-metric-text">
-                    <div className="ios-title2 ios26-text-primary ios26-weather-metric-value">
+              <div
+                key={item.key}
+                className="ios26-weather-metric enhanced-readability"
+              >
+                <div className="ios26-weather-metric-content enhanced-readability">
+                  <div className="ios26-weather-metric-icon enhanced-readability">
+                    {item.icon}
+                  </div>
+                  <div className="ios26-weather-metric-text enhanced-readability">
+                    <div className="ios-title2 ios26-text-primary ios26-weather-metric-value enhanced-readability">
                       {item.getValue(weather)}
                     </div>
-                    <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label">
+                    <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label enhanced-readability">
                       {item.label}
                     </div>
                     {item.subValue && (
-                      <div className="ios-caption2 ios26-text-tertiary ios26-weather-metric-subtitle">
+                      <div className="ios-caption2 ios26-text-tertiary ios26-weather-metric-subtitle enhanced-readability">
                         {item.subValue(weather)}
                       </div>
                     )}
@@ -1231,14 +1238,16 @@ const WeatherMainCard = React.memo(
               </div>
             ))}
             {weather.uv_index > 0 && (
-              <div className="ios26-weather-metric">
-                <div className="ios26-weather-metric-content">
-                  <div className="ios26-weather-metric-icon">☀️</div>
-                  <div className="ios26-weather-metric-text">
-                    <div className="ios-title2 ios26-text-primary ios26-weather-metric-value">
+              <div className="ios26-weather-metric enhanced-readability">
+                <div className="ios26-weather-metric-content enhanced-readability">
+                  <div className="ios26-weather-metric-icon enhanced-readability">
+                    ☀️
+                  </div>
+                  <div className="ios26-weather-metric-text enhanced-readability">
+                    <div className="ios-title2 ios26-text-primary ios26-weather-metric-value enhanced-readability">
                       {Math.round(weather.uv_index)}
                     </div>
-                    <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label">
+                    <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label enhanced-readability">
                       UV
                     </div>
                   </div>
@@ -1246,14 +1255,16 @@ const WeatherMainCard = React.memo(
               </div>
             )}
             {weather.visibility > 0 && (
-              <div className="ios26-weather-metric">
-                <div className="ios26-weather-metric-content">
-                  <div className="ios26-weather-metric-icon">👁️</div>
-                  <div className="ios26-weather-metric-text">
-                    <div className="ios-title2 ios26-text-primary ios26-weather-metric-value">
+              <div className="ios26-weather-metric enhanced-readability">
+                <div className="ios26-weather-metric-content enhanced-readability">
+                  <div className="ios26-weather-metric-icon enhanced-readability">
+                    👁️
+                  </div>
+                  <div className="ios26-weather-metric-text enhanced-readability">
+                    <div className="ios-title2 ios26-text-primary ios26-weather-metric-value enhanced-readability">
                       {Math.round(weather.visibility / 1000)} km
                     </div>
-                    <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label">
+                    <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label enhanced-readability">
                       VISIBILITY
                     </div>
                   </div>
@@ -1298,19 +1309,19 @@ const HourlyForecastSection = React.memo(
     }
     if (hourlyForecast.length > 0) {
       return (
-        <div className="ios26-forecast-section">
-          <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
+        <div className="ios26-forecast-section enhanced-readability">
+          <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title enhanced-readability">
             Hourly
           </div>
-          <div className="ios26-forecast-scroll">
+          <div className="ios26-forecast-scroll enhanced-readability">
             {hourlyForecast.slice(0, 24).map((hour, index) => {
               const timeStr = formatHourTime(hour.time);
               return (
                 <div
                   key={`hour-${hour.time}-${index}`}
-                  className="ios26-forecast-item"
+                  className="ios26-forecast-item enhanced-readability"
                 >
-                  <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time">
+                  <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time enhanced-readability">
                     {timeStr}
                   </div>
                   <div className="ios26-forecast-icon">
@@ -1320,7 +1331,7 @@ const HourlyForecastSection = React.memo(
                       animated={true}
                     />
                   </div>
-                  <div className="ios26-forecast-temperature">
+                  <div className="ios26-forecast-temperature enhanced-readability">
                     <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
                       {hour.temperature}°F
                     </div>
@@ -1355,8 +1366,8 @@ const DailyForecastSection = React.memo(
   }>) => {
     if (loading && dailyForecast.length === 0) {
       return (
-        <div className="ios26-forecast-section">
-          <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
+        <div className="ios26-forecast-section enhanced-readability">
+          <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title enhanced-readability">
             Daily
           </div>
           <SmartWeatherSkeleton
@@ -1370,11 +1381,11 @@ const DailyForecastSection = React.memo(
     }
     if (dailyForecast.length > 0) {
       return (
-        <div className="ios26-forecast-section">
-          <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
+        <div className="ios26-forecast-section enhanced-readability">
+          <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title enhanced-readability">
             Daily
           </div>
-          <div className="ios26-forecast-scroll">
+          <div className="ios26-forecast-scroll enhanced-readability">
             {dailyForecast.map((day, index) => {
               const { dayName, dateStr, isToday } = formatDayInfo(
                 day.date,
@@ -1383,9 +1394,9 @@ const DailyForecastSection = React.memo(
               return (
                 <div
                   key={`day-${day.date}-${index}`}
-                  className="ios26-forecast-item"
+                  className="ios26-forecast-item enhanced-readability"
                 >
-                  <div className="ios26-forecast-time">
+                  <div className="ios26-forecast-time enhanced-readability">
                     <div
                       className={`ios-subheadline ${
                         isToday
@@ -1409,16 +1420,16 @@ const DailyForecastSection = React.memo(
                   </div>
 
                   <div className="ios26-forecast-temp-range">
-                    <div className="ios-subheadline ios26-text-semibold ios26-text-primary">
+                    <div className="ios-subheadline ios26-text-semibold ios26-text-primary ios26-forecast-temperature enhanced-readability">
                       {day.tempMax}°
                     </div>
-                    <div className="ios-subheadline ios26-text-secondary">
+                    <div className="ios-subheadline ios26-text-secondary ios26-forecast-temperature enhanced-readability">
                       {day.tempMin}°
                     </div>
                   </div>
 
                   {day.precipitation > 0 && (
-                    <div className="ios-caption2 ios26-text-tertiary">
+                    <div className="ios-caption2 ios26-text-tertiary ios26-forecast-precipitation enhanced-readability">
                       🌧️ {day.precipitation}mm
                     </div>
                   )}
