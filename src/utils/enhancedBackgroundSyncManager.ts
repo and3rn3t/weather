@@ -64,7 +64,7 @@ export class EnhancedBackgroundSyncManager {
   queueTask(
     type: SyncTask['type'],
     data: unknown,
-    priority: SyncTask['priority'] = 'medium'
+    priority: SyncTask['priority'] = 'medium',
   ): string {
     const taskId = this.generateTaskId();
     const task: SyncTask = {
@@ -125,7 +125,7 @@ export class EnhancedBackgroundSyncManager {
 
     try {
       logger.info(
-        `🔄 Processing ${task.type} task (attempt ${task.retries + 1})`
+        `🔄 Processing ${task.type} task (attempt ${task.retries + 1})`,
       );
 
       switch (task.type) {
@@ -162,7 +162,7 @@ export class EnhancedBackgroundSyncManager {
         this.syncStats.failedTasks++;
         this.syncStats.pendingTasks--;
         logger.error(
-          `❌ Task ${task.type} failed after ${task.maxRetries} attempts`
+          `❌ Task ${task.type} failed after ${task.maxRetries} attempts`,
         );
       } else {
         // Reschedule with exponential backoff
@@ -170,8 +170,8 @@ export class EnhancedBackgroundSyncManager {
         logger.warn(
           `⚠️ Task ${task.type} failed, retrying in ${Math.pow(
             2,
-            task.retries
-          )}s`
+            task.retries,
+          )}s`,
         );
       }
     }
@@ -186,7 +186,7 @@ export class EnhancedBackgroundSyncManager {
     const { cityName, latitude, longitude } = data;
 
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`,
     );
 
     if (!response.ok) {
@@ -214,8 +214,8 @@ export class EnhancedBackgroundSyncManager {
 
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        query
-      )}&limit=10`
+        query,
+      )}&limit=10`,
     );
 
     if (!response.ok) {
@@ -237,7 +237,7 @@ export class EnhancedBackgroundSyncManager {
     const { latitude, longitude } = data;
 
     const response = await fetch(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
     );
 
     if (!response.ok) {
@@ -249,7 +249,7 @@ export class EnhancedBackgroundSyncManager {
     await this.smartCacheManager.set(
       `location:${latitude},${longitude}`,
       locationData,
-      { priority: 'medium' }
+      { priority: 'medium' },
     );
 
     logger.info(`📍 Cached location data for ${latitude}, ${longitude}`);
@@ -385,7 +385,7 @@ export class EnhancedBackgroundSyncManager {
       localStorage.setItem('background-sync-queue', JSON.stringify(queueData));
       localStorage.setItem(
         'background-sync-stats',
-        JSON.stringify(this.syncStats)
+        JSON.stringify(this.syncStats),
       );
     } catch (error) {
       logger.error('Failed to persist sync queue:', error);

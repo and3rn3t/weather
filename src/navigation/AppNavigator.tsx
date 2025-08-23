@@ -82,6 +82,7 @@ import {
 import WeatherIcon from '../utils/weatherIcons';
 // Enhanced Mobile Components
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
+import WeatherAlertPanel from '../components/mobile/WeatherAlertPanel';
 // Phase 3A: Enhanced Loading States & Progress Indicators
 import {
   BackgroundUpdateIndicator,
@@ -1574,6 +1575,7 @@ const AppNavigator = () => {
   const [selectedView, setSelectedView] = useState(0); // For segmented control
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [showIOSDemo, setShowIOSDemo] = useState(false);
+  const [showWeatherAlertPanel, setShowWeatherAlertPanel] = useState(false);
 
   // iOS26 Enhanced Features State
   const [showLiveActivity, setShowLiveActivity] = useState(false);
@@ -2657,6 +2659,44 @@ const AppNavigator = () => {
             }}
           />
 
+          {/* Phase 5C: Weather Alerts Floating Action Button */}
+          <button
+            onClick={() => setShowWeatherAlertPanel(true)}
+            style={{
+              position: 'fixed',
+              bottom: '80px',
+              right: '20px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              backgroundColor: '#ff6b35',
+              border: 'none',
+              color: 'white',
+              fontSize: '24px',
+              boxShadow: '0 4px 12px rgba(255, 107, 53, 0.4)',
+              cursor: 'pointer',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.boxShadow =
+                '0 6px 16px rgba(255, 107, 53, 0.6)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow =
+                '0 4px 12px rgba(255, 107, 53, 0.4)';
+            }}
+            aria-label="Open weather alerts"
+            title="Weather Alerts"
+          >
+            🚨
+          </button>
+
           {/* Performance Dashboard - Development monitoring */}
           <React.Suspense
             fallback={
@@ -2718,6 +2758,12 @@ const AppNavigator = () => {
               </div>
             )}
         </EnhancedMobileContainer>
+
+        {/* Phase 5C: Weather Alerts Panel */}
+        <WeatherAlertPanel
+          isVisible={showWeatherAlertPanel}
+          onClose={() => setShowWeatherAlertPanel(false)}
+        />
       </LoadingProvider>
     </Dash0ErrorBoundary>
   );
