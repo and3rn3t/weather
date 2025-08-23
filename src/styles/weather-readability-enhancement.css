@@ -3,6 +3,18 @@
    Enhanced typography, layout, and card-based sections for better weather data readability
    ============================================================================ */
 
+/* FIX TOP CUTOFF ISSUE - Weather Details Container Padding */
+.ios26-weather-details-container {
+  padding-top: 1rem !important;
+  margin-top: 0 !important;
+}
+
+.main-content-area {
+  padding-top: calc(var(--safe-top, 20px) + 1rem) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
 /* Enhanced Weather Section Cards - Main Container Styling */
 .ios26-weather-main-card {
   background: var(--ios26-material-regular, rgba(255, 255, 255, 0.12)) !important;
@@ -344,4 +356,122 @@
 .ios26-forecast-item.enhanced-readability:focus {
   outline: 2px solid var(--ios26-color-primary) !important;
   outline-offset: 2px !important;
+}
+
+/* ============================================================================
+   HORROR THEME CARD SHADOW FIX - Overrides poorly designed horror shadows
+   ============================================================================ */
+
+/* Fix horror theme's excessive and poorly designed box shadows on new card components */
+.horror-theme .ios26-weather-main-card,
+.horror-theme .ios26-weather-header-card,
+.horror-theme .ios26-temperature-section-card,
+.horror-theme .ios26-weather-metrics-section {
+  /* Much more visible background with stronger contrast */
+  background: linear-gradient(
+    135deg, 
+    rgba(26, 10, 10, 0.95), 
+    rgba(10, 5, 5, 0.98)
+  ) !important;
+  
+  /* Enhanced border visibility */
+  border: 2px solid rgba(220, 20, 60, 0.6) !important;
+  
+  /* Professional shadows with better contrast */
+  box-shadow: 
+    0 4px 16px rgba(220, 20, 60, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(220, 20, 60, 0.1) !important;
+  
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  
+  /* Ensure text is readable */
+  color: #e8e8e8 !important;
+}
+
+/* Horror theme hover states - more visible and engaging */
+.horror-theme .ios26-weather-main-card:hover,
+.horror-theme .ios26-weather-header-card:hover,
+.horror-theme .ios26-temperature-section-card:hover,
+.horror-theme .ios26-weather-metrics-section:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(30, 12, 12, 0.98), 
+    rgba(15, 8, 8, 1)
+  ) !important;
+  
+  border: 2px solid rgba(220, 20, 60, 0.8) !important;
+  
+  box-shadow: 
+    0 6px 24px rgba(220, 20, 60, 0.35),
+    0 3px 12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(220, 20, 60, 0.2) !important;
+  
+  transform: translateY(-2px) !important;
+}
+
+/* Fix horror theme metric cards with better visibility */
+.horror-theme .ios26-weather-metric.enhanced-readability {
+  background: rgba(26, 10, 10, 0.85) !important;
+  border: 1px solid rgba(220, 20, 60, 0.5) !important;
+  
+  box-shadow: 
+    0 2px 8px rgba(220, 20, 60, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(220, 20, 60, 0.1) !important;
+    
+  color: #e8e8e8 !important;
+}
+
+.horror-theme .ios26-weather-metric.enhanced-readability:hover {
+  background: rgba(30, 12, 12, 0.9) !important;
+  border: 1px solid rgba(220, 20, 60, 0.7) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(220, 20, 60, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(220, 20, 60, 0.15) !important;
+}
+
+/* Fix forecast items in horror theme */
+.horror-theme .ios26-forecast-item.enhanced-readability {
+  background: rgba(26, 10, 10, 0.8) !important;
+  border: 1px solid rgba(220, 20, 60, 0.4) !important;
+  
+  box-shadow: 
+    0 2px 6px rgba(220, 20, 60, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.2) !important;
+    
+  color: #e8e8e8 !important;
+}
+
+.horror-theme .ios26-forecast-item.enhanced-readability:hover {
+  background: rgba(30, 12, 12, 0.85) !important;
+  border: 1px solid rgba(220, 20, 60, 0.6) !important;
+  
+  box-shadow: 
+    0 3px 9px rgba(220, 20, 60, 0.25),
+    0 2px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Enhanced horror theme text readability */
+.horror-theme .ios26-weather-metric-value.enhanced-readability,
+.horror-theme .ios26-temperature-main.enhanced-readability,
+.horror-theme .enhanced-readability {
+  color: #f0f0f0 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.horror-theme .ios26-weather-metric-label.enhanced-readability,
+.horror-theme .ios26-weather-metric-subtitle.enhanced-readability {
+  color: rgba(220, 20, 60, 0.9) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Horror theme card titles and headers */
+.horror-theme .ios26-weather-metrics-title,
+.horror-theme .ios26-text-primary {
+  color: #f0f0f0 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
 }

@@ -121,26 +121,67 @@ body.horror-film-grain::before {
    HORROR WEATHER COMPONENTS
    ============================================================================ */
 
-/* Weather cards in horror theme */
+/* Weather cards in horror theme - COMPREHENSIVE CARD COVERAGE */
 .horror-theme .weather-card,
 .horror-theme .ios26-weather-card,
 .horror-theme .ios26-main-weather-card,
+.horror-theme .ios26-weather-main-card,
+.horror-theme .ios26-weather-header-card,
+.horror-theme .ios26-temperature-section-card,
+.horror-theme .ios26-weather-metrics-section,
 .horror-theme .modern-weather-card,
-.horror-theme .forecast-card {
-  background: linear-gradient(135deg, var(--horror-shadow) 0%, var(--horror-midnight) 50%, var(--horror-void) 100%);
-  border: 1px solid var(--horror-blood);
-  color: #e0e0e0;
-  box-shadow: var(--horror-glow);
-  backdrop-filter: blur(10px);
+.horror-theme .forecast-card,
+.horror-theme .city-card,
+.horror-theme .ios-hig-weather-card,
+.horror-theme .weather-metric-card,
+.horror-theme .mobile-card-enhanced,
+.horror-theme .simple-card,
+.horror-theme .metric-card,
+.horror-theme .mobile-card {
+  background: linear-gradient(
+    135deg, 
+    rgba(26, 10, 10, 0.95) 0%, 
+    rgba(15, 8, 8, 0.98) 50%, 
+    rgba(10, 5, 5, 1) 100%
+  ) !important;
+  border: 2px solid rgba(220, 20, 60, 0.7) !important;
+  color: #e8e8e8 !important;
+  box-shadow: 
+    0 4px 16px rgba(220, 20, 60, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(220, 20, 60, 0.15) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
   transition: all 0.3s ease;
 }
 
 .horror-theme .weather-card:hover,
 .horror-theme .ios26-weather-card:hover,
+.horror-theme .ios26-main-weather-card:hover,
+.horror-theme .ios26-weather-main-card:hover,
+.horror-theme .ios26-weather-header-card:hover,
+.horror-theme .ios26-temperature-section-card:hover,
+.horror-theme .ios26-weather-metrics-section:hover,
 .horror-theme .modern-weather-card:hover,
-.horror-theme .forecast-card:hover {
-  border-color: var(--horror-crimson);
-  box-shadow: 0 0 30px rgba(220, 20, 60, 0.4), 0 0 60px rgba(220, 20, 60, 0.3);
+.horror-theme .forecast-card:hover,
+.horror-theme .city-card:hover,
+.horror-theme .ios-hig-weather-card:hover,
+.horror-theme .weather-metric-card:hover,
+.horror-theme .mobile-card-enhanced:hover,
+.horror-theme .simple-card:hover,
+.horror-theme .metric-card:hover,
+.horror-theme .mobile-card:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(30, 12, 12, 0.98) 0%, 
+    rgba(20, 10, 10, 1) 50%, 
+    rgba(15, 8, 8, 1) 100%
+  ) !important;
+  border: 2px solid rgba(220, 20, 60, 0.9) !important;
+  box-shadow: 
+    0 6px 24px rgba(220, 20, 60, 0.4),
+    0 3px 12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(220, 20, 60, 0.25) !important;
   transform: translateY(-2px);
 }
 
@@ -153,10 +194,74 @@ body.horror-film-grain::before {
 /* Temperature displays */
 .horror-theme .ios26-temperature-value,
 .horror-theme .weather-temperature,
-.horror-theme .enhanced-weather-temperature {
-  color: var(--horror-crimson);
-  text-shadow: var(--horror-text-shadow);
+.horror-theme .enhanced-weather-temperature,
+.horror-theme .ios26-temperature-main,
+.horror-theme .ios26-weather-metric-value,
+.horror-theme .enhanced-readability {
+  color: var(--horror-crimson) !important;
+  text-shadow: var(--horror-text-shadow) !important;
   font-weight: 600;
+}
+
+/* Enhanced horror theme text readability for all cards */
+.horror-theme .ios26-text-primary,
+.horror-theme .ios26-weather-metrics-title,
+.horror-theme h1, .horror-theme h2, .horror-theme h3,
+.horror-theme .weather-title,
+.horror-theme .card-title {
+  color: #f0f0f0 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
+}
+
+.horror-theme .ios26-text-secondary,
+.horror-theme .ios26-weather-metric-label,
+.horror-theme .ios26-weather-metric-subtitle,
+.horror-theme .weather-label,
+.horror-theme .card-subtitle {
+  color: rgba(220, 20, 60, 0.85) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5) !important;
+}
+
+.horror-theme .ios26-text-tertiary,
+.horror-theme .weather-description,
+.horror-theme .card-description {
+  color: rgba(200, 200, 200, 0.8) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Enhanced Horror Theme - Metric Cards and Enhanced Readability */
+.horror-theme .ios26-weather-metric.enhanced-readability,
+.horror-theme .ios26-forecast-item.enhanced-readability {
+  background: rgba(26, 10, 10, 0.9) !important;
+  border: 1px solid rgba(220, 20, 60, 0.6) !important;
+  box-shadow: 
+    0 2px 8px rgba(220, 20, 60, 0.25),
+    0 1px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(220, 20, 60, 0.1) !important;
+  color: #e8e8e8 !important;
+}
+
+.horror-theme .ios26-weather-metric.enhanced-readability:hover,
+.horror-theme .ios26-forecast-item.enhanced-readability:hover {
+  background: rgba(30, 12, 12, 0.95) !important;
+  border: 1px solid rgba(220, 20, 60, 0.8) !important;
+  box-shadow: 
+    0 4px 12px rgba(220, 20, 60, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(220, 20, 60, 0.15) !important;
+}
+
+/* Horror theme forecast sections */
+.horror-theme .ios26-forecast-section.enhanced-readability {
+  background: linear-gradient(
+    135deg, 
+    rgba(26, 10, 10, 0.9), 
+    rgba(15, 8, 8, 0.95)
+  ) !important;
+  border: 2px solid rgba(220, 20, 60, 0.5) !important;
+  box-shadow: 
+    0 4px 16px rgba(220, 20, 60, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ============================================================================
