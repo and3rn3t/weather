@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SmartCacheManager } from '../../services/mobile/SmartCacheManager';
 import { logger } from '../../utils/logger';
 import { offlineStorage } from '../../utils/offlineWeatherStorage';
@@ -45,8 +45,8 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
   });
   const [isVisible, setIsVisible] = useState(true);
 
-  // Smart cache manager instance
-  const smartCacheManager = new SmartCacheManager();
+  // Smart cache manager instance (memoized to avoid recreating on every render)
+  const smartCacheManager = useMemo(() => new SmartCacheManager(), []);
 
   // Update cache statistics
   const updateCacheStats = useCallback(async () => {
@@ -62,7 +62,8 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
     } catch (error) {
       logger.error('Failed to update cache stats:', error);
     }
-  }, [smartCacheManager]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // smartCacheManager is memoized, so it's stable
 
   // Test network latency
   const testNetworkLatency = useCallback(async () => {
@@ -73,7 +74,7 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
 
     try {
       const start = performance.now();
-      await fetch('/favicon.ico', {
+      await fetch('/vite.svg', {
         method: 'HEAD',
         cache: 'no-cache',
       });
