@@ -1,7 +1,77 @@
 /* ============================================================================
-   WEATHER READABILITY OPTIMIZATION
-   Enhanced typography and layout for better weather data readability
+   WEATHER READABILITY OPTIMIZATION - CARD-BASED DESIGN
+   Enhanced typography, layout, and card-based sections for better weather data readability
    ============================================================================ */
+
+/* Enhanced Weather Section Cards - Main Container Styling */
+.ios26-weather-main-card {
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.12)) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.2)) !important;
+  border-radius: 24px !important;
+  padding: 1.5rem !important;
+  margin: 1rem 0 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s var(--ios26-ease-out, ease) !important;
+}
+
+.ios26-weather-main-card:hover {
+  background: var(--ios26-material-thick, rgba(255, 255, 255, 0.18)) !important;
+  border: 1px solid var(--ios26-border-secondary, rgba(255, 255, 255, 0.3)) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Enhanced Weather Header Card */
+.ios26-weather-header-card {
+  background: var(--ios26-material-thin, rgba(255, 255, 255, 0.08)) !important;
+  border: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.15)) !important;
+  border-radius: 16px !important;
+  padding: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  text-align: center !important;
+}
+
+/* Enhanced Temperature Section Card */
+.ios26-temperature-section-card {
+  background: linear-gradient(
+    135deg,
+    var(--ios26-material-regular, rgba(255, 255, 255, 0.12)),
+    var(--ios26-material-thin, rgba(255, 255, 255, 0.08))
+  ) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.2)) !important;
+  border-radius: 20px !important;
+  padding: 2rem 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  text-align: center !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+}
+
+/* Enhanced Weather Metrics Card Container */
+.ios26-weather-metrics-section {
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.12)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.2)) !important;
+  border-radius: 20px !important;
+  padding: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+}
+
+.ios26-weather-metrics-header {
+  margin-bottom: 1rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.15)) !important;
+}
+
+.ios26-weather-metrics-title {
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  color: var(--ios26-text-primary) !important;
+  margin: 0 !important;
+}
 
 /* Enhanced Weather Metrics - Larger, more readable typography */
 .ios26-weather-metric-value.enhanced-readability {
@@ -30,18 +100,20 @@
   min-height: 110px !important;
   display: flex !important;
   align-items: center !important;
-  background: rgba(255, 255, 255, 0.15) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  background: var(--ios26-material-thin, rgba(255, 255, 255, 0.08)) !important;
+  border: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.15)) !important;
+  border-radius: 16px !important;
   transition: all 0.3s ease !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 
 .ios26-weather-metric.enhanced-readability:hover {
-  background: rgba(255, 255, 255, 0.22) !important;
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.15)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.25)) !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Enhanced Weather Metric Content Layout */
+} /* Enhanced Weather Metric Content Layout */
 .ios26-weather-metric-content.enhanced-readability {
   display: flex !important;
   align-items: center !important;
@@ -99,13 +171,49 @@
   margin-bottom: 1.5rem !important;
 }
 
+/* Enhanced Forecast Section Cards */
+.ios26-forecast-section.enhanced-readability {
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.12)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.2)) !important;
+  border-radius: 20px !important;
+  padding: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.ios26-forecast-title.enhanced-readability {
+  font-size: 1.25rem !important; /* 20pt */
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.15)) !important;
+  color: var(--ios26-text-primary) !important;
+}
+
+.ios26-forecast-scroll.enhanced-readability {
+  gap: 1rem !important;
+  padding: 0.5rem 0 !important;
+}
+
 /* Enhanced Forecast Items - Better readability */
 .ios26-forecast-item.enhanced-readability {
   min-width: 90px !important;
   padding: 1rem !important;
   border-radius: 16px !important;
-  background: rgba(255, 255, 255, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: var(--ios26-material-thin, rgba(255, 255, 255, 0.08)) !important;
+  border: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.15)) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ios26-forecast-item.enhanced-readability:hover {
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.15)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.25)) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
 }
 
 .ios26-forecast-time.enhanced-readability {
@@ -133,50 +241,46 @@
   margin-top: 1.5rem !important;
 }
 
-/* Enhanced Forecast Section */
-.ios26-forecast-section.enhanced-readability {
-  padding: 1.5rem !important;
-  border-radius: 20px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  margin-top: 1.5rem !important;
-}
-
-.ios26-forecast-title.enhanced-readability {
-  font-size: 1.25rem !important; /* 20pt */
-  font-weight: 700 !important;
-  margin-bottom: 1rem !important;
-  color: var(--ios26-text-primary) !important;
-}
-
-.ios26-forecast-scroll.enhanced-readability {
-  gap: 1rem !important;
-  padding-bottom: 0.5rem !important;
-}
-
 /* Dark Theme Enhancements for Better Contrast */
+[data-theme='dark'] .ios26-weather-main-card {
+  background: var(--ios26-material-regular, rgba(0, 0, 0, 0.3)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.15)) !important;
+}
+
+[data-theme='dark'] .ios26-weather-header-card,
+[data-theme='dark'] .ios26-temperature-section-card,
+[data-theme='dark'] .ios26-weather-metrics-section {
+  background: var(--ios26-material-thin, rgba(0, 0, 0, 0.2)) !important;
+  border: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.1)) !important;
+}
+
 [data-theme='dark'] .ios26-weather-metric.enhanced-readability {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: var(--ios26-material-thin, rgba(0, 0, 0, 0.15)) !important;
+  border: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.1)) !important;
 }
 
 [data-theme='dark'] .ios26-weather-metric.enhanced-readability:hover {
-  background: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  background: var(--ios26-material-regular, rgba(0, 0, 0, 0.25)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.2)) !important;
 }
 
 [data-theme='dark'] .ios26-weather-metric-icon.enhanced-readability {
-  background: rgba(255, 255, 255, 0.1) !important;
-}
-
-[data-theme='dark'] .ios26-forecast-item.enhanced-readability {
-  background: rgba(0, 0, 0, 0.25) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: var(--ios26-material-thin, rgba(255, 255, 255, 0.05)) !important;
 }
 
 [data-theme='dark'] .ios26-forecast-section.enhanced-readability {
-  background: rgba(0, 0, 0, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: var(--ios26-material-regular, rgba(0, 0, 0, 0.25)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.15)) !important;
+}
+
+[data-theme='dark'] .ios26-forecast-item.enhanced-readability {
+  background: var(--ios26-material-thin, rgba(0, 0, 0, 0.15)) !important;
+  border: 1px solid var(--ios26-border-quaternary, rgba(255, 255, 255, 0.1)) !important;
+}
+
+[data-theme='dark'] .ios26-forecast-item.enhanced-readability:hover {
+  background: var(--ios26-material-regular, rgba(0, 0, 0, 0.25)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.2)) !important;
 }
 
 /* Mobile-Specific Readability Enhancements */
