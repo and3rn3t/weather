@@ -125,6 +125,13 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
     return 'serviceWorker' in navigator;
   };
 
+  // Helper: determine if running on localhost
+  const isLocalhost = (hostname: string): boolean => {
+    return (
+      hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1'
+    );
+  };
+
   const isSecureContext = (): boolean => {
     // Allow HTTPS and production hostnames; skip localhost during dev to avoid SW caching issues
     const { protocol, hostname } = window.location;
@@ -144,11 +151,8 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
 
     // Skip SW registration on localhost/preview to avoid stale caches interfering with dev
     const { hostname } = window.location;
-    const isLocal =
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '::1';
-    if (isLocalhost(hostname) || !isSecureContext()) {
+    const isLocal = isLocalhost(hostname);
+    if (isLocal || !isSecureContext()) {
       logInfo('Service Worker: Skipped in development/localhost');
       return;
     }
@@ -258,7 +262,7 @@ export const useNetworkStatus = () => {
     window.addEventListener('offline', handleOffline);
     window.addEventListener(
       'connectivity-restored',
-      handleConnectivityRestored,
+      handleConnectivityRestored
     );
 
     return () => {
@@ -266,7 +270,7 @@ export const useNetworkStatus = () => {
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener(
         'connectivity-restored',
-        handleConnectivityRestored,
+        handleConnectivityRestored
       );
     };
   }, []);
