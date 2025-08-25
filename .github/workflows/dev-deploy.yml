@@ -62,6 +62,11 @@ jobs:
           npm run lint --silent || echo "⚠️ Lint warnings (non-blocking)"
         continue-on-error: true
 
+      - name: ✨ Prettier check
+        run: |
+          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
+        continue-on-error: true
+
       - name: 🔒 Type-check (PRs)
         if: github.event_name == 'pull_request'
         run: |

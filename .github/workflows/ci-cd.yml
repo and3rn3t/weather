@@ -70,6 +70,13 @@ jobs:
         continue-on-error: true
         timeout-minutes: 1
 
+      - name: ✨ Prettier check
+        if: ${{ !inputs.skip_quality }}
+        run: |
+          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
+        continue-on-error: true
+        timeout-minutes: 1
+
       - name: 🔒 Type-check (PRs)
         if: ${{ github.event_name == 'pull_request' && !inputs.skip_quality }}
         run: |
