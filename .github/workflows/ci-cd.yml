@@ -70,13 +70,18 @@ jobs:
         continue-on-error: true
         timeout-minutes: 1
 
+      - name: 🔒 Type-check (PRs)
+        if: ${{ github.event_name == 'pull_request' && !inputs.skip_quality }}
+        run: |
+          npm run type-check
+
       - name: ⚡ Turbo build
         run: |
           # Ultra-fast build without TypeScript compilation check
           npm run build:ultra
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v5
+      - name: 🚀 Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
