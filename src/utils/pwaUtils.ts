@@ -262,7 +262,7 @@ export const useNetworkStatus = () => {
     window.addEventListener('offline', handleOffline);
     window.addEventListener(
       'connectivity-restored',
-      handleConnectivityRestored
+      handleConnectivityRestored,
     );
 
     return () => {
@@ -270,7 +270,7 @@ export const useNetworkStatus = () => {
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener(
         'connectivity-restored',
-        handleConnectivityRestored
+        handleConnectivityRestored,
       );
     };
   }, []);

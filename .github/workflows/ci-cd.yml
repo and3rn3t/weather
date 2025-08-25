@@ -58,6 +58,14 @@ jobs:
           restore-keys: |
             build-${{ runner.os }}-
 
+      - name: ♻️ Cache ESLint
+        uses: actions/cache@v4
+        with:
+          path: .eslintcache
+          key: eslint-${{ runner.os }}-${{ hashFiles('**/*.ts', '**/*.tsx', 'eslint.config.js', 'package-lock.json') }}
+          restore-keys: |
+            eslint-${{ runner.os }}-
+
       - name: ⚡ Install dependencies (turbo mode)
         run: |
           npm ci --prefer-offline --no-audit --no-fund --silent
@@ -65,10 +73,15 @@ jobs:
       - name: ⚡ Fast quality check
         if: ${{ !inputs.skip_quality }}
         run: |
-          # Run essential checks (non-blocking for speed)
-          npm run lint --silent || echo "⚠️ Lint warnings (non-blocking)"
+          # Run essential checks (non-blocking for speed) with ESLint cache
+          npx eslint . --cache --cache-location .eslintcache || echo "⚠️ Lint warnings (non-blocking)"
         continue-on-error: true
         timeout-minutes: 1
+
+      - name: 🔍 Lint (main - blocking)
+        if: ${{ github.ref_name == 'main' && !inputs.skip_quality }}
+        run: |
+          npm run lint:check
 
       - name: ✨ Prettier check
         if: ${{ !inputs.skip_quality }}

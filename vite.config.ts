@@ -129,7 +129,7 @@ export default defineConfig({
     __BUNDLE_OPTIMIZED__: JSON.stringify(true),
     // Provide compatibility shims for process.env usage in browser code
     'process.env.NODE_ENV': JSON.stringify(
-      process.env.NODE_ENV || 'development'
+      process.env.NODE_ENV || 'development',
     ),
     'process.env': {},
   },
