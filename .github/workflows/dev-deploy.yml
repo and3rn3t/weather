@@ -64,8 +64,7 @@ jobs:
 
       - name: ✨ Prettier check
         run: |
-          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
-        continue-on-error: true
+          npm run format:check
 
       - name: 🔒 Type-check (PRs)
         if: github.event_name == 'pull_request'

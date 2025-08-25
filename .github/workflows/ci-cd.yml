@@ -73,8 +73,7 @@ jobs:
       - name: ✨ Prettier check
         if: ${{ !inputs.skip_quality }}
         run: |
-          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
-        continue-on-error: true
+          npm run format:check
         timeout-minutes: 1
 
       - name: 🔒 Type-check (PRs)

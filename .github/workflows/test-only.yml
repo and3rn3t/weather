@@ -54,8 +54,7 @@ jobs:
 
       - name: ✨ Prettier check
         run: |
-          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
-        continue-on-error: true
+          npm run format:check
 
       - name: 🔒 Type-check
         run: |
