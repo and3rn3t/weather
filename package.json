@@ -186,8 +186,8 @@
     "@capacitor/network": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
     "@dash0/sdk-web": "^0.13.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.2",
@@ -200,7 +200,7 @@
     "@types/axios": "^0.14.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.15",
-    "@types/react": "^19.1.10",
+    "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-v8": "^3.2.4",
