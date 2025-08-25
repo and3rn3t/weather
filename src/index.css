@@ -18,6 +18,9 @@
 /* NEW: iOS Human Interface Guidelines Enhancements */
 @import './styles/ios-hig-enhancements.css';
 
+/* NEW: Weather Readability Enhancement - Better Typography & Contrast */
+@import './styles/weather-readability-enhancement.css';
+
 /* NEW: iOS26 Text Optimization - HIG Compliant Typography */
 @import './styles/ios26-text-optimization.css';
 

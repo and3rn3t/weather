@@ -25,11 +25,12 @@ export interface Dash0Config {
 // Default configuration - replace with your actual Dash0 credentials
 const DEFAULT_CONFIG: Dash0Config = {
   endpointUrl:
-    process.env.VITE_DASH0_ENDPOINT_URL || 'https://ingress.dash0.dev',
-  authToken: process.env.VITE_DASH0_AUTH_TOKEN || 'your-dash0-auth-token-here',
+    import.meta.env.VITE_DASH0_ENDPOINT_URL || 'https://ingress.dash0.dev',
+  authToken:
+    import.meta.env.VITE_DASH0_AUTH_TOKEN || 'your-dash0-auth-token-here',
   serviceName: 'premium-weather-app',
   serviceVersion: '1.0.0',
-  environment: process.env.NODE_ENV || 'development',
+  environment: import.meta.env.MODE || 'development',
   dataset: 'default',
 };
 

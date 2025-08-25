@@ -11,10 +11,12 @@ import { OfflineStatusIndicator } from './components/mobile/OfflineStatusIndicat
 import MobileNavigation, {
   type NavigationScreen,
 } from './components/MobileNavigation';
+import SettingsScreen from './components/SettingsScreen';
 import ErrorBoundary from './ErrorBoundary';
 import './styles/mobileEnhancements.css';
 import { HapticFeedbackProvider } from './utils/hapticContext';
 import { logError } from './utils/logger';
+import type { ScreenInfo } from './utils/mobileScreenOptimization';
 import { ThemeProvider } from './utils/themeContext';
 import ThemeToggle from './utils/ThemeToggle';
 import { useTheme } from './utils/useTheme';
@@ -56,6 +58,21 @@ interface WeatherData {
 // Simple weather component for debugging
 const SimpleWeatherApp: React.FC = () => {
   const { theme } = useTheme();
+
+  // Create basic screen info for SettingsScreen
+  const screenInfo: ScreenInfo = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    isMobile: window.innerWidth < 768,
+    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
+    isDesktop: window.innerWidth >= 1024,
+    orientation:
+      window.innerWidth > window.innerHeight ? 'landscape' : 'portrait',
+    pixelRatio: window.devicePixelRatio || 1,
+    hasNotch: false,
+    safeAreaTop: 0,
+    safeAreaBottom: 0,
+  };
 
   // Navigation state
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
@@ -1496,35 +1513,13 @@ const SimpleWeatherApp: React.FC = () => {
     </div>
   );
 
-  // Settings Screen - Placeholder
+  // Settings Screen - Enhanced Settings with Phase 5A-5C Features
   const renderSettingsScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ color: theme.primaryText, marginBottom: '30px' }}>
-        ⚙️ Settings
-      </h1>
-      <div
-        style={{
-          background: theme.weatherCardBackground,
-          padding: '40px 20px',
-          borderRadius: '16px',
-          border: `1px solid ${theme.weatherCardBorder}`,
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚧</div>
-        <p style={{ color: theme.secondaryText, fontSize: '16px' }}>
-          Settings screen coming soon!
-          <br />
-          Theme toggle is available in the top-right corner.
-        </p>
-      </div>
-    </div>
+    <SettingsScreen
+      theme={theme}
+      screenInfo={screenInfo}
+      onBack={() => setCurrentScreen('Home')}
+    />
   );
 
   return (
