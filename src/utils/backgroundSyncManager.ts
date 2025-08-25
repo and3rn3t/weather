@@ -34,7 +34,7 @@ class BackgroundSyncManager {
   queueRequest(
     type: PendingRequest['type'],
     data: PendingRequest['data'],
-    priority: PendingRequest['priority'] = 'medium',
+    priority: PendingRequest['priority'] = 'medium'
   ): void {
     const pendingRequests = this.getPendingRequests();
 
@@ -106,7 +106,7 @@ class BackgroundSyncManager {
           errors.push(
             `Request ${request.id} failed: ${
               error instanceof Error ? error.message : String(error)
-            }`,
+            }`
           );
         }
       }
@@ -134,7 +134,7 @@ class BackgroundSyncManager {
       switch (type) {
         case 'weather-update': {
           return await this.processWeatherUpdate(
-            data as { cityName: string; latitude: number; longitude: number },
+            data as { cityName: string; latitude: number; longitude: number }
           );
         }
         case 'city-search': {
@@ -142,7 +142,7 @@ class BackgroundSyncManager {
         }
         case 'location-fetch': {
           return await this.processLocationFetch(
-            data as { latitude: number; longitude: number },
+            data as { latitude: number; longitude: number }
           );
         }
         default: {
@@ -170,7 +170,7 @@ class BackgroundSyncManager {
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`
       );
 
       if (!response.ok) {
@@ -200,13 +200,13 @@ class BackgroundSyncManager {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          query,
+          query
         )}&format=json&limit=5`,
         {
           headers: {
             'User-Agent': 'Premium Weather App (https://weather.andernet.dev)',
           },
-        },
+        }
       );
 
       if (!response.ok) {
@@ -221,7 +221,7 @@ class BackgroundSyncManager {
         await offlineStorage.cacheRecentCity(
           query,
           parseFloat(results[0].lat),
-          parseFloat(results[0].lon),
+          parseFloat(results[0].lon)
         );
       }
 
@@ -250,7 +250,7 @@ class BackgroundSyncManager {
           headers: {
             'User-Agent': 'Premium Weather App (https://weather.andernet.dev)',
           },
-        },
+        }
       );
 
       if (!response.ok) {

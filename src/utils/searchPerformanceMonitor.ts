@@ -51,7 +51,7 @@ class SearchPerformanceMonitor {
   endSearch(
     trackingId: string,
     searchType: string,
-    resultsCount: number = 0,
+    resultsCount: number = 0
   ): SearchPerformanceMetrics {
     const endMark = `${trackingId}-end`;
     performance.mark(endMark);

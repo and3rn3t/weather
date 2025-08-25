@@ -11,7 +11,7 @@ interface LazyWeatherDetailsScreenProps {
  * Currently forwards to the main weather display
  */
 function LazyWeatherDetailsScreen(
-  props: Readonly<LazyWeatherDetailsScreenProps>,
+  props: Readonly<LazyWeatherDetailsScreenProps>
 ) {
   const { navigate } = props;
   return (

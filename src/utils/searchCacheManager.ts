@@ -58,7 +58,7 @@ class SearchCacheManager {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(
         CACHE_CONFIG.DATABASE_NAME,
-        CACHE_CONFIG.DATABASE_VERSION,
+        CACHE_CONFIG.DATABASE_VERSION
       );
 
       request.onerror = () => {
@@ -95,7 +95,7 @@ class SearchCacheManager {
     query: string,
     results: unknown[],
     source: 'api' | 'autocorrect' | 'prefetch',
-    metadata: { responseTime: number; accuracy?: number },
+    metadata: { responseTime: number; accuracy?: number }
   ): Promise<void> {
     if (!this.db) {
       console.warn('Cache not initialized');
@@ -124,7 +124,7 @@ class SearchCacheManager {
       }
       const transaction = db.transaction(
         [CACHE_CONFIG.STORE_NAME],
-        'readwrite',
+        'readwrite'
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -195,7 +195,7 @@ class SearchCacheManager {
    * Find fuzzy matches for typos
    */
   private async findFuzzyMatch(
-    query: string,
+    query: string
   ): Promise<CachedSearchResult | null> {
     if (!this.db) return null;
 
@@ -261,7 +261,7 @@ class SearchCacheManager {
         matrix[i][j] = Math.min(
           matrix[i - 1][j] + 1,
           matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost,
+          matrix[i - 1][j - 1] + cost
         );
       }
     }
@@ -284,7 +284,7 @@ class SearchCacheManager {
       }
       const transaction = db.transaction(
         [CACHE_CONFIG.STORE_NAME],
-        'readwrite',
+        'readwrite'
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -330,7 +330,7 @@ class SearchCacheManager {
       }
       const transaction = db.transaction(
         [CACHE_CONFIG.STORE_NAME],
-        'readwrite',
+        'readwrite'
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -339,7 +339,7 @@ class SearchCacheManager {
       request.onsuccess = () => {
         const allEntries = request.result as CachedSearchResult[];
         const expiredEntries = allEntries.filter(
-          entry => !this.isValidCache(entry),
+          entry => !this.isValidCache(entry)
         );
 
         this.deleteExpiredEntries(store, expiredEntries).then(count => {
@@ -379,7 +379,7 @@ class SearchCacheManager {
 
     const transaction = this.db.transaction(
       [CACHE_CONFIG.STORE_NAME],
-      'readonly',
+      'readonly'
     );
     const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -402,7 +402,7 @@ class SearchCacheManager {
 
     const transaction = this.db.transaction(
       [CACHE_CONFIG.STORE_NAME],
-      'readwrite',
+      'readwrite'
     );
     const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
     store.delete(id);
@@ -430,7 +430,7 @@ class SearchCacheManager {
    */
   private deleteExpiredEntries(
     store: IDBObjectStore,
-    entries: CachedSearchResult[],
+    entries: CachedSearchResult[]
   ): Promise<number> {
     const deletions = entries.map(
       entry =>
@@ -438,7 +438,7 @@ class SearchCacheManager {
           const req = store.delete(entry.id);
           req.onsuccess = () => resolve();
           req.onerror = () => resolve();
-        }),
+        })
     );
 
     return Promise.all(deletions).then(() => entries.length);

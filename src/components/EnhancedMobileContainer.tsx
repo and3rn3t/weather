@@ -43,7 +43,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
 
   // Touch state for gestures
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
-    null,
+    null
   );
   const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -88,7 +88,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
         e.preventDefault();
         container.style.transform = `translateY(${Math.min(
           pullDistance * 0.5,
-          60,
+          60
         )}px)`;
       }
     };

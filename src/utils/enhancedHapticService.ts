@@ -212,7 +212,7 @@ export class EnhancedHapticService {
   // ============================================================================
 
   private async executeNativeHaptic(
-    pattern: HapticPatternType,
+    pattern: HapticPatternType
   ): Promise<boolean> {
     if (!this.isNative || !this.config.enabled) {
       return false;

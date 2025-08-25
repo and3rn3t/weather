@@ -139,7 +139,7 @@ export const useDash0Telemetry = (): Dash0TelemetryHook => {
         } else {
           // eslint-disable-next-line no-console
           console.debug(
-            `Operation (fallback): ${name} completed in ${duration}ms`,
+            `Operation (fallback): ${name} completed in ${duration}ms`
           );
         }
 
@@ -162,7 +162,7 @@ export const useDash0Telemetry = (): Dash0TelemetryHook => {
           // eslint-disable-next-line no-console
           console.debug(
             `Operation (fallback): ${name} failed after ${duration}ms`,
-            error,
+            error
           );
         }
 

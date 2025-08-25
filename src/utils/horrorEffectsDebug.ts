@@ -10,7 +10,7 @@ export const debugHorrorTheme = () => {
   console.log('HTML classes:', document.documentElement.className);
   console.log(
     'Theme in localStorage:',
-    localStorage.getItem('weatherAppTheme'),
+    localStorage.getItem('weatherAppTheme')
   );
 
   // Check if horror CSS is loaded
@@ -64,17 +64,17 @@ export const forceHorrorEffects = () => {
     (element as HTMLElement).style.setProperty(
       'animation',
       'bloodDrip 4s infinite ease-in-out',
-      'important',
+      'important'
     );
     (element as HTMLElement).style.setProperty(
       'filter',
       'drop-shadow(0 2px 10px rgba(139, 0, 0, 0.8))',
-      'important',
+      'important'
     );
     console.log(
       `Added blood drip to element ${index + 1}:`,
       element.tagName,
-      element.className,
+      element.className
     );
   });
 
@@ -90,12 +90,12 @@ export const forceHorrorEffects = () => {
     (element as HTMLElement).style.setProperty(
       'animation',
       'flickeringHorror 3s infinite ease-in-out',
-      'important',
+      'important'
     );
     console.log(
       `Added flicker to element ${index + 1}:`,
       element.tagName,
-      element.className,
+      element.className
     );
   });
 
@@ -145,7 +145,7 @@ if (typeof window !== 'undefined') {
   setTimeout(() => {
     debugHorrorTheme();
     console.log(
-      '💀 Horror debug loaded. Run forceHorrorEffects() in console to force effects.',
+      '💀 Horror debug loaded. Run forceHorrorEffects() in console to force effects.'
     );
   }, 2000);
 }

@@ -20,20 +20,20 @@ const forceHorrorEffectsNow = (): void => {
     el.style.setProperty(
       'animation',
       'bloodDrip 4s infinite ease-in-out',
-      'important',
+      'important'
     );
     el.style.setProperty(
       'filter',
       'drop-shadow(0 2px 10px rgba(139, 0, 0, 0.8))',
-      'important',
+      'important'
     );
     el.style.setProperty(
       'text-shadow',
       '0 0 10px rgba(139, 0, 0, 0.8)',
-      'important',
+      'important'
     );
     logInfo(
-      `Added blood drip to element ${index + 1}: ${el.tagName} ${el.className}`,
+      `Added blood drip to element ${index + 1}: ${el.tagName} ${el.className}`
     );
   });
 
@@ -47,10 +47,10 @@ const forceHorrorEffectsNow = (): void => {
     el.style.setProperty(
       'animation',
       'flickeringHorror 3s infinite ease-in-out',
-      'important',
+      'important'
     );
     logInfo(
-      `Added flicker to element ${index + 1}: ${el.tagName} ${el.className}`,
+      `Added flicker to element ${index + 1}: ${el.tagName} ${el.className}`
     );
   });
 
@@ -66,7 +66,7 @@ const forceHorrorEffectsNow = (): void => {
   document.body.style.setProperty(
     'background',
     'linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%)',
-    'important',
+    'important'
   );
   document.body.style.setProperty('background-color', '#0d0d0d', 'important');
 };
@@ -84,16 +84,16 @@ const HorrorThemeActivator: React.FC = () => {
       document.body.classList.add('horror-film-grain');
       setTimeout(() => {
         const headers = document.querySelectorAll(
-          'h1, h2, h3, .temperature-display',
+          'h1, h2, h3, .temperature-display'
         );
         headers.forEach(header =>
-          (header as HTMLElement).classList.add('horror-blood-drip'),
+          (header as HTMLElement).classList.add('horror-blood-drip')
         );
         const texts = document.querySelectorAll(
-          '.weather-description, .forecast-day, .metric-label',
+          '.weather-description, .forecast-day, .metric-label'
         );
         texts.forEach(el =>
-          (el as HTMLElement).classList.add('horror-flicker'),
+          (el as HTMLElement).classList.add('horror-flicker')
         );
       }, 500);
       document.title = '🎃 Crystal Lake Weather Station';
@@ -101,25 +101,25 @@ const HorrorThemeActivator: React.FC = () => {
       document.body.classList.remove('horror-film-grain');
       document.title = '🌤️ Weather App';
       const elements = document.querySelectorAll(
-        '.horror-blood-drip, .horror-flicker',
+        '.horror-blood-drip, .horror-flicker'
       );
       elements.forEach(el =>
         (el as HTMLElement).classList.remove(
           'horror-blood-drip',
-          'horror-flicker',
-        ),
+          'horror-flicker'
+        )
       );
     }
     return () => {
       document.body.classList.remove('horror-film-grain');
       const elements = document.querySelectorAll(
-        '.horror-blood-drip, .horror-flicker',
+        '.horror-blood-drip, .horror-flicker'
       );
       elements.forEach(el =>
         (el as HTMLElement).classList.remove(
           'horror-blood-drip',
-          'horror-flicker',
-        ),
+          'horror-flicker'
+        )
       );
     };
   }, [isHorror]);

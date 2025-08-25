@@ -40,7 +40,7 @@ const SmartContentWrapper: React.FC<SmartContentWrapperProps> = ({
       {
         threshold: 0.1,
         rootMargin: '50px',
-      },
+      }
     );
 
     const element = document.getElementById(`content-${priority.id}`);

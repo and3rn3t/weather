@@ -46,7 +46,7 @@ const WeatherAlertPanel: React.FC<WeatherAlertPanelProps> = ({
   }, [isVisible, loadData]);
 
   const unreadCount = alerts.filter(
-    (alert: WeatherAlert) => !alert.isRead,
+    (alert: WeatherAlert) => !alert.isRead
   ).length;
 
   const handleMarkAsRead = (alertId: string) => {

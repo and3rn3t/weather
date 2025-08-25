@@ -91,7 +91,7 @@ export class BackgroundRefreshService {
   }
 
   static getInstance(
-    config?: Partial<BackgroundRefreshConfig>,
+    config?: Partial<BackgroundRefreshConfig>
   ): BackgroundRefreshService {
     if (!BackgroundRefreshService.instance) {
       BackgroundRefreshService.instance = new BackgroundRefreshService(config);
@@ -152,7 +152,7 @@ export class BackgroundRefreshService {
       'appStateChange',
       ({ isActive }) => {
         this.handleAppStateChange(isActive);
-      },
+      }
     );
 
     // Network status monitoring
@@ -160,7 +160,7 @@ export class BackgroundRefreshService {
       'networkStatusChange',
       status => {
         this.handleNetworkChange(status.connected);
-      },
+      }
     );
 
     this.log('Native monitoring initialized');
@@ -207,7 +207,7 @@ export class BackgroundRefreshService {
 
       if (shouldForceRefresh && this.isOnline) {
         this.log(
-          `Force refresh triggered after ${Math.round(timeInBackground / 60000)} minutes in background`,
+          `Force refresh triggered after ${Math.round(timeInBackground / 60000)} minutes in background`
         );
         this.performRefresh({
           type: 'forced',
@@ -328,7 +328,7 @@ export class BackgroundRefreshService {
     }, intervalMs);
 
     this.log(
-      `Foreground refresh started (${this.config.foregroundInterval} minute interval)`,
+      `Foreground refresh started (${this.config.foregroundInterval} minute interval)`
     );
   }
 
@@ -365,7 +365,7 @@ export class BackgroundRefreshService {
     }, intervalMs);
 
     this.log(
-      `Background refresh scheduled in ${Math.round(intervalMs / 60000)} minutes`,
+      `Background refresh scheduled in ${Math.round(intervalMs / 60000)} minutes`
     );
   }
 
@@ -461,7 +461,7 @@ export class BackgroundRefreshService {
   private updateStats(
     type: RefreshContext['type'],
     duration: number,
-    success: boolean,
+    success: boolean
   ): void {
     this.stats.totalRefreshes++;
 
@@ -589,7 +589,7 @@ export class BackgroundRefreshService {
 
 // Export singleton instance creator
 export const createBackgroundRefreshService = (
-  config?: Partial<BackgroundRefreshConfig>,
+  config?: Partial<BackgroundRefreshConfig>
 ) => {
   return BackgroundRefreshService.getInstance(config);
 };
@@ -606,7 +606,7 @@ export const getDefaultConfig = (): BackgroundRefreshConfig => ({
  * createOptimizedConfig - Creates and configures optimizedconfig
  */
 export const createOptimizedConfig = (
-  platform: 'mobile' | 'web' = 'mobile',
+  platform: 'mobile' | 'web' = 'mobile'
 ): BackgroundRefreshConfig => {
   const baseConfig = getDefaultConfig();
 

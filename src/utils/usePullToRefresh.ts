@@ -32,7 +32,7 @@ interface PullToRefreshState {
  */
 export const usePullToRefresh = (
   onRefresh: () => Promise<void>,
-  options: PullToRefreshOptions = {},
+  options: PullToRefreshOptions = {}
 ) => {
   const {
     maxPullDistance = 120,
@@ -91,7 +91,7 @@ export const usePullToRefresh = (
         setState(prev => ({ ...prev, isPulling: true }));
       }
     },
-    [disabled, state.isRefreshing, canPull, haptic],
+    [disabled, state.isRefreshing, canPull, haptic]
   );
 
   // Handle touch move
@@ -142,7 +142,7 @@ export const usePullToRefresh = (
       refreshThreshold,
       resetState,
       haptic,
-    ],
+    ]
   );
 
   // Handle touch end
@@ -224,7 +224,7 @@ export const usePullToRefresh = (
         pointerEvents: 'none' as const,
       };
     },
-    [state, refreshThreshold],
+    [state, refreshThreshold]
   );
 
   // Get refresh icon rotation
@@ -241,7 +241,7 @@ export const usePullToRefresh = (
 
     return `rotate(${Math.min(
       (pullDistance / refreshThreshold) * 180,
-      180,
+      180
     )}deg)`;
   }, [state, refreshThreshold]);
 

@@ -147,7 +147,7 @@ export class WeatherAlertManager {
   async processWeatherData(
     weatherData: WeatherDataLike,
     location: string,
-    coordinates?: { lat: number; lon: number },
+    coordinates?: { lat: number; lon: number }
   ): Promise<WeatherAlert[]> {
     try {
       const triggeredAlerts: WeatherAlert[] = [];
@@ -174,7 +174,7 @@ export class WeatherAlertManager {
         const alertTriggered = await this.evaluateAlertConditions(
           rule,
           weatherData,
-          location,
+          location
         );
         if (alertTriggered) {
           // Check for duplicate recent alerts
@@ -184,7 +184,7 @@ export class WeatherAlertManager {
               rule,
               weatherData,
               location,
-              coordinates,
+              coordinates
             );
             triggeredAlerts.push(alert);
             this.addAlert(alert);
@@ -196,7 +196,7 @@ export class WeatherAlertManager {
       const severeWeatherAlerts = await this.processSevereWeatherWarnings(
         weatherData,
         location,
-        coordinates,
+        coordinates
       );
       triggeredAlerts.push(...severeWeatherAlerts);
 
@@ -230,7 +230,7 @@ export class WeatherAlertManager {
   private async evaluateAlertConditions(
     rule: AlertRule,
     weatherData: WeatherDataLike,
-    location: string,
+    location: string
   ): Promise<boolean> {
     try {
       const conditions = rule.conditions;
@@ -298,7 +298,7 @@ export class WeatherAlertManager {
   private async processSevereWeatherWarnings(
     weatherData: WeatherDataLike,
     location: string,
-    coordinates?: { lat: number; lon: number },
+    coordinates?: { lat: number; lon: number }
   ): Promise<WeatherAlert[]> {
     const severeAlerts: WeatherAlert[] = [];
 
@@ -313,7 +313,7 @@ export class WeatherAlertManager {
           const existingAlert = this.findRecentAlert(
             { id: 'severe-weather', type: 'general' } as AlertRule,
             location,
-            120, // 2 hours
+            120 // 2 hours
           );
 
           if (!existingAlert) {
@@ -357,7 +357,7 @@ export class WeatherAlertManager {
     // Cleanup old alerts based on preferences
     const cutoffDate = new Date();
     cutoffDate.setDate(
-      cutoffDate.getDate() - this.preferences.alertHistoryDays,
+      cutoffDate.getDate() - this.preferences.alertHistoryDays
     );
 
     this.alerts = this.alerts.filter(a => a.createdAt >= cutoffDate);
@@ -375,7 +375,7 @@ export class WeatherAlertManager {
     rule: AlertRule,
     weatherData: WeatherDataLike,
     location: string,
-    coordinates?: { lat: number; lon: number },
+    coordinates?: { lat: number; lon: number }
   ): WeatherAlert {
     const current = weatherData.current_weather || weatherData.current || {};
 
@@ -401,7 +401,7 @@ export class WeatherAlertManager {
   private formatAlertDescription(
     rule: AlertRule,
     weatherData: CurrentWeatherLike,
-    location: string,
+    location: string
   ): string {
     let description = rule.description;
 
@@ -409,15 +409,15 @@ export class WeatherAlertManager {
     description = description.replace('{location}', location);
     description = description.replace(
       '{temperature}',
-      `${weatherData.temperature || weatherData.temperature_2m || 'N/A'}°F`,
+      `${weatherData.temperature || weatherData.temperature_2m || 'N/A'}°F`
     );
     description = description.replace(
       '{windSpeed}',
-      `${weatherData.windspeed || weatherData.wind_speed_10m || 'N/A'} mph`,
+      `${weatherData.windspeed || weatherData.wind_speed_10m || 'N/A'} mph`
     );
     description = description.replace(
       '{time}',
-      new Date().toLocaleTimeString(),
+      new Date().toLocaleTimeString()
     );
 
     return description;
@@ -437,7 +437,7 @@ export class WeatherAlertManager {
       // Check notification permission
       if (this.notificationPermission !== 'granted') {
         logger.warn(
-          'Notification permission not granted, skipping notification',
+          'Notification permission not granted, skipping notification'
         );
         return;
       }
@@ -545,14 +545,14 @@ export class WeatherAlertManager {
   private isLocationMatch(
     rule: AlertRule,
     location: string,
-    coordinates?: { lat: number; lon: number },
+    coordinates?: { lat: number; lon: number }
   ): boolean {
     if (rule.locations.includes('current') && coordinates) {
       return true;
     }
 
     return rule.locations.some(
-      ruleLocation => ruleLocation.toLowerCase() === location.toLowerCase(),
+      ruleLocation => ruleLocation.toLowerCase() === location.toLowerCase()
     );
   }
 
@@ -597,7 +597,7 @@ export class WeatherAlertManager {
     const currentTime = new Date();
     return !this.isTimeRangeMatch(
       { timeRange: this.preferences.quietHours } as AlertRule,
-      currentTime,
+      currentTime
     );
   }
 
@@ -607,7 +607,7 @@ export class WeatherAlertManager {
   private findRecentAlert(
     rule: { id: string; type: AlertType },
     location: string,
-    minutesBack: number,
+    minutesBack: number
   ): WeatherAlert | undefined {
     const cutoffTime = new Date();
     cutoffTime.setMinutes(cutoffTime.getMinutes() - minutesBack);
@@ -616,7 +616,7 @@ export class WeatherAlertManager {
       alert =>
         alert.type === rule.type &&
         alert.location === location &&
-        alert.createdAt >= cutoffTime,
+        alert.createdAt >= cutoffTime
     );
   }
 
@@ -655,7 +655,7 @@ export class WeatherAlertManager {
    */
   private getWeatherCodeDescription(
     weatherCode: number,
-    weatherData: CurrentWeatherLike,
+    weatherData: CurrentWeatherLike
   ): string {
     const temp = weatherData.temperature || weatherData.temperature_2m || 'N/A';
     const wind = weatherData.windspeed || weatherData.wind_speed_10m || 'N/A';
@@ -919,15 +919,15 @@ export class WeatherAlertManager {
       localStorage.setItem('weatherAlerts', JSON.stringify(this.alerts));
       localStorage.setItem(
         'weatherAlertRules',
-        JSON.stringify(this.alertRules),
+        JSON.stringify(this.alertRules)
       );
       localStorage.setItem(
         'weatherAlertPreferences',
-        JSON.stringify(this.preferences),
+        JSON.stringify(this.preferences)
       );
       localStorage.setItem(
         'weatherAlertCounts',
-        JSON.stringify(Array.from(this.alertCounts.entries())),
+        JSON.stringify(Array.from(this.alertCounts.entries()))
       );
     } catch (error) {
       logger.error('Error saving alert data', { error });

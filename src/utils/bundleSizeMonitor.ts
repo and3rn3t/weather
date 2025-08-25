@@ -32,10 +32,10 @@ class BundleSizeMonitor {
     try {
       // Navigation entries available if needed in future
       performance.getEntriesByType(
-        'navigation',
+        'navigation'
       ) as PerformanceNavigationTiming[];
       const resourceEntries = performance.getEntriesByType(
-        'resource',
+        'resource'
       ) as PerformanceResourceTiming[];
 
       // Calculate total bundle size from resource entries
@@ -44,7 +44,7 @@ class BundleSizeMonitor {
           entry =>
             entry.name.includes('.js') ||
             entry.name.includes('.css') ||
-            entry.name.includes('.wasm'),
+            entry.name.includes('.wasm')
         )
         .reduce((total, entry) => {
           // Use transferSize if available, otherwise decodedBodySize
@@ -196,7 +196,7 @@ class BundleSizeMonitor {
     // Average bundle size
     const totalSize = this.metrics.reduce(
       (sum, m) => sum + m.totalBundleSize,
-      0,
+      0
     );
     const averageBundleSize = totalSize / this.metrics.length;
 
@@ -279,7 +279,7 @@ class BundleSizeMonitor {
     if (stats.averageLazyLoadTime > 1000) {
       // > 1 second
       recommendations.push(
-        'Lazy loaded components are taking too long to load',
+        'Lazy loaded components are taking too long to load'
       );
     }
 

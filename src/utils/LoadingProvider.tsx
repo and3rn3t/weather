@@ -34,7 +34,7 @@ const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) => {
         return newStates;
       });
     },
-    [],
+    []
   );
 
   const setError = useCallback((operation: LoadingOperation, error: string) => {
@@ -82,7 +82,7 @@ const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) => {
       if (retryCount >= 3) {
         setError(
           operation,
-          'Maximum retry attempts reached. Please try again later.',
+          'Maximum retry attempts reached. Please try again later.'
         );
         return;
       }
@@ -96,22 +96,22 @@ const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) => {
       } catch (error) {
         setError(
           operation,
-          error instanceof Error ? error.message : 'Operation failed',
+          error instanceof Error ? error.message : 'Operation failed'
         );
       }
     },
-    [loadingStates, setLoading, setError, clearError],
+    [loadingStates, setLoading, setError, clearError]
   );
 
   const isAnyLoading = Array.from(loadingStates.values()).some(
-    state => state.isLoading,
+    state => state.isLoading
   );
 
   const getLoadingState = useCallback(
     (operation: LoadingOperation) => {
       return loadingStates.get(operation);
     },
-    [loadingStates],
+    [loadingStates]
   );
 
   const contextValue: LoadingContextType = useMemo(
@@ -132,7 +132,7 @@ const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) => {
       retry,
       isAnyLoading,
       getLoadingState,
-    ],
+    ]
   );
 
   return (

@@ -26,7 +26,7 @@ export const useHapticContext = (): HapticFeedbackContextType => {
 
   if (context === undefined) {
     throw new Error(
-      'useHapticContext must be used within a HapticFeedbackProvider',
+      'useHapticContext must be used within a HapticFeedbackProvider'
     );
   }
 

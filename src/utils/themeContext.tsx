@@ -98,7 +98,7 @@ export const ThemeProvider = ({
       // NUCLEAR FIX: Completely disable automatic background changes
       // Let the nuclear system in index.html handle all background changes
       logInfo(
-        '🚫 React theme context disabled - nuclear system handling background',
+        '🚫 React theme context disabled - nuclear system handling background'
       );
 
       // Remove all theme classes first
@@ -142,7 +142,7 @@ export const ThemeProvider = ({
       isDark,
       isHorror,
     }),
-    [theme, themeName, toggleTheme, isDark, isHorror],
+    [theme, themeName, toggleTheme, isDark, isHorror]
   );
 
   return (

@@ -45,7 +45,7 @@ export const useSmartContentPriority = (weatherContext: WeatherContext) => {
           ? ('landscape' as const)
           : ('portrait' as const),
     }),
-    [],
+    []
   );
 
   const [userPreferences, setUserPreferences] = useState({
@@ -153,7 +153,7 @@ export const useSmartContentPriority = (weatherContext: WeatherContext) => {
   }, [deviceInfo, weatherContext, userPreferences]);
 
   const [contentPriorities, setContentPriorities] = useState<ContentPriority[]>(
-    [],
+    []
   );
 
   useEffect(() => {
@@ -183,7 +183,7 @@ export const useSmartContentPriority = (weatherContext: WeatherContext) => {
     (newPreferences: Partial<typeof userPreferences>) => {
       setUserPreferences(prev => ({ ...prev, ...newPreferences }));
     },
-    [],
+    []
   );
 
   // Auto-adjust based on extreme weather

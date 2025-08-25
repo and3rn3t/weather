@@ -120,7 +120,7 @@ export class NativeGeolocationService {
           enableHighAccuracy: true,
           timeout: 15000,
           maximumAge: 60000,
-        },
+        }
       );
     });
   }
@@ -129,7 +129,7 @@ export class NativeGeolocationService {
    * Watch position changes for real-time updates
    */
   async startWatching(
-    callback: (location: LocationResult) => void,
+    callback: (location: LocationResult) => void
   ): Promise<void> {
     try {
       if (!Capacitor.isNativePlatform()) {
@@ -151,7 +151,7 @@ export class NativeGeolocationService {
               timestamp: position.timestamp,
             });
           }
-        },
+        }
       );
     } catch (error) {
       logError('Failed to start location watching:', error);
@@ -381,7 +381,7 @@ export class WeatherNotificationService {
   async sendWeatherUpdate(
     temperature: number,
     condition: string,
-    city: string,
+    city: string
   ): Promise<void> {
     const alert: WeatherAlert = {
       id: `weather-update-${Date.now()}`,
@@ -399,7 +399,7 @@ export class WeatherNotificationService {
   async sendSevereWeatherAlert(
     alertType: string,
     description: string,
-    city: string,
+    city: string
   ): Promise<void> {
     const alert: WeatherAlert = {
       id: `severe-alert-${Date.now()}`,

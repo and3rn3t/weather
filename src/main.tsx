@@ -24,7 +24,7 @@ const log = (...args: unknown[]) => {
   if (!devOverlay) return;
   const line = document.createElement('div');
   const parts = args.map(v =>
-    v instanceof Error ? v.stack || v.message : String(v),
+    v instanceof Error ? v.stack || v.message : String(v)
   );
   const built = parts.join(' ');
   const time = new Date().toLocaleTimeString();
@@ -83,7 +83,7 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
                 k.startsWith('weather-') ||
                 k.includes('vite') ||
                 k.includes('workbox') ||
-                k.includes('static'),
+                k.includes('static')
             );
             await Promise.all(deletable.map((k: string) => caches.delete(k)));
           }
@@ -208,7 +208,7 @@ if (rootElement) {
         'style',
         'position:fixed;top:24px;left:0;right:0;z-index:2147483647;background:#fee2e2;color:#991b1b;' +
           'border-bottom:1px solid #fecaca;font:600 12px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;' +
-          'padding:6px 10px;text-align:center',
+          'padding:6px 10px;text-align:center'
       );
       bar.textContent = `DEV ERROR: ${String(err)}`;
       document.body.appendChild(bar);

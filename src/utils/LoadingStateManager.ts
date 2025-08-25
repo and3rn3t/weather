@@ -35,7 +35,7 @@ export interface LoadingContextType {
 }
 
 export const LoadingContext = createContext<LoadingContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export const useLoading = () => {

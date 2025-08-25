@@ -43,7 +43,7 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
     window.dispatchEvent(
       new CustomEvent('themeChanged', {
         detail: { theme: nextTheme },
-      }),
+      })
     );
 
     logInfo(`🎨 Theme changed to: ${nextTheme}`);
@@ -98,7 +98,7 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
         transition: 'all 0.3s ease',
       },
     },
-    getThemeIcon(),
+    getThemeIcon()
   );
 };
 

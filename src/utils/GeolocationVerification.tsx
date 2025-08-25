@@ -60,7 +60,7 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
       locationData.address?.city ||
       locationData.address?.display ||
       `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(
-        4,
+        4
       )}`;
 
     onConfirm(cityName, locationData.latitude, locationData.longitude);

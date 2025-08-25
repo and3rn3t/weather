@@ -151,7 +151,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
             headers: {
               'User-Agent': 'EnhancedWeatherApp/2.0 (US Location Search)',
             },
-          },
+          }
         );
 
         if (!response.ok) {
@@ -219,13 +219,13 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
           // If no results with US focus, try global search
           const globalResponse = await fetch(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-              searchQuery,
+              searchQuery
             )}&format=json&limit=10&addressdetails=1`,
             {
               headers: {
                 'User-Agent': 'EnhancedWeatherApp/2.0 (Global Search)',
               },
-            },
+            }
           );
 
           if (globalResponse.ok) {
@@ -257,7 +257,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
           if (cityResults.length === 0) {
             setError(
-              'No cities found. Try a different search term or check spelling.',
+              'No cities found. Try a different search term or check spelling.'
             );
           }
         }
@@ -269,7 +269,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         setIsLoading(false);
       }
     },
-    [formatCityDisplay],
+    [formatCityDisplay]
   );
 
   // Debounced search
@@ -288,7 +288,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         performSearch(value);
       }, 300);
     },
-    [performSearch],
+    [performSearch]
   );
 
   // Handle city selection
@@ -300,7 +300,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       await interactionFeedback.onSuccess();
       await weatherAnnouncements.announceStateChange(
         'location-changed',
-        `Selected location: ${city.name}`,
+        `Selected location: ${city.name}`
       );
 
       const latitude = parseFloat(city.lat);
@@ -315,7 +315,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       setRecentSearches(newRecent);
       localStorage.setItem(
         'weather-recent-searches',
-        JSON.stringify(newRecent),
+        JSON.stringify(newRecent)
       );
 
       logInfo(`Selected city: ${city.name} (${latitude}, ${longitude})`);
@@ -327,7 +327,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       recentSearches,
       interactionFeedback,
       weatherAnnouncements,
-    ],
+    ]
   );
 
   // Handle recent search selection
@@ -339,14 +339,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       await interactionFeedback.onSuccess();
       await weatherAnnouncements.announceStateChange(
         'location-changed',
-        `Selected recent location: ${result.name}`,
+        `Selected recent location: ${result.name}`
       );
 
       const latitude = parseFloat(result.lat);
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements],
+    [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements]
   );
 
   // Get current location
@@ -369,7 +369,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         onLocationSelect(
           'Current Location',
           position.coords.latitude,
-          position.coords.longitude,
+          position.coords.longitude
         );
       },
       error => {
@@ -382,7 +382,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 300000,
-      },
+      }
     );
   }, [haptic, onLocationSelect]);
 
@@ -404,7 +404,7 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: theme.appBackground,
       color: theme.primaryText,
     }),
-    [theme],
+    [theme]
   );
 
   const searchContainerStyles = useMemo(
@@ -412,14 +412,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       background: `${theme.primaryGradient}10`,
       borderColor: `${theme.primaryGradient}30`,
     }),
-    [theme],
+    [theme]
   );
 
   const resultItemStyles = useMemo(
     () => ({
       borderColor: `${theme.primaryGradient}20`,
     }),
-    [theme],
+    [theme]
   );
 
   return (

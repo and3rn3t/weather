@@ -293,7 +293,7 @@ export function usePerformanceMonitor(config: PerformanceConfig) {
         });
       }
     },
-    [config.componentName, config.trackInteractions, telemetry],
+    [config.componentName, config.trackInteractions, telemetry]
   );
 
   return {
@@ -325,7 +325,7 @@ export class WeatherApiPerformanceMonitor {
   async monitorApiCall<T>(
     apiName: string,
     apiCall: () => Promise<T>,
-    city?: string,
+    city?: string
   ): Promise<T> {
     const markStart = `${apiName}_start_${Date.now()}`;
     const markEnd = `${apiName}_end_${Date.now()}`;
@@ -356,7 +356,7 @@ export class WeatherApiPerformanceMonitor {
         dash0Telemetry.trackPerformance(
           `api_${apiName}_duration`,
           duration,
-          'milliseconds',
+          'milliseconds'
         );
         dash0Telemetry.trackUserInteraction(`api_${apiName}_success`, {
           city: city || 'unknown',
@@ -404,7 +404,7 @@ export class WeatherApiPerformanceMonitor {
    */
   getPerformanceSummary(): Record<string, unknown> {
     const navigation = performance.getEntriesByType(
-      'navigation',
+      'navigation'
     )[0] as PerformanceNavigationTiming;
 
     return {
@@ -422,7 +422,7 @@ export class WeatherApiPerformanceMonitor {
   private getFirstContentfulPaint(): number {
     const paintEntries = performance.getEntriesByType('paint');
     const fcp = paintEntries.find(
-      entry => entry.name === 'first-contentful-paint',
+      entry => entry.name === 'first-contentful-paint'
     );
     return fcp ? fcp.startTime : 0;
   }

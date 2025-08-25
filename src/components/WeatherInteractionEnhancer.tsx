@@ -61,7 +61,7 @@ const WeatherInteractionEnhancer: React.FC<WeatherInteractionEnhancerProps> = ({
     }
 
     logInteraction(
-      `Weather card tap - Code: ${weatherCode}, Temp: ${temperature}°`,
+      `Weather card tap - Code: ${weatherCode}, Temp: ${temperature}°`
     );
     onWeatherCardTap?.();
   }, [

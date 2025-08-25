@@ -94,7 +94,7 @@ class FastLocationManager {
     // Prevent multiple simultaneous requests
     if (this.currentRequest) {
       logInfo(
-        '⏳ FastLocationService: Request already in progress, waiting...',
+        '⏳ FastLocationService: Request already in progress, waiting...'
       );
       return this.currentRequest;
     }
@@ -103,7 +103,7 @@ class FastLocationManager {
       this.currentRequest = this.executeOptimizedLocationRequest(
         prioritizeSpeed,
         includeCityName,
-        startTime,
+        startTime
       );
       return await this.currentRequest;
     } finally {
@@ -117,7 +117,7 @@ class FastLocationManager {
   private async executeOptimizedLocationRequest(
     prioritizeSpeed: boolean,
     includeCityName: boolean,
-    startTime: number,
+    startTime: number
   ): Promise<FastLocationResult | null> {
     if (!navigator.geolocation) {
       throw new Error('Geolocation not supported');
@@ -130,7 +130,7 @@ class FastLocationManager {
       if (prioritizeSpeed) {
         logInfo('🏃 FastLocationService: Getting fast location fix');
         const fastLocation = await this.getLocationWithTimeout(
-          this.FAST_OPTIONS,
+          this.FAST_OPTIONS
         );
 
         locationResult = {
@@ -157,7 +157,7 @@ class FastLocationManager {
           operations.push(
             this.getReverseGeocodingFast(
               locationResult.latitude,
-              locationResult.longitude,
+              locationResult.longitude
             )
               .then(cityData => {
                 locationResult.city = cityData.city;
@@ -167,10 +167,10 @@ class FastLocationManager {
               .catch(error => {
                 logWarn(
                   'FastLocationService: Reverse geocoding failed (non-fatal)',
-                  error,
+                  error
                 );
                 return { city: 'Unknown Location', country: '' };
-              }),
+              })
           );
         }
 
@@ -188,7 +188,7 @@ class FastLocationManager {
                 locationResult.accuracy = preciseLocation.coords.accuracy;
                 this.cacheLocation(locationResult, 'high');
                 logInfo(
-                  '📍 FastLocationService: Updated with high-accuracy location',
+                  '📍 FastLocationService: Updated with high-accuracy location'
                 );
               }
               return preciseLocation;
@@ -196,10 +196,10 @@ class FastLocationManager {
             .catch(error => {
               logWarn(
                 'FastLocationService: High-accuracy location failed (non-fatal)',
-                error,
+                error
               );
               return null;
-            }),
+            })
         );
 
         // Wait for all parallel operations to complete (with timeout)
@@ -208,7 +208,7 @@ class FastLocationManager {
         // Traditional approach but with optimized timeouts
         logInfo('🎯 FastLocationService: Getting precise location');
         const position = await this.getLocationWithTimeout(
-          this.PRECISION_OPTIONS,
+          this.PRECISION_OPTIONS
         );
 
         locationResult = {
@@ -222,7 +222,7 @@ class FastLocationManager {
         if (includeCityName) {
           const cityData = await this.getReverseGeocodingFast(
             locationResult.latitude,
-            locationResult.longitude,
+            locationResult.longitude
           );
           locationResult.city = cityData.city;
           locationResult.country = cityData.country;
@@ -250,12 +250,12 @@ class FastLocationManager {
    * Get geolocation with promise wrapper and timeout
    */
   private getLocationWithTimeout(
-    options: PositionOptions,
+    options: PositionOptions
   ): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         reject(
-          new Error(`Location request timed out after ${options.timeout}ms`),
+          new Error(`Location request timed out after ${options.timeout}ms`)
         );
       }, options.timeout);
 
@@ -268,7 +268,7 @@ class FastLocationManager {
           clearTimeout(timeoutId);
           reject(error);
         },
-        options,
+        options
       );
     });
   }
@@ -278,7 +278,7 @@ class FastLocationManager {
    */
   private async getReverseGeocodingFast(
     lat: number,
-    lon: number,
+    lon: number
   ): Promise<{ city?: string; country?: string }> {
     try {
       const controller = new AbortController();
@@ -291,7 +291,7 @@ class FastLocationManager {
             'User-Agent': 'WeatherApp/1.0 (fast-location@weatherapp.com)',
           },
           signal: controller.signal,
-        },
+        }
       );
 
       clearTimeout(timeoutId);
@@ -330,10 +330,10 @@ class FastLocationManager {
    */
   private cacheLocation(
     location: FastLocationResult,
-    quality: 'high' | 'medium' | 'low',
+    quality: 'high' | 'medium' | 'low'
   ): void {
     const cacheKey = `${Math.round(location.latitude * 1000)}_${Math.round(
-      location.longitude * 1000,
+      location.longitude * 1000
     )}`;
     const expiry = Date.now() + this.CACHE_DURATION[quality];
 

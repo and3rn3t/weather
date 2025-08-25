@@ -65,7 +65,7 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     // Announce theme change for accessibility
     await weatherAnnouncements.announceStateChange(
       'theme-changed',
-      `Switched to ${nextTheme} theme`,
+      `Switched to ${nextTheme} theme`
     );
   };
 

@@ -73,7 +73,7 @@ class AdvancedCachingManager {
     key: string,
     data: T,
     category: keyof typeof this.strategies = 'weather-data',
-    priority: CacheEntry<T>['priority'] = 'medium',
+    priority: CacheEntry<T>['priority'] = 'medium'
   ): Promise<boolean> {
     try {
       const strategy = this.strategies[category];
@@ -108,7 +108,7 @@ class AdvancedCachingManager {
    */
   async get<T>(
     key: string,
-    category: keyof typeof this.strategies = 'weather-data',
+    category: keyof typeof this.strategies = 'weather-data'
   ): Promise<T | null> {
     const entry = this.cache.get(key) as CacheEntry<T> | undefined;
 
@@ -165,15 +165,15 @@ class AdvancedCachingManager {
   getStats(): CacheStats {
     const totalSize = Array.from(this.cache.values()).reduce(
       (sum, entry) => sum + entry.size,
-      0,
+      0
     );
     const totalHits = Array.from(this.cacheHits.values()).reduce(
       (sum, hits) => sum + hits,
-      0,
+      0
     );
     const totalMisses = Array.from(this.cacheMisses.values()).reduce(
       (sum, misses) => sum + misses,
-      0,
+      0
     );
     const totalRequests = totalHits + totalMisses;
 
@@ -222,7 +222,7 @@ class AdvancedCachingManager {
 
     await this.persistCache();
     logInfo(
-      `Cache optimization complete: ${evicted} evicted, ${optimized} optimized`,
+      `Cache optimization complete: ${evicted} evicted, ${optimized} optimized`
     );
 
     return { evicted, optimized };
@@ -253,7 +253,7 @@ class AdvancedCachingManager {
    */
   private async ensureSpace(
     strategy: CacheStrategy,
-    requiredSize: number,
+    requiredSize: number
   ): Promise<void> {
     const stats = this.getStats();
     const maxSizeBytes = strategy.maxSize * 1024 * 1024; // Convert MB to bytes
@@ -272,7 +272,7 @@ class AdvancedCachingManager {
    */
   private async evictEntries(
     strategy: CacheStrategy,
-    requiredSize: number,
+    requiredSize: number
   ): Promise<void> {
     const entries = Array.from(this.cache.entries());
     let freedSize = 0;
@@ -443,26 +443,26 @@ class AdvancedCachingManager {
 
     if (stats.hitRate < 0.6) {
       recommendations.push(
-        'Consider implementing predictive caching for better hit rates',
+        'Consider implementing predictive caching for better hit rates'
       );
     }
 
     if (stats.memoryUsage > 50 * 1024 * 1024) {
       // > 50MB
       recommendations.push(
-        'Cache memory usage is high, consider reducing cache size limits',
+        'Cache memory usage is high, consider reducing cache size limits'
       );
     }
 
     if (stats.evictions > stats.entries * 0.5) {
       recommendations.push(
-        'High eviction rate detected, consider increasing cache size or TTL',
+        'High eviction rate detected, consider increasing cache size or TTL'
       );
     }
 
     if (this.cache.size === 0) {
       recommendations.push(
-        'Cache is empty, data is not being cached effectively',
+        'Cache is empty, data is not being cached effectively'
       );
     }
 

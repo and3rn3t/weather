@@ -55,7 +55,7 @@ export const HapticFeedbackProvider: React.FC<HapticFeedbackProviderProps> = ({
       debugMode: process.env.NODE_ENV === 'development',
       ...config,
     }),
-    [config],
+    [config]
   );
 
   const haptic = useHapticFeedback(defaultConfig);
@@ -67,7 +67,7 @@ export const HapticFeedbackProvider: React.FC<HapticFeedbackProviderProps> = ({
       isSupported: haptic.isSupported,
       isEnabled: haptic.isEnabled,
     }),
-    [haptic, defaultConfig],
+    [haptic, defaultConfig]
   );
 
   return (

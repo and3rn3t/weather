@@ -86,11 +86,11 @@ export default tseslint.config([
       'object-shorthand': 'error',
       'prefer-template': 'error',
 
-    // Code style (should match Prettier)
+      // Code style (should match Prettier)
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
-    // Trailing commas aligned with Prettier; ESLint core rule supports TS in v9+
-    'comma-dangle': [
+      // Trailing commas aligned with Prettier; ESLint core rule supports TS in v9+
+      'comma-dangle': [
         'error',
         {
           arrays: 'always-multiline',
@@ -98,7 +98,7 @@ export default tseslint.config([
           imports: 'always-multiline',
           exports: 'always-multiline',
           functions: 'always-multiline',
-      // NOTE: ESLint core handles TS constructs via typescript-eslint parser
+          // NOTE: ESLint core handles TS constructs via typescript-eslint parser
         },
       ],
     },

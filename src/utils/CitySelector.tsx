@@ -58,7 +58,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
         city.name.toLowerCase().includes(term) ||
         city.displayName.toLowerCase().includes(term) ||
         city.country?.toLowerCase().includes(term) ||
-        city.state?.toLowerCase().includes(term),
+        city.state?.toLowerCase().includes(term)
     );
   }, [getQuickAccessCities, searchTerm]);
 
@@ -92,7 +92,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
       setSearchTerm('');
       setHoveredIndex(-1);
     },
-    [haptic, onCitySelected],
+    [haptic, onCitySelected]
   );
 
   // Handle keyboard navigation
@@ -145,7 +145,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
       city.longitude,
       city.displayName,
       city.country,
-      city.state,
+      city.state
     );
   };
 
