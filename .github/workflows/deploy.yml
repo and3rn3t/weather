@@ -75,8 +75,8 @@ jobs:
           # Ultra-fast build without TypeScript compilation check
           npm run build:ultra
 
-      - name: ⚡ Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
