@@ -1,10 +1,10 @@
-name: 🔎 SonarCloud Analysis (Manual)
+name: 🔎 SonarCloud Analysis
 
-# Automatic Analysis is enabled in SonarCloud for this project.
-# To avoid the CI scanner failure ("You are running CI analysis while Automatic Analysis is enabled"),
-# this workflow is disabled for automatic triggers and kept only for manual runs when needed.
 on:
-  workflow_dispatch:
+  push:
+    branches: [main, dev, develop, chore/**, feat/**, fix/**]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
@@ -15,16 +15,11 @@ env:
 
 jobs:
   sonarcloud:
-    name: 🔎 SonarCloud (manual only)
+    name: 🔎 SonarCloud
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: ℹ️ Notice
-        run: |
-          echo "SonarCloud Automatic Analysis is active for this repository."
-          echo "Use this workflow manually only if you disable Automatic Analysis in SonarCloud settings."
-
       - name: 🚚 Checkout
         uses: actions/checkout@v4
         with:
@@ -57,4 +52,4 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.pullrequest.provider=github
             -Dsonar.pullrequest.github.repository=and3rn3t/weather
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+  # Note: Ensure SonarCloud Automatic Analysis is disabled for this project to avoid conflicts.
