@@ -168,7 +168,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [enablePullToRefresh, onRefresh, pullProgress, isRefreshing]);
+  }, [enablePullToRefresh, onRefresh, pullProgress, isRefreshing, telemetry]);
 
   // Swipe gesture logic
   useEffect(() => {
@@ -294,7 +294,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [enableSwipeGestures, onSwipeLeft, onSwipeRight]);
+  }, [enableSwipeGestures, onSwipeLeft, onSwipeRight, telemetry]);
 
   const containerStyle: React.CSSProperties = {
     background: theme.appBackground,

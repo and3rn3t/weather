@@ -85,7 +85,7 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
       // Check cache first for instant results
       const cacheKey = searchQuery.toLowerCase().trim();
       if (searchCache.current.has(cacheKey)) {
-        const cachedResults = searchCache.current.get(cacheKey)!;
+        const cachedResults = searchCache.current.get(cacheKey) ?? [];
         setSuggestions(cachedResults);
         setIsOpen(cachedResults.length > 0);
         setIsLoading(false);

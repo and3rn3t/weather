@@ -173,7 +173,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
   const getCurrentCityDisplay = (): string => {
     if (!currentCity) return 'Select City';
     if (currentCity.length > 20 && isMobile) {
-      return `${currentCity.substring(0, 17)  }...`;
+      return `${currentCity.substring(0, 17)}...`;
     }
     return currentCity;
   };

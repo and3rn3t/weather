@@ -423,14 +423,14 @@ export function useFastLocation() {
     useCache?: boolean;
   }) => {
     try {
-      haptic.triggerHaptic('light');
+      haptic.light();
       const result = await manager.getFastLocation(options);
       if (result) {
-        haptic.triggerHaptic('success');
+        haptic.success();
       }
       return result;
     } catch (error) {
-      haptic.triggerHaptic('error');
+      haptic.error();
       throw error;
     }
   };

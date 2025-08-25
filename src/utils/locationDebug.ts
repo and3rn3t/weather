@@ -7,7 +7,6 @@
 import { useLocationServices } from './useLocationServices';
 import { logError, logInfo } from './logger';
 
-
 /**
  * useLocationDebug - Custom React hook for locationDebug functionality
  */

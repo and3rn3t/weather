@@ -7,7 +7,6 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useHapticFeedback } from '../utils/hapticFeedback';
 import { logError } from '../utils/logger';
 
-
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
   children: React.ReactNode;

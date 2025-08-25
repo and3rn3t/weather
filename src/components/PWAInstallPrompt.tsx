@@ -31,7 +31,7 @@ const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
     try {
       await onInstall();
       setShow(false);
-    } catch (error) {
+    } catch {
       // Handle installation error
       setInstalling(false);
     }

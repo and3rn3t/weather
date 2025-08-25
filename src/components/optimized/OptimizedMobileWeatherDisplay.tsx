@@ -9,15 +9,13 @@
  */
 
 import React, { Suspense, useMemo } from 'react';
-import {
-  SmartContentWrapper,
-  useSmartContentPriority,
-} from '../../hooks/useSmartContentPriority';
+import { useSmartContentPriority } from '../../hooks/useSmartContentPriority';
 import type {
   DailyForecast,
   HourlyForecast,
   WeatherData,
 } from '../../types/weather';
+import SmartContentWrapper from '../SmartContentWrapper';
 import {
   PrecipitationChart,
   TemperatureTrend,
@@ -55,10 +53,10 @@ const OptimizedMobileWeatherDisplay: React.FC<
       currentHour < 6
         ? 'night'
         : currentHour < 12
-        ? 'morning'
-        : currentHour < 18
-        ? 'afternoon'
-        : 'evening';
+          ? 'morning'
+          : currentHour < 18
+            ? 'afternoon'
+            : 'evening';
 
     return {
       temperature: weather?.main.temp,
@@ -130,7 +128,15 @@ const OptimizedMobileWeatherDisplay: React.FC<
             key={priority.id}
             priority={priority}
             fallback={
-              <SmartWeatherSkeleton variant={priority.component as any} />
+              <SmartWeatherSkeleton
+                variant={
+                  priority.component as
+                    | 'current'
+                    | 'hourly'
+                    | 'daily'
+                    | 'metrics'
+                }
+              />
             }
           >
             {renderContentByType(priority.component, {
@@ -153,12 +159,28 @@ const OptimizedMobileWeatherDisplay: React.FC<
             key={priority.id}
             priority={priority}
             fallback={
-              <SmartWeatherSkeleton variant={priority.component as any} />
+              <SmartWeatherSkeleton
+                variant={
+                  priority.component as
+                    | 'current'
+                    | 'hourly'
+                    | 'daily'
+                    | 'metrics'
+                }
+              />
             }
           >
             <Suspense
               fallback={
-                <SmartWeatherSkeleton variant={priority.component as any} />
+                <SmartWeatherSkeleton
+                  variant={
+                    priority.component as
+                      | 'current'
+                      | 'hourly'
+                      | 'daily'
+                      | 'metrics'
+                  }
+                />
               }
             >
               {renderContentByType(priority.component, {
@@ -176,7 +198,19 @@ const OptimizedMobileWeatherDisplay: React.FC<
       </div>
 
       {/* Pull-to-refresh indicator */}
-      <div className="refresh-indicator" onClick={onRefresh}>
+      <div
+        className="refresh-indicator"
+        role="button"
+        tabIndex={0}
+        onClick={onRefresh}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onRefresh();
+          }
+        }}
+        aria-label="Refresh weather data"
+      >
         <span className="refresh-icon">🔄</span>
         <span className="refresh-text">Pull to refresh</span>
       </div>
@@ -185,16 +219,25 @@ const OptimizedMobileWeatherDisplay: React.FC<
 };
 
 // Content renderer based on priority type
+type TrendPoint = { time: string; temperature: number };
+type PrecipPoint = { time: string; precipitation: number };
+
 const renderContentByType = (
-  type: string,
+  type:
+    | 'current'
+    | 'hourly'
+    | 'daily'
+    | 'metrics'
+    | 'visualizations'
+    | 'alerts',
   data: {
     weather: WeatherData;
-    hourlyForecast: any[];
-    dailyForecast: any[];
+    hourlyForecast: HourlyForecast[];
+    dailyForecast: DailyForecast[];
     locationName: string;
-    temperatureTrendData: any[];
-    precipitationData: any[];
-    layoutConfig: any;
+    temperatureTrendData: TrendPoint[];
+    precipitationData: PrecipPoint[];
+    layoutConfig: { isCompact: boolean } & Record<string, unknown>;
   },
 ) => {
   const {

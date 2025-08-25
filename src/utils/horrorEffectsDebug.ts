@@ -17,7 +17,7 @@ export const debugHorrorTheme = () => {
   const horrorStylesheets = Array.from(document.styleSheets).filter(sheet => {
     try {
       return sheet.href && sheet.href.includes('horror');
-    } catch (e) {
+    } catch {
       return false;
     }
   });
@@ -33,7 +33,7 @@ export const debugHorrorTheme = () => {
           }
         }
       }
-    } catch (e) {
+    } catch {
       // CORS or access issues
     }
     return false;
@@ -128,8 +128,18 @@ export const forceHorrorEffects = () => {
 
 // Add to window for easy console access
 if (typeof window !== 'undefined') {
-  (window as any).debugHorrorTheme = debugHorrorTheme;
-  (window as any).forceHorrorEffects = forceHorrorEffects;
+  (
+    window as unknown as {
+      debugHorrorTheme?: unknown;
+      forceHorrorEffects?: unknown;
+    }
+  ).debugHorrorTheme = debugHorrorTheme;
+  (
+    window as unknown as {
+      debugHorrorTheme?: unknown;
+      forceHorrorEffects?: unknown;
+    }
+  ).forceHorrorEffects = forceHorrorEffects;
 
   // Auto-run debug on load
   setTimeout(() => {

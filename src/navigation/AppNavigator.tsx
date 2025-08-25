@@ -88,10 +88,8 @@ import {
   BackgroundUpdateIndicator,
   ErrorRecoveryState,
 } from '../components/EnhancedLoadingStates';
-import {
-  LoadingProvider,
-  useOperationLoading,
-} from '../utils/LoadingStateManager';
+import LoadingProvider from '../utils/LoadingProvider';
+import { useOperationLoading } from '../utils/LoadingStateManager';
 // iOS 26 Modern UI Components - Complete Suite
 import {
   ContextMenu,
@@ -139,7 +137,7 @@ import '../styles/ios-typography-enhancement.css';
 import '../styles/iosComponents.css';
 import '../styles/modernWeatherUI.css';
 // Navigation & UI Fixes - August 21, 2025
-import '../styles/navigation-fixes.css';
+// navigation-fixes.css was removed after consolidating nav styles into mobile.css
 import { logError, logInfo, logWarn } from '../utils/logger';
 // Horror Effects Debug Utility
 import '../utils/horrorEffectsDebug';
@@ -460,7 +458,7 @@ function WeatherDetailsScreen({
   weather,
   hourlyForecast,
   dailyForecast,
-  weatherCode,
+  weatherCode: _weatherCode,
   getWeather,
   getWeatherByLocation,
   onRefresh,
@@ -1119,7 +1117,7 @@ const WeatherMainCard = React.memo(
     weather,
     city,
     theme,
-    isMobile,
+    isMobile: _isMobile,
     weatherCode,
     onRefresh,
   }: Readonly<{
@@ -1293,8 +1291,8 @@ const HourlyForecastSection = React.memo(
   ({
     loading,
     hourlyForecast,
-    theme,
-    isMobile,
+    theme: _theme,
+    isMobile: _isMobile,
   }: Readonly<{
     loading: boolean;
     hourlyForecast: HourlyForecast[];
@@ -1367,7 +1365,7 @@ const DailyForecastSection = React.memo(
   ({
     loading,
     dailyForecast,
-    theme,
+    theme: _theme,
   }: Readonly<{
     loading: boolean;
     dailyForecast: DailyForecast[];
@@ -1471,6 +1469,7 @@ const AppNavigator = () => {
   const memoryOptimization = useMemoryOptimization();
 
   // Track lazy component loading for performance monitoring
+
   useEffect(() => {
     const trackComponent = trackLazyComponentLoad('WeatherCharts');
     // Return the tracking function to be called on component mount
@@ -1484,9 +1483,6 @@ const AppNavigator = () => {
 
   // Phase 3A: Loading state management for weather operations
   const weatherLoading = useOperationLoading('weatherData');
-  const forecastLoading = useOperationLoading('forecast');
-  const locationLoading = useOperationLoading('location');
-  const backgroundRefreshLoading = useOperationLoading('background-refresh');
 
   // Update screen info on orientation changes
   useEffect(() => {
@@ -1495,6 +1491,7 @@ const AppNavigator = () => {
   }, []);
 
   // Load Crystal Lake, NJ as default horror location
+
   useEffect(() => {
     const loadCrystalLake = async () => {
       // Crystal Lake, NJ coordinates (approximate)
@@ -1523,7 +1520,7 @@ const AppNavigator = () => {
     // Delay slightly to let other initialization complete
     const timer = setTimeout(loadCrystalLake, 1000);
     return () => clearTimeout(timer);
-  }, []); // Empty dependency array for mount-only effect
+  }, [city, fetchWeatherData]);
 
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
@@ -1604,7 +1601,7 @@ const AppNavigator = () => {
     message: string;
     severity: 'info' | 'warning' | 'severe';
   } | null>(null);
-  const [dataUpdateProgress, setDataUpdateProgress] = useState(0);
+  const [dataUpdateProgress, _setDataUpdateProgress] = useState(0);
   const [showWeatherSettingsModal, setShowWeatherSettingsModal] =
     useState(false);
 
@@ -1618,13 +1615,13 @@ const AppNavigator = () => {
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
 
   // Phase 3: Progressive Loading Hook Integration
-  const progressiveWeatherData = useProgressiveWeatherLoading(
+  const _progressiveWeatherData = useProgressiveWeatherLoading(
     currentCoordinates?.latitude || 0,
     currentCoordinates?.longitude || 0,
   );
 
   // Enable progressive loading when coordinates are available
-  const useProgressiveMode = Boolean(currentCoordinates);
+  const _useProgressiveMode = Boolean(currentCoordinates);
 
   // Weather Display Optimization Hooks - August 2025 (ENABLED in Phase 2B)
   // Create weather context for smart content prioritization
@@ -1647,7 +1644,7 @@ const AppNavigator = () => {
     [weather, weatherCode, weatherAlert],
   );
 
-  const smartContent = useSmartContentPriority(weatherContext);
+  const _smartContent = useSmartContentPriority(weatherContext);
 
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(
@@ -1762,7 +1759,7 @@ const AppNavigator = () => {
         },
       });
 
-      haptic.triggerHaptic('navigation');
+      haptic.navigation();
       navigate('Weather'); // Use new screen name
     } else {
       // Track invalid swipe attempt
@@ -1792,7 +1789,7 @@ const AppNavigator = () => {
         },
       });
 
-      haptic.triggerHaptic('navigation');
+      haptic.navigation();
       navigate('Home');
     } else {
       // Track invalid swipe with telemetry
@@ -1807,7 +1804,7 @@ const AppNavigator = () => {
       });
 
       // Subtle error feedback for invalid swipe
-      haptic.triggerHaptic('light');
+      haptic.light();
     }
   };
 
@@ -1830,8 +1827,6 @@ const AppNavigator = () => {
   // Common weather data fetching logic with optimization
   const fetchWeatherData = useCallback(
     async (lat: number, lon: number) => {
-      const operationId = `weather-fetch-${lat}-${lon}-${Date.now()}`;
-
       return telemetry.trackOperation('weather_data_fetch', async () => {
         try {
           // Start loading state
@@ -2334,7 +2329,16 @@ const AppNavigator = () => {
         await interactionFeedback.onSuccess();
       }
     }
-  }, [city, weather, backgroundRefresh, haptic, getWeather, telemetry]);
+  }, [
+    city,
+    weather,
+    backgroundRefresh,
+    haptic,
+    getWeather,
+    telemetry,
+    interactionFeedback,
+    weatherAnnouncements,
+  ]);
 
   return (
     <Dash0ErrorBoundary
@@ -2376,7 +2380,7 @@ const AppNavigator = () => {
               );
               setCity(detectedCity);
               getWeatherByLocation(detectedCity, lat, lon);
-              haptic.triggerHaptic('light');
+              haptic.light();
             }}
             onError={errorMessage => {
               logWarn('📍 Auto location failed:', errorMessage);
@@ -2486,7 +2490,7 @@ const AppNavigator = () => {
                       getWeatherByLocation(cityName, latitude, longitude);
                       setCity(cityName);
                       navigate('Weather');
-                      haptic.triggerHaptic('light');
+                      haptic.light();
                     }}
                     onAddFavorite={() => navigate('Search')}
                     currentCity={city}

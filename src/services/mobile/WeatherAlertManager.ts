@@ -13,6 +13,41 @@
 
 import { logger } from '../../utils/logger';
 
+// Minimal weather data shapes to avoid `any`
+interface CurrentWeatherLike {
+  temperature?: number;
+  temperature_2m?: number;
+  windspeed?: number;
+  wind_speed_10m?: number;
+  weathercode?: number;
+  weather_code?: number;
+  visibility?: number;
+  precipitation?: number;
+}
+
+interface HourlyWeatherLike {
+  precipitation?: number[];
+}
+
+interface WeatherDataLike {
+  current_weather?: CurrentWeatherLike;
+  current?: CurrentWeatherLike;
+  hourly?: HourlyWeatherLike;
+}
+
+type _StoredWeatherAlert = Omit<
+  WeatherAlert,
+  'startTime' | 'endTime' | 'createdAt'
+> & {
+  startTime: string;
+  endTime?: string;
+  createdAt: string;
+};
+
+type _StoredAlertRule = Omit<AlertRule, 'createdAt'> & {
+  createdAt: string;
+};
+
 // Alert Types and Severity Levels
 export type AlertSeverity = 'info' | 'warning' | 'severe' | 'extreme';
 export type AlertType =
@@ -110,7 +145,7 @@ export class WeatherAlertManager {
    * Process weather data and trigger alerts based on conditions
    */
   async processWeatherData(
-    weatherData: any,
+    weatherData: WeatherDataLike,
     location: string,
     coordinates?: { lat: number; lon: number },
   ): Promise<WeatherAlert[]> {
@@ -194,7 +229,7 @@ export class WeatherAlertManager {
    */
   private async evaluateAlertConditions(
     rule: AlertRule,
-    weatherData: any,
+    weatherData: WeatherDataLike,
     location: string,
   ): Promise<boolean> {
     try {
@@ -261,7 +296,7 @@ export class WeatherAlertManager {
    * Process severe weather warnings from OpenMeteo weather codes
    */
   private async processSevereWeatherWarnings(
-    weatherData: any,
+    weatherData: WeatherDataLike,
     location: string,
     coordinates?: { lat: number; lon: number },
   ): Promise<WeatherAlert[]> {
@@ -338,7 +373,7 @@ export class WeatherAlertManager {
    */
   private createAlert(
     rule: AlertRule,
-    weatherData: any,
+    weatherData: WeatherDataLike,
     location: string,
     coordinates?: { lat: number; lon: number },
   ): WeatherAlert {
@@ -365,7 +400,7 @@ export class WeatherAlertManager {
    */
   private formatAlertDescription(
     rule: AlertRule,
-    weatherData: any,
+    weatherData: CurrentWeatherLike,
     location: string,
   ): string {
     let description = rule.description;
@@ -620,7 +655,7 @@ export class WeatherAlertManager {
    */
   private getWeatherCodeDescription(
     weatherCode: number,
-    weatherData: any,
+    weatherData: CurrentWeatherLike,
   ): string {
     const temp = weatherData.temperature || weatherData.temperature_2m || 'N/A';
     const wind = weatherData.windspeed || weatherData.wind_speed_10m || 'N/A';
@@ -766,6 +801,14 @@ export class WeatherAlertManager {
     this.saveStoredData();
   }
 
+  /**
+   * Reset alert preferences to defaults
+   */
+  resetPreferences(): void {
+    this.preferences = { ...DEFAULT_ALERT_PREFERENCES };
+    this.saveStoredData();
+  }
+
   // ===== Default Alert Rules Setup =====
 
   /**
@@ -833,8 +876,8 @@ export class WeatherAlertManager {
     try {
       const alertsData = localStorage.getItem('weatherAlerts');
       if (alertsData) {
-        const parsed = JSON.parse(alertsData);
-        this.alerts = parsed.map((alert: any) => ({
+        const parsed: _StoredWeatherAlert[] = JSON.parse(alertsData);
+        this.alerts = parsed.map(alert => ({
           ...alert,
           startTime: new Date(alert.startTime),
           endTime: alert.endTime ? new Date(alert.endTime) : undefined,
@@ -844,8 +887,8 @@ export class WeatherAlertManager {
 
       const rulesData = localStorage.getItem('weatherAlertRules');
       if (rulesData) {
-        const parsed = JSON.parse(rulesData);
-        this.alertRules = parsed.map((rule: any) => ({
+        const parsedRules: _StoredAlertRule[] = JSON.parse(rulesData);
+        this.alertRules = parsedRules.map(rule => ({
           ...rule,
           createdAt: new Date(rule.createdAt),
         }));

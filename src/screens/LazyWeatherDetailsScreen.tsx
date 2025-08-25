@@ -3,8 +3,6 @@ import type { ThemeColors } from '../utils/themeConfig';
 interface LazyWeatherDetailsScreenProps {
   theme: ThemeColors;
   navigate: (screenName: string) => void;
-  // Add other props as needed - this is a placeholder for future extraction
-  [key: string]: any;
 }
 
 /**
@@ -12,10 +10,10 @@ interface LazyWeatherDetailsScreenProps {
  * Placeholder for future extraction from AppNavigator
  * Currently forwards to the main weather display
  */
-function LazyWeatherDetailsScreen({
-  navigate,
-  ...props
-}: LazyWeatherDetailsScreenProps) {
+function LazyWeatherDetailsScreen(
+  props: Readonly<LazyWeatherDetailsScreenProps>,
+) {
+  const { navigate } = props;
   return (
     <div className="ios26-weather-details-container ios26-container ios26-p-4">
       <div className="ios26-navigation-bar">

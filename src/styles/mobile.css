@@ -1,3 +1,4 @@
+/* Restored clean baseline from backup; re-adding polished nav styles at bottom */
 /**
  * Mobile-First CSS Optimizations
  *
@@ -328,14 +329,21 @@ body {
 
 /* Forecast cards */
 .forecast-card {
-  background: var(--forecast-card-bg, rgba(255, 255, 255, 0.08));
+  background: var(--forecast-card-background, var(--forecast-card-bg, rgba(255, 255, 255, 0.08)));
   border: 1px solid var(--forecast-card-border, rgba(255, 255, 255, 0.12));
-  border-radius: 12px;
-  padding: 16px;
-  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 16px;
+  padding: 16px 16px;
+  transition:
+    box-shadow 0.2s,
+    background 0.2s,
+    transform 0.2s;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  margin-bottom: 0;
+  min-height: 64px;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .forecast-card:active {
@@ -564,9 +572,15 @@ body {
 /* Weather display components */
 .weather-display {
   text-align: center;
-  padding: 24px 16px;
-  background: var(--weather-card-background, transparent);
-  border-radius: var(--border-radius, 16px);
+  padding: 24px 12px 24px 12px;
+  background: var(--card-background, var(--weather-card-background, transparent));
+  border-radius: 20px;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .weather-temperature {
@@ -762,8 +776,8 @@ body {
 
 .mobile-navigation {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: stretch;
+  justify-content: stretch;
   padding: 12px 16px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
@@ -771,6 +785,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  /* Seamless segmented layout: no visual gaps between tabs */
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .mobile-back-button {
@@ -861,27 +879,9 @@ body {
 }
 
 /* ============================================================================
-   MERGED: CRITICAL MOBILE FIXES (from mobile-fixes.css)
-   ============================================================================ */
-
-html {
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  font-size: 16px; /* Prevent zoom on iOS input focus */
-}
-
-body {
-  overscroll-behavior: none; /* Prevent pull-to-refresh bounce */
-  -webkit-overflow-scrolling: touch;
-}
-
-#root {
-  width: 100% !important;
-  max-width: 100vw !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow-x: hidden;
-}
+  MERGED: CRITICAL MOBILE FIXES (from mobile-fixes.css)
+  (html/body/#root rules already defined above)
+  ============================================================================ */
 
 button,
 [role='button'],
@@ -986,7 +986,7 @@ textarea {
 
 /* Utility for custom background gradient (set via inline style if dynamic) */
 .bg-gradient {
-  /* background: var(--custom-gradient); */
+  background: var(--custom-gradient, transparent);
 }
 
 /* Utility for fixed position top-left button */
@@ -1004,7 +1004,7 @@ textarea {
 
 /* Utility for custom box shadow (set via inline style if dynamic) */
 .custom-shadow {
-  /* box-shadow: var(--custom-shadow); */
+  box-shadow: var(--custom-shadow, none);
 }
 
 /* Utility for flex center column */
@@ -1051,8 +1051,8 @@ textarea {
 
 /* Utility for custom font size and color (set via inline style if dynamic) */
 .custom-font {
-  /* font-size: var(--custom-font-size); */
-  /* color: var(--custom-color); */
+  font-size: var(--custom-font-size, inherit);
+  color: var(--custom-color, inherit);
 }
 
 /* ============================================================================
@@ -1170,39 +1170,8 @@ body.dark-theme {
   padding: 0 !important;
 }
 
-/* Theme-specific toggle button classes */
-.theme-toggle-light {
-  background: var(--toggle-background, rgba(255, 255, 255, 0.8));
-  border-color: var(--toggle-border, rgba(255, 255, 255, 0.3));
-  color: var(--toggle-icon, #2563eb);
-}
-
-.theme-toggle-dark {
-  background: var(--toggle-background, rgba(139, 92, 246, 0.2));
-  border-color: var(--toggle-border, rgba(139, 92, 246, 0.4));
-  color: var(--toggle-icon, #cbd5e1);
-}
-
-.theme-toggle-horror {
-  background: var(--toggle-background, linear-gradient(135deg, #1a0a0a, #0a0a0a));
-  border-color: var(--toggle-border, #8b0000);
-  color: var(--toggle-icon, #dc143c);
-  box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4), 0 0 20px rgba(220, 20, 60, 0.2);
-}
-
 /* Weather Results Polishing */
-.weather-display {
-  padding: 24px 12px 24px 12px;
-  background: var(--card-background);
-  border-radius: 20px;
-  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
-  max-width: 420px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
-  box-sizing: border-box;
-}
+/* merged into earlier .weather-display to avoid duplicate selectors */
 
 .hourly-forecast-section,
 .daily-forecast-section {
@@ -1268,20 +1237,7 @@ body.dark-theme {
   margin: 0 -8px 0 -8px;
 }
 
-.forecast-card {
-  transition: box-shadow 0.2s, background 0.2s;
-  cursor: pointer;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  background: var(--forecast-card-background);
-  border: 1px solid var(--forecast-card-border);
-  margin-bottom: 0;
-  position: relative;
-  overflow: hidden;
-  padding: 16px 16px;
-  min-height: 64px;
-  gap: 16px;
-}
+/* merged extra .forecast-card rules into the first definition */
 
 .forecast-card-details {
   grid-column: 1 / span 3;
@@ -1339,4 +1295,64 @@ body.dark-theme .forecast-bg {
 body.dark-theme .today-card {
   background: var(--forecast-card-background, #312e81) !important;
   border-left: 5px solid var(--weather-card-border, #8b5cf6) !important;
+}
+
+/* iOS-style rounded glass navigation: rules extend earlier .mobile-navigation */
+.mobile-navigation .nav-tab {
+  appearance: none;
+  -webkit-appearance: none;
+  /* Seamless: no borders and transparent by default */
+  border: none;
+  background: transparent;
+  color: var(--primary-text, #1f2937);
+  border-radius: 0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  flex: 1 1 0;
+  min-width: 0;
+  box-shadow: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.mobile-navigation .nav-tab:hover {
+  transform: translateY(-1px);
+}
+.mobile-navigation .nav-tab:active {
+  transform: scale(0.98);
+}
+.mobile-navigation .nav-tab.active {
+  /* Subtle glass highlight for active segment */
+  background: linear-gradient(135deg, rgba(120, 97, 255, 0.12), rgba(138, 67, 255, 0.08));
+  color: var(--inverse-text, #fff);
+  /* Keep glass effect without borders */
+  border-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(120, 97, 255, 0.12),
+    inset 0 -1px 0 rgba(120, 97, 255, 0.06);
+}
+.mobile-navigation .nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.mobile-navigation .nav-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+@media (max-width: 380px) {
+  .mobile-navigation .nav-label {
+    display: none;
+  }
+  .mobile-navigation .nav-tab {
+    border-radius: 0;
+    padding: 10px 12px;
+  }
 }

@@ -71,17 +71,19 @@ class EnhancedPerformanceMonitor {
           this.metrics.cssLoadTimes[fileName] = entry.duration;
 
           // Track if it was served from cache
-          const wasFromCache = (entry as any).transferSize === 0;
+          const res = entry as PerformanceResourceTiming & {
+            transferSize?: number;
+          };
+          const wasFromCache = (res.transferSize ?? 0) === 0;
           if (wasFromCache) {
             this.metrics.optimizationStats.serviceWorkerCacheHits++;
           }
 
           // Track bundle size
-          if ((entry as any).transferSize > 0) {
-            this.metrics.bundleSizes[fileName] = (entry as any).transferSize;
-            this.metrics.optimizationStats.totalCSSBytes += (
-              entry as any
-            ).transferSize;
+          if ((res.transferSize ?? 0) > 0) {
+            this.metrics.bundleSizes[fileName] = res.transferSize ?? 0;
+            this.metrics.optimizationStats.totalCSSBytes +=
+              res.transferSize ?? 0;
           }
 
           this.logCSSLoadEvent(fileName, entry.duration, wasFromCache);
@@ -135,7 +137,10 @@ class EnhancedPerformanceMonitor {
           totalRequests++;
 
           // Check if request was served from cache
-          if ((entry as any).transferSize === 0) {
+          const res = entry as PerformanceResourceTiming & {
+            transferSize?: number;
+          };
+          if ((res.transferSize ?? 0) === 0) {
             cacheHits++;
           }
 
@@ -155,8 +160,11 @@ class EnhancedPerformanceMonitor {
   private monitorMemoryUsage(): void {
     if ('memory' in performance) {
       setInterval(() => {
-        const memory = (performance as any).memory;
-        this.metrics.optimizationStats.memoryUsage = memory.usedJSHeapSize;
+        const perfWithMemory = performance as Performance & {
+          memory?: { usedJSHeapSize: number };
+        };
+        this.metrics.optimizationStats.memoryUsage =
+          perfWithMemory.memory?.usedJSHeapSize ?? 0;
       }, 10000); // Every 10 seconds
     }
   }
@@ -313,8 +321,15 @@ class EnhancedPerformanceMonitor {
    */
   private reportToAnalytics(report: PerformanceReport): void {
     // Send to Dash0 if available
-    if (window.dash0?.track) {
-      window.dash0.track('performance_report', {
+    const dash0 = (
+      window as unknown as {
+        dash0?: {
+          track: (event: string, data: Record<string, unknown>) => void;
+        };
+      }
+    ).dash0;
+    if (dash0?.track) {
+      dash0.track('performance_report', {
         css_optimization: report.cssOptimization,
         render_performance: report.renderPerformance,
         memory_usage: report.memoryUsage,
@@ -411,7 +426,11 @@ export const initializePerformanceMonitoring =
 
       // Make available globally for debugging
       if (typeof window !== 'undefined') {
-        (window as any).weatherPerformance = performanceMonitor;
+        (
+          window as unknown as {
+            weatherPerformance?: EnhancedPerformanceMonitor;
+          }
+        ).weatherPerformance = performanceMonitor;
       }
     }
 
@@ -436,7 +455,7 @@ export const generatePerformanceReport = (): PerformanceReport | null => {
 declare global {
   interface Window {
     dash0?: {
-      track: (event: string, data: any) => void;
+      track: (event: string, data: Record<string, unknown>) => void;
     };
     weatherPerformance?: EnhancedPerformanceMonitor;
   }

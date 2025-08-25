@@ -151,19 +151,19 @@ function createPlaceholderIcons() {
         </linearGradient>
       </defs>
       <rect width="${size}" height="${size}" fill="url(#grad)" rx="${
-      size * 0.1
-    }"/>
+        size * 0.1
+      }"/>
       <circle cx="${size * 0.3}" cy="${size * 0.35}" r="${
-      size * 0.08
-    }" fill="#ffd700"/>
+        size * 0.08
+      }" fill="#ffd700"/>
       <ellipse cx="${size * 0.6}" cy="${size * 0.5}" rx="${size * 0.15}" ry="${
-      size * 0.08
-    }" fill="white"/>
+        size * 0.08
+      }" fill="white"/>
       <text x="${size / 2}" y="${
-      size * 0.8
-    }" font-family="sans-serif" font-size="${
-      size * 0.1
-    }" font-weight="bold" text-anchor="middle" fill="white">W</text>
+        size * 0.8
+      }" font-family="sans-serif" font-size="${
+        size * 0.1
+      }" font-weight="bold" text-anchor="middle" fill="white">W</text>
     </svg>`;
 
     fs.writeFileSync(

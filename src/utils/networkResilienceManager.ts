@@ -232,7 +232,10 @@ export class NetworkResilienceManager {
     this.processingQueue = true;
 
     while (this.requestQueue.length > 0) {
-      const request = this.requestQueue.shift()!;
+      const request = this.requestQueue.shift();
+      if (!request) {
+        continue;
+      }
 
       try {
         const response = await this.executeRequest(request);
@@ -559,7 +562,7 @@ export class NetworkResilienceManager {
    * Generate unique request ID
    */
   private generateRequestId(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `req_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   /**

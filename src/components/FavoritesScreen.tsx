@@ -285,7 +285,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   // Handle city selection
   const handleCitySelect = useCallback(
     (city: SavedCity) => {
-      haptic.triggerHaptic('light');
+      haptic.light();
       onCitySelect(city.name, city.latitude, city.longitude);
     },
     [haptic, onCitySelect],
@@ -295,7 +295,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   const handleToggleFavorite = useCallback(
     (city: SavedCity, event: React.MouseEvent) => {
       event.stopPropagation();
-      haptic.triggerHaptic('light');
+      haptic.light();
 
       if (city.isFavorite) {
         removeFromFavorites(city.id);
@@ -315,7 +315,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
 
   // Handle clear recent cities
   const handleClearRecent = useCallback(() => {
-    haptic.triggerHaptic('medium');
+    haptic.medium();
     clearRecentCities();
   }, [haptic, clearRecentCities]);
 

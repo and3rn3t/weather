@@ -21,7 +21,6 @@ import { Network, type ConnectionStatus } from '@capacitor/network';
 import { App } from '@capacitor/app';
 import { logError, logWarn, logInfo } from './logger';
 
-
 // Type definitions for native API responses
 export interface LocationResult {
   latitude: number;
@@ -92,10 +91,7 @@ export class NativeGeolocationService {
         timestamp: position.timestamp,
       };
     } catch (error) {
-      logWarn(
-        'Native geolocation failed, falling back to web API:',
-        error,
-      );
+      logWarn('Native geolocation failed, falling back to web API:', error);
       return this.getWebLocation();
     }
   }

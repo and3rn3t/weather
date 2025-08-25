@@ -101,6 +101,22 @@ export default tseslint.config([
     },
   },
   {
+    // Dev-only diagnostics: allow console usage without warnings
+    files: [
+      'src/App-diagnostic.tsx',
+      'src/utils/logger.ts',
+      'src/utils/horrorEffectsDebug.ts',
+      'src/utils/locationDiagnostic.ts',
+      'src/components/Dash0ErrorBoundary.tsx',
+      'src/dash0/components/Dash0ErrorBoundary.tsx',
+      'src/utils/performanceMonitor.ts',
+      'src/utils/backgroundSyncManager.ts',
+    ],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     files: ['scripts/**/*.{ts,js}'],
     rules: {
       'no-console': 'off',

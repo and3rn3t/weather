@@ -6,7 +6,10 @@
 interface PendingRequest {
   id: string;
   type: 'weather-update' | 'city-search' | 'location-fetch';
-  data: any;
+  data:
+    | { cityName: string; latitude: number; longitude: number }
+    | { query: string }
+    | { latitude: number; longitude: number };
   timestamp: number;
   retryCount: number;
   priority: 'high' | 'medium' | 'low';
@@ -30,7 +33,7 @@ class BackgroundSyncManager {
    */
   queueRequest(
     type: PendingRequest['type'],
-    data: any,
+    data: PendingRequest['data'],
     priority: PendingRequest['priority'] = 'medium',
   ): void {
     const pendingRequests = this.getPendingRequests();
@@ -129,18 +132,28 @@ class BackgroundSyncManager {
 
     try {
       switch (type) {
-        case 'weather-update':
-          return await this.processWeatherUpdate(data);
-        case 'city-search':
-          return await this.processCitySearch(data);
-        case 'location-fetch':
-          return await this.processLocationFetch(data);
-        default:
-          console.warn(`Unknown request type: ${type}`);
+        case 'weather-update': {
+          return await this.processWeatherUpdate(
+            data as { cityName: string; latitude: number; longitude: number },
+          );
+        }
+        case 'city-search': {
+          return await this.processCitySearch(data as { query: string });
+        }
+        case 'location-fetch': {
+          return await this.processLocationFetch(
+            data as { latitude: number; longitude: number },
+          );
+        }
+        default: {
+          const { logWarn } = await import('./logger');
+          logWarn(`Unknown request type: ${type}`);
           return false;
+        }
       }
     } catch (error) {
-      console.error(`Failed to process ${type} request:`, error);
+      const { logError } = await import('./logger');
+      logError(`Failed to process ${type} request:`, error as Error);
       return false;
     }
   }
@@ -172,7 +185,8 @@ class BackgroundSyncManager {
 
       return true;
     } catch (error) {
-      console.error('Weather update failed:', error);
+      const { logError } = await import('./logger');
+      logError('Weather update failed:', error as Error);
       return false;
     }
   }
@@ -213,7 +227,8 @@ class BackgroundSyncManager {
 
       return true;
     } catch (error) {
-      console.error('City search failed:', error);
+      const { logError } = await import('./logger');
+      logError('City search failed:', error as Error);
       return false;
     }
   }
@@ -252,7 +267,8 @@ class BackgroundSyncManager {
 
       return true;
     } catch (error) {
-      console.error('Location fetch failed:', error);
+      const { logError } = await import('./logger');
+      logError('Location fetch failed:', error as Error);
       return false;
     }
   }
@@ -302,7 +318,7 @@ class BackgroundSyncManager {
    * Generate unique request ID
    */
   private generateRequestId(): string {
-    return `sync_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `sync_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   /**
@@ -343,7 +359,8 @@ class BackgroundSyncManager {
       try {
         const registration = await navigator.serviceWorker.ready;
         if ('sync' in registration) {
-          await (registration as any).sync.register('weather-background-sync');
+          // @ts-expect-error types may not include sync in some envs
+          await registration.sync.register('weather-background-sync');
         }
         return true;
       } catch (error) {

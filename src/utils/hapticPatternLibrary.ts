@@ -544,9 +544,12 @@ export class HapticPatternManager {
       this.config.enabled = true;
 
       // Type-safe way to enable category-specific setting
-      const categoryKey = `${pattern.category}Enabled` as const;
+      const categoryKey =
+        `${pattern.category}Enabled` as keyof typeof this.config;
       if (categoryKey in this.config) {
-        (this.config as any)[categoryKey] = true;
+        // @ts-expect-error - index type maps to boolean flags on config
+        this.config[categoryKey] =
+          true as unknown as (typeof this.config)[typeof categoryKey];
       }
 
       await this.playPattern(pattern);

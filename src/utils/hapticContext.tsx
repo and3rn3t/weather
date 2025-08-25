@@ -4,15 +4,20 @@
  * Provides global haptic feedback configuration and access throughout the app.
  * Integrates with theme system and user preferences.
  */
-
-import React, { createContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
+import { createContext, useMemo } from 'react';
 import {
+  HapticPattern,
   useHapticFeedback,
   type HapticConfig,
-  HapticPattern,
   type HapticPatternType,
 } from './useHapticFeedback';
+
+// Dev instrumentation to verify React imports at runtime
+if (import.meta?.env?.DEV) {
+  // eslint-disable-next-line no-console
+  console.log('[hapticContext] typeof createContext =', typeof createContext);
+}
 
 // ============================================================================
 // HAPTIC FEEDBACK CONTEXT
@@ -130,5 +135,5 @@ export const HapticWrapper: React.FC<HapticWrapperProps> = ({
 // EXPORTS
 // ============================================================================
 
-export type { HapticConfig, HapticFeedbackContextType };
 export { HapticFeedbackContext };
+export type { HapticConfig, HapticFeedbackContextType };

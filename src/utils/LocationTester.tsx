@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useLocationServices } from './useLocationServices';
 import { logInfo } from './logger';
 
-
 export const LocationTester: React.FC = () => {
   const {
     isLoading,

@@ -5,9 +5,8 @@
  * Provides localStorage persistence and weather data coordination.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { logError } from './logger';
-
 
 export interface SavedCity {
   id: string;
@@ -84,7 +83,9 @@ export const useCityManagement = () => {
   // Generate unique ID for a city
   const generateCityId = useCallback(
     (name: string, latitude: number, longitude: number): string => {
-      return `${name.toLowerCase().replace(/\s+/g, '-')}-${latitude.toFixed(4)}-${longitude.toFixed(4)}`;
+      return `${name.toLowerCase().replace(/\s+/g, '-')}-${latitude.toFixed(
+        4,
+      )}-${longitude.toFixed(4)}`;
     },
     [],
   );
@@ -323,7 +324,7 @@ export const useCityManagement = () => {
         if (data.favorites && Array.isArray(data.favorites)) {
           setState(prev => ({
             ...prev,
-            favorites: data.favorites!.slice(0, MAX_FAVORITE_CITIES),
+            favorites: (data.favorites ?? []).slice(0, MAX_FAVORITE_CITIES),
             recentCities: data.recentCities
               ? data.recentCities.slice(0, MAX_RECENT_CITIES)
               : prev.recentCities,

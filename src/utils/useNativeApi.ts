@@ -489,13 +489,16 @@ export const useSmartWeatherRefresh = (
     }
 
     // Schedule background refresh for when app is inactive
-    backgroundTimeoutRef.current = setTimeout(() => {
-      if (!isActive && isOnline) {
-        backgroundRefresh();
-        // Schedule next background refresh
-        scheduleBackgroundRefresh();
-      }
-    }, 15 * 60 * 1000); // 15 minutes
+    backgroundTimeoutRef.current = setTimeout(
+      () => {
+        if (!isActive && isOnline) {
+          backgroundRefresh();
+          // Schedule next background refresh
+          scheduleBackgroundRefresh();
+        }
+      },
+      15 * 60 * 1000,
+    ); // 15 minutes
   }, [isActive, isOnline, backgroundRefresh]);
 
   useEffect(() => {
@@ -688,9 +691,12 @@ export const useBackgroundRefresh = (
       clearInterval(intervals.current.foreground);
     }
 
-    intervals.current.foreground = setInterval(() => {
-      performRefresh('foreground');
-    }, foregroundInterval * 60 * 1000);
+    intervals.current.foreground = setInterval(
+      () => {
+        performRefresh('foreground');
+      },
+      foregroundInterval * 60 * 1000,
+    );
   }, [performRefresh, foregroundInterval]);
 
   const startBackgroundRefresh = useCallback(() => {
@@ -699,11 +705,14 @@ export const useBackgroundRefresh = (
     }
 
     // Longer intervals for background to preserve battery
-    intervals.current.background = setInterval(() => {
-      if (!isActive && isOnline) {
-        performRefresh('background');
-      }
-    }, backgroundInterval * 60 * 1000);
+    intervals.current.background = setInterval(
+      () => {
+        if (!isActive && isOnline) {
+          performRefresh('background');
+        }
+      },
+      backgroundInterval * 60 * 1000,
+    );
   }, [performRefresh, backgroundInterval, isActive, isOnline]);
 
   const stopAllRefresh = useCallback(() => {

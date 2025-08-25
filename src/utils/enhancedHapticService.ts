@@ -9,7 +9,6 @@ import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { logWarn, logInfo } from './logger';
 
-
 // ============================================================================
 // HAPTIC PATTERNS & CONFIGURATION
 // ============================================================================

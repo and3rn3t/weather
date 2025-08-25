@@ -61,7 +61,9 @@ export class EnhancedLocationService {
       // Fallback: permission API not available
       return 'prompt';
     } catch (error) {
-      console.warn('Permission check failed:', error);
+      // Lazy import to avoid circular imports at module init
+      const { logWarn } = await import('./logger');
+      logWarn('Permission check failed:', error as Error);
       return 'prompt';
     }
   }
@@ -94,6 +96,9 @@ export class EnhancedLocationService {
       maximumAge: 600000, // 10 minutes
     };
 
+    const isGeoError = (e: unknown): e is GeolocationPositionError =>
+      typeof e === 'object' && e !== null && 'code' in e;
+
     try {
       const position = await this.getPositionAsync(options);
 
@@ -111,13 +116,14 @@ export class EnhancedLocationService {
         );
         result.cityName = cityName;
       } catch (cityError) {
-        console.warn('Failed to get city name:', cityError);
+        const { logWarn } = await import('./logger');
+        logWarn('Failed to get city name:', cityError as Error);
         // Continue without city name
       }
 
       return result;
-    } catch (error: any) {
-      if (error instanceof GeolocationPositionError) {
+    } catch (error) {
+      if (isGeoError(error)) {
         switch (error.code) {
           case GeolocationPositionError.PERMISSION_DENIED:
             throw this.createError(

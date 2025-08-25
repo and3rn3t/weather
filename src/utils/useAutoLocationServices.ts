@@ -13,12 +13,11 @@
  * - Battery optimization for mobile devices
  */
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useLocationServices } from './useLocationServices';
-import type { LocationData } from './useLocationServices';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logError, logWarn, logInfo } from './logger';
-
+import { logError, logInfo, logWarn } from './logger';
+import type { LocationData } from './useLocationServices';
+import { useLocationServices } from './useLocationServices';
 
 // ============================================================================
 // AUTO LOCATION TYPES
@@ -266,7 +265,7 @@ export const useAutoLocationServices = (config: AutoLocationConfig = {}) => {
 
         if (locationData) {
           updateLocationCache(locationData, source);
-          haptic.triggerHaptic('light');
+          haptic.light();
           logInfo('✅ Auto location detection successful:', locationData);
         }
       } catch (error) {

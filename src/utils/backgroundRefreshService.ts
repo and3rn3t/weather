@@ -14,7 +14,6 @@ import { App } from '@capacitor/app';
 import { Network } from '@capacitor/network';
 import { logError, logInfo } from './logger';
 
-
 // Background refresh configuration
 export interface BackgroundRefreshConfig {
   foregroundInterval: number; // Minutes between foreground refreshes

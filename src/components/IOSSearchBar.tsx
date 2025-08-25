@@ -11,17 +11,16 @@
  */
 
 import React, {
-  useState,
-  useEffect,
-  useRef,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
-import { useTheme } from '../utils/useTheme';
-import { useHaptic } from '../utils/hapticHooks';
 import '../styles/IOSSearchBar.css';
+import { useHaptic } from '../utils/hapticHooks';
 import { logError } from '../utils/logger';
-
+import { useTheme } from '../utils/useTheme';
 
 interface City {
   display_name: string;
@@ -60,7 +59,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
   autoFocus = false,
 }) => {
   const { isDark } = useTheme();
-  const { triggerHaptic } = useHaptic();
+  const haptic = useHaptic();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -340,7 +339,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
   // Handle city selection
   const handleCitySelect = useCallback(
     async (city: City) => {
-      triggerHaptic('light');
+      haptic.light();
       setQuery(city.display_name.split(',')[0]);
       setShowResults(false);
       setIsActive(false);
@@ -350,7 +349,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
         onCitySelected(city, weatherData);
       }
     },
-    [triggerHaptic, onCitySelected, fetchWeatherData],
+    [haptic, onCitySelected, fetchWeatherData],
   );
 
   // Handle focus/blur
@@ -374,9 +373,9 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
     setQuery('');
     setResults([]);
     setShowResults(false);
-    triggerHaptic('light');
+    haptic.light();
     inputRef.current?.focus();
-  }, [triggerHaptic]);
+  }, [haptic]);
 
   // Auto-focus if requested
   useEffect(() => {
@@ -438,7 +437,7 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
       {/* Results dropdown */}
       {showResults && (
         <div className={`ios-results-dropdown ${themeClass}`}>
-          {results.map((city, index) => {
+          {results.map(city => {
             const cityName = city.display_name.split(',')[0];
             const location = city.display_name
               .split(',')

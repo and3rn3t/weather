@@ -227,7 +227,7 @@ export const useLocationServices = () => {
             'Your browser does not support location services. Please enter your city manually.',
         };
         setState(prev => ({ ...prev, error, isLoading: false }));
-        haptic.triggerHaptic('error');
+        haptic.error();
         return null;
       }
 
@@ -238,7 +238,7 @@ export const useLocationServices = () => {
         error: null,
       }));
 
-      haptic.triggerHaptic('light'); // Light feedback when starting location request
+      haptic.light(); // Light feedback when starting location request
 
       const locationOptions: PositionOptions = {
         enableHighAccuracy: options?.enableHighAccuracy ?? false, // Changed: prioritize speed
@@ -292,7 +292,7 @@ export const useLocationServices = () => {
             }));
 
             logInfo('✅ Location state updated successfully');
-            haptic.triggerHaptic('success'); // Success feedback
+            haptic.success(); // Success feedback
             resolve(locationData);
           } catch (error) {
             logError('❌ Location processing error:', error);
@@ -309,7 +309,7 @@ export const useLocationServices = () => {
               error: locationError,
             }));
 
-            haptic.triggerHaptic('error');
+            haptic.error();
             resolve(null);
           }
         };
@@ -334,7 +334,7 @@ export const useLocationServices = () => {
             error: locationError,
           }));
 
-          haptic.triggerHaptic('error'); // Error feedback
+          haptic.error(); // Error feedback
           resolve(null);
         };
 
@@ -431,13 +431,13 @@ export const useLocationServices = () => {
       error: null,
       lastUpdate: null,
     });
-    haptic.triggerHaptic('light');
+    haptic.light();
   }, [haptic]);
 
   // Refresh current location
   const refreshLocation = useCallback(async () => {
     if (state.location) {
-      haptic.triggerHaptic('refresh');
+      haptic.refresh();
       return await getCurrentLocation({ includeAddress: true });
     }
     return null;

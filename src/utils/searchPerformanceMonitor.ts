@@ -22,6 +22,15 @@ interface PerformanceStats {
   memoryTrend: Array<{ timestamp: number; used: number }>;
 }
 
+// Augment Performance to avoid `any` casts for memory stats in supporting browsers
+interface PerformanceMemory {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+type PerformanceWithMemory = Performance & { memory?: PerformanceMemory };
+
 class SearchPerformanceMonitor {
   private metrics: SearchPerformanceMetrics[] = [];
   private readonly MAX_METRICS = 100; // Keep last 100 searches
@@ -64,7 +73,7 @@ class SearchPerformanceMonitor {
       this.cleanup();
 
       return metric;
-    } catch (error) {
+    } catch {
       // Fallback metric if performance API fails
       return {
         searchType,
@@ -89,7 +98,7 @@ class SearchPerformanceMonitor {
     // Persist to localStorage for analysis
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.metrics));
-    } catch (error) {
+    } catch {
       // Storage quota exceeded or disabled - continue without persistence
     }
   }
@@ -98,8 +107,9 @@ class SearchPerformanceMonitor {
    * Get current memory usage
    */
   private getMemoryUsage(): SearchPerformanceMetrics['memoryUsage'] {
-    if ('memory' in performance && (performance as any).memory) {
-      const memory = (performance as any).memory;
+    const perf = performance as unknown as PerformanceWithMemory;
+    if ('memory' in perf && perf.memory) {
+      const { memory } = perf;
       return {
         used: memory.usedJSHeapSize,
         total: memory.totalJSHeapSize,
@@ -119,7 +129,7 @@ class SearchPerformanceMonitor {
       if (entries.length > 50) {
         performance.clearMeasures();
       }
-    } catch (error) {
+    } catch {
       // Cleanup failed - continue without clearing
     }
   }
@@ -155,7 +165,7 @@ class SearchPerformanceMonitor {
       .slice(-10)
       .map(m => ({
         timestamp: m.timestamp,
-        used: m.memoryUsage!.used,
+        used: m.memoryUsage?.used ?? 0,
       }));
 
     return {
@@ -182,7 +192,7 @@ class SearchPerformanceMonitor {
       localStorage.removeItem(this.STORAGE_KEY);
       performance.clearMeasures();
       performance.clearMarks();
-    } catch (error) {
+    } catch {
       // Cleanup failed - continue
     }
   }
@@ -199,7 +209,7 @@ class SearchPerformanceMonitor {
           this.metrics = parsed.slice(-this.MAX_METRICS);
         }
       }
-    } catch (error) {
+    } catch {
       // Failed to load - start fresh
       this.metrics = [];
     }

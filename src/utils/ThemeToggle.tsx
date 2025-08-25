@@ -12,7 +12,7 @@ interface ThemeToggleProps {
 }
 
 const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
-  const { isDark, themeName, toggleTheme } = useTheme();
+  const { themeName, toggleTheme } = useTheme();
   const haptic = useHaptic();
   const telemetry = useDash0Telemetry();
 

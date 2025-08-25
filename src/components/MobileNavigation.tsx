@@ -40,7 +40,7 @@ const tabs: TabConfig[] = [
  * Features:
  * - iOS26 liquid glass navigation with authentic Apple glassmorphism
  * - Follows Apple Human Interface Guidelines
- * - Zero inline styles - all styling handled by liquid-glass-navigation.css
+ * - Zero inline styles - styling handled by styles/mobile.css
  * - Haptic feedback on navigation
  * - Accessibility compliance with proper ARIA attributes
  */

@@ -3,44 +3,46 @@
  * Phase 4A: Strategic chunking for 40% bundle size reduction
  */
 
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  
+
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
           // React core - loaded once, heavily cached
           'react-vendor': ['react', 'react-dom'],
-          
+
           // Capacitor features - mobile-only conditional loading
           'capacitor-vendor': [
             '@capacitor/app',
-            '@capacitor/device', 
+            '@capacitor/device',
             '@capacitor/geolocation',
             '@capacitor/haptics',
             '@capacitor/network',
             '@capacitor/status-bar',
           ],
-          
+
           // UI utilities - shared across components
           'ui-utils': [
             './src/utils/themeConfig.ts',
-            './src/utils/themeContext.tsx', 
+            './src/utils/themeContext.tsx',
             './src/utils/ThemeToggle.tsx',
           ],
-          
+
           // Weather functionality - core features
           'weather-core': [
             './src/utils/weatherIcons.tsx',
             './src/utils/useEnhancedSearch.ts',
             './src/utils/autocorrectEngine.ts',
           ],
-          
+
           // Mobile features - conditionally loaded
           'haptic-features': [
             './src/utils/hapticHooks.ts',
@@ -49,10 +51,10 @@ export default defineConfig({
             './src/components/MobileNavigation.tsx',
           ],
         },
-        
+
         chunkFileNames: 'assets/[name]-[hash].js',
-        
-        assetFileNames: (assetInfo) => {
+
+        assetFileNames: assetInfo => {
           if (assetInfo.name?.endsWith('.css')) {
             if (assetInfo.name.includes('mobile')) {
               return 'styles/mobile-[hash].css';
@@ -68,13 +70,13 @@ export default defineConfig({
           return 'assets/[name]-[hash][extname]';
         },
       },
-      
+
       treeshake: {
         moduleSideEffects: false,
         preset: 'smallest',
       },
     },
-    
+
     minify: 'esbuild',
     cssMinify: 'esbuild',
     target: 'es2020',
@@ -82,12 +84,12 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     assetsInlineLimit: 4096,
     cssCodeSplit: true,
-    
+
     modulePreload: {
       polyfill: true,
     },
   },
-  
+
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -95,39 +97,41 @@ export default defineConfig({
       '@utils': resolve(__dirname, 'src/utils'),
       '@styles': resolve(__dirname, 'src/styles'),
     },
+    dedupe: ['react', 'react-dom'],
   },
-  
+
   server: {
     fs: {
       allow: ['..'],
     },
   },
-  
+
   optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      '@capacitor/core',
-    ],
-    
+    include: ['react', 'react-dom', '@capacitor/core'],
+
     exclude: [
       '@capacitor/geolocation',
       '@capacitor/haptics',
       '@capacitor/local-notifications',
     ],
   },
-  
+
   css: {
     modules: {
       localsConvention: 'camelCase',
       generateScopedName: '[local]_[hash:base64:5]',
     },
   },
-  
+
   define: {
-    '__DEV__': JSON.stringify(false),
-    '__MOBILE_ONLY__': JSON.stringify(true),
-    '__CAPACITOR_ENABLED__': JSON.stringify(true),
-    '__BUNDLE_OPTIMIZED__': JSON.stringify(true),
+    __DEV__: JSON.stringify(false),
+    __MOBILE_ONLY__: JSON.stringify(true),
+    __CAPACITOR_ENABLED__: JSON.stringify(true),
+    __BUNDLE_OPTIMIZED__: JSON.stringify(true),
+    // Provide compatibility shims for process.env usage in browser code
+    'process.env.NODE_ENV': JSON.stringify(
+      process.env.NODE_ENV || 'development',
+    ),
+    'process.env': {},
   },
 });

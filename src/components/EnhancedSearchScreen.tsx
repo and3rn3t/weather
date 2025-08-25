@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import '../utils/locationDiagnostic'; // Load diagnostic tools in development
 import { locationService } from '../utils/locationService';
-import { logError } from '../utils/logger';
+import { logError, logInfo } from '../utils/logger';
 import { offlineStorage } from '../utils/offlineWeatherStorage';
 import { searchPerformanceMonitor } from '../utils/searchPerformanceMonitor';
 import type { ThemeColors } from '../utils/themeConfig';
@@ -95,6 +95,15 @@ function EnhancedSearchScreen({
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Type guard for custom error shapes
+  const hasUserMessage = (e: unknown): e is { userMessage: string } => {
+    if (e && typeof e === 'object' && 'userMessage' in e) {
+      const candidate = e as { userMessage: unknown };
+      return typeof candidate.userMessage === 'string';
+    }
+    return false;
+  };
+
   // Load recent searches
   useEffect(() => {
     try {
@@ -114,7 +123,7 @@ function EnhancedSearchScreen({
         const permission = await locationService.checkPermissions();
         setLocationPermission(permission);
       } catch (error) {
-        console.warn('Failed to check location permissions:', error);
+        logError('Failed to check location permissions:', error as Error);
         setLocationPermission('unknown');
       }
     };
@@ -155,7 +164,7 @@ function EnhancedSearchScreen({
                 class: 'place',
                 name: city.name,
                 address: { city: city.name },
-              } as NominatimResult),
+              }) as NominatimResult,
           );
 
         setSearchResults(offlineMatches);
@@ -289,16 +298,17 @@ function EnhancedSearchScreen({
         'nominatim',
         filteredResults.length,
       );
-    } catch (error: any) {
-      logError('Search error:', error);
+    } catch (err) {
+      logError('Search error:', err as Error);
 
-      if (error.name === 'AbortError') {
+      if (err instanceof DOMException && err.name === 'AbortError') {
         setError(
           'Search timed out. Please check your internet connection and try again.',
         );
       } else if (
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('NetworkError')
+        err instanceof Error &&
+        (err.message?.includes('Failed to fetch') ||
+          err.message?.includes('NetworkError'))
       ) {
         setError(
           'Network error. Please check your internet connection and try again.',
@@ -459,12 +469,12 @@ function EnhancedSearchScreen({
         locationResult.latitude,
         locationResult.longitude,
       );
-    } catch (locationError: any) {
+    } catch (locationError) {
       haptic.error();
-      logError('Enhanced geolocation error:', locationError);
+      logError('Enhanced geolocation error:', locationError as Error);
 
       // Use the user-friendly message from the location service
-      if (locationError.userMessage) {
+      if (hasUserMessage(locationError)) {
         setError(locationError.userMessage);
       } else {
         setError(
@@ -474,7 +484,7 @@ function EnhancedSearchScreen({
 
       // Log additional troubleshooting tips
       const tips = locationService.getLocationTips();
-      console.log('Location troubleshooting tips:', tips);
+      logInfo('Location troubleshooting tips:', tips);
     } finally {
       setIsGettingLocation(false);
     }

@@ -284,7 +284,18 @@ export class PerformanceMonitor {
    */
   recordMemoryUsage(context: string, details?: Record<string, unknown>): void {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const perf = performance as unknown as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+      const memory = perf.memory ?? {
+        usedJSHeapSize: 0,
+        totalJSHeapSize: 0,
+        jsHeapSizeLimit: PERFORMANCE_CONFIG.THRESHOLDS.MEMORY_USAGE,
+      };
 
       this.recordMetric({
         id: this.generateId(),
@@ -316,7 +327,18 @@ export class PerformanceMonitor {
 
     // Browser memory API
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const perf = performance as unknown as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+      const memory = perf.memory ?? {
+        usedJSHeapSize: 0,
+        totalJSHeapSize: 0,
+        jsHeapSizeLimit: PERFORMANCE_CONFIG.THRESHOLDS.MEMORY_USAGE,
+      };
       memoryMetric = {
         ...memoryMetric,
         used: memory.usedJSHeapSize,
@@ -508,7 +530,6 @@ export class PerformanceMonitor {
 
     // Log summary for development
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
       console.log('📊 Performance Summary:', summary);
     }
 
@@ -631,7 +652,7 @@ export class PerformanceMonitor {
    * Generate unique identifier
    */
   private generateId(): string {
-    return `perf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `perf_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   /**
@@ -649,17 +670,16 @@ export class PerformanceMonitor {
     }
 
     if (filter?.timeRange) {
+      const start = filter.timeRange?.start ?? Number.NEGATIVE_INFINITY;
+      const end = filter.timeRange?.end ?? Number.POSITIVE_INFINITY;
       filtered = filtered.filter(
-        m =>
-          m.timestamp >= filter.timeRange!.start &&
-          m.timestamp <= filter.timeRange!.end,
+        m => m.timestamp >= start && m.timestamp <= end,
       );
     }
 
     if (filter?.tags && filter.tags.length > 0) {
-      filtered = filtered.filter(m =>
-        m.tags?.some(tag => filter.tags!.includes(tag)),
-      );
+      const tags = filter.tags ?? [];
+      filtered = filtered.filter(m => m.tags?.some(tag => tags.includes(tag)));
     }
 
     return filtered;

@@ -25,11 +25,11 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
   // Feature 4B integration
   const {
-    stats: feature4BStats,
-    getPerformanceRecommendations,
-    optimizeCache,
-    processPendingSync,
-    clearCache,
+    stats: _feature4BStats,
+    getPerformanceRecommendations: _getPerformanceRecommendations,
+    optimizeCache: _optimizeCache,
+    processPendingSync: _processPendingSync,
+    clearCache: _clearCache,
   } = useFeature4B();
 
   // Update stats periodically

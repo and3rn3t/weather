@@ -9,7 +9,7 @@ import './SimpleAutocomplete.css';
 
 interface SimpleAutocompleteProps {
   onCitySelected: (cityName: string, lat: number, lon: number) => void;
-  theme: any;
+  theme: unknown;
   disabled?: boolean;
   placeholder?: string;
 }
@@ -23,7 +23,7 @@ interface CityResult {
 
 export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
   onCitySelected,
-  theme,
+  theme: _theme,
   disabled = false,
   placeholder = 'Search cities...',
 }) => {
@@ -32,7 +32,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timeoutRef = useRef<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Simple search function
@@ -78,17 +78,17 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
 
   // Debounced search
   useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+    if (timeoutRef.current !== undefined) {
+      window.clearTimeout(timeoutRef.current);
     }
 
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       searchCities(query);
     }, 300);
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutRef.current !== undefined) {
+        window.clearTimeout(timeoutRef.current);
       }
     };
   }, [query, searchCities]);
