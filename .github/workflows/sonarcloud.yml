@@ -28,40 +28,28 @@ jobs:
         with:
           fetch-depth: 0 # full history for better PR analysis
 
-      # For PRs, we skip the actual Sonar scan to avoid conflicts with any residual Automatic Analysis
-      # The job still completes successfully so the required check stays green. The real scan runs on push to main after merge.
-      - name: 🟨 PR detected — skipping Sonar scan (runs on main after merge)
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          echo "Pull Request event detected; skipping SonarCloud analysis to avoid Automatic Analysis conflicts."
-          echo "A full SonarCloud scan will run on push to main after this PR is merged."
-
       - name: ⚙️ Setup Node.js
-        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: 📦 Install dependencies
-        if: ${{ github.event_name != 'pull_request' }}
         run: |
           npm ci --prefer-offline --no-audit --no-fund --silent
 
       - name: 🧪 Run tests to produce coverage (fast)
-        if: ${{ github.event_name != 'pull_request' }}
         run: |
           npm run test:ci || npm run test:fast
 
       - name: 🔎 SonarCloud Scan
-        if: ${{ github.event_name != 'pull_request' }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: >-
-            -Dsonar.projectKey=and3rn3t_weather
+            -Dsonar.projectKey=and3rn3t_weather_ci
             -Dsonar.organization=and3rn3t
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
