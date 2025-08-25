@@ -1,4 +1,4 @@
-name: 🔎 SonarCloud Analysis
+name: SonarCloud Code Analysis
 
 on:
   push:
@@ -15,7 +15,7 @@ env:
 
 jobs:
   sonarcloud:
-    name: 🔎 SonarCloud
+    name: SonarCloud Code Analysis
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
