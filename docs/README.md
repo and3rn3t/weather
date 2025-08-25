@@ -37,15 +37,17 @@ npm run dev
 - **[Quick Start Guide](./QUICK_START.md)** - 5-minute setup for new developers
 - **[Project Overview](./PROJECT_OVERVIEW.md)** - Complete project summary and architecture
 - **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment to Cloudflare Pages
+- **[Project Completion Summary](./PROJECT_COMPLETION_SUMMARY.md)** - Full implementation achievements and metrics
+- **[Troubleshooting Guide](./TROUBLESHOOTING_GUIDE.md)** - Comprehensive problem-solving reference
 
 ### **📖 Development Guides** (docs/guides/)
 
-- **[Development Workflow](./guides/DEVELOPMENT_WORKFLOW.md)** - Contribution guidelines and
-  workflow
+- **[Development Workflow](./guides/DEVELOPMENT_WORKFLOW.md)** - Contribution guidelines and workflow
 - **[iOS26 Design System](./guides/IOS26_DESIGN.md)** - Design patterns and component system
+- **[iOS26 Components Guide](./guides/iOS26_COMPONENTS_GUIDE.md)** - Component implementation reference
+- **[iOS HIG Compliance](./guides/IOS_HIG_COMPLIANCE.md)** - Apple Human Interface Guidelines
 - **[Mobile Development](./guides/MOBILE_GUIDE.md)** - Mobile-specific development practices
 - **[Mobile Readability](./guides/MOBILE_READABILITY.md)** - Mobile optimization and accessibility
-- **[SonarCloud Integration](./guides/SONARCLOUD_IDE_INTEGRATION.md)** - IDE integration setup
 - **[Testing Guide](./guides/TESTING_GUIDE.md)** - Testing strategies and procedures
 
 ### **⚙️ Technical Documentation** (docs/technical/)
@@ -99,51 +101,54 @@ Organized archive of project history, including:
 
 ---
 
-## 📁 **Documentation Structure**
+## 📁 **Documentation Structure** *(Optimized August 2025)*
 
-### **Root Documentation** (4 Essential Files)
-
-```
-docs/
-├── README.md              # This documentation hub
-├── QUICK_START.md         # 5-minute developer setup
-├── PROJECT_OVERVIEW.md    # Complete project summary
-└── DEPLOYMENT_GUIDE.md    # Production deployment
-```
-
-### **Current Active Documentation**
+### **Root Documentation** (7 Essential Files)
 
 ```
 docs/
-├── guides/                # 6 Development Guides
-│   ├── DEVELOPMENT_WORKFLOW.md
-│   ├── IOS26_DESIGN.md
-│   ├── MOBILE_GUIDE.md
-│   ├── MOBILE_READABILITY.md
-│   ├── SONARCLOUD_IDE_INTEGRATION.md
-│   └── TESTING_GUIDE.md
-│
-├── technical/             # 1 Technical Specification
-│   └── API_INTEGRATION.md
-│
-└── reports/               # 3 Project Summaries
-    ├── FINAL_PROJECT_SUMMARY.md
-    ├── iOS26_INTEGRATION_FINAL_SUMMARY.md
-    └── iOS26_LESSONS_LEARNED.md
+├── README.md                      # This documentation hub
+├── QUICK_START.md                 # 5-minute developer setup
+├── PROJECT_OVERVIEW.md            # Complete project summary  
+├── DEPLOYMENT_GUIDE.md            # Production deployment guide
+├── PROJECT_COMPLETION_SUMMARY.md  # Full implementation summary
+└── TROUBLESHOOTING_GUIDE.md       # Comprehensive problem-solving guide
 ```
 
-### **Organized Historical Archive**
+### **Active Development Documentation**
 
 ```
-docs/archive/              # Categorized Historical Content
-├── phases/                # iOS26 implementation phases
-├── features/              # Feature development reports
-├── fixes/                 # Bug fixes and optimizations
-├── integrations/          # Integration completion reports
-├── deployment-guides/     # Historical deployment docs
-├── system-monitoring/     # System monitoring reports
-├── css-optimization/      # CSS optimization phases
-└── themes/                # Theme implementation history
+docs/
+├── guides/                        # 7 Development Guides
+│   ├── DEVELOPMENT_WORKFLOW.md    # Contribution workflow
+│   ├── IOS26_DESIGN.md           # Design system patterns
+│   ├── IOS26_COMPONENTS_GUIDE.md # Component implementation
+│   ├── IOS_HIG_COMPLIANCE.md     # Apple HIG compliance
+│   ├── MOBILE_GUIDE.md           # Mobile development
+│   ├── MOBILE_READABILITY.md     # Mobile optimization
+│   └── TESTING_GUIDE.md          # Testing strategies
+│
+├── technical/                     # 1 Technical Specification
+│   └── API_INTEGRATION.md        # Weather API integration
+│
+└── reports/                       # 3 Project Reports
+    ├── FINAL_PROJECT_SUMMARY.md   # Project completion status
+    ├── iOS26_INTEGRATION_FINAL_SUMMARY.md # iOS26 implementation
+    └── iOS26_LESSONS_LEARNED.md   # Development insights
+```
+
+### **Organized Historical Archive** *(35+ Archived Files)*
+
+```
+docs/archive/                      # Categorized Historical Content
+├── phases/                        # Implementation phase completions
+├── features/                      # Feature development reports  
+├── optimization/                  # Performance & build optimizations
+├── deployment/                    # Historical deployment docs
+├── css-fixes/                     # CSS fix implementations
+├── legacy/                        # Deprecated components
+├── reports/                       # Generated reports & logs
+└── security/                      # Security analysis files
 ```
 
 ---
