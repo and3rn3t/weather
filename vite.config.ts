@@ -6,8 +6,6 @@
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -54,15 +52,16 @@ export default defineConfig({
 
         chunkFileNames: 'assets/[name]-[hash].js',
 
-        assetFileNames: assetInfo => {
-          if (assetInfo.name?.endsWith('.css')) {
-            if (assetInfo.name.includes('mobile')) {
+        assetFileNames: (assetInfo: { fileName?: string; name?: string }) => {
+          const assetName = assetInfo.fileName ?? assetInfo.name;
+          if (assetName?.endsWith('.css')) {
+            if (assetName.includes('mobile')) {
               return 'styles/mobile-[hash].css';
             }
-            if (assetInfo.name.includes('ios26')) {
+            if (assetName.includes('ios26')) {
               return 'styles/ios26-[hash].css';
             }
-            if (assetInfo.name.includes('horror')) {
+            if (assetName.includes('horror')) {
               return 'styles/horror-[hash].css';
             }
             return 'styles/[name]-[hash].css';
@@ -130,7 +129,7 @@ export default defineConfig({
     __BUNDLE_OPTIMIZED__: JSON.stringify(true),
     // Provide compatibility shims for process.env usage in browser code
     'process.env.NODE_ENV': JSON.stringify(
-      process.env.NODE_ENV || 'development',
+      process.env.NODE_ENV || 'development'
     ),
     'process.env': {},
   },

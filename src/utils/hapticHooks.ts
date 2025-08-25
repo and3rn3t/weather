@@ -26,7 +26,7 @@ export const useHapticContext = (): HapticFeedbackContextType => {
 
   if (context === undefined) {
     throw new Error(
-      'useHapticContext must be used within a HapticFeedbackProvider',
+      'useHapticContext must be used within a HapticFeedbackProvider'
     );
   }
 
@@ -48,10 +48,11 @@ export const useHapticContext = (): HapticFeedbackContextType => {
  * useHaptic - Custom React hook for hapticHooks functionality
  */
 export const useHaptic = (config?: HapticConfig) => {
-  // Try to read provider; if missing in dev, provide a soft fallback so UI can render
+  // Read provider with a safe fallback in dev so UI can render without provider
   let hapticCore: ReturnType<typeof useEnhancedHaptics> | undefined;
   let isSupported = false;
   let isEnabled = false;
+
   try {
     const ctx = useHapticContext();
     hapticCore = ctx.haptic as unknown as ReturnType<typeof useEnhancedHaptics>;
@@ -62,16 +63,6 @@ export const useHaptic = (config?: HapticConfig) => {
       // eslint-disable-next-line no-console
       console.warn('[useHaptic] provider missing, using local fallback');
     }
-    isSupported = false;
-  // Read provider if available; otherwise use defaults
-  const ctx = useContext(HapticFeedbackContext);
-  let hapticCore: ReturnType<typeof useEnhancedHaptics> | undefined;
-  let isSupported = false;
-  let isEnabled = false;
-  if (ctx !== undefined) {
-    hapticCore = ctx.haptic as unknown as ReturnType<typeof useEnhancedHaptics>;
-    isSupported = ctx.isSupported;
-    isEnabled = ctx.isEnabled;
   }
 
   // Get enhanced haptics service
