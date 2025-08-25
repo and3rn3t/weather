@@ -40,7 +40,7 @@ const tabs: TabConfig[] = [
  * Features:
  * - iOS26 liquid glass navigation with authentic Apple glassmorphism
  * - Follows Apple Human Interface Guidelines
- * - Zero inline styles - all styling handled by liquid-glass-navigation.css
+ * - Zero inline styles - styling handled by styles/mobile.css
  * - Haptic feedback on navigation
  * - Accessibility compliance with proper ARIA attributes
  */
@@ -62,7 +62,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   const handleTabPress = useCallback(
     async (
       tabId: NavigationScreen,
-      event?: React.MouseEvent | React.TouchEvent,
+      event?: React.MouseEvent | React.TouchEvent
     ) => {
       // Prevent any default browser behavior that might cause styling
       if (event) {
@@ -83,7 +83,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
 
       // Announce navigation change
       await weatherAnnouncements.announceStateChange(
-        `Navigated to ${tabId} screen`,
+        `Navigated to ${tabId} screen`
       );
 
       // Update active state immediately for visual feedback
@@ -92,7 +92,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       // Navigate to new screen
       onNavigate(tabId);
     },
-    [activeTab, onNavigate, haptic, interactionFeedback, weatherAnnouncements],
+    [activeTab, onNavigate, haptic, interactionFeedback, weatherAnnouncements]
   );
 
   return (

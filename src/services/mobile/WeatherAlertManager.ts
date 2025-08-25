@@ -766,6 +766,14 @@ export class WeatherAlertManager {
     this.saveStoredData();
   }
 
+  /**
+   * Reset alert preferences to defaults
+   */
+  resetPreferences(): void {
+    this.preferences = { ...DEFAULT_ALERT_PREFERENCES };
+    this.saveStoredData();
+  }
+
   // ===== Default Alert Rules Setup =====
 
   /**

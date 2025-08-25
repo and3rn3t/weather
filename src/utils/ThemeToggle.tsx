@@ -12,7 +12,7 @@ interface ThemeToggleProps {
 }
 
 const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
-  const { isDark, themeName, toggleTheme } = useTheme();
+  const { themeName, toggleTheme } = useTheme();
   const haptic = useHaptic();
   const telemetry = useDash0Telemetry();
 
@@ -65,7 +65,7 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     // Announce theme change for accessibility
     await weatherAnnouncements.announceStateChange(
       'theme-changed',
-      `Switched to ${nextTheme} theme`,
+      `Switched to ${nextTheme} theme`
     );
   };
 

@@ -8,9 +8,7 @@
 /* Import core iOS26 design system - ESSENTIAL */
 @import './styles/ios26-design-system-consolidated.css';
 
-/* Import core navigation - ALWAYS NEEDED */
-@import './liquid-glass-navigation.css';
-@import './seamless-navigation.css';
+/* Core navigation is now styled via styles/mobile.css; no extra overrides needed */
 
 /* Core typography and basic layout - ESSENTIAL */
 :root {

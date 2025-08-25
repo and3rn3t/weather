@@ -17,6 +17,7 @@ import './styles/mobileEnhancements.css';
 import { HapticFeedbackProvider } from './utils/hapticContext';
 import { logError } from './utils/logger';
 import type { ScreenInfo } from './utils/mobileScreenOptimization';
+import { getScreenInfo } from './utils/mobileScreenOptimization';
 import { ThemeProvider } from './utils/themeContext';
 import ThemeToggle from './utils/ThemeToggle';
 import { useTheme } from './utils/useTheme';
@@ -60,19 +61,7 @@ const SimpleWeatherApp: React.FC = () => {
   const { theme } = useTheme();
 
   // Create basic screen info for SettingsScreen
-  const screenInfo: ScreenInfo = {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    isMobile: window.innerWidth < 768,
-    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
-    isDesktop: window.innerWidth >= 1024,
-    orientation:
-      window.innerWidth > window.innerHeight ? 'landscape' : 'portrait',
-    pixelRatio: window.devicePixelRatio || 1,
-    hasNotch: false,
-    safeAreaTop: 0,
-    safeAreaBottom: 0,
-  };
+  const screenInfo: ScreenInfo = getScreenInfo();
 
   // Navigation state
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
@@ -1534,6 +1523,30 @@ const SimpleWeatherApp: React.FC = () => {
       }}
       onTouchStart={handleTouchStart}
     >
+      {/* Dev-only debug banner to confirm render and layering */}
+      {process.env.NODE_ENV !== 'production' && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 99999,
+            background: '#fffbeb',
+            color: '#92400e',
+            borderBottom: '1px solid #f59e0b',
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            padding: '6px 10px',
+            textAlign: 'center',
+          }}
+        >
+          UI Debug: App rendered. If you see only this bar, a full-screen
+          overlay or opacity rule may be hiding content.
+        </div>
+      )}
       {/* Pull-to-Refresh Indicator */}
       {(pullDistance > 0 || refreshing) && (
         <div

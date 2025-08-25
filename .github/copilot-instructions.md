@@ -124,6 +124,8 @@ features and animations.
 - **USE** inline components within AppNavigator.tsx - this approach is proven to work reliably
 - Current navigation uses React state (`useState`) to switch between screens
 - React Navigation was abandoned due to React Native Web compatibility issues in browser environment
+- **Single-source nav styling**: Navigation bar visuals live in `src/styles/mobile.css`. Avoid
+  creating or importing additional nav override CSS files.
 
 ### API Integration
 
@@ -391,15 +393,17 @@ Through comprehensive debugging with visual CSS borders, we discovered the blue 
 
 ### **Successful Solution** ✅
 
-**Target the real culprits**: Content area and scrollbar `:active` states
+Focus fixes where they actually originate: content area and scrollbar `:active` states. The final
+implementation is consolidated inside `src/index.css` (not separate fix files) and complemented by
+the single-source nav styles in `src/styles/mobile.css`.
 
-#### **Key Files Created:**
+#### **Consolidated Fix Location**
 
-- `src/final-blue-rectangle-fix.css` - Comprehensive fix targeting content elements
-- `src/nuclear-navigation-fix.css` - Aggressive overrides for navigation styling
-- `src/core-navigation-fix-clean.css` - Clean navigation positioning and behavior
+- Global active-state neutralization: `src/index.css` (single source; do not reintroduce separate
+  fix files)
+- Navigation visuals and layout: `src/styles/mobile.css`
 
-#### **Critical CSS Rules:**
+#### **Critical CSS Rules (now in index.css):**
 
 ```css
 /* Disable :active on all content elements */
@@ -435,16 +439,13 @@ body {
 }
 ```
 
-#### **CSS Import Order (Critical):**
+#### **CSS Import Order (Updated, Minimal):**
 
 ```css
-/* In src/index.css - LOAD ORDER MATTERS */
+/* In src/index.css - keep it lean and predictable */
 @import './styles/mobile.css';
-@import './styles/mobileEnhancements.css';
-@import './styles/modernWeatherUI.css';
-@import './core-navigation-fix-clean.css';
-@import './nuclear-navigation-fix.css';
-@import './final-blue-rectangle-fix.css'; /* MUST BE LAST */
+@import './styles/iosComponents.css';
+/* Avoid additional nav override files; the global fix lives here in index.css */
 ```
 
 ### **Debugging Technique Used**
@@ -468,7 +469,8 @@ div:active {
 2. **Use debug borders** when investigating mysterious styling issues
 3. **Target content elements, not just navigation** - browser styling can affect parent containers
 4. **Check scrollbar pseudo-elements** - they can receive unexpected `:active` states
-5. **Import fix CSS files LAST** - CSS cascade order is critical for overrides
+5. **Do not add new global nav overrides** - Keep nav styles in `styles/mobile.css` and the global
+   active-state fix in `index.css`
 
 ### **Component Architecture Changes**
 
@@ -485,6 +487,21 @@ div:active {
 3. Verify single scrollbar only
 4. Check no blue rectangle appears on any navigation interaction
 5. Confirm haptic feedback and navigation switching still work
+
+## 📘 Lessons Learned: Blank Screen + CSS Cleanup (Aug 2025)
+
+- Blank screens often come from environment/caching or duplicate React installs. Ensure service
+  workers are unregistered on localhost and caches purged; dedupe `react`/`react-dom`.
+- Keep navigation styling in one place (`styles/mobile.css`). Competing override files caused
+  inconsistent states and UI artifacts.
+- The “blue rectangle” was caused by content and scrollbar `:active` states, not the nav itself; fix
+  globally in `index.css` rather than piling on component-level overrides.
+- When debugging CSS, progressively disable imports in `index.css`, add temporary debug borders, and
+  verify overflow/scrollbar pseudo-elements.
+- Prefer minimal, predictable CSS import order. Avoid alternate entry CSS files (e.g.,
+  `index-core.css`, `index-optimized.css`, `index-test.css`).
+- Retain development-only safeguards (dev boot banner suppression, overlay neutralization) to
+  prevent dev-only obstruction.
 
 ## Future Enhancements (Roadmap)
 

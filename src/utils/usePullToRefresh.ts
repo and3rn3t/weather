@@ -5,10 +5,9 @@
  * Provides smooth animations and haptic feedback for enhanced UX.
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { useHapticFeedback, HapticPattern } from './useHapticFeedback';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { logError } from './logger';
-
+import { useHapticFeedback } from './useHapticFeedback';
 
 interface PullToRefreshOptions {
   maxPullDistance?: number;
@@ -33,7 +32,7 @@ interface PullToRefreshState {
  */
 export const usePullToRefresh = (
   onRefresh: () => Promise<void>,
-  options: PullToRefreshOptions = {},
+  options: PullToRefreshOptions = {}
 ) => {
   const {
     maxPullDistance = 120,
@@ -85,14 +84,14 @@ export const usePullToRefresh = (
 
       if (canPull()) {
         // Light haptic feedback when starting to pull
-        haptic.triggerHaptic(HapticPattern.LIGHT);
+        haptic.light();
 
         touchStartY.current = e.touches[0].clientY;
         lastTouchY.current = e.touches[0].clientY;
         setState(prev => ({ ...prev, isPulling: true }));
       }
     },
-    [disabled, state.isRefreshing, canPull, haptic],
+    [disabled, state.isRefreshing, canPull, haptic]
   );
 
   // Handle touch move
@@ -114,7 +113,7 @@ export const usePullToRefresh = (
 
         // Trigger haptic when crossing refresh threshold
         if (!wasCanRefresh && newCanRefresh) {
-          haptic.triggerHaptic(HapticPattern.MEDIUM);
+          haptic.medium();
         }
 
         setState(prev => ({
@@ -143,7 +142,7 @@ export const usePullToRefresh = (
       refreshThreshold,
       resetState,
       haptic,
-    ],
+    ]
   );
 
   // Handle touch end
@@ -152,7 +151,7 @@ export const usePullToRefresh = (
 
     if (state.canRefresh && state.pullDistance >= refreshThreshold) {
       // Success haptic when refresh is triggered
-      haptic.triggerHaptic(HapticPattern.REFRESH);
+      haptic.refresh();
 
       setState(prev => ({
         ...prev,
@@ -164,11 +163,11 @@ export const usePullToRefresh = (
       try {
         await onRefresh();
         // Success haptic when refresh completes
-        haptic.triggerHaptic(HapticPattern.SUCCESS);
+        haptic.success();
       } catch (error) {
         logError('Pull-to-refresh error:', error);
         // Error haptic when refresh fails
-        haptic.triggerHaptic(HapticPattern.ERROR);
+        haptic.error();
       } finally {
         setState(prev => ({
           ...prev,
@@ -179,7 +178,7 @@ export const usePullToRefresh = (
       }
     } else {
       // Light haptic when release without refresh
-      haptic.triggerHaptic(HapticPattern.LIGHT);
+      haptic.light();
       resetState();
     }
   }, [
@@ -225,7 +224,7 @@ export const usePullToRefresh = (
         pointerEvents: 'none' as const,
       };
     },
-    [state, refreshThreshold],
+    [state, refreshThreshold]
   );
 
   // Get refresh icon rotation
@@ -240,7 +239,10 @@ export const usePullToRefresh = (
       return 'rotate(180deg)';
     }
 
-    return `rotate(${Math.min((pullDistance / refreshThreshold) * 180, 180)}deg)`;
+    return `rotate(${Math.min(
+      (pullDistance / refreshThreshold) * 180,
+      180
+    )}deg)`;
   }, [state, refreshThreshold]);
 
   // Cleanup effect
