@@ -5,8 +5,9 @@
  * Includes comprehensive permission handling, error states, and mobile optimization.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useHaptic } from './hapticHooks';
+import { logError, logInfo, logWarn } from './logger';
 
 // ============================================================================
 // LOCATION SERVICE TYPES
@@ -80,17 +81,17 @@ const getLocationError = (error: GeolocationPositionError): LocationError => {
 
 const reverseGeocode = async (
   latitude: number,
-  longitude: number
+  longitude: number,
 ): Promise<{ city?: string; country?: string }> => {
   try {
-    console.log(
-      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`
+    logInfo(
+      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`,
     );
 
     const REVERSE_GEOCODING_URL = 'https://nominatim.openstreetmap.org/reverse';
     const url = `${REVERSE_GEOCODING_URL}?lat=${latitude}&lon=${longitude}&format=json&zoom=10&addressdetails=1`;
 
-    console.log(`📡 Making API request to: ${url}`);
+    logInfo(`📡 Making API request to: ${url}`);
 
     const response = await fetch(url, {
       headers: {
@@ -98,27 +99,25 @@ const reverseGeocode = async (
       },
     });
 
-    console.log(
-      `📡 API Response - Status: ${response.status}, OK: ${response.ok}`
-    );
+    logInfo(`📡 API Response - Status: ${response.status}, OK: ${response.ok}`);
 
     if (!response.ok) {
-      console.error(
+      logError(
         '❌ Reverse geocoding failed:',
         response.status,
-        response.statusText
+        response.statusText,
       );
       return {};
     }
 
     const data = await response.json();
-    console.log(
+    logInfo(
       '🗺️ Reverse geocoding response data:',
-      JSON.stringify(data, null, 2)
+      JSON.stringify(data, null, 2),
     );
 
     const address = data?.address || {};
-    console.log('🏠 Address object:', JSON.stringify(address, null, 2));
+    logInfo('🏠 Address object:', JSON.stringify(address, null, 2));
 
     // Extract city name from various possible fields
     const city =
@@ -132,13 +131,13 @@ const reverseGeocode = async (
 
     const country = address.country || '';
 
-    console.log(
-      `🏙️ Final extracted location: City="${city}", Country="${country}"`
+    logInfo(
+      `🏙️ Final extracted location: City="${city}", Country="${country}"`,
     );
 
     return { city, country };
   } catch (error) {
-    console.error('❌ Reverse geocoding error:', error);
+    logError('❌ Reverse geocoding error:', error);
     return {};
   }
 };
@@ -147,6 +146,12 @@ const reverseGeocode = async (
 // LOCATION SERVICES HOOK
 // ============================================================================
 
+/**
+ * useLocationServices - Custom React hook for useLocationServices functionality
+ */
+/**
+ * useLocationServices - Custom React hook for useLocationServices functionality
+ */
 export const useLocationServices = () => {
   const haptic = useHaptic();
   const [state, setState] = useState<LocationState>({
@@ -172,7 +177,7 @@ export const useLocationServices = () => {
       }
       return 'getCurrentPosition' in navigator.geolocation;
     } catch (error) {
-      console.error('Error checking geolocation support:', error);
+      logError('Error checking geolocation support:', error);
       return false;
     }
   }, []);
@@ -193,7 +198,7 @@ export const useLocationServices = () => {
       // Fallback for older browsers
       return 'unknown';
     } catch (error) {
-      console.warn('Permission check failed:', error);
+      logWarn('Permission check failed:', error);
       return 'unknown';
     }
   }, [isSupported]);
@@ -206,7 +211,7 @@ export const useLocationServices = () => {
       maximumAge?: number;
       includeAddress?: boolean;
     }) => {
-      console.log('🚀 Starting getCurrentLocation with options:', options);
+      logInfo('🚀 Starting getCurrentLocation with options:', options);
 
       // Clear any existing debounce timeout
       if (debounceTimeoutRef.current) {
@@ -214,7 +219,7 @@ export const useLocationServices = () => {
       }
 
       if (!isSupported()) {
-        console.error('❌ Geolocation not supported in this browser');
+        logError('❌ Geolocation not supported in this browser');
         const error: LocationError = {
           code: -1,
           message: 'Geolocation not supported',
@@ -226,7 +231,7 @@ export const useLocationServices = () => {
         return null;
       }
 
-      console.log('✅ Geolocation is supported, setting loading state...');
+      logInfo('✅ Geolocation is supported, setting loading state...');
       setState(prev => ({
         ...prev,
         isLoading: true,
@@ -236,17 +241,17 @@ export const useLocationServices = () => {
       haptic.triggerHaptic('light'); // Light feedback when starting location request
 
       const locationOptions: PositionOptions = {
-        enableHighAccuracy: options?.enableHighAccuracy ?? true,
-        timeout: options?.timeout ?? 15000, // 15 seconds
-        maximumAge: options?.maximumAge ?? 300000, // 5 minutes
+        enableHighAccuracy: options?.enableHighAccuracy ?? false, // Changed: prioritize speed
+        timeout: options?.timeout ?? 8000, // Reduced from 15000ms
+        maximumAge: options?.maximumAge ?? 180000, // Reduced from 5 minutes to 3 minutes
       };
 
-      console.log('⚙️ Using location options:', locationOptions);
+      logInfo('⚙️ Using location options:', locationOptions);
 
       return new Promise<LocationData | null>(resolve => {
         const successCallback = async (position: GeolocationPosition) => {
           try {
-            console.log('🎯 GPS location acquired successfully:', {
+            logInfo('🎯 GPS location acquired successfully:', {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
               accuracy: position.coords.accuracy,
@@ -260,21 +265,21 @@ export const useLocationServices = () => {
               timestamp: position.timestamp,
             };
 
-            console.log('📍 Created location data object:', locationData);
+            logInfo('📍 Created location data object:', locationData);
 
             // Optionally include reverse geocoded address
             if (options?.includeAddress !== false) {
-              console.log('🔍 Starting reverse geocoding process...');
+              logInfo('🔍 Starting reverse geocoding process...');
               const addressInfo = await reverseGeocode(
                 position.coords.latitude,
-                position.coords.longitude
+                position.coords.longitude,
               );
-              console.log('🏙️ Reverse geocoding completed:', addressInfo);
+              logInfo('🏙️ Reverse geocoding completed:', addressInfo);
 
               locationData.city = addressInfo.city;
               locationData.country = addressInfo.country;
 
-              console.log('📍 Final location data with address:', locationData);
+              logInfo('📍 Final location data with address:', locationData);
             }
 
             setState(prev => ({
@@ -286,11 +291,11 @@ export const useLocationServices = () => {
               lastUpdate: Date.now(),
             }));
 
-            console.log('✅ Location state updated successfully');
+            logInfo('✅ Location state updated successfully');
             haptic.triggerHaptic('success'); // Success feedback
             resolve(locationData);
           } catch (error) {
-            console.error('❌ Location processing error:', error);
+            logError('❌ Location processing error:', error);
             const locationError: LocationError = {
               code: -2,
               message: 'Location processing failed',
@@ -310,14 +315,14 @@ export const useLocationServices = () => {
         };
 
         const errorCallback = (error: GeolocationPositionError) => {
-          console.error('❌ GPS location acquisition failed:', {
+          logError('❌ GPS location acquisition failed:', {
             code: error.code,
             message: error.message,
             timestamp: Date.now(),
           });
 
           const locationError = getLocationError(error);
-          console.error('❌ Processed location error:', locationError);
+          logError('❌ Processed location error:', locationError);
 
           setState(prev => ({
             ...prev,
@@ -335,16 +340,16 @@ export const useLocationServices = () => {
 
         // Add debounce to prevent rapid calls
         debounceTimeoutRef.current = setTimeout(() => {
-          console.log('📡 Calling navigator.geolocation.getCurrentPosition...');
+          logInfo('📡 Calling navigator.geolocation.getCurrentPosition...');
           navigator.geolocation.getCurrentPosition(
             successCallback,
             errorCallback,
-            locationOptions
+            locationOptions,
           );
         }, 100);
       });
     },
-    [isSupported, haptic]
+    [isSupported, haptic],
   );
 
   // Watch location for continuous updates
@@ -356,7 +361,7 @@ export const useLocationServices = () => {
       includeAddress?: boolean;
     }) => {
       if (!isSupported()) {
-        console.warn('Geolocation not supported for watching');
+        logWarn('Geolocation not supported for watching');
         return null;
       }
 
@@ -377,7 +382,7 @@ export const useLocationServices = () => {
         if (options?.includeAddress !== false) {
           const addressInfo = await reverseGeocode(
             position.coords.latitude,
-            position.coords.longitude
+            position.coords.longitude,
           );
           locationData.city = addressInfo.city;
           locationData.country = addressInfo.country;
@@ -399,12 +404,12 @@ export const useLocationServices = () => {
       const watchId = navigator.geolocation.watchPosition(
         successCallback,
         errorCallback,
-        locationOptions
+        locationOptions,
       );
 
       return watchId;
     },
-    [isSupported]
+    [isSupported],
   );
 
   // Stop watching location
@@ -414,7 +419,7 @@ export const useLocationServices = () => {
         navigator.geolocation.clearWatch(watchId);
       }
     },
-    [isSupported]
+    [isSupported],
   );
 
   // Clear location data and errors
@@ -458,7 +463,7 @@ export const useLocationServices = () => {
       if (!state.lastUpdate) return true;
       return Date.now() - state.lastUpdate > maxAgeMs;
     },
-    [state.lastUpdate]
+    [state.lastUpdate],
   );
 
   return {

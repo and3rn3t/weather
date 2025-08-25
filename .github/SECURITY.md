@@ -81,4 +81,4 @@ For security-related questions or concerns:
 
 ---
 
-#### Last updated: July 2025
+### Last updated: July 2025

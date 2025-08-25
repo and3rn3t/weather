@@ -5,7 +5,7 @@
  * verify the detected location before proceeding with weather fetch.
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from './hapticHooks';
 import type { ThemeColors } from './themeConfig';
 
@@ -59,7 +59,9 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
     const cityName =
       locationData.address?.city ||
       locationData.address?.display ||
-      `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}`;
+      `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(
+        4,
+      )}`;
 
     onConfirm(cityName, locationData.latitude, locationData.longitude);
   };
@@ -140,8 +142,13 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
   };
 
   return (
-    <div style={overlayStyle} onClick={handleCancel}>
-      <div style={modalStyle} onClick={e => e.stopPropagation()}>
+    <div style={overlayStyle} onClick={handleCancel} aria-hidden="true">
+      <div
+        style={modalStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="location-dialog-title"
+      >
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div
@@ -154,6 +161,7 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
             📍
           </div>
           <h2
+            id="location-dialog-title"
             style={{
               color: theme.primaryText,
               fontSize: isMobile ? '20px' : '24px',

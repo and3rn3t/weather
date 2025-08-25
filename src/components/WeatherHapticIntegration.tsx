@@ -96,7 +96,7 @@ const WeatherHapticIntegration: React.FC<WeatherHapticIntegrationProps> = ({
       if (weatherCode >= 60) return 'moderate'; // Rain
       return 'light'; // Clear/light conditions
     },
-    []
+    [],
   );
 
   // Create weather condition object
@@ -156,7 +156,7 @@ const WeatherHapticIntegration: React.FC<WeatherHapticIntegrationProps> = ({
         'Weather transition detected:',
         prev.weatherCode,
         '→',
-        weatherCode
+        weatherCode,
       );
       weatherHaptic.triggerWeatherTransition(prevCondition, condition);
     } else if (prev.weatherCode === undefined) {
@@ -197,7 +197,7 @@ const WeatherHapticIntegration: React.FC<WeatherHapticIntegrationProps> = ({
           'Temperature change haptic:',
           prev.temperature,
           '→',
-          temperature
+          temperature,
         );
         weatherHaptic.triggerTemperatureChange(prev.temperature, temperature);
       }

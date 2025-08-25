@@ -1,0 +1,66 @@
+/* Horror Theme Layout Fix - Prevents screen cutoff issues */
+
+/* Fix for horror status indicator positioning */
+.horror-status-indicator {
+  position: absolute !important; /* Change from fixed to absolute */
+  top: 10px !important; /* Reduce from 20px to prevent cutoff */
+  right: 10px !important; /* Reduce from 20px */
+  z-index: 100 !important; /* Reduce from 1000 to prevent conflicts */
+  pointer-events: none;
+}
+
+/* Fix film grain overlays to not interfere with layout */
+body.horror-film-grain::before {
+  position: absolute !important; /* Change from fixed to absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1 !important; /* Move behind content */
+  pointer-events: none;
+}
+
+/* Fix enhanced film grain overlays */
+.horror-theme #root::before,
+.horror-theme .app-container::before {
+  position: absolute !important; /* Change from fixed to absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1 !important; /* Move behind content to prevent interference */
+  pointer-events: none;
+  opacity: 0.3 !important; /* Reduce opacity to make less intrusive */
+}
+
+/* Ensure app container can contain absolute positioned children */
+.horror-theme .app-container {
+  position: relative !important;
+  overflow: visible !important; /* Change from hidden to prevent cutoff */
+}
+
+/* Fix horror theme root container */
+.horror-theme #root {
+  position: relative !important;
+  overflow-x: hidden !important; /* Only hide horizontal overflow */
+  overflow-y: auto !important; /* Allow vertical scrolling */
+  min-height: 100vh !important;
+}
+
+/* Prevent any horror elements from cutting off the top */
+.horror-theme * {
+  max-height: calc(100vh - 20px) !important; /* Leave space at top */
+}
+
+/* Special fix for horror backgrounds */
+.horror-theme body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  position: relative !important;
+}
+
+/* Emergency override for any remaining fixed positioning issues */
+.horror-theme [style*='position: fixed'] {
+  position: absolute !important;
+  z-index: -1 !important;
+}

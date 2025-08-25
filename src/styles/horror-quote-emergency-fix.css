@@ -1,0 +1,161 @@
+/**
+ * Emergency Horror Quote Positioning Fix
+ * Apply this CSS to fix quote container positioning and background issues
+ * Updated to handle various screen sizes and prevent content coverage
+ */
+
+/* Primary fix: Ensure proper positioning in content flow */
+.horror-quote-overlay,
+.horror-weather-quote {
+  position: relative !important;
+  display: block !important;
+  margin: 20px auto 100px auto !important;
+  max-width: 85% !important;
+  width: auto !important;
+  max-height: 200px !important;
+
+  /* Force normal document flow */
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+
+  /* Reduced z-index to prevent overlaying */
+  z-index: 1 !important;
+
+  /* Force override purple backgrounds from main theme */
+  background: rgba(0, 0, 0, 0.85) !important;
+  background-image: none !important;
+  background-color: rgba(0, 0, 0, 0.85) !important;
+
+  /* Horror styling */
+  border: 1px solid #8b0000 !important;
+  color: #ff6b6b !important;
+  padding: 15px 20px !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  font-style: italic !important;
+  box-shadow: 0 0 15px rgba(139, 0, 0, 0.4) !important;
+  clear: both !important;
+
+  /* Prevent expanding beyond container */
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+} /* Extra specificity to override inherited styles */
+.horror-theme .horror-quote-overlay,
+.horror-theme .horror-weather-quote,
+.horror-theme .horror-quote-overlay .horror-weather-quote {
+  background: rgba(0, 0, 0, 0.92) !important;
+  background-image: none !important;
+  background-color: rgba(0, 0, 0, 0.92) !important;
+}
+
+/* Nuclear override for any gradient inheritance */
+.horror-quote-overlay *,
+.horror-weather-quote * {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Mobile adjustments - Small screens */
+@media (max-width: 480px) {
+  .horror-quote-overlay,
+  .horror-weather-quote {
+    margin: 15px auto 80px auto !important;
+    max-width: 95% !important;
+    padding: 12px 15px !important;
+    max-height: 150px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Mobile adjustments - Medium screens */
+@media (min-width: 481px) and (max-width: 768px) {
+  .horror-quote-overlay,
+  .horror-weather-quote {
+    margin: 20px auto 100px auto !important;
+    max-width: 90% !important;
+    padding: 15px 20px !important;
+    max-height: 180px !important;
+  }
+}
+
+/* Desktop adjustments */
+@media (min-width: 769px) {
+  .horror-quote-overlay,
+  .horror-weather-quote {
+    margin: 30px auto 50px auto !important;
+    max-width: 600px !important;
+    padding: 20px 24px !important;
+    max-height: 200px !important;
+  }
+}
+
+/* Very short screens */
+@media (max-height: 600px) {
+  .horror-quote-overlay,
+  .horror-weather-quote {
+    margin: 10px auto 40px auto !important;
+    max-height: 100px !important;
+    padding: 10px 15px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Ensure quotes appear at end of content flow */
+.horror-quote-overlay {
+  order: 999 !important;
+}
+
+/* Fix any flex container issues */
+.horror-quote-overlay,
+.horror-weather-quote {
+  flex-shrink: 0 !important;
+  align-self: center !important;
+}
+
+/* Text styling overrides */
+.horror-weather-quote .quote-text {
+  color: #ff6b6b !important;
+  font-size: 16px !important;
+  font-style: italic !important;
+  line-height: 1.6 !important;
+  margin-bottom: 10px !important;
+}
+
+.horror-weather-quote .quote-attribution {
+  color: rgba(255, 107, 107, 0.8) !important;
+  font-size: 14px !important;
+  margin-top: 10px !important;
+}
+
+.horror-weather-quote .quote-author,
+.horror-weather-quote .quote-movie {
+  color: rgba(255, 107, 107, 0.8) !important;
+  font-weight: normal !important;
+}
+
+/* Quotation marks styling */
+.horror-weather-quote::before {
+  content: '"' !important;
+  font-size: 2.5em !important;
+  position: absolute !important;
+  top: -15px !important;
+  left: 15px !important;
+  color: #8b0000 !important;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8) !important;
+  font-family: serif !important;
+}
+
+.horror-weather-quote::after {
+  content: '"' !important;
+  font-size: 2.5em !important;
+  position: absolute !important;
+  bottom: -25px !important;
+  right: 15px !important;
+  color: #8b0000 !important;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8) !important;
+  font-family: serif !important;
+}

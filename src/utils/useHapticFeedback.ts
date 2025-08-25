@@ -6,11 +6,19 @@
  */
 
 import { useCallback, useRef } from 'react';
+import { logError, logInfo } from './logger';
+
 
 // ============================================================================
 // HAPTIC FEEDBACK PATTERNS
 // ============================================================================
 
+/**
+ * HapticPattern - Haptic feedback system for mobile interactions
+ */
+/**
+ * HapticPattern - Haptic feedback system for mobile interactions
+ */
 export const HapticPattern = {
   LIGHT: 'light', // 10ms - Light tap, button press
   MEDIUM: 'medium', // 20ms - Medium feedback, selection
@@ -62,6 +70,12 @@ interface HapticCapabilities {
 // HAPTIC FEEDBACK HOOK
 // ============================================================================
 
+/**
+ * useHapticFeedback - Custom React hook for useHapticFeedback functionality
+ */
+/**
+ * useHapticFeedback - Custom React hook for useHapticFeedback functionality
+ */
 export const useHapticFeedback = (config: HapticConfig = {}) => {
   const {
     enabled = true,
@@ -87,7 +101,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
 
     // Check if device likely supports haptics
     const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone/i.test(
-      userAgent
+      userAgent,
     );
     const isIOS = /iphone|ipad|ipod/i.test(userAgent);
     const isAndroid = /android/i.test(userAgent);
@@ -131,7 +145,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
       if (!capabilities.isSupported || !capabilities.isEnabled) {
         if (debugMode) {
           if (import.meta.env.DEV) {
-            console.log('🔇 Haptic feedback not available:', capabilities);
+            logInfo('🔇 Haptic feedback not available:', capabilities);
           }
         }
         return false;
@@ -142,7 +156,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
       if (respectSystemSettings && now - lastVibrationTime.current < 50) {
         if (debugMode) {
           if (import.meta.env.DEV) {
-            console.log('🔇 Haptic feedback rate limited');
+            logInfo('🔇 Haptic feedback rate limited');
           }
         }
         return false;
@@ -155,19 +169,19 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
 
         if (debugMode) {
           if (import.meta.env.DEV) {
-            console.log('📳 Haptic feedback executed:', { pattern, result });
+            logInfo('📳 Haptic feedback executed:', { pattern, result });
           }
         }
 
         return result;
       } catch (error) {
         if (debugMode) {
-          console.error('❌ Haptic feedback error:', error);
+          logError('❌ Haptic feedback error:', error);
         }
         return false;
       }
     },
-    [getCapabilities, respectSystemSettings, debugMode]
+    [getCapabilities, respectSystemSettings, debugMode],
   );
 
   // ============================================================================
@@ -186,49 +200,49 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
 
       return executeVibration(vibrationPattern);
     },
-    [executeVibration]
+    [executeVibration],
   );
 
   // Convenience methods for common patterns
   const light = useCallback(
     () => triggerHaptic(HapticPattern.LIGHT),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const medium = useCallback(
     () => triggerHaptic(HapticPattern.MEDIUM),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const heavy = useCallback(
     () => triggerHaptic(HapticPattern.HEAVY),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const success = useCallback(
     () => triggerHaptic(HapticPattern.SUCCESS),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const error = useCallback(
     () => triggerHaptic(HapticPattern.ERROR),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const notification = useCallback(
     () => triggerHaptic(HapticPattern.NOTIFICATION),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const selection = useCallback(
     () => triggerHaptic(HapticPattern.SELECTION),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const refresh = useCallback(
     () => triggerHaptic(HapticPattern.REFRESH),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const navigation = useCallback(
     () => triggerHaptic(HapticPattern.NAVIGATION),
-    [triggerHaptic]
+    [triggerHaptic],
   );
   const longPress = useCallback(
     () => triggerHaptic(HapticPattern.LONG_PRESS),
-    [triggerHaptic]
+    [triggerHaptic],
   );
 
   // ============================================================================
@@ -271,7 +285,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
         // Silently fail for audio fallback
       }
     },
-    [fallbackToAudio]
+    [fallbackToAudio],
   );
 
   // ============================================================================

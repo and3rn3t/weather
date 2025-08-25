@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="0 0 144 144">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="144" height="144" fill="url(#grad)" rx="14.4"/>
+      <circle cx="43.199999999999996" cy="50.4" r="11.52" fill="#ffd700"/>
+      <ellipse cx="86.39999999999999" cy="72" rx="21.599999999999998" ry="11.52" fill="white"/>
+      <text x="72" y="115.2" font-family="sans-serif" font-size="14.4" font-weight="bold" text-anchor="middle" fill="white">W</text>
+    </svg>

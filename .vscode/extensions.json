@@ -1,23 +1,77 @@
 {
   "recommendations": [
+    // Core Development
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss",
     "ms-vscode.vscode-json",
+
+    // GitHub Integration
     "github.copilot",
     "github.copilot-chat",
-    "ms-vscode.test-adapter-converter",
+    "github.vscode-pull-request-github",
+    "ms-vscode.vscode-github-issue-notebooks",
+
+    // Testing & Quality
     "vitest.explorer",
+    "ms-vscode.test-adapter-converter",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "ms-vscode.hexeditor",
+
+    // React/TypeScript Development
     "formulahendry.auto-rename-tag",
     "christian-kohler.path-intellisense",
-    "ms-vscode.vscode-github-issue-notebooks",
-    "github.vscode-pull-request-github",
-    "ms-vscode.powershell",
+    "bradlc.vscode-tailwindcss",
+    "zignd.html-css-class-completion",
+    "ms-vscode.vscode-typescript-next",
+
+    // Mobile Development
     "ms-vscode.live-server",
     "ritwickdey.liveserver",
+    "ms-vscode.remote-repositories",
+
+    // Weather App Specific
+    "ms-vscode.theme-tomorrowkit",
+    "pkief.material-icon-theme",
+    "johnpapa.vscode-peacock",
+    "oderwat.indent-rainbow",
+
+    // PowerShell & Terminal
+    "ms-vscode.powershell",
+    "ms-vscode.remote-containers",
+
+    // Performance & Analysis
     "ms-vscode.references-view",
-    "ms-vscode.outline-map"
+    "ms-vscode.outline-map",
+    "ms-vscode.vscode-bundle-analyzer",
+    "bradlc.vscode-tailwindcss-intellisense",
+
+    // Documentation
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "bierner.markdown-preview-github-styles",
+    "bierner.markdown-emoji",
+
+    // Git & Version Control
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    "donjayamanne.githistory",
+
+    // Productivity
+    "alefragnani.bookmarks",
+    "gruntfuggly.todo-tree",
+    "aaron-bond.better-comments",
+    "ms-vscode.wordcount",
+
+    // API Development
+    "humao.rest-client",
+    "42crunch.vscode-openapi",
+
+    // CSS/Styling
+    "syler.sass-indented",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-css-peek"
   ],
   "unwantedRecommendations": [
     "ms-vscode.vscode-typescript",

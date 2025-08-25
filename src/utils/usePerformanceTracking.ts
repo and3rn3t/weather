@@ -10,6 +10,12 @@ import { useRef, useEffect } from 'react';
 /**
  * Hook for tracking performance metrics
  */
+/**
+ * usePerformanceTracking - Custom React hook for usePerformanceTracking functionality
+ */
+/**
+ * usePerformanceTracking - Custom React hook for usePerformanceTracking functionality
+ */
 export const usePerformanceTracking = () => {
   const renderCount = useRef(0);
   const apiCallCount = useRef(0);

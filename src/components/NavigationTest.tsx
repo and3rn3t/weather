@@ -12,6 +12,8 @@ import React from 'react';
 import MobileNavigation, { type NavigationScreen } from './MobileNavigation';
 import InteractiveWeatherWidget from './modernWeatherUI/InteractiveWeatherWidget';
 import { useTheme } from '../utils/useTheme';
+import { logInfo } from '../utils/logger';
+
 
 const NavigationTest: React.FC = () => {
   const { theme } = useTheme();
@@ -133,7 +135,7 @@ const NavigationTest: React.FC = () => {
             weatherData={mockWeatherData}
             isDark={theme.appBackground.includes('28, 28, 30')} // Simple dark mode detection
             isCompact={false}
-            onRefresh={() => console.log('Weather refreshed!')}
+            onRefresh={() => logInfo('Weather refreshed!')}
           />
         </div>
 

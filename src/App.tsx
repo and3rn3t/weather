@@ -5,18 +5,22 @@
  */
 
 import React, { useState } from 'react';
-import { ThemeProvider } from './utils/themeContext';
-import { HapticFeedbackProvider } from './utils/hapticContext';
-import { useTheme } from './utils/useTheme';
-import WeatherIcon from './utils/weatherIcons';
-import ThemeToggle from './utils/ThemeToggle';
+import './App.css';
+import EnhancedSearchScreen from './components/EnhancedSearchScreen';
+import { OfflineStatusIndicator } from './components/mobile/OfflineStatusIndicator';
 import MobileNavigation, {
   type NavigationScreen,
 } from './components/MobileNavigation';
+import SettingsScreen from './components/SettingsScreen';
 import ErrorBoundary from './ErrorBoundary';
-import IOS26WeatherDemo from './components/modernWeatherUI/iOS26WeatherDemo';
-import './App.css';
 import './styles/mobileEnhancements.css';
+import { HapticFeedbackProvider } from './utils/hapticContext';
+import { logError } from './utils/logger';
+import type { ScreenInfo } from './utils/mobileScreenOptimization';
+import { ThemeProvider } from './utils/themeContext';
+import ThemeToggle from './utils/ThemeToggle';
+import { useTheme } from './utils/useTheme';
+import WeatherIcon from './utils/weatherIcons';
 
 // Interfaces for type safety
 interface NominatimResult {
@@ -54,6 +58,21 @@ interface WeatherData {
 // Simple weather component for debugging
 const SimpleWeatherApp: React.FC = () => {
   const { theme } = useTheme();
+
+  // Create basic screen info for SettingsScreen
+  const screenInfo: ScreenInfo = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    isMobile: window.innerWidth < 768,
+    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
+    isDesktop: window.innerWidth >= 1024,
+    orientation:
+      window.innerWidth > window.innerHeight ? 'landscape' : 'portrait',
+    pixelRatio: window.devicePixelRatio || 1,
+    hasNotch: false,
+    safeAreaTop: 0,
+    safeAreaBottom: 0,
+  };
 
   // Navigation state
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
@@ -120,7 +139,9 @@ const SimpleWeatherApp: React.FC = () => {
     try {
       // Step 1: Get coordinates from city name
       const geoResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          city,
+        )}&format=json&limit=1`,
       );
       const geoData = await geoResponse.json();
 
@@ -132,7 +153,7 @@ const SimpleWeatherApp: React.FC = () => {
 
       // Step 2: Get weather data with hourly and daily forecasts
       const weatherResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
       );
 
       const weatherData = await weatherResponse.json();
@@ -157,7 +178,7 @@ const SimpleWeatherApp: React.FC = () => {
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
         visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34
+          (weatherData.current.visibility || 10000) / 1609.34,
         ), // Convert meters to miles
       };
 
@@ -186,7 +207,7 @@ const SimpleWeatherApp: React.FC = () => {
           tempMax: Math.round(weatherData.daily.temperature_2m_max[index]),
           tempMin: Math.round(weatherData.daily.temperature_2m_min[index]),
           precipitation: weatherData.daily.precipitation_sum[index] || 0,
-        })
+        }),
       );
 
       setWeather(currentWeather);
@@ -195,7 +216,7 @@ const SimpleWeatherApp: React.FC = () => {
       generateWeatherAlerts(currentWeather);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to fetch weather data'
+        err instanceof Error ? err.message : 'Failed to fetch weather data',
       );
     } finally {
       setLoading(false);
@@ -219,7 +240,7 @@ const SimpleWeatherApp: React.FC = () => {
             timeout: 10000,
             maximumAge: 300000,
           });
-        }
+        },
       );
 
       const { latitude, longitude } = position.coords;
@@ -227,7 +248,7 @@ const SimpleWeatherApp: React.FC = () => {
       // Get city name from coordinates
       const geoResponse = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
+        { headers: { 'User-Agent': 'WeatherApp/1.0' } },
       );
       const geoData = await geoResponse.json();
 
@@ -240,7 +261,7 @@ const SimpleWeatherApp: React.FC = () => {
 
       // Get weather data directly with forecasts
       const weatherResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
       );
 
       const weatherData = await weatherResponse.json();
@@ -265,7 +286,7 @@ const SimpleWeatherApp: React.FC = () => {
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
         visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34
+          (weatherData.current.visibility || 10000) / 1609.34,
         ), // Convert meters to miles
       };
 
@@ -294,7 +315,7 @@ const SimpleWeatherApp: React.FC = () => {
           tempMax: Math.round(weatherData.daily.temperature_2m_max[index]),
           tempMin: Math.round(weatherData.daily.temperature_2m_min[index]),
           precipitation: weatherData.daily.precipitation_sum[index] || 0,
-        })
+        }),
       );
 
       setWeather(currentWeather);
@@ -306,7 +327,7 @@ const SimpleWeatherApp: React.FC = () => {
         switch (err.code) {
           case err.PERMISSION_DENIED:
             setError(
-              'Location access denied. Please enable location services.'
+              'Location access denied. Please enable location services.',
             );
             break;
           case err.POSITION_UNAVAILABLE:
@@ -321,7 +342,7 @@ const SimpleWeatherApp: React.FC = () => {
         }
       } else {
         setError(
-          err instanceof Error ? err.message : 'Failed to get current location'
+          err instanceof Error ? err.message : 'Failed to get current location',
         );
       }
     } finally {
@@ -365,7 +386,7 @@ const SimpleWeatherApp: React.FC = () => {
         await getWeather();
       }
     } catch (err) {
-      console.error('Refresh failed:', err);
+      logError('Refresh failed:', err);
     } finally {
       setRefreshing(false);
       setIsRefreshTriggered(false);
@@ -432,8 +453,10 @@ const SimpleWeatherApp: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchTerm)}&format=json&limit=5&addressdetails=1`,
-        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchTerm,
+        )}&format=json&limit=5&addressdetails=1`,
+        { headers: { 'User-Agent': 'WeatherApp/1.0' } },
       );
       const data = await response.json();
 
@@ -449,7 +472,7 @@ const SimpleWeatherApp: React.FC = () => {
       setSearchSuggestions(suggestions);
       setShowSuggestions(suggestions.length > 0);
     } catch (error) {
-      console.error('Failed to fetch suggestions:', error);
+      logError('Failed to fetch suggestions:', error);
     }
   };
 
@@ -480,7 +503,7 @@ const SimpleWeatherApp: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
       );
       const weatherData = await response.json();
 
@@ -503,7 +526,7 @@ const SimpleWeatherApp: React.FC = () => {
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
         visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34
+          (weatherData.current.visibility || 10000) / 1609.34,
         ),
       };
 
@@ -511,9 +534,9 @@ const SimpleWeatherApp: React.FC = () => {
       generateWeatherAlerts(currentWeather);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to fetch weather data'
+        err instanceof Error ? err.message : 'Failed to fetch weather data',
       );
-      console.error('Weather fetch error:', err);
+      logError('Weather fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -578,8 +601,6 @@ const SimpleWeatherApp: React.FC = () => {
         return renderHomeScreen();
       case 'Weather':
         return renderWeatherScreen();
-      case 'iOS26':
-        return renderIOS26Screen();
       case 'Search':
         return renderSearchScreen();
       case 'Favorites':
@@ -724,10 +745,6 @@ const SimpleWeatherApp: React.FC = () => {
       )}
     </div>
   );
-
-  // iOS 26 Demo Screen - Latest iOS components showcase
-  const renderIOS26Screen = () => <IOS26WeatherDemo theme={theme} />;
-
   // Weather Screen - Full weather functionality
   const renderWeatherScreen = () => (
     <div
@@ -892,7 +909,9 @@ const SimpleWeatherApp: React.FC = () => {
               style={{
                 background: alert.severity === 'high' ? '#fef2f2' : '#fff7ed',
                 color: alert.severity === 'high' ? '#dc2626' : '#ea580c',
-                border: `1px solid ${alert.severity === 'high' ? '#fecaca' : '#fed7aa'}`,
+                border: `1px solid ${
+                  alert.severity === 'high' ? '#fecaca' : '#fed7aa'
+                }`,
                 padding: '12px',
                 borderRadius: '8px',
                 marginBottom: '8px',
@@ -1344,35 +1363,20 @@ const SimpleWeatherApp: React.FC = () => {
     </div>
   );
 
-  // Search Screen - Placeholder
+  // Enhanced Search Screen
   const renderSearchScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        textAlign: 'center',
+    <EnhancedSearchScreen
+      theme={theme}
+      onBack={() => setCurrentScreen('Home')}
+      onLocationSelect={(cityName, latitude, longitude) => {
+        // Update the location and switch back to weather screen
+        setCity(cityName);
+        setCurrentScreen('Home');
+
+        // Fetch weather for the new location
+        fetchWeatherForLocation(latitude, longitude);
       }}
-    >
-      <h1 style={{ color: theme.primaryText, marginBottom: '30px' }}>
-        🔍 Search
-      </h1>
-      <div
-        style={{
-          background: theme.weatherCardBackground,
-          padding: '40px 20px',
-          borderRadius: '16px',
-          border: `1px solid ${theme.weatherCardBorder}`,
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚧</div>
-        <p style={{ color: theme.secondaryText, fontSize: '16px' }}>
-          Enhanced search screen coming soon!
-          <br />
-          Use the Weather tab for now.
-        </p>
-      </div>
-    </div>
+    />
   );
 
   // Favorites Screen - Show current favorites
@@ -1509,35 +1513,13 @@ const SimpleWeatherApp: React.FC = () => {
     </div>
   );
 
-  // Settings Screen - Placeholder
+  // Settings Screen - Enhanced Settings with Phase 5A-5C Features
   const renderSettingsScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ color: theme.primaryText, marginBottom: '30px' }}>
-        ⚙️ Settings
-      </h1>
-      <div
-        style={{
-          background: theme.weatherCardBackground,
-          padding: '40px 20px',
-          borderRadius: '16px',
-          border: `1px solid ${theme.weatherCardBorder}`,
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚧</div>
-        <p style={{ color: theme.secondaryText, fontSize: '16px' }}>
-          Settings screen coming soon!
-          <br />
-          Theme toggle is available in the top-right corner.
-        </p>
-      </div>
-    </div>
+    <SettingsScreen
+      theme={theme}
+      screenInfo={screenInfo}
+      onBack={() => setCurrentScreen('Home')}
+    />
   );
 
   return (
@@ -1602,6 +1584,15 @@ const SimpleWeatherApp: React.FC = () => {
 
       {/* Theme Toggle Button */}
       <ThemeToggle />
+
+      {/* Offline Status Indicator */}
+      <OfflineStatusIndicator
+        variant="minimal"
+        position="top"
+        autoHide={true}
+        autoHideDelay={4000}
+        showCacheInfo={true}
+      />
 
       {/* Screen Content */}
       {renderScreen()}

@@ -1,3 +1,5 @@
+import { logInfo, logWarn } from './utils/logger';
+
 /**
  * NUCLEAR FIX for Background Color Changes
  * This prevents ANY click from changing the background except theme toggle
@@ -25,15 +27,15 @@ document.addEventListener(
       if (now - lastThemeToggleTime > 1000) {
         // Only if not within 1 second of legitimate toggle
         // Block theme context from running
-        console.log(
+        logInfo(
           '🚫 Blocking potential accidental theme change from click on:',
-          target
+          target,
         );
         event.stopImmediatePropagation();
       }
     } else {
       // This IS a legitimate theme toggle
-      console.log('✅ Legitimate theme toggle detected');
+      logInfo('✅ Legitimate theme toggle detected');
       themeToggleInProgress = true;
       lastThemeToggleTime = Date.now();
       setTimeout(() => {
@@ -41,7 +43,7 @@ document.addEventListener(
       }, 1000);
     }
   },
-  true
+  true,
 );
 
 // Monitor for unauthorized background changes
@@ -49,15 +51,15 @@ const originalSetProperty = CSSStyleDeclaration.prototype.setProperty;
 CSSStyleDeclaration.prototype.setProperty = function (
   property,
   value,
-  priority
+  priority,
 ) {
   if (property === 'background' && this === document.body.style) {
     const now = Date.now();
     if (!themeToggleInProgress && now - lastThemeToggleTime > 1000) {
-      console.warn('🚨 BLOCKED unauthorized background change:', value);
+      logWarn('🚨 BLOCKED unauthorized background change:', value);
       return; // Block the change
     } else {
-      console.log('✅ Authorized background change:', value);
+      logInfo('✅ Authorized background change:', value);
     }
   }
   return originalSetProperty.call(this, property, value, priority);

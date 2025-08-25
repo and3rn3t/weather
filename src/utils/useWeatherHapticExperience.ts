@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { useHaptic } from './hapticHooks';
-import { logWeatherHaptic, logWeatherTransition, logger } from './logger';
+import logger, { logWeatherHaptic, logWeatherTransition } from './logger';
 
 // ============================================================================
 // WEATHER-CONTEXTUAL HAPTIC PATTERNS
@@ -209,8 +209,14 @@ const WEATHER_HAPTIC_PATTERNS: Record<string, number[]> = {
 // MAIN HOOK
 // ============================================================================
 
+/**
+ * useWeatherHapticExperience - Custom React hook for useWeatherHapticExperience functionality
+ */
+/**
+ * useWeatherHapticExperience - Custom React hook for useWeatherHapticExperience functionality
+ */
 export const useWeatherHapticExperience = (
-  config: WeatherHapticConfig = {}
+  config: WeatherHapticConfig = {},
 ) => {
   const {
     enableWeatherContext = true,
@@ -283,7 +289,7 @@ export const useWeatherHapticExperience = (
         description: mapping.description,
       };
     },
-    [enableTemperatureMapping, enableTimeOfDayVariation, intensityMultiplier]
+    [enableTemperatureMapping, enableTimeOfDayVariation, intensityMultiplier],
   );
 
   // ============================================================================
@@ -302,7 +308,7 @@ export const useWeatherHapticExperience = (
 
       // Apply intensity scaling to pattern
       const scaledPattern = patternData.map(duration =>
-        Math.round(duration * intensity)
+        Math.round(duration * intensity),
       );
 
       try {
@@ -314,7 +320,7 @@ export const useWeatherHapticExperience = (
         logger.warn('Weather haptic execution failed:', error);
       }
     },
-    [enableAtmosphericPatterns]
+    [enableAtmosphericPatterns],
   );
 
   // ============================================================================
@@ -335,12 +341,14 @@ export const useWeatherHapticExperience = (
       lastWeatherHaptic.current = now;
 
       logWeatherHaptic(
-        `${experience.description} (intensity: ${experience.intensity.toFixed(2)})`
+        `${experience.description} (intensity: ${experience.intensity.toFixed(
+          2,
+        )})`,
       );
 
       await executeWeatherHaptic(experience.pattern, experience.intensity);
     },
-    [enableWeatherContext, createWeatherExperience, executeWeatherHaptic]
+    [enableWeatherContext, createWeatherExperience, executeWeatherHaptic],
   );
 
   // Temperature change haptic
@@ -354,16 +362,16 @@ export const useWeatherHapticExperience = (
       if (newTemp > oldTemp) {
         await executeWeatherHaptic(
           'temperature-rising',
-          Math.min(1.0, tempDiff / 10)
+          Math.min(1.0, tempDiff / 10),
         );
       } else {
         await executeWeatherHaptic(
           'temperature-falling',
-          Math.min(1.0, tempDiff / 10)
+          Math.min(1.0, tempDiff / 10),
         );
       }
     },
-    [enableProgressiveFeedback, executeWeatherHaptic]
+    [enableProgressiveFeedback, executeWeatherHaptic],
   );
 
   // Pressure change haptic
@@ -374,7 +382,7 @@ export const useWeatherHapticExperience = (
       const intensity = Math.min(1.0, Math.abs(pressureChange) / 20);
       await executeWeatherHaptic('pressure-building', intensity);
     },
-    [enableProgressiveFeedback, executeWeatherHaptic]
+    [enableProgressiveFeedback, executeWeatherHaptic],
   );
 
   // Wind intensity haptic
@@ -385,7 +393,7 @@ export const useWeatherHapticExperience = (
       const intensity = Math.min(1.0, windSpeed / 50); // Scale by wind speed
       await executeWeatherHaptic('wind-gusting', intensity);
     },
-    [enableAtmosphericPatterns, executeWeatherHaptic]
+    [enableAtmosphericPatterns, executeWeatherHaptic],
   );
 
   // Weather transition haptic (between different conditions)
@@ -409,13 +417,13 @@ export const useWeatherHapticExperience = (
       ];
 
       logWeatherTransition(
-        `${fromExperience.description} → ${toExperience.description}`
+        `${fromExperience.description} → ${toExperience.description}`,
       );
 
       try {
         if (navigator.vibrate) {
           const scaledPattern = transitionPattern.map(duration =>
-            Math.round(duration * blendedIntensity)
+            Math.round(duration * blendedIntensity),
           );
           navigator.vibrate(scaledPattern);
         }
@@ -423,7 +431,7 @@ export const useWeatherHapticExperience = (
         logger.warn('Weather transition haptic failed:', error);
       }
     },
-    [enableWeatherContext, createWeatherExperience]
+    [enableWeatherContext, createWeatherExperience],
   );
 
   // Enhanced weather loading with progressive feedback
@@ -448,7 +456,7 @@ export const useWeatherHapticExperience = (
         setTimeout(() => triggerWeatherHaptic(condition), 500);
       }
     },
-    [haptic, enableWeatherContext, triggerWeatherHaptic]
+    [haptic, enableWeatherContext, triggerWeatherHaptic],
   );
 
   return {

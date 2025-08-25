@@ -10,23 +10,32 @@
  * - App state management
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { logError, logInfo, logWarn } from './logger';
+import type {
+  DeviceCapabilities,
+  LocationResult,
+  WeatherAlert,
+} from './nativeApiService';
 import {
-  nativeGeolocation,
-  nativeHaptics,
-  weatherNotifications,
-  deviceInfo,
-  networkStatus,
   appState,
+  deviceInfo,
   initializeNativeServices,
   isNativePlatform,
-  type LocationResult,
-  type WeatherAlert,
-  type DeviceCapabilities,
+  nativeGeolocation,
+  nativeHaptics,
+  networkStatus,
+  weatherNotifications,
 } from './nativeApiService';
 
 /**
  * Hook for native geolocation with enhanced GPS capabilities
+ */
+/**
+ * useNativeGeolocation - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useNativeGeolocation - Custom React hook for useNativeApi functionality
  */
 export const useNativeGeolocation = () => {
   const [location, setLocation] = useState<LocationResult | null>(null);
@@ -62,7 +71,7 @@ export const useNativeGeolocation = () => {
       });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to start location watching'
+        err instanceof Error ? err.message : 'Failed to start location watching',
       );
       setIsWatching(false);
     }
@@ -75,7 +84,7 @@ export const useNativeGeolocation = () => {
       await nativeGeolocation.stopWatching();
       setIsWatching(false);
     } catch (err) {
-      console.error('Failed to stop location watching:', err);
+      logError('Failed to stop location watching:', err);
     }
   }, [isWatching]);
 
@@ -102,6 +111,12 @@ export const useNativeGeolocation = () => {
 
 /**
  * Hook for native haptic feedback with rich patterns
+ */
+/**
+ * useNativeHaptics - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useNativeHaptics - Custom React hook for useNativeApi functionality
  */
 export const useNativeHaptics = () => {
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
@@ -153,6 +168,12 @@ export const useNativeHaptics = () => {
 /**
  * Hook for weather notifications and alerts
  */
+/**
+ * useWeatherNotifications - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useWeatherNotifications - Custom React hook for useNativeApi functionality
+ */
 export const useWeatherNotifications = () => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -164,7 +185,7 @@ export const useWeatherNotifications = () => {
       setHasPermission(granted);
       return granted;
     } catch (err) {
-      console.error('Failed to request notification permissions:', err);
+      logError('Failed to request notification permissions:', err);
       return false;
     } finally {
       setLoading(false);
@@ -174,12 +195,12 @@ export const useWeatherNotifications = () => {
   const scheduleAlert = useCallback(
     async (alert: WeatherAlert) => {
       if (!hasPermission) {
-        console.warn('Cannot schedule alert: No notification permission');
+        logWarn('Cannot schedule alert: No notification permission');
         return;
       }
       await weatherNotifications.scheduleWeatherAlert(alert);
     },
-    [hasPermission]
+    [hasPermission],
   );
 
   const sendWeatherUpdate = useCallback(
@@ -187,10 +208,10 @@ export const useWeatherNotifications = () => {
       await weatherNotifications.sendWeatherUpdate(
         temperature,
         condition,
-        city
+        city,
       );
     },
-    []
+    [],
   );
 
   const sendSevereAlert = useCallback(
@@ -198,10 +219,10 @@ export const useWeatherNotifications = () => {
       await weatherNotifications.sendSevereWeatherAlert(
         alertType,
         description,
-        city
+        city,
       );
     },
-    []
+    [],
   );
 
   const clearAllNotifications = useCallback(async () => {
@@ -230,6 +251,12 @@ export const useWeatherNotifications = () => {
 /**
  * Hook for device information and capabilities
  */
+/**
+ * useDeviceInfo - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useDeviceInfo - Custom React hook for useNativeApi functionality
+ */
 export const useDeviceInfo = () => {
   const [device, setDevice] = useState<DeviceCapabilities | null>(null);
   const [canHandleAdvanced, setCanHandleAdvanced] = useState<boolean>(true);
@@ -244,7 +271,7 @@ export const useDeviceInfo = () => {
         setDevice(info);
         setCanHandleAdvanced(advanced);
       } catch (err) {
-        console.error('Failed to load device info:', err);
+        logError('Failed to load device info:', err);
       } finally {
         setLoading(false);
       }
@@ -263,6 +290,12 @@ export const useDeviceInfo = () => {
 
 /**
  * Hook for network status monitoring
+ */
+/**
+ * useNetworkStatus - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useNetworkStatus - Custom React hook for useNativeApi functionality
  */
 export const useNetworkStatus = () => {
   const [isOnline, setIsOnline] = useState<boolean>(true);
@@ -299,6 +332,12 @@ export const useNetworkStatus = () => {
 /**
  * Hook for app state monitoring (active/background)
  */
+/**
+ * useAppState - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useAppState - Custom React hook for useNativeApi functionality
+ */
 export const useAppState = () => {
   const [isActive, setIsActive] = useState<boolean>(true);
   const callbackRef = useRef<((active: boolean) => void) | null>(null);
@@ -331,6 +370,12 @@ export const useAppState = () => {
 /**
  * Comprehensive hook that initializes and provides all native APIs
  */
+/**
+ * useNativeServices - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useNativeServices - Custom React hook for useNativeApi functionality
+ */
 export const useNativeServices = () => {
   const [initialized, setInitialized] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -351,7 +396,7 @@ export const useNativeServices = () => {
         setError(
           err instanceof Error
             ? err.message
-            : 'Failed to initialize native services'
+            : 'Failed to initialize native services',
         );
       }
     };
@@ -376,8 +421,14 @@ export const useNativeServices = () => {
  * Hook for smart weather data refresh based on app state and network
  * Enhanced with background refresh capabilities and intelligent scheduling
  */
+/**
+ * useSmartWeatherRefresh - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useSmartWeatherRefresh - Custom React hook for useNativeApi functionality
+ */
 export const useSmartWeatherRefresh = (
-  refreshCallback: () => Promise<void>
+  refreshCallback: () => Promise<void>,
 ) => {
   const { isOnline } = useNetworkStatus();
   const { isActive } = useAppState();
@@ -398,13 +449,13 @@ export const useSmartWeatherRefresh = (
         try {
           await refreshCallback();
           lastRefreshRef.current = now;
-          console.log('Weather data refreshed successfully');
+          logInfo('Weather data refreshed successfully');
         } catch (err) {
-          console.error('Smart refresh failed:', err);
+          logError('Smart refresh failed:', err);
         }
       }
     },
-    [refreshCallback, isOnline]
+    [refreshCallback, isOnline],
   );
 
   const backgroundRefresh = useCallback(async () => {
@@ -418,15 +469,15 @@ export const useSmartWeatherRefresh = (
       try {
         await refreshCallback();
         lastBackgroundRefreshRef.current = now;
-        console.log('Background weather refresh completed');
+        logInfo('Background weather refresh completed');
 
         // Send a subtle notification about fresh data
         if (weatherNotifications) {
           // Note: This is a light notification that doesn't interrupt user
-          console.log('Weather data updated in background');
+          logInfo('Weather data updated in background');
         }
       } catch (err) {
-        console.error('Background refresh failed:', err);
+        logError('Background refresh failed:', err);
       }
     }
   }, [refreshCallback, isOnline]);
@@ -438,16 +489,13 @@ export const useSmartWeatherRefresh = (
     }
 
     // Schedule background refresh for when app is inactive
-    backgroundTimeoutRef.current = setTimeout(
-      () => {
-        if (!isActive && isOnline) {
-          backgroundRefresh();
-          // Schedule next background refresh
-          scheduleBackgroundRefresh();
-        }
-      },
-      15 * 60 * 1000
-    ); // 15 minutes
+    backgroundTimeoutRef.current = setTimeout(() => {
+      if (!isActive && isOnline) {
+        backgroundRefresh();
+        // Schedule next background refresh
+        scheduleBackgroundRefresh();
+      }
+    }, 15 * 60 * 1000); // 15 minutes
   }, [isActive, isOnline, backgroundRefresh]);
 
   useEffect(() => {
@@ -455,7 +503,7 @@ export const useSmartWeatherRefresh = (
     if (isActive) {
       // App came to foreground
       if (wasInactiveRef.current) {
-        console.log('App returned to foreground, checking for refresh');
+        logInfo('App returned to foreground, checking for refresh');
         const now = Date.now();
         const timeSinceLastRefresh = now - lastRefreshRef.current;
 
@@ -470,13 +518,13 @@ export const useSmartWeatherRefresh = (
       if (isOnline) {
         refreshIntervalRef.current = setInterval(
           () => smartRefresh(),
-          10 * 60 * 1000
+          10 * 60 * 1000,
         ); // 10 minutes
       }
     } else {
       // App went to background
       wasInactiveRef.current = true;
-      console.log('App moved to background, scheduling background refresh');
+      logInfo('App moved to background, scheduling background refresh');
 
       // Clear active refresh interval
       if (refreshIntervalRef.current) {
@@ -538,6 +586,12 @@ export const useSmartWeatherRefresh = (
  * Hook for advanced background app refresh with native scheduling
  * Provides comprehensive background task management
  */
+/**
+ * useBackgroundRefresh - Custom React hook for useNativeApi functionality
+ */
+/**
+ * useBackgroundRefresh - Custom React hook for useNativeApi functionality
+ */
 export const useBackgroundRefresh = (
   refreshCallback: () => Promise<void>,
   options: {
@@ -545,7 +599,7 @@ export const useBackgroundRefresh = (
     backgroundInterval?: number; // Minutes between background refreshes
     forceRefreshThreshold?: number; // Minutes to force refresh on app return
     enableNotifications?: boolean; // Show notifications for background updates
-  } = {}
+  } = {},
 ) => {
   const {
     foregroundInterval = 10,
@@ -593,7 +647,7 @@ export const useBackgroundRefresh = (
 
       if (shouldRefresh && isOnline) {
         try {
-          console.log(`Performing ${type} refresh...`);
+          logInfo(`Performing ${type} refresh...`);
           await refreshCallback();
 
           if (type === 'foreground' || type === 'force') {
@@ -608,13 +662,13 @@ export const useBackgroundRefresh = (
 
           // Optional notification for background updates
           if (type === 'background' && enableNotifications) {
-            console.log('Weather updated in background');
+            logInfo('Weather updated in background');
             // Could schedule a notification here if needed
           }
 
-          console.log(`${type} refresh completed successfully`);
+          logInfo(`${type} refresh completed successfully`);
         } catch (error) {
-          console.error(`${type} refresh failed:`, error);
+          logError(`${type} refresh failed:`, error);
         }
       }
     },
@@ -626,7 +680,7 @@ export const useBackgroundRefresh = (
       isActive,
       haptics,
       enableNotifications,
-    ]
+    ],
   );
 
   const startForegroundRefresh = useCallback(() => {
@@ -634,12 +688,9 @@ export const useBackgroundRefresh = (
       clearInterval(intervals.current.foreground);
     }
 
-    intervals.current.foreground = setInterval(
-      () => {
-        performRefresh('foreground');
-      },
-      foregroundInterval * 60 * 1000
-    );
+    intervals.current.foreground = setInterval(() => {
+      performRefresh('foreground');
+    }, foregroundInterval * 60 * 1000);
   }, [performRefresh, foregroundInterval]);
 
   const startBackgroundRefresh = useCallback(() => {
@@ -648,14 +699,11 @@ export const useBackgroundRefresh = (
     }
 
     // Longer intervals for background to preserve battery
-    intervals.current.background = setInterval(
-      () => {
-        if (!isActive && isOnline) {
-          performRefresh('background');
-        }
-      },
-      backgroundInterval * 60 * 1000
-    );
+    intervals.current.background = setInterval(() => {
+      if (!isActive && isOnline) {
+        performRefresh('background');
+      }
+    }, backgroundInterval * 60 * 1000);
   }, [performRefresh, backgroundInterval, isActive, isOnline]);
 
   const stopAllRefresh = useCallback(() => {
@@ -681,7 +729,7 @@ export const useBackgroundRefresh = (
 
       // Force refresh if app was in background for too long
       if (timeInBackground > forceRefreshThreshold * 60 * 1000) {
-        console.log('App returned from background, forcing refresh');
+        logInfo('App returned from background, forcing refresh');
         performRefresh('force');
       }
 

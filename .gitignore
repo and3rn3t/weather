@@ -23,3 +23,51 @@ coverage/
 *.njsproj
 *.sln
 *.sw?
+
+# Development and Debug Files
+public/*-debug.js
+public/*-test.js
+public/*-test.html
+public/horror-*.js
+public/horror-*.html
+public/theme-*.js
+public/test-*.js
+public/instant-*.js
+public/comprehensive-*.js
+public/targeted-*.js
+public/transparent-*.js
+public/enhanced-*.js
+public/console-*.js
+public/background-*.js
+public/final-*.js
+public/simple-*.js
+public/quote-*.js
+public/mobile-nav-*.js
+
+# Documentation Archives
+docs/archive/
+docs/legacy/
+docs/backup/
+docs/deprecated/
+
+# Backup and Archive Files
+backup/
+archive/
+legacy/
+deprecated/
+*.backup
+*.bak
+*.old
+
+# Android and Mobile Build Files
+android/
+ios/
+capacitor/
+
+# Temporary and Cache Files
+.cache/
+.vite/
+.temp/
+.tmp/
+*.temp
+*.tmp

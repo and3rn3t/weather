@@ -43,7 +43,7 @@ export const LocationManager: React.FC<LocationManagerProps> = ({
       onLocationReceived(
         city,
         currentLocation.latitude,
-        currentLocation.longitude
+        currentLocation.longitude,
       );
     }
   }, [currentLocation, onLocationReceived]);

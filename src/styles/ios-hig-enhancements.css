@@ -1,0 +1,778 @@
+/**
+ * iOS Human Interface Guidelines (HIG) Enhancements
+ *
+ * This file provides strict iOS HIG compliance enhancements while
+ * maintaining the fun theme and existing design system.
+ *
+ * Key HIG Principles Implemented:
+ * - Clarity: Clear visual hierarchy and readable typography
+ * - Deference: Content-first design with subtle UI elements
+ * - Depth: Layered interfaces with realistic motion
+ */
+
+/* ============================================================================
+  /* Active tab stylin.ios-hig-nav-tab[aria-pressed="true  .ios-hig-nav-tab[a  .ios-hig-nav-tab[aria-pressed="true"] .ios-hig-nav-icon {
+    transform: none;
+  }-pressed="true"] {
+    border: 2px solid #007AFF;
+  }.ios-hig-nav-icon {
+  transform: scale(1.1);
+}/
+.ios-hig-nav-tab[aria-pressed="true"] {
+  background-color: rgba(0, 122, 255, 0.1);
+} HIG BUTTON SYSTEM
+   ============================================================================ */
+
+/* HIG-Compliant Button Foundation */
+.ios-hig-button {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 17px; /* iOS HIG standard body text size */
+  font-weight: 600; /* Semibold for better readability */
+  border: none;
+  border-radius: 12px; /* iOS standard corner radius */
+  min-height: 44px; /* iOS HIG minimum touch target */
+  min-width: 44px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  outline: none;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS HIG Primary Action Button */
+.ios-hig-button-primary {
+  background: #007aff; /* iOS Blue */
+  color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.ios-hig-button-primary:hover {
+  background: #0056cc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+.ios-hig-button-primary:active {
+  transform: translateY(0);
+  background: #004499;
+}
+
+/* iOS HIG Secondary Button */
+.ios-hig-button-secondary {
+  background: rgba(0, 122, 255, 0.1);
+  color: #007aff;
+  border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.ios-hig-button-secondary:hover {
+  background: rgba(0, 122, 255, 0.15);
+  border-color: rgba(0, 122, 255, 0.3);
+}
+
+/* iOS HIG Tinted Button */
+.ios-hig-button-tinted {
+  background: rgba(0, 122, 255, 0.08);
+  color: #007aff;
+}
+
+.ios-hig-button-tinted:hover {
+  background: rgba(0, 122, 255, 0.12);
+}
+
+/* iOS HIG Plain Text Button */
+.ios-hig-button-plain {
+  background: transparent;
+  color: #007aff;
+  padding: 8px 12px;
+  min-height: 36px;
+}
+
+.ios-hig-button-plain:hover {
+  background: rgba(0, 122, 255, 0.05);
+}
+
+/* Destructive Actions */
+.ios-hig-button-destructive {
+  background: #ff3b30;
+  color: white;
+}
+
+.ios-hig-button-destructive:hover {
+  background: #d70015;
+}
+
+/* ============================================================================
+   iOS HIG ACCESSIBILITY COMPLIANCE
+   ============================================================================ */
+
+/* Focus Management (HIG Required) */
+.ios-hig-button:focus-visible {
+  outline: 3px solid #007aff;
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+/* Disabled States */
+.ios-hig-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ios-hig-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Screen Reader Support */
+.ios-hig-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .ios-hig-button {
+    border: 2px solid currentColor;
+  }
+
+  .ios-hig-button-primary {
+    border-color: white;
+  }
+
+  .ios-hig-button-secondary {
+    border-color: #007aff;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .ios-hig-button {
+    transition: none;
+    animation: none;
+  }
+
+  .ios-hig-button:hover {
+    transform: none;
+  }
+}
+
+/* Large Text Support */
+@media (prefers-reduced-motion: no-preference) {
+  .ios-hig-large-text {
+    font-size: max(17px, 1rem);
+    line-height: 1.4;
+  }
+}
+
+/* ============================================================================
+   iOS HIG NAVIGATION PATTERNS
+   ============================================================================ */
+
+/* HIG-Compliant Navigation Bar */
+.ios-hig-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px; /* Standard iOS nav height */
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Dark mode navigation */
+[data-theme='dark'] .ios-hig-nav-bar {
+  background: rgba(28, 28, 30, 0.95);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Navigation Title */
+.ios-hig-nav-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: inherit;
+  margin: 0;
+}
+
+/* Large Title */
+.ios-hig-nav-title-large {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 16px 0 8px 0;
+  padding: 0 16px;
+}
+
+/* Navigation Buttons */
+.ios-hig-nav-button {
+  background: transparent;
+  border: none;
+  color: #007aff;
+  font-size: 17px;
+  font-weight: 400;
+  padding: 8px 12px;
+  min-height: 44px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.ios-hig-nav-button:hover {
+  background: rgba(0, 122, 255, 0.1);
+}
+
+.ios-hig-nav-button:active {
+  background: rgba(0, 122, 255, 0.2);
+}
+
+/* ============================================================================
+   iOS HIG LIST AND CONTENT PATTERNS
+   ============================================================================ */
+
+/* HIG-Compliant List Items */
+.ios-hig-list {
+  background: var(--ios26-background-secondary, #f2f2f7);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 16px;
+}
+
+.ios-hig-list-item {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px 16px;
+  background: var(--ios26-background-primary, white);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ios-hig-list-item:last-child {
+  border-bottom: none;
+}
+
+.ios-hig-list-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.ios-hig-list-item:active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode list items */
+[data-theme='dark'] .ios-hig-list {
+  background: #1c1c1e;
+}
+
+[data-theme='dark'] .ios-hig-list-item {
+  background: #2c2c2e;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .ios-hig-list-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================================================
+   iOS HIG SEGMENTED CONTROL
+   ============================================================================ */
+
+.ios-hig-segmented-control {
+  display: flex;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 2px;
+  min-height: 44px;
+  margin: 16px;
+}
+
+.ios-hig-segmented-control button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 40px;
+}
+
+.ios-hig-segmented-control button[aria-selected='true'] {
+  background: white;
+  color: black;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode segmented control */
+[data-theme='dark'] .ios-hig-segmented-control {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .ios-hig-segmented-control button[aria-selected='true'] {
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+}
+
+/* ============================================================================
+   iOS HIG MODAL AND SHEET PATTERNS
+   ============================================================================ */
+
+/* Action Sheet Foundation */
+.ios-hig-action-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px 12px 0 0;
+  padding: 0;
+  z-index: 2000;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios-hig-action-sheet.visible {
+  transform: translateY(0);
+}
+
+.ios-hig-action-sheet-item {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 400;
+  color: #007aff;
+  text-align: center;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ios-hig-action-sheet-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.ios-hig-action-sheet-item.destructive {
+  color: #ff3b30;
+}
+
+.ios-hig-action-sheet-cancel {
+  margin-top: 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   iOS HIG SAFE AREA AND LAYOUT
+   ============================================================================ */
+
+/* Safe Area Support */
+.ios-hig-safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Standard Content Margins */
+.ios-hig-content {
+  padding: 0 16px;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+/* Form Elements */
+.ios-hig-form-section {
+  background: var(--ios26-background-secondary, #f2f2f7);
+  margin: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ios-hig-form-row {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px 16px;
+  background: var(--ios26-background-primary, white);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.ios-hig-form-row:last-child {
+  border-bottom: none;
+}
+
+.ios-hig-form-label {
+  font-size: 17px;
+  font-weight: 400;
+  color: inherit;
+  flex: 1;
+}
+
+.ios-hig-form-input {
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  padding: 8px 0;
+  outline: none;
+  text-align: right;
+  min-width: 100px;
+}
+
+/* ============================================================================
+   iOS HIG NAVIGATION COMPONENT STYLES
+   ============================================================================ */
+
+/* HIG Navigation Container */
+.ios-hig-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  min-height: 83px;
+  padding-top: 8px;
+}
+
+/* Dark mode navigation */
+[data-theme='dark'] .ios-hig-navigation {
+  background: rgba(28, 28, 30, 0.95);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* HIG Navigation Tab */
+.ios-hig-nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  gap: 2px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  margin: 0 4px;
+  position: relative;
+}
+
+/* Active tab styling */
+.ios-hig-nav-tab[aria-selected='true'] {
+  background-color: rgba(0, 122, 255, 0.1);
+}
+
+/* Touch feedback */
+.ios-hig-nav-tab:active {
+  transform: scale(0.95);
+}
+
+/* Navigation Icon */
+.ios-hig-nav-icon {
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.ios-hig-nav-tab[aria-selected='true'] .ios-hig-nav-icon {
+  transform: scale(1.1);
+}
+
+/* Navigation Label */
+.ios-hig-nav-label {
+  font-size: 10px;
+  font-weight: 400;
+  color: #8e8e93;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 1px;
+  transition: all 0.2s ease;
+}
+
+.ios-hig-nav-tab[aria-pressed='true'] .ios-hig-nav-label {
+  font-weight: 600;
+  color: #007aff;
+}
+
+/* Focus ring for accessibility */
+.ios-hig-nav-tab:focus-visible {
+  outline: 3px solid #007aff;
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ios-hig-navigation {
+    border-top-width: 2px;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .ios-hig-nav-tab[aria-selected='true'] {
+    border: 2px solid #007aff;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ios-hig-nav-tab,
+  .ios-hig-nav-icon,
+  .ios-hig-nav-label {
+    transition: none;
+    animation: none;
+  }
+
+  .ios-hig-nav-tab:active {
+    transform: none;
+  }
+
+  .ios-hig-nav-tab[aria-selected='true'] .ios-hig-nav-icon {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   WEATHER APP SPECIFIC HIG ENHANCEMENTS
+   ============================================================================ */
+
+/* Weather Card HIG Compliance */
+.ios-hig-weather-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Weather Header */
+.ios-hig-weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Main Temperature Container */
+.ios-hig-weather-main {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.ios-hig-temperature-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* Loading State */
+.ios-hig-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 20px;
+}
+
+.ios-hig-activity-indicator {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 122, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: #007aff;
+  animation: ios-hig-spin 1s linear infinite;
+}
+
+@keyframes ios-hig-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark mode weather card */
+[data-theme='dark'] .ios-hig-weather-card {
+  background: rgba(28, 28, 30, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Temperature Display HIG Styling */
+.ios-hig-temperature {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 64px;
+  font-weight: 200; /* Ultralight for large numbers */
+  line-height: 1;
+  margin: 0;
+}
+
+.ios-hig-temperature-unit {
+  font-size: 32px;
+  font-weight: 300;
+  vertical-align: top;
+  margin-left: 4px;
+}
+
+/* Weather Details Grid */
+.ios-hig-weather-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.ios-hig-weather-detail-item {
+  text-align: center;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.ios-hig-weather-detail-value {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.ios-hig-weather-detail-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Dark mode weather details */
+[data-theme='dark'] .ios-hig-weather-detail-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .ios-hig-weather-detail-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================================================
+   UTILITY CLASSES FOR HIG COMPLIANCE
+   ============================================================================ */
+
+/* Typography Utilities */
+.ios-hig-title1 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.ios-hig-title2 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.ios-hig-title3 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ios-hig-headline {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.ios-hig-body {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.ios-hig-callout {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.ios-hig-subheadline {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.ios-hig-footnote {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.ios-hig-caption1 {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.ios-hig-caption2 {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Color Utilities */
+.ios-hig-text-primary {
+  color: var(--ios26-text-primary, #000);
+}
+.ios-hig-text-secondary {
+  color: var(--ios26-text-secondary, rgba(60, 60, 67, 0.6));
+}
+.ios-hig-text-tertiary {
+  color: var(--ios26-text-tertiary, rgba(60, 60, 67, 0.3));
+}
+
+/* Spacing Utilities */
+.ios-hig-mt-8 {
+  margin-top: 8px;
+}
+.ios-hig-mt-16 {
+  margin-top: 16px;
+}
+.ios-hig-mt-24 {
+  margin-top: 24px;
+}
+.ios-hig-mb-8 {
+  margin-bottom: 8px;
+}
+.ios-hig-mb-16 {
+  margin-bottom: 16px;
+}
+.ios-hig-mb-24 {
+  margin-bottom: 24px;
+}
+.ios-hig-p-16 {
+  padding: 16px;
+}
+.ios-hig-p-20 {
+  padding: 20px;
+}

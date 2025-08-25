@@ -57,55 +57,55 @@ class Logger {
   // Weather-specific logging
   weatherHaptic(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🌤️', message, ...args));
+      console.info(...this.formatMessage('🌤️', message, ...args));
     }
   }
 
   weatherTransition(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🌦️', message, ...args));
+      console.info(...this.formatMessage('🌦️', message, ...args));
     }
   }
 
   temperatureChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🌡️', message, ...args));
+      console.info(...this.formatMessage('🌡️', message, ...args));
     }
   }
 
   pressureChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('📊', message, ...args));
+      console.info(...this.formatMessage('📊', message, ...args));
     }
   }
 
   windChange(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('💨', message, ...args));
+      console.info(...this.formatMessage('💨', message, ...args));
     }
   }
 
   weatherLoading(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🔄', message, ...args));
+      console.info(...this.formatMessage('🔄', message, ...args));
     }
   }
 
   interaction(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('🎯', message, ...args));
+      console.info(...this.formatMessage('🎯', message, ...args));
     }
   }
 
   location(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('📍', message, ...args));
+      console.info(...this.formatMessage('📍', message, ...args));
     }
   }
 
   api(message: string, ...args: unknown[]): void {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
-      console.log(...this.formatMessage('📡', message, ...args));
+      console.info(...this.formatMessage('📡', message, ...args));
     }
   }
 
@@ -146,11 +146,11 @@ class Logger {
       const start = performance.now();
       fn();
       const end = performance.now();
-      console.log(
+      console.info(
         ...this.formatMessage(
           '⚡',
-          `${label} took ${(end - start).toFixed(2)}ms`
-        )
+          `${label} took ${(end - start).toFixed(2)}ms`,
+        ),
       );
     } else {
       fn();
@@ -172,15 +172,70 @@ class Logger {
 // Export singleton instance
 export const logger = new Logger();
 
+// Export basic logging functions
+export const logTrace = logger.trace.bind(logger);
+export const logDebug = logger.debug.bind(logger);
+export const logInfo = logger.info.bind(logger);
+export const logWarn = logger.warn.bind(logger);
+export const logError = logger.error.bind(logger);
+
 // Export convenience functions for common patterns
 export const logWeatherHaptic = logger.weatherHaptic.bind(logger);
+/**
+ * logWeatherTransition - Weather data processing and display
+ */
+/**
+ * logWeatherTransition - Weather data processing and display
+ */
 export const logWeatherTransition = logger.weatherTransition.bind(logger);
+/**
+ * logTemperatureChange - Core logger functionality
+ */
+/**
+ * logTemperatureChange - Core logger functionality
+ */
 export const logTemperatureChange = logger.temperatureChange.bind(logger);
+/**
+ * logPressureChange - Core logger functionality
+ */
+/**
+ * logPressureChange - Core logger functionality
+ */
 export const logPressureChange = logger.pressureChange.bind(logger);
+/**
+ * logWindChange - Core logger functionality
+ */
+/**
+ * logWindChange - Core logger functionality
+ */
 export const logWindChange = logger.windChange.bind(logger);
+/**
+ * logWeatherLoading - Weather data processing and display
+ */
+/**
+ * logWeatherLoading - Weather data processing and display
+ */
 export const logWeatherLoading = logger.weatherLoading.bind(logger);
+/**
+ * logInteraction - Core logger functionality
+ */
+/**
+ * logInteraction - Core logger functionality
+ */
 export const logInteraction = logger.interaction.bind(logger);
+/**
+ * logLocation - Location services and geolocation handling
+ */
+/**
+ * logLocation - Location services and geolocation handling
+ */
 export const logLocation = logger.location.bind(logger);
+/**
+ * logApi - Core logger functionality
+ */
+/**
+ * logApi - Core logger functionality
+ */
 export const logApi = logger.api.bind(logger);
 
 export default logger;

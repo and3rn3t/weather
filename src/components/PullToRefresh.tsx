@@ -5,6 +5,8 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useHapticFeedback } from '../utils/hapticFeedback';
+import { logError } from '../utils/logger';
+
 
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
@@ -41,7 +43,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
       startY.current = e.touches[0].clientY;
       setIsPulling(true);
     },
-    [disabled, isRefreshing]
+    [disabled, isRefreshing],
   );
 
   const handleTouchMove = useCallback(
@@ -68,7 +70,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         }
       }
     },
-    [isPulling, disabled, isRefreshing, threshold, canRefresh, pullToRefresh]
+    [isPulling, disabled, isRefreshing, threshold, canRefresh, pullToRefresh],
   );
 
   const handleTouchEnd = useCallback(async () => {
@@ -82,7 +84,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         await onRefresh();
         success();
       } catch (error) {
-        console.error('Refresh failed:', error);
+        logError('Refresh failed:', error);
       } finally {
         setIsRefreshing(false);
       }

@@ -1,0 +1,450 @@
+/* Responsive Layout System - Consolidated
+   Combines all layout-related files into a unified responsive system
+   Reduces: layout-fixes.css (302) + ios26-layout-fixes.css (201) + mobile-fixes.css (0) = 503 lines → ~300 lines
+   Date: August 21, 2025 - Phase 2 Optimization
+*/
+
+/* ============================================================================
+   RESPONSIVE FOUNDATION VARIABLES
+   ============================================================================ */
+
+:root {
+  /* Layout constants - centralized for consistency */
+  --mobile-nav-height: 80px;
+  --header-height: 60px;
+  --content-padding: 16px;
+  --content-padding-small: 12px;
+  --content-padding-tiny: 8px;
+  
+  /* Safe area calculations */
+  --safe-top: max(env(safe-area-inset-top), 12px);
+  --safe-bottom: max(env(safe-area-inset-bottom), 12px);
+  --safe-left: max(env(safe-area-inset-left), var(--content-padding));
+  --safe-right: max(env(safe-area-inset-right), var(--content-padding));
+  
+  /* Responsive breakpoints */
+  --mobile-small: 375px;
+  --mobile-tiny: 320px;
+  --tablet: 768px;
+  --desktop: 1024px;
+}
+
+/* ============================================================================
+   CORE LAYOUT FOUNDATION
+   ============================================================================ */
+
+/* Root and body setup */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  height: auto;
+  padding-bottom: 0;
+}
+
+#root {
+  min-height: calc(100dvh - var(--mobile-nav-height));
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ============================================================================
+   CONTAINER SYSTEM
+   ============================================================================ */
+
+/* Main content area - universal container */
+.main-content-area {
+  flex: 1;
+  padding: var(--content-padding);
+  padding-top: var(--safe-top);
+  padding-bottom: calc(var(--mobile-nav-height) + var(--content-padding));
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: calc(100dvh - var(--mobile-nav-height));
+}
+
+/* Safe area container - alternative layout */
+.safe-area-container {
+  padding-top: var(--safe-top);
+  padding-bottom: calc(var(--mobile-nav-height) + var(--safe-bottom));
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  min-height: calc(100dvh - var(--mobile-nav-height));
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Screen containers - for different layout systems */
+.screen-container,
+.ios26-container,
+.mobile-container {
+  width: 100%;
+  max-width: 100vw;
+  min-height: calc(100dvh - var(--mobile-nav-height));
+  padding: var(--content-padding);
+  padding-bottom: calc(var(--mobile-nav-height) + var(--content-padding));
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Mobile card layout */
+.mobile-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+   iOS26 COMPONENT LAYOUTS
+   ============================================================================ */
+
+/* iOS26 weather interface optimizations */
+.ios26-weather-interface {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  max-height: calc(100dvh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS26 height management */
+.ios26-h-screen {
+  height: calc(100dvh - var(--mobile-nav-height)) !important;
+  max-height: calc(100dvh - var(--mobile-nav-height)) !important;
+}
+
+/* iOS26 spacing utilities */
+.ios26-p-0 { padding: 0; }
+.ios26-p-4 { padding: 16px; }
+.ios26-mb-4 { margin-bottom: 16px; }
+.ios26-w-full { width: 100%; }
+
+/* iOS26 navigation bar */
+.ios26-navigation-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 16px;
+  background: var(--navigation-bg, rgba(255, 255, 255, 0.95));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  margin-bottom: 16px;
+}
+
+/* iOS26 forecast sections */
+.ios26-forecast-section {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.ios26-forecast-scroll {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 12px;
+  padding: 8px 0 16px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ios26-forecast-item {
+  flex: 0 0 auto;
+  min-width: 80px;
+  max-width: 120px;
+  scroll-snap-align: start;
+}
+
+/* iOS26 weather metrics */
+.ios26-weather-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 16px 0;
+  max-width: 100%;
+}
+
+/* iOS26 quick actions */
+.ios26-quick-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 16px 0;
+}
+
+.ios26-quick-actions > * {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+/* iOS26 weather cards */
+.ios26-weather-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 16px;
+}
+
+/* iOS26 button system */
+.ios26-button {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.ios26-button-primary {
+  background: #007AFF;
+  color: white;
+}
+
+.ios26-button-secondary {
+  background: rgba(120, 120, 128, 0.2);
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================================ */
+
+/* Small mobile devices (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  :root {
+    --content-padding: var(--content-padding-small);
+  }
+  
+  .main-content-area,
+  .safe-area-container,
+  .screen-container,
+  .ios26-container,
+  .mobile-container {
+    padding: var(--content-padding-small);
+    padding-bottom: calc(var(--mobile-nav-height) + var(--content-padding-small));
+  }
+
+  .ios26-navigation-bar {
+    padding: 10px var(--content-padding-small);
+    margin-bottom: 12px;
+  }
+
+  .ios26-weather-metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px;
+  }
+
+  .ios26-quick-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ios26-quick-actions > * {
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+/* Very small devices */
+@media (max-width: 320px) {
+  :root {
+    --content-padding: var(--content-padding-tiny);
+  }
+  
+  .main-content-area,
+  .safe-area-container,
+  .screen-container,
+  .ios26-container,
+  .mobile-container {
+    padding: var(--content-padding-tiny);
+    padding-bottom: calc(var(--mobile-nav-height) + var(--content-padding-tiny));
+  }
+
+  .ios26-weather-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
+
+/* Larger mobile screens */
+@media (min-width: 376px) and (max-width: 768px) {
+  .ios26-weather-metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Tablet and desktop */
+@media (min-width: 769px) {
+  .main-content-area,
+  .safe-area-container,
+  .screen-container,
+  .ios26-container,
+  .mobile-container {
+    padding-bottom: var(--content-padding);
+    min-height: 100dvh;
+  }
+
+  .ios26-h-screen {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --content-padding: var(--content-padding-tiny);
+    --mobile-nav-height: 60px;
+  }
+  
+  .main-content-area,
+  .safe-area-container,
+  .screen-container,
+  .ios26-container,
+  .mobile-container {
+    padding: var(--content-padding-tiny);
+    padding-bottom: calc(var(--mobile-nav-height) + var(--content-padding-tiny));
+  }
+
+  .ios26-navigation-bar {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  .ios26-weather-interface {
+    max-height: calc(100dvh - 120px);
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Scrolling utilities */
+.scrollable-content {
+  height: auto;
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Content height management */
+.content-max-height {
+  max-height: calc(100dvh - var(--mobile-nav-height) - 40px);
+  overflow-y: auto;
+}
+
+/* Navigation spacing utilities */
+.navigation-safe-padding {
+  padding-bottom: calc(var(--mobile-nav-height) + var(--safe-bottom));
+}
+
+.navigation-safe-bottom {
+  margin-bottom: calc(var(--mobile-nav-height) + 16px);
+}
+
+/* Navigation wrapper fixes */
+.mobile-navigation-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.mobile-navigation-wrapper > * {
+  margin: 0;
+  padding: 0;
+}
+
+/* Pull-to-refresh container */
+.pull-to-refresh-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================================================
+   DEBUG UTILITIES (DEVELOPMENT ONLY)
+   ============================================================================ */
+
+.debug-container {
+  border: 2px dashed red;
+  background: rgba(255, 0, 0, 0.1);
+}
+
+.debug-content {
+  border: 2px dashed blue;
+  background: rgba(0, 0, 255, 0.1);
+}
+
+.debug-navigation {
+  border: 2px dashed green;
+  background: rgba(0, 255, 0, 0.1);
+}
+
+/* ============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================ */
+
+/* GPU acceleration for smooth scrolling */
+.main-content-area,
+.ios26-weather-interface,
+.scrollable-content {
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimize touch scrolling on iOS */
+.ios26-forecast-scroll,
+.scrollable-content {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  * {
+    scroll-behavior: auto !important;
+  }
+}

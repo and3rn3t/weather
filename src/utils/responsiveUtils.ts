@@ -18,6 +18,12 @@ export type GridColumns = { mobile: number; tablet?: number; desktop?: number };
 // RESPONSIVE BREAKPOINTS (Mobile-First Approach)
 // ============================================================================
 
+/**
+ * breakpoints - Core responsiveUtils functionality
+ */
+/**
+ * breakpoints - Core responsiveUtils functionality
+ */
 export const breakpoints = {
   // Mobile devices (default, no media query needed)
   mobile: '320px',
@@ -42,6 +48,12 @@ export const breakpoints = {
 // MEDIA QUERY HELPERS
 // ============================================================================
 
+/**
+ * mediaQueries - Core responsiveUtils functionality
+ */
+/**
+ * mediaQueries - Core responsiveUtils functionality
+ */
 export const mediaQueries = {
   mobileLarge: `@media (min-width: ${breakpoints.mobileLarge})`,
   tablet: `@media (min-width: ${breakpoints.tablet})`,
@@ -70,6 +82,12 @@ export const mediaQueries = {
 // RESPONSIVE SPACING SYSTEM
 // ============================================================================
 
+/**
+ * spacing - Core responsiveUtils functionality
+ */
+/**
+ * spacing - Core responsiveUtils functionality
+ */
 export const spacing = {
   // Base spacing values (mobile-first)
   xs: '4px',
@@ -109,6 +127,12 @@ export const spacing = {
 // TOUCH TARGET STANDARDS
 // ============================================================================
 
+/**
+ * touchTargets - Core responsiveUtils functionality
+ */
+/**
+ * touchTargets - Core responsiveUtils functionality
+ */
 export const touchTargets = {
   // Minimum touch target sizes (following Apple and Material Design guidelines)
   minimum: '44px',
@@ -137,6 +161,12 @@ export const touchTargets = {
 // RESPONSIVE TYPOGRAPHY SCALE
 // ============================================================================
 
+/**
+ * typography - Core responsiveUtils functionality
+ */
+/**
+ * typography - Core responsiveUtils functionality
+ */
 export const typography = {
   fontSize: {
     // Mobile-first font sizes
@@ -197,6 +227,12 @@ export const typography = {
 // MOBILE-OPTIMIZED COMPONENT STYLES
 // ============================================================================
 
+/**
+ * mobileStyles - Core responsiveUtils functionality
+ */
+/**
+ * mobileStyles - Core responsiveUtils functionality
+ */
 export const mobileStyles = {
   // Container with responsive padding
   container: (maxWidth = '600px') => ({
@@ -371,13 +407,19 @@ export const mobileStyles = {
 /**
  * Generate responsive CSS for a property across breakpoints
  */
+/**
+ * createResponsiveProperty - Creates and configures responsiveproperty
+ */
+/**
+ * createResponsiveProperty - Creates and configures responsiveproperty
+ */
 export const createResponsiveProperty = (
   property: string,
   values: {
     mobile: string;
     tablet?: string;
     desktop?: string;
-  }
+  },
 ) => ({
   [property]: values.mobile,
 
@@ -397,6 +439,12 @@ export const createResponsiveProperty = (
 /**
  * Check if device supports hover (desktop vs mobile)
  */
+/**
+ * supportsHover - Core responsiveUtils functionality
+ */
+/**
+ * supportsHover - Core responsiveUtils functionality
+ */
 export const supportsHover = () => {
   // Handle test environment
   if (typeof window === 'undefined' || !window.matchMedia) {
@@ -409,6 +457,12 @@ export const supportsHover = () => {
 /**
  * Check if user prefers reduced motion
  */
+/**
+ * prefersReducedMotion - Core responsiveUtils functionality
+ */
+/**
+ * prefersReducedMotion - Core responsiveUtils functionality
+ */
 export const prefersReducedMotion = () => {
   // Handle test environment
   if (typeof window === 'undefined' || !window.matchMedia) {
@@ -420,6 +474,12 @@ export const prefersReducedMotion = () => {
 
 /**
  * Get current breakpoint
+ */
+/**
+ * getCurrentBreakpoint - Retrieves currentbreakpoint data
+ */
+/**
+ * getCurrentBreakpoint - Retrieves currentbreakpoint data
  */
 export const getCurrentBreakpoint = (): keyof typeof breakpoints => {
   // Handle test environment
@@ -441,6 +501,12 @@ export const getCurrentBreakpoint = (): keyof typeof breakpoints => {
 /**
  * Debounced resize handler for responsive updates
  */
+/**
+ * createResizeHandler - Creates and configures resizehandler
+ */
+/**
+ * createResizeHandler - Creates and configures resizehandler
+ */
 export const createResizeHandler = (callback: () => void, delay = 150) => {
   let timeoutId: NodeJS.Timeout;
 
@@ -456,6 +522,12 @@ export const createResizeHandler = (callback: () => void, delay = 150) => {
 
 /**
  * Enhance theme with responsive utilities
+ */
+/**
+ * createResponsiveTheme - Creates and configures responsivetheme
+ */
+/**
+ * createResponsiveTheme - Creates and configures responsivetheme
  */
 export const createResponsiveTheme = (baseTheme: ThemeColors) => ({
   ...baseTheme,

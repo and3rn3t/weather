@@ -1,7 +1,17 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useHaptic } from '../utils/hapticHooks';
+import { logError, logInfo } from '../utils/logger';
 import type { ThemeColors } from '../utils/themeConfig';
-import './SearchScreen.css';
+import {
+  useInteractionFeedback,
+  useWeatherAnnouncements,
+} from '../utils/useMultiSensoryWeather';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -14,12 +24,15 @@ interface SearchScreenProps {
 }
 
 interface SearchResult {
+  id: string;
   name: string;
   display_name: string;
   lat: string;
   lon: string;
   country: string;
   state?: string;
+  type: string;
+  importance: number;
 }
 
 interface NominatimResult {
@@ -29,525 +42,546 @@ interface NominatimResult {
   place_id: number;
   type: string;
   class: string;
+  importance?: number;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    hamlet?: string;
+    state?: string;
+    country?: string;
+  };
 }
 
 /**
- * SearchScreen - Enhanced search with nuclear implementation integration
- * Uses proven nuclear HTML/JS search functionality within React wrapper
+ * Enhanced SearchScreen - Clean, responsive, and user-friendly
+ *
+ * Features:
+ * - Real-time search with debouncing
+ * - Enhanced result formatting and readability
+ * - Responsive design for all screen sizes
+ * - Better error handling and loading states
+ * - Improved accessibility
+ * - Clean visual hierarchy
  */
 function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
   const haptic = useHaptic();
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-  const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
 
-  // Load recent searches
+  // iOS26 Phase 3C: Multi-sensory search experience
+  const interactionFeedback = useInteractionFeedback();
+  const weatherAnnouncements = useWeatherAnnouncements();
+
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load recent searches on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem('weather-recent-searches');
       if (saved) {
-        setRecentSearches(JSON.parse(saved).slice(0, 5));
+        const parsed = JSON.parse(saved);
+        setRecentSearches(Array.isArray(parsed) ? parsed.slice(0, 6) : []);
       }
     } catch (error) {
-      console.error('Error loading recent searches:', error);
+      logError('Error loading recent searches:', error);
     }
   }, []);
 
+  // Focus search input on mount
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, []);
+
+  // Enhanced city name formatting
+  const formatCityDisplay = useCallback((displayName: string) => {
+    const parts = displayName.split(',').map(part => part.trim());
+    const cityName = parts[0];
+    const region = parts.length > 1 ? parts[1] : '';
+    const country = parts.length > 2 ? parts[parts.length - 1] : parts[1] || '';
+
+    return {
+      name: cityName,
+      region: region && region !== country ? region : '',
+      country: country || '',
+    };
+  }, []);
+
+  // Enhanced search with US location optimization
+  const performSearch = useCallback(
+    async (searchQuery: string) => {
+      if (!searchQuery.trim() || searchQuery.length < 2) {
+        setResults([]);
+        setShowResults(false);
+        setError('');
+        return;
+      }
+
+      setIsLoading(true);
+      setError('');
+      setShowResults(true);
+
+      try {
+        // Enhanced search parameters with US prioritization
+        const searchParams = new URLSearchParams({
+          q: searchQuery,
+          format: 'json',
+          addressdetails: '1',
+          limit: '15', // Increased limit for better US coverage
+          'accept-language': 'en-US,en', // US English preference
+          dedupe: '1',
+          extratags: '1',
+          namedetails: '1',
+          // US-focused parameters
+          countrycodes: 'us,ca,mx', // North America focus
+          viewbox: '-125,49,-66,24', // US bounding box
+          bounded: '1',
+        });
+
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?${searchParams}`,
+          {
+            headers: {
+              'User-Agent': 'EnhancedWeatherApp/2.0 (US Location Search)',
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Search failed: ${response.status}`);
+        }
+
+        const data: NominatimResult[] = await response.json();
+
+        // Enhanced filtering with better US location support
+        const cityResults = data
+          .filter((item: NominatimResult) => {
+            const isValidLocation =
+              item.type === 'city' ||
+              item.type === 'town' ||
+              item.type === 'village' ||
+              item.type === 'hamlet' ||
+              item.type === 'administrative' ||
+              item.class === 'place';
+
+            // Improved importance threshold for US locations
+            const hasGoodImportance =
+              !item.importance || item.importance > 0.15;
+
+            // Prioritize US locations
+            const isUSLocation =
+              item.display_name?.includes('United States') ||
+              item.address?.country === 'United States';
+
+            return isValidLocation && (hasGoodImportance || isUSLocation);
+          })
+          .map((item, index) => ({
+            id: `${item.place_id}-${index}`,
+            name: formatCityDisplay(item.display_name).name,
+            display_name: item.display_name,
+            lat: item.lat,
+            lon: item.lon,
+            country: formatCityDisplay(item.display_name).country,
+            state: formatCityDisplay(item.display_name).region,
+            type: item.type,
+            importance: item.importance || 0,
+          }))
+          .sort((a, b) => {
+            // Enhanced sorting for US locations
+            const aIsUS = a.display_name.includes('United States');
+            const bIsUS = b.display_name.includes('United States');
+
+            // US locations first
+            if (aIsUS && !bIsUS) return -1;
+            if (bIsUS && !aIsUS) return 1;
+
+            // Exact name matches
+            const searchLower = searchQuery.toLowerCase();
+            const aExact = a.name.toLowerCase().startsWith(searchLower) ? 1 : 0;
+            const bExact = b.name.toLowerCase().startsWith(searchLower) ? 1 : 0;
+            if (aExact !== bExact) return bExact - aExact;
+
+            // Then by importance
+            return (b.importance || 0) - (a.importance || 0);
+          })
+          .slice(0, 8); // Limit to 8 results for better UX
+
+        setResults(cityResults);
+
+        if (cityResults.length === 0) {
+          // If no results with US focus, try global search
+          const globalResponse = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+              searchQuery,
+            )}&format=json&limit=10&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'EnhancedWeatherApp/2.0 (Global Search)',
+              },
+            },
+          );
+
+          if (globalResponse.ok) {
+            const globalData: NominatimResult[] = await globalResponse.json();
+            const globalResults = globalData
+              .filter((item: NominatimResult) => {
+                const isCity =
+                  item.type === 'city' ||
+                  item.type === 'town' ||
+                  item.type === 'village' ||
+                  item.class === 'place';
+                return isCity && (!item.importance || item.importance > 0.1);
+              })
+              .map((item, index) => ({
+                id: `global-${item.place_id}-${index}`,
+                name: formatCityDisplay(item.display_name).name,
+                display_name: item.display_name,
+                lat: item.lat,
+                lon: item.lon,
+                country: formatCityDisplay(item.display_name).country,
+                state: formatCityDisplay(item.display_name).region,
+                type: item.type,
+                importance: item.importance || 0,
+              }))
+              .slice(0, 5);
+
+            setResults(globalResults);
+          }
+
+          if (cityResults.length === 0) {
+            setError(
+              'No cities found. Try a different search term or check spelling.',
+            );
+          }
+        }
+      } catch (error) {
+        logError('Enhanced search error:', error);
+        setError('Search failed. Please check your connection and try again.');
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [formatCityDisplay],
+  );
+
+  // Debounced search
+  const handleSearchInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setQuery(value);
+
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      // Set new timeout for debounced search
+      searchTimeoutRef.current = setTimeout(() => {
+        performSearch(value);
+      }, 300);
+    },
+    [performSearch],
+  );
+
   // Handle city selection
   const handleCitySelection = useCallback(
-    (city: NominatimResult) => {
-      haptic.dataLoad();
+    async (city: SearchResult) => {
+      haptic.selection();
 
-      const cityName = city.display_name.split(',')[0];
+      // iOS26 Phase 3C: Enhanced location selection with multi-sensory feedback
+      await interactionFeedback.onSuccess();
+      await weatherAnnouncements.announceStateChange(
+        'location-changed',
+        `Selected location: ${city.name}`,
+      );
+
       const latitude = parseFloat(city.lat);
       const longitude = parseFloat(city.lon);
 
       // Add to recent searches
-      const searchResult: SearchResult = {
-        name: cityName,
-        display_name: city.display_name,
-        lat: city.lat,
-        lon: city.lon,
-        country: city.display_name.split(',').pop()?.trim() || '',
-        state: city.display_name.split(',')[1]?.trim(),
-      };
-
       const newRecent = [
-        searchResult,
-        ...recentSearches.filter(
-          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon
-        ),
-      ].slice(0, 5);
+        city,
+        ...recentSearches.filter(r => r.id !== city.id),
+      ].slice(0, 6);
+
       setRecentSearches(newRecent);
       localStorage.setItem(
         'weather-recent-searches',
-        JSON.stringify(newRecent)
+        JSON.stringify(newRecent),
       );
 
-      onLocationSelect(cityName, latitude, longitude);
+      logInfo(`Selected city: ${city.name} (${latitude}, ${longitude})`);
+      onLocationSelect(city.name, latitude, longitude);
     },
-    [haptic, onLocationSelect, recentSearches]
+    [
+      haptic,
+      onLocationSelect,
+      recentSearches,
+      interactionFeedback,
+      weatherAnnouncements,
+    ],
   );
-
-  // Initialize nuclear search when component mounts
-  useEffect(() => {
-    if (searchContainerRef.current) {
-      const container = searchContainerRef.current;
-
-      // Create the nuclear search HTML
-      container.innerHTML = `
-        <div class="nuclear-ios-search">
-          <div class="search-input-container">
-            <div class="search-icon">🔍</div>
-            <input 
-              type="text" 
-              id="nuclear-search-input"
-              class="search-input" 
-              placeholder="Search cities..."
-              autocomplete="off"
-            />
-          </div>
-          <div id="nuclear-search-results" class="search-results" style="display: none;"></div>
-        </div>
-      `;
-
-      // Add nuclear search functionality
-      const searchInput = container.querySelector(
-        '#nuclear-search-input'
-      ) as HTMLInputElement;
-      const searchResults = container.querySelector(
-        '#nuclear-search-results'
-      ) as HTMLElement;
-
-      if (searchInput && searchResults) {
-        // Nuclear fuzzy search implementation
-        const fuzzySearch = (query: string, cities: NominatimResult[]) => {
-          if (!query.trim()) return [];
-
-          const queryLower = query.toLowerCase();
-          return cities
-            .map(city => {
-              const name = city.display_name.toLowerCase();
-              let score = 0;
-
-              // Exact match gets highest score
-              if (name.includes(queryLower)) {
-                score += 100;
-              }
-
-              // Character by character fuzzy matching
-              let queryIndex = 0;
-              for (
-                let i = 0;
-                i < name.length && queryIndex < queryLower.length;
-                i++
-              ) {
-                if (name[i] === queryLower[queryIndex]) {
-                  score += 10;
-                  queryIndex++;
-                }
-              }
-
-              // Boost score if all characters found
-              if (queryIndex === queryLower.length) {
-                score += 50;
-              }
-
-              return { ...city, score };
-            })
-            .filter(city => city.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 8);
-        };
-
-        // Search function
-        const performSearch = async (query: string) => {
-          if (!query.trim() || query.length < 2) {
-            searchResults.style.display = 'none';
-            return;
-          }
-
-          searchResults.innerHTML =
-            '<div class="search-loading">🔍 Searching...</div>';
-          searchResults.style.display = 'block';
-
-          try {
-            const url =
-              'https://nominatim.openstreetmap.org/search?q=' +
-              encodeURIComponent(query) +
-              '&format=json&limit=25&addressdetails=1';
-            const response = await fetch(url, {
-              headers: {
-                'User-Agent': 'WeatherApp/1.0',
-              },
-            });
-
-            if (response.ok) {
-              const data: NominatimResult[] = await response.json();
-              const cities = data.filter(
-                (item: NominatimResult) =>
-                  item.type === 'city' ||
-                  item.type === 'town' ||
-                  item.type === 'village' ||
-                  item.class === 'place'
-              );
-
-              const fuzzyResults = fuzzySearch(query, cities);
-
-              if (fuzzyResults.length === 0) {
-                searchResults.innerHTML =
-                  '<div class="search-empty">No cities found</div>';
-                return;
-              }
-
-              searchResults.innerHTML = fuzzyResults
-                .map(
-                  city => `
-                <button class="search-result-item" data-city='${JSON.stringify(city)}'>
-                  <div class="result-icon">🏙️</div>
-                  <div class="result-text">
-                    <div class="result-name">${city.display_name.split(',')[0]}</div>
-                    <div class="result-location">${city.display_name}</div>
-                  </div>
-                </button>
-              `
-                )
-                .join('');
-
-              // Add click handlers to results
-              searchResults
-                .querySelectorAll('.search-result-item')
-                .forEach(button => {
-                  button.addEventListener('click', () => {
-                    const cityData = JSON.parse(
-                      button.getAttribute('data-city') || '{}'
-                    );
-                    handleCitySelection(cityData);
-                  });
-                });
-            }
-          } catch (error) {
-            console.error('Search error:', error);
-            searchResults.innerHTML =
-              '<div class="search-empty">Search failed</div>';
-          }
-        };
-
-        // Input event handler
-        let searchTimeout: NodeJS.Timeout;
-        searchInput.addEventListener('input', e => {
-          const query = (e.target as HTMLInputElement).value;
-          clearTimeout(searchTimeout);
-          searchTimeout = setTimeout(() => performSearch(query), 300);
-        });
-
-        // Focus the input
-        searchInput.focus();
-      }
-
-      // Add nuclear styles
-      const style = document.createElement('style');
-      style.textContent = `
-        .nuclear-ios-search {
-          position: relative;
-          width: 100%;
-        }
-
-        .search-input-container {
-          display: flex;
-          align-items: center;
-          background: ${theme.primaryGradient}10;
-          border: 1px solid ${theme.primaryGradient}30;
-          border-radius: 12px;
-          padding: 12px 16px;
-          gap: 12px;
-        }
-
-        .search-icon {
-          font-size: 18px;
-          opacity: 0.6;
-          color: ${theme.primaryText};
-        }
-
-        .search-input {
-          flex: 1;
-          background: none;
-          border: none;
-          outline: none;
-          color: ${theme.primaryText};
-          font-size: 16px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        .search-input::placeholder {
-          color: ${theme.primaryText};
-          opacity: 0.6;
-        }
-
-        .search-results {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          background: ${theme.appBackground};
-          border: 1px solid ${theme.primaryGradient}30;
-          border-top: none;
-          border-radius: 0 0 12px 12px;
-          max-height: 300px;
-          overflow-y: auto;
-          z-index: 1000;
-          backdrop-filter: blur(20px);
-        }
-
-        .search-loading,
-        .search-empty {
-          padding: 16px;
-          text-align: center;
-          color: ${theme.primaryText};
-          opacity: 0.7;
-          font-size: 14px;
-        }
-
-        .search-result-item {
-          width: 100%;
-          padding: 12px 16px;
-          background: none;
-          border: none;
-          color: ${theme.primaryText};
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          border-bottom: 1px solid ${theme.primaryGradient}20;
-          transition: background 0.2s ease;
-          font-family: inherit;
-        }
-
-        .search-result-item:hover {
-          background: ${theme.primaryGradient}10;
-        }
-
-        .result-icon {
-          font-size: 16px;
-        }
-
-        .result-text {
-          flex: 1;
-          text-align: left;
-        }
-
-        .result-name {
-          font-size: 14px;
-          font-weight: 500;
-          margin-bottom: 2px;
-        }
-
-        .result-location {
-          font-size: 12px;
-          opacity: 0.7;
-        }
-      `;
-
-      document.head.appendChild(style);
-
-      // Cleanup function
-      return () => {
-        if (document.head.contains(style)) {
-          document.head.removeChild(style);
-        }
-      };
-    }
-  }, [theme, handleCitySelection]);
 
   // Handle recent search selection
   const handleRecentSelect = useCallback(
-    (result: SearchResult) => {
+    async (result: SearchResult) => {
       haptic.selection();
+
+      // iOS26 Phase 3C: Enhanced recent selection with multi-sensory feedback
+      await interactionFeedback.onSuccess();
+      await weatherAnnouncements.announceStateChange(
+        'location-changed',
+        `Selected recent location: ${result.name}`,
+      );
+
       const latitude = parseFloat(result.lat);
       const longitude = parseFloat(result.lon);
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect]
+    [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements],
   );
 
   // Get current location
   const getCurrentLocation = useCallback(() => {
-    haptic.dataLoad();
+    haptic.buttonPress();
 
     if (!navigator.geolocation) {
       haptic.error();
+      setError('Geolocation is not supported by this browser.');
       return;
     }
 
+    setIsLoading(true);
+    setError('');
+
     navigator.geolocation.getCurrentPosition(
       position => {
-        haptic.dataLoad();
+        haptic.searchSuccess();
+        setIsLoading(false);
         onLocationSelect(
           'Current Location',
           position.coords.latitude,
-          position.coords.longitude
+          position.coords.longitude,
         );
       },
       error => {
         haptic.error();
-        console.error('Geolocation error:', error);
+        setIsLoading(false);
+        setError('Unable to get your location. Please check your permissions.');
+        logError('Geolocation error:', error);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      },
     );
   }, [haptic, onLocationSelect]);
 
-  // Dynamic styles with theme integration
-  const dynamicStyles = `
-    .search-screen {
-      background: ${theme.appBackground};
-      color: ${theme.primaryText};
+  // Clear search
+  const clearSearch = useCallback(() => {
+    setQuery('');
+    setResults([]);
+    setShowResults(false);
+    setError('');
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
     }
-    .search-header {
-      border-bottom: 1px solid ${theme.primaryGradient}20;
-    }
-    .search-back-button {
-      color: ${theme.primaryText};
-    }
-    .search-back-button:hover {
-      background: ${theme.primaryGradient}15;
-    }
-    .current-location-button {
-      background: ${theme.primaryGradient}10;
-      border-color: ${theme.primaryGradient}20;
-      color: ${theme.primaryText};
-    }
-    .current-location-button:hover {
-      background: ${theme.primaryGradient}20;
-    }
-    .recent-item {
-      border-color: ${theme.primaryGradient}40;
-      color: ${theme.primaryText};
-    }
-    .recent-item:hover {
-      background: ${theme.primaryGradient}05;
-      border-color: ${theme.primaryGradient}60;
-    }
-    .search-input-container {
-      background: ${theme.primaryGradient}10;
-      border-color: ${theme.primaryGradient}30;
-    }
-    .search-icon {
-      color: ${theme.primaryText};
-    }
-    .search-input {
-      color: ${theme.primaryText};
-    }
-    .search-input::placeholder {
-      color: ${theme.primaryText};
-    }
-    .search-results {
-      background: ${theme.appBackground};
-      border-color: ${theme.primaryGradient}30;
-    }
-    .search-loading, .search-empty {
-      color: ${theme.primaryText};
-    }
-    .search-result-item {
-      color: ${theme.primaryText};
-      border-bottom-color: ${theme.primaryGradient}20;
-    }
-    .search-result-item:hover {
-      background: ${theme.primaryGradient}10;
-    }
-  `;
+  }, []);
 
-  return React.createElement(
-    'div',
-    { className: 'search-screen' },
-    // Add dynamic styles
-    React.createElement('style', {
-      dangerouslySetInnerHTML: { __html: dynamicStyles },
+  // Memoized styles for performance
+  const containerStyles = useMemo(
+    () => ({
+      minHeight: 'calc(100dvh - 80px)',
+      background: theme.appBackground,
+      color: theme.primaryText,
     }),
+    [theme],
+  );
 
-    // Header
-    React.createElement(
-      'header',
-      { className: 'search-header' },
-      React.createElement(
-        'button',
-        {
-          className: 'search-back-button',
-          onClick: onBack,
-          'aria-label': 'Go back',
-        },
-        '←'
-      ),
+  const searchContainerStyles = useMemo(
+    () => ({
+      background: `${theme.primaryGradient}10`,
+      borderColor: `${theme.primaryGradient}30`,
+    }),
+    [theme],
+  );
 
-      React.createElement('div', {
-        ref: searchContainerRef,
-        className: 'search-container',
-      })
-    ),
+  const resultItemStyles = useMemo(
+    () => ({
+      borderColor: `${theme.primaryGradient}20`,
+    }),
+    [theme],
+  );
 
-    // Content
-    React.createElement(
-      'div',
-      { className: 'search-content' },
-      // Current Location Button
-      React.createElement(
-        'button',
-        {
-          className: 'current-location-button',
-          onClick: getCurrentLocation,
-        },
-        React.createElement('div', { className: 'location-icon' }, '📍'),
-        React.createElement(
-          'div',
-          { className: 'location-text' },
-          React.createElement(
-            'div',
-            { className: 'location-title' },
-            'Use Current Location'
-          ),
-          React.createElement(
-            'div',
-            { className: 'location-subtitle' },
-            'Get weather for your current location'
-          )
-        )
-      ),
+  return (
+    <div className="enhanced-search-screen" style={containerStyles}>
+      {/* Header */}
+      <header className="search-header">
+        <button
+          className="search-back-button"
+          onClick={onBack}
+          aria-label="Go back"
+          style={{ color: theme.primaryText }}
+        >
+          ←
+        </button>
+        <h1 className="search-title">Search Locations</h1>
+      </header>
 
-      // Recent Searches
-      recentSearches.length > 0 &&
-        React.createElement(
-          'div',
-          null,
-          React.createElement(
-            'div',
-            { className: 'section-title' },
-            'Recent Searches'
-          ),
-          ...recentSearches.map((result, index) =>
-            React.createElement(
-              'button',
-              {
-                key: `${result.lat}-${result.lon}-${index}`,
-                className: 'recent-item',
-                onClick: () => handleRecentSelect(result),
-              },
-              React.createElement('div', { className: 'recent-icon' }, '🕒'),
-              React.createElement(
-                'div',
-                { className: 'recent-text' },
-                React.createElement(
-                  'div',
-                  { className: 'recent-name' },
-                  result.name
-                ),
-                React.createElement(
-                  'div',
-                  { className: 'recent-location' },
-                  `${result.state ? result.state + ', ' : ''}${result.country}`
-                )
-              )
+      {/* Search Input */}
+      <div className="search-input-section">
+        <div className="search-input-container" style={searchContainerStyles}>
+          <div className="search-icon">🔍</div>
+          <input
+            ref={searchInputRef}
+            type="text"
+            className="search-input"
+            placeholder="Search for cities, towns..."
+            value={query}
+            onChange={handleSearchInput}
+            style={{ color: theme.primaryText }}
+          />
+          {query && (
+            <button
+              className="clear-search-button"
+              onClick={clearSearch}
+              aria-label="Clear search"
+              style={{ color: theme.primaryText }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="search-error">
+            <span className="error-icon">⚠️</span>
+            {error}
+          </div>
+        )}
+      </div>
+
+      {/* Search Results */}
+      {showResults && (
+        <div className="search-results-section">
+          {isLoading ? (
+            <div className="search-loading">
+              <div className="loading-spinner"></div>
+              <span>Searching...</span>
+            </div>
+          ) : results.length > 0 ? (
+            <div className="search-results">
+              <div className="results-header">
+                <span className="results-count">
+                  {results.length} results found
+                </span>
+              </div>
+              {results.map(result => (
+                <button
+                  key={result.id}
+                  className="search-result-item"
+                  onClick={() => handleCitySelection(result)}
+                  style={resultItemStyles}
+                >
+                  <div className="result-icon">🏙️</div>
+                  <div className="result-content">
+                    <div className="result-name">{result.name}</div>
+                    <div className="result-location">
+                      {result.state && result.state !== result.country && (
+                        <span className="result-state">{result.state}, </span>
+                      )}
+                      <span className="result-country">{result.country}</span>
+                    </div>
+                  </div>
+                  <div className="result-arrow">→</div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            query.length >= 2 &&
+            !isLoading && (
+              <div className="search-empty">
+                <div className="empty-icon">🔍</div>
+                <div className="empty-message">No cities found</div>
+                <div className="empty-suggestion">
+                  Try a different search term
+                </div>
+              </div>
             )
-          )
-        )
-    )
+          )}
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="search-content">
+        {/* Current Location Button */}
+        <div className="quick-actions">
+          <button
+            className="current-location-button"
+            onClick={getCurrentLocation}
+            disabled={isLoading}
+            style={{
+              background: `${theme.primaryGradient}10`,
+              borderColor: `${theme.primaryGradient}30`,
+              color: theme.primaryText,
+            }}
+          >
+            <div className="location-icon">📍</div>
+            <div className="location-content">
+              <div className="location-title">Use Current Location</div>
+              <div className="location-subtitle">
+                Get weather for where you are
+              </div>
+            </div>
+            <div className="location-arrow">→</div>
+          </button>
+        </div>
+
+        {/* Recent Searches */}
+        {recentSearches.length > 0 && !showResults && (
+          <div className="recent-searches">
+            <div className="section-header">
+              <h2 className="section-title">Recent Searches</h2>
+              <span className="section-count">{recentSearches.length}</span>
+            </div>
+            <div className="recent-list">
+              {recentSearches.map(result => (
+                <button
+                  key={result.id}
+                  className="recent-item"
+                  onClick={() => handleRecentSelect(result)}
+                  style={{
+                    borderColor: `${theme.primaryGradient}20`,
+                    color: theme.primaryText,
+                  }}
+                >
+                  <div className="recent-icon">🕒</div>
+                  <div className="recent-content">
+                    <div className="recent-name">{result.name}</div>
+                    <div className="recent-location">
+                      {result.state && result.state !== result.country && (
+                        <span>{result.state}, </span>
+                      )}
+                      {result.country}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

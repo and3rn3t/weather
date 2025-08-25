@@ -1,15 +1,11 @@
-# Cloudflare Workers/Pages Configuration
-# For Pages deployment with optional Functions support
+# Cloudflare Pages Configuration
+# Optimized for static site deployment
 
 name = "premium-weather-app"
 compatibility_date = "2024-01-01"
-compatibility_flags = ["nodejs_compat"]
 
-# Build configuration
-[build]
-command = "npm run build"
-cwd = "."
-watch_dir = "src"
+# Pages build output directory
+pages_build_output_dir = "dist"
 
 # Environment variables
 [env.production.vars]
@@ -17,12 +13,6 @@ ENVIRONMENT = "production"
 
 [env.preview.vars]
 ENVIRONMENT = "preview"
-
-# Pages configuration
-[pages]
-build_command = "npm run build"
-destination_dir = "dist"
-source_dir = "."
 
 # Optional: Add functions support for future API endpoints
 # [env.production.vars]

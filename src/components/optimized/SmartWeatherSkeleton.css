@@ -1,0 +1,312 @@
+/**
+ * Smart Weather Skeleton Styles
+ *
+ * Optimized skeleton loading animations with reduced motion support
+ * and better performance through CSS transforms
+ */
+
+/* Base skeleton styles */
+.smart-skeleton {
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Progressive shimmer animation (GPU accelerated) */
+.smart-skeleton.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  animation: shimmer-slide 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  transform: translateZ(0); /* Force GPU acceleration */
+}
+
+/* Pulse animation (lighter on performance) */
+.smart-skeleton.pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Current weather skeleton */
+.current-weather-skeleton {
+  padding: clamp(1rem, 4vw, 2rem);
+  text-align: center;
+}
+
+.skeleton-location {
+  width: 60%;
+  height: clamp(1.25rem, 4vw, 1.5rem);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin: 0 auto 1rem;
+}
+
+.skeleton-icon-large {
+  width: clamp(80px, 20vw, 120px);
+  height: clamp(80px, 20vw, 120px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+}
+
+.skeleton-temperature {
+  width: 40%;
+  height: clamp(3rem, 8vw, 4rem);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  margin: 0 auto 1rem;
+}
+
+.skeleton-condition {
+  width: 50%;
+  height: clamp(1rem, 3vw, 1.25rem);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin: 0 auto 0.5rem;
+}
+
+.skeleton-feels-like {
+  width: 35%;
+  height: clamp(0.875rem, 2.5vw, 1rem);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+/* Hourly forecast skeleton */
+.hourly-forecast-skeleton {
+  padding: 1rem 0;
+}
+
+.skeleton-title {
+  width: 30%;
+  height: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-scroll-container {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  overflow-x: hidden;
+}
+
+.skeleton-hourly-item {
+  flex: 0 0 auto;
+  width: clamp(70px, 18vw, 90px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.skeleton-time {
+  width: 80%;
+  height: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.skeleton-icon-small {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.skeleton-temp-value {
+  width: 70%;
+  height: 1rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+.skeleton-humidity {
+  width: 60%;
+  height: 0.625rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+/* Daily forecast skeleton */
+.daily-forecast-skeleton {
+  padding: 1rem;
+}
+
+.skeleton-daily-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-daily-item:last-child {
+  border-bottom: none;
+}
+
+.skeleton-day-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.skeleton-day-name {
+  width: 60px;
+  height: 1rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+.skeleton-date {
+  width: 40px;
+  height: 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.skeleton-icon-medium {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  margin: 0 1rem;
+}
+
+.skeleton-temp-range {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.skeleton-temp-high,
+.skeleton-temp-low {
+  width: 30px;
+  height: 1rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+.skeleton-temp-low {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.skeleton-precipitation {
+  width: 40px;
+  height: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+}
+
+/* Metrics skeleton */
+.metrics-skeleton {
+  padding: 1rem;
+}
+
+.skeleton-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.skeleton-metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  gap: 0.5rem;
+}
+
+.skeleton-metric-icon {
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.skeleton-metric-value {
+  width: 60%;
+  height: 1.25rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+.skeleton-metric-label {
+  width: 80%;
+  height: 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+/* Performance optimizations */
+.smart-skeleton * {
+  will-change: transform, opacity;
+}
+
+/* Responsive adjustments */
+@media (max-width: 375px) {
+  .skeleton-scroll-container {
+    gap: 0.5rem;
+    padding: 0 0.75rem;
+  }
+
+  .skeleton-hourly-item {
+    width: clamp(60px, 16vw, 75px);
+    padding: 0.5rem 0.25rem;
+  }
+
+  .skeleton-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  .smart-skeleton.shimmer::before {
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .smart-skeleton.shimmer::before {
+    animation: none;
+  }
+
+  .smart-skeleton.pulse {
+    animation: none;
+    opacity: 0.7;
+  }
+}

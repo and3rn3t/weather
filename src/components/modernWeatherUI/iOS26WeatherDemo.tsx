@@ -7,26 +7,30 @@
  * - Interactive Widgets with real-time updates
  * - Modal Sheets with detents
  * - Swipe Actions for enhanced interactions
- * - Enhanced Search with advanced filtering
+         <h2 style={titleStyle}>Locations</h2>
+        <p style={{ color: theme.secondaryText, marginBottom: '16px' }}>
+          Tap and hold for options. Swipe for quick actions.
+        </p>nhanced Search with advanced filtering
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import '../../styles/iOS26Components.css';
+import { logInfo } from '../../utils/logger';
+import type { ThemeColors } from '../../utils/themeConfig';
 import {
   ContextMenu,
-  LiveActivity,
   InteractiveWidget,
+  LiveActivity,
   ModalSheet,
   SwipeActions,
 } from './iOS26Components';
 import {
-  SegmentedControl,
   ActivityIndicator,
-  StatusBadge,
   ListItem,
   ProgressIndicator,
+  SegmentedControl,
+  StatusBadge,
 } from './IOSComponents';
-import type { ThemeColors } from '../../utils/themeConfig';
-import '../../styles/iOS26Components.css';
 
 interface WeatherData {
   temperature: number;
@@ -57,12 +61,28 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
   const [showLiveActivity, setShowLiveActivity] = useState(false);
   const [showModalSheet, setShowModalSheet] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  // Security: Use cryptographically secure random number generation
+  const getSecureRandom = (): number => {
+    if (
+      typeof window !== 'undefined' &&
+      window.crypto &&
+      window.crypto.getRandomValues
+    ) {
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      return array[0] / (0xffffffff + 1); // Convert to 0-1 range
+    } else {
+      // Fallback for environments without crypto
+      return Math.random();
+    }
+  };
+
   const [syncProgress, setSyncProgress] = useState(0);
 
   // Simulate data updates
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.8) {
+      if (getSecureRandom() > 0.8) {
         setShowLiveActivity(true);
         setTimeout(() => setShowLiveActivity(false), 5000);
       }
@@ -76,7 +96,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     if (isUpdating) {
       const interval = setInterval(() => {
         setSyncProgress(prev => {
-          const next = prev + Math.random() * 15;
+          const next = prev + getSecureRandom() * 15;
           if (next >= 100) {
             setIsUpdating(false);
             return 100;
@@ -105,7 +125,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       id: 'share',
       title: 'Share Location',
       icon: '📍',
-      onAction: () => console.log('Share location'),
+      onAction: () => logInfo('Share location'),
     },
     {
       id: 'settings',
@@ -118,7 +138,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Remove Location',
       icon: '🗑️',
       destructive: true,
-      onAction: () => console.log('Delete location'),
+      onAction: () => logInfo('Delete location'),
     },
   ];
 
@@ -128,7 +148,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Favorite',
       icon: '⭐',
       color: '#FF9500',
-      onAction: () => console.log('Added to favorites'),
+      onAction: () => logInfo('Added to favorites'),
     },
   ];
 
@@ -138,14 +158,14 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
       title: 'Share',
       icon: '📤',
       color: '#007AFF',
-      onAction: () => console.log('Share weather'),
+      onAction: () => logInfo('Share weather'),
     },
     {
       id: 'delete',
       title: 'Delete',
       icon: '🗑️',
       color: '#FF3B30',
-      onAction: () => console.log('Delete weather data'),
+      onAction: () => logInfo('Delete weather data'),
     },
   ];
 
@@ -187,7 +207,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
     <div style={containerStyle}>
       {/* Header with Segmented Control */}
       <div style={sectionStyle}>
-        <h1 style={titleStyle}>🌤️ iOS 26 Weather Experience</h1>
+        <h1 style={titleStyle}>Weather</h1>
         <SegmentedControl
           segments={['Today', 'Weekly', 'Radar', 'Settings']}
           selectedIndex={selectedView}
@@ -212,11 +232,11 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Interactive Widgets Grid */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>📱 Interactive Widgets</h2>
+        <h2 style={titleStyle}>Details</h2>
         <div style={gridStyle}>
           {/* Current Weather Widget */}
           <InteractiveWidget
-            title="Current Weather"
+            title="Now"
             size="medium"
             theme={theme}
             isLoading={isUpdating}
@@ -244,7 +264,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             title="Air Quality"
             size="medium"
             theme={theme}
-            onTap={() => console.log('View air quality details')}
+            onTap={() => logInfo('View air quality details')}
           >
             <div
               style={{
@@ -272,7 +292,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
           </InteractiveWidget>
 
           {/* UV Index Widget */}
-          <InteractiveWidget title="UV Index" size="small" theme={theme}>
+          <InteractiveWidget title="UV" size="small" theme={theme}>
             <div style={{ textAlign: 'center' }}>
               <div
                 style={{
@@ -315,10 +335,10 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Context Menu Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>📝 Context Menu & Swipe Actions</h2>
+        <h2 style={titleStyle}>� My Locations</h2>
         <p style={{ color: theme.secondaryText, marginBottom: '16px' }}>
-          Right-click or tap and hold for context menu. Swipe left/right for
-          quick actions.
+          Right-click or tap and hold for options. Swipe left/right for quick
+          actions.
         </p>
 
         <SwipeActions
@@ -333,7 +353,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
               badge="Now"
               disclosure
               theme={theme}
-              onPress={() => console.log('View San Francisco weather')}
+              onPress={() => logInfo('View San Francisco weather')}
             />
           </ContextMenu>
         </SwipeActions>
@@ -351,7 +371,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
                 badge="5 min ago"
                 disclosure
                 theme={theme}
-                onPress={() => console.log('View New York weather')}
+                onPress={() => logInfo('View New York weather')}
               />
             </ContextMenu>
           </SwipeActions>
@@ -360,7 +380,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Loading States Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>⏳ Loading States & Indicators</h2>
+        <h2 style={titleStyle}>Status</h2>
         <div
           style={{
             display: 'flex',
@@ -386,16 +406,12 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
 
       {/* Status Badges Demo */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>🏷️ Status Badges</h2>
+        <h2 style={titleStyle}>Alerts</h2>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <StatusBadge
-            text="Good Air Quality"
-            variant="success"
-            theme={theme}
-          />
-          <StatusBadge text="UV Warning" variant="warning" theme={theme} />
-          <StatusBadge text="Severe Weather" variant="error" theme={theme} />
-          <StatusBadge text="Weather Alert" variant="info" theme={theme} />
+          <StatusBadge text="Good Air" variant="success" theme={theme} />
+          <StatusBadge text="UV Alert" variant="warning" theme={theme} />
+          <StatusBadge text="Storm Alert" variant="error" theme={theme} />
+          <StatusBadge text="Info" variant="info" theme={theme} />
         </div>
       </div>
 
@@ -425,7 +441,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          Open Weather Settings
+          Open Settings
         </button>
       </div>
 
@@ -443,7 +459,7 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             subtitle="Fahrenheit"
             disclosure
             theme={theme}
-            onPress={() => console.log('Change temperature unit')}
+            onPress={() => logInfo('Change temperature unit')}
           />
           <ListItem
             title="Weather Alerts"
@@ -451,21 +467,21 @@ export const IOS26WeatherDemo: React.FC<IOS26DemoProps> = ({
             badge="On"
             disclosure
             theme={theme}
-            onPress={() => console.log('Configure alerts')}
+            onPress={() => logInfo('Configure alerts')}
           />
           <ListItem
             title="Location Services"
             subtitle="Always"
             disclosure
             theme={theme}
-            onPress={() => console.log('Location settings')}
+            onPress={() => logInfo('Location settings')}
           />
           <ListItem
             title="Data Refresh"
             subtitle="Every 15 minutes"
             disclosure
             theme={theme}
-            onPress={() => console.log('Refresh settings')}
+            onPress={() => logInfo('Refresh settings')}
           />
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>

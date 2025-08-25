@@ -1,0 +1,166 @@
+/* iOS26 Typography Enhancement - Applied to Weather App */
+
+/* iOS26 Typography Hierarchy - Based on Apple's Human Interface Guidelines */
+.ios-large-title {
+  font-size: 2.125rem; /* 34pt */
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.ios-title1 {
+  font-size: 1.75rem; /* 28pt */
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+}
+
+.ios-title2 {
+  font-size: 1.375rem; /* 22pt */
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+}
+
+.ios-title3 {
+  font-size: 1.25rem; /* 20pt */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ios-headline {
+  font-size: 1.0625rem; /* 17pt */
+  font-weight: 600;
+  line-height: 1.24;
+}
+
+.ios-body {
+  font-size: 1.0625rem; /* 17pt */
+  font-weight: 400;
+  line-height: 1.24;
+}
+
+.ios-callout {
+  font-size: 1rem; /* 16pt */
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.ios-subheadline {
+  font-size: 0.9375rem; /* 15pt */
+  font-weight: 400;
+  line-height: 1.27;
+}
+
+.ios-footnote {
+  font-size: 0.8125rem; /* 13pt */
+  font-weight: 400;
+  line-height: 1.31;
+}
+
+.ios-caption1 {
+  font-size: 0.75rem; /* 12pt */
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+.ios-caption2 {
+  font-size: 0.6875rem; /* 11pt */
+  font-weight: 400;
+  line-height: 1.36;
+}
+
+/* Enhanced Material Effects */
+.ios-material-thin {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ios-material-regular {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ios-material-thick {
+  backdrop-filter: blur(30px);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ios-material-chrome {
+  backdrop-filter: blur(40px) saturate(1.8);
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Dark Theme Adjustments */
+@media (prefers-color-scheme: dark) {
+  .ios-material-thin {
+    background: rgba(28, 28, 30, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ios-material-regular {
+    background: rgba(28, 28, 30, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .ios-material-thick {
+    background: rgba(28, 28, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .ios-material-chrome {
+    background: rgba(28, 28, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* iOS-Style Cards Enhancement */
+.ios-card {
+  border-radius: 16px;
+  padding: 16px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.ios-card.thin {
+  @apply ios-material-thin;
+}
+
+.ios-card.regular {
+  @apply ios-material-regular;
+}
+
+.ios-card.thick {
+  @apply ios-material-thick;
+}
+
+.ios-card.chrome {
+  @apply ios-material-chrome;
+}
+
+/* Enhanced Hover States */
+.ios-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .ios-card,
+  .ios-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  .ios-card {
+    border-width: 2px;
+    border-color: currentColor;
+  }
+}

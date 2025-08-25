@@ -5,20 +5,28 @@
  */
 
 import { useLocationServices } from './useLocationServices';
+import { logError, logInfo } from './logger';
 
+
+/**
+ * useLocationDebug - Custom React hook for locationDebug functionality
+ */
+/**
+ * useLocationDebug - Custom React hook for locationDebug functionality
+ */
 export const useLocationDebug = () => {
   const locationServices = useLocationServices();
 
   const testGeolocation = async () => {
-    console.log('🧪 Testing Geolocation Functionality');
-    console.log('📍 Geolocation supported:', locationServices.isSupported);
+    logInfo('🧪 Testing Geolocation Functionality');
+    logInfo('📍 Geolocation supported:', locationServices.isSupported);
 
     if (!locationServices.isSupported) {
-      console.error('❌ Geolocation not supported in this browser');
+      logError('❌ Geolocation not supported in this browser');
       return;
     }
 
-    console.log('🔄 Requesting location...');
+    logInfo('🔄 Requesting location...');
 
     try {
       const location = await locationServices.getCurrentLocation({
@@ -28,7 +36,7 @@ export const useLocationDebug = () => {
       });
 
       if (location) {
-        console.log('✅ Location received:', {
+        logInfo('✅ Location received:', {
           latitude: location.latitude,
           longitude: location.longitude,
           accuracy: location.accuracy,
@@ -37,15 +45,15 @@ export const useLocationDebug = () => {
           timestamp: new Date(location.timestamp).toISOString(),
         });
       } else {
-        console.error('❌ Location request returned null');
+        logError('❌ Location request returned null');
       }
     } catch (error) {
-      console.error('❌ Location request failed:', error);
+      logError('❌ Location request failed:', error);
     }
   };
 
   const testReverseGeocoding = async (lat: number, lon: number) => {
-    console.log(`🧪 Testing Reverse Geocoding for ${lat}, ${lon}`);
+    logInfo(`🧪 Testing Reverse Geocoding for ${lat}, ${lon}`);
 
     try {
       const response = await fetch(
@@ -54,7 +62,7 @@ export const useLocationDebug = () => {
           headers: {
             'User-Agent': 'WeatherApp/1.0 (test@example.com)',
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -62,7 +70,7 @@ export const useLocationDebug = () => {
       }
 
       const data = await response.json();
-      console.log('✅ Reverse geocoding response:', data);
+      logInfo('✅ Reverse geocoding response:', data);
 
       const address = data.address || {};
       const city =
@@ -72,16 +80,16 @@ export const useLocationDebug = () => {
         address.hamlet ||
         'Unknown Location';
 
-      console.log('🏙️ Extracted city:', city);
+      logInfo('🏙️ Extracted city:', city);
       return { city, country: address.country || '' };
     } catch (error) {
-      console.error('❌ Reverse geocoding failed:', error);
+      logError('❌ Reverse geocoding failed:', error);
       return { city: 'Unknown Location', country: '' };
     }
   };
 
   const testWeatherAPI = async (lat: number, lon: number) => {
-    console.log(`🧪 Testing Weather API for ${lat}, ${lon}`);
+    logInfo(`🧪 Testing Weather API for ${lat}, ${lon}`);
 
     try {
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
@@ -97,10 +105,10 @@ export const useLocationDebug = () => {
       }
 
       const data = await response.json();
-      console.log('✅ Weather API response:', data);
+      logInfo('✅ Weather API response:', data);
 
       if (data.current_weather) {
-        console.log('🌡️ Current weather:', {
+        logInfo('🌡️ Current weather:', {
           temperature: data.current_weather.temperature,
           windspeed: data.current_weather.windspeed,
           weathercode: data.current_weather.weathercode,
@@ -110,27 +118,27 @@ export const useLocationDebug = () => {
 
       return data;
     } catch (error) {
-      console.error('❌ Weather API failed:', error);
+      logError('❌ Weather API failed:', error);
       return null;
     }
   };
 
   const runFullTest = async () => {
-    console.log('🚀 Running Full Location & Weather Test');
-    console.log('='.repeat(50));
+    logInfo('🚀 Running Full Location & Weather Test');
+    logInfo('='.repeat(50));
 
     // Test 1: Basic geolocation
     await testGeolocation();
 
     // Test 2: Sample reverse geocoding (New York City)
-    console.log('\n🧪 Testing with sample coordinates (NYC):');
+    logInfo('\n🧪 Testing with sample coordinates (NYC):');
     await testReverseGeocoding(40.7128, -74.006);
 
     // Test 3: Sample weather API (NYC)
-    console.log('\n🧪 Testing weather API with sample coordinates (NYC):');
+    logInfo('\n🧪 Testing weather API with sample coordinates (NYC):');
     await testWeatherAPI(40.7128, -74.006);
 
-    console.log('\n✅ Full test complete');
+    logInfo('\n✅ Full test complete');
   };
 
   return {
@@ -152,17 +160,17 @@ if (typeof window !== 'undefined') {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,
         {
           headers: { 'User-Agent': 'WeatherApp/1.0 (test@example.com)' },
-        }
+        },
       );
       const data = await response.json();
-      console.log('Reverse geocoding result:', data);
+      logInfo('Reverse geocoding result:', data);
       return data;
     },
     testWeatherAPI: async (lat: number, lon: number) => {
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`;
       const response = await fetch(weatherUrl);
       const data = await response.json();
-      console.log('Weather API result:', data);
+      logInfo('Weather API result:', data);
       return data;
     },
   };

@@ -44,7 +44,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       setDragCurrentY(e.touches[0].clientY);
       selection();
     },
-    [selection]
+    [selection],
   );
 
   const handleTouchMove = useCallback(
@@ -59,11 +59,11 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
       const newSnapPoint = Math.max(
         0,
-        Math.min(1, currentSnapPoint - deltaSnapPoint)
+        Math.min(1, currentSnapPoint - deltaSnapPoint),
       );
       setCurrentSnapPoint(newSnapPoint);
     },
-    [isDragging, dragStartY, currentSnapPoint]
+    [isDragging, dragStartY, currentSnapPoint],
   );
 
   const handleTouchEnd = useCallback(() => {
@@ -77,7 +77,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     if (deltaY > threshold) {
       // Dragged down - find closest lower snap point or close
       const lowerSnapPoints = snapPoints.filter(
-        point => point < currentSnapPoint
+        point => point < currentSnapPoint,
       );
       if (lowerSnapPoints.length > 0) {
         const closestSnapPoint = Math.max(...lowerSnapPoints);
@@ -89,7 +89,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     } else if (deltaY < -threshold) {
       // Dragged up - find closest higher snap point
       const higherSnapPoints = snapPoints.filter(
-        point => point > currentSnapPoint
+        point => point > currentSnapPoint,
       );
       if (higherSnapPoints.length > 0) {
         const closestSnapPoint = Math.min(...higherSnapPoints);
@@ -101,7 +101,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       const closest = snapPoints.reduce((prev, curr) =>
         Math.abs(curr - currentSnapPoint) < Math.abs(prev - currentSnapPoint)
           ? curr
-          : prev
+          : prev,
       );
       setCurrentSnapPoint(closest);
     }
@@ -227,7 +227,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
           style={{
             flex: 1,
             padding: '20px',
-            paddingBottom: `calc(20px + env(safe-area-inset-bottom))`,
+            paddingBottom: 'calc(20px + env(safe-area-inset-bottom))',
             overflow: 'auto',
             WebkitOverflowScrolling: 'touch',
           }}

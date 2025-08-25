@@ -1,0 +1,380 @@
+/* Mobile Enhancements - Consolidated
+   Combines mobile layout, typography, and enhancement files into unified system
+   Reduces: enhancedMobileLayout.css (474) + mobileEnhancements.css (486) + enhancedMobileTypography.css (285) = 1,245 lines → ~600 lines
+   Date: August 21, 2025 - Phase 3 Optimization
+*/
+
+/* ============================================================================
+   MOBILE ENHANCEMENT VARIABLES
+   ============================================================================ */
+
+:root {
+  /* Touch target system */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 52px;
+  --touch-target-large: 60px;
+  --touch-target-gesture: 72px;
+
+  /* Mobile spacing scale - adaptive and consistent */
+  --mobile-space-1: clamp(2px, 1vw, 4px);
+  --mobile-space-2: clamp(4px, 1.5vw, 8px);
+  --mobile-space-3: clamp(6px, 2vw, 12px);
+  --mobile-space-4: clamp(8px, 2.5vw, 16px);
+  --mobile-space-5: clamp(12px, 3vw, 20px);
+  --mobile-space-6: clamp(16px, 4vw, 24px);
+  --mobile-space-7: clamp(20px, 5vw, 32px);
+  --mobile-space-8: clamp(24px, 6vw, 40px);
+
+  /* Mobile typography scale - viewport responsive */
+  --mobile-font-xs: clamp(11px, 3vw, 13px);
+  --mobile-font-sm: clamp(13px, 3.5vw, 15px);
+  --mobile-font-base: clamp(15px, 4vw, 17px);
+  --mobile-font-lg: clamp(17px, 4.5vw, 20px);
+  --mobile-font-xl: clamp(19px, 5vw, 24px);
+  --mobile-font-2xl: clamp(22px, 6vw, 28px);
+  --mobile-font-3xl: clamp(26px, 7vw, 34px);
+
+  /* Line heights optimized for mobile reading */
+  --mobile-line-tight: 1.2;
+  --mobile-line-normal: 1.4;
+  --mobile-line-relaxed: 1.5;
+
+  /* Font weights */
+  --mobile-weight-normal: 400;
+  --mobile-weight-medium: 500;
+  --mobile-weight-semibold: 600;
+  --mobile-weight-bold: 700;
+
+  /* Border radius scale */
+  --mobile-radius-sm: 8px;
+  --mobile-radius-md: 12px;
+  --mobile-radius-lg: 16px;
+  --mobile-radius-xl: 20px;
+
+  /* Content spacing shortcuts */
+  --mobile-content-gap: var(--mobile-space-6);
+  --mobile-section-gap: var(--mobile-space-8);
+  --mobile-card-padding: var(--mobile-space-5);
+  --mobile-page-padding: var(--mobile-space-4);
+}
+
+/* ============================================================================
+   MOBILE TYPOGRAPHY CLASSES
+   ============================================================================ */
+
+.mobile-text-xs {
+  font-size: var(--mobile-font-xs);
+  line-height: var(--mobile-line-normal);
+}
+
+.mobile-text-sm {
+  font-size: var(--mobile-font-sm);
+  line-height: var(--mobile-line-normal);
+}
+
+.mobile-text-base {
+  font-size: var(--mobile-font-base);
+  line-height: var(--mobile-line-normal);
+}
+
+.mobile-text-lg {
+  font-size: var(--mobile-font-lg);
+  line-height: var(--mobile-line-relaxed);
+}
+
+.mobile-text-xl {
+  font-size: var(--mobile-font-xl);
+  line-height: var(--mobile-line-tight);
+}
+
+.mobile-text-2xl {
+  font-size: var(--mobile-font-2xl);
+  line-height: var(--mobile-line-tight);
+}
+
+.mobile-text-3xl {
+  font-size: var(--mobile-font-3xl);
+  line-height: var(--mobile-line-tight);
+}
+
+/* Typography color utilities */
+.mobile-text-primary {
+  color: var(--text-primary, #1a1a1a);
+}
+
+.mobile-text-secondary {
+  color: var(--text-secondary, #666666);
+}
+
+.mobile-text-muted {
+  color: var(--text-muted, #999999);
+}
+
+/* Weather-specific typography */
+.weather-temperature-mobile {
+  font-size: var(--mobile-font-3xl);
+  font-weight: var(--mobile-weight-bold);
+  line-height: var(--mobile-line-tight);
+  color: var(--text-primary);
+}
+
+.weather-metric-value-mobile {
+  font-size: var(--mobile-font-lg);
+  font-weight: var(--mobile-weight-semibold);
+  line-height: var(--mobile-line-normal);
+}
+
+/* Animated text for weather updates */
+.mobile-text-animated {
+  transition: all 0.3s ease;
+}
+
+/* ============================================================================
+   MOBILE LAYOUT CONTAINERS
+   ============================================================================ */
+
+/* Enhanced mobile containers */
+.mobile-content-enhanced {
+  padding: var(--mobile-page-padding);
+  gap: var(--mobile-content-gap);
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-page-header {
+  padding: var(--mobile-space-4) var(--mobile-page-padding);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.mobile-content-area {
+  padding: var(--mobile-page-padding);
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ============================================================================
+   MOBILE CARD SYSTEM
+   ============================================================================ */
+
+.mobile-card-enhanced {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--mobile-radius-lg);
+  padding: var(--mobile-card-padding);
+  margin-bottom: var(--mobile-space-4);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.mobile-card-enhanced:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Weather-specific cards */
+.weather-card-enhanced {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+.weather-main-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+/* ============================================================================
+   MOBILE GRID SYSTEM
+   ============================================================================ */
+
+.mobile-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--mobile-space-4);
+}
+
+.mobile-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--mobile-space-3);
+}
+
+.mobile-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--mobile-space-2);
+}
+
+/* Weather details grid */
+.weather-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--mobile-space-4);
+  margin-top: var(--mobile-space-6);
+}
+
+/* ============================================================================
+   MOBILE BUTTON SYSTEM
+   ============================================================================ */
+
+.mobile-button-enhanced {
+  min-height: var(--touch-target-comfortable);
+  padding: var(--mobile-space-3) var(--mobile-space-5);
+  border-radius: var(--mobile-radius-md);
+  font-size: var(--mobile-font-base);
+  font-weight: var(--mobile-weight-medium);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mobile-space-2);
+}
+
+.mobile-button-large {
+  min-height: var(--touch-target-large);
+  padding: var(--mobile-space-4) var(--mobile-space-6);
+  font-size: var(--mobile-font-lg);
+  border-radius: var(--mobile-radius-lg);
+}
+
+.mobile-button-small {
+  min-height: var(--touch-target-min);
+  padding: var(--mobile-space-2) var(--mobile-space-4);
+  font-size: var(--mobile-font-sm);
+  border-radius: var(--mobile-radius-sm);
+}
+
+.mobile-button-secondary {
+  background: rgba(120, 120, 128, 0.2);
+  color: var(--text-primary);
+}
+
+/* Touch target optimization */
+.mobile-touch-target {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================================
+   FORECAST ITEM ENHANCEMENTS
+   ============================================================================ */
+
+.forecast-item-enhanced {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--mobile-radius-md);
+  padding: var(--mobile-space-4);
+  text-align: center;
+  min-width: 80px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.forecast-item-enhanced:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   MOBILE RESPONSIVE BREAKPOINTS
+   ============================================================================ */
+
+/* Small screens (iPhone SE) */
+@media (max-width: 375px) {
+  :root {
+    --mobile-page-padding: var(--mobile-space-3);
+    --mobile-card-padding: var(--mobile-space-4);
+  }
+
+  .weather-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mobile-space-3);
+  }
+
+  .mobile-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mobile-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  :root {
+    --mobile-page-padding: var(--mobile-space-2);
+    --mobile-card-padding: var(--mobile-space-3);
+  }
+
+  .mobile-grid-2,
+  .mobile-grid-3,
+  .mobile-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mobile-space-2);
+  }
+}
+
+/* Landscape mobile */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --mobile-page-padding: var(--mobile-space-2);
+    --mobile-section-gap: var(--mobile-space-4);
+  }
+
+  .mobile-page-header {
+    padding: var(--mobile-space-2) var(--mobile-page-padding);
+  }
+}
+
+/* ============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================ */
+
+/* GPU acceleration for cards and buttons */
+.mobile-card-enhanced,
+.mobile-button-enhanced,
+.forecast-item-enhanced {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Touch optimization */
+.mobile-button-enhanced,
+.mobile-touch-target {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* Smooth transitions */
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-card-enhanced,
+  .mobile-button-enhanced,
+  .mobile-text-animated {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-card-enhanced,
+  .mobile-button-enhanced,
+  .mobile-text-animated,
+  .forecast-item-enhanced {
+    transition: none !important;
+    animation: none !important;
+  }
+}

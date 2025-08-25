@@ -1,3 +1,5 @@
+import { logWarn } from './logger';
+
 /**
  * Centralized Haptic Patterns - Optimization
  *
@@ -40,9 +42,15 @@ export const HAPTIC_PATTERNS = {
 /**
  * Centralized vibration executor with error handling and logging
  */
+/**
+ * executeVibration - Core hapticPatterns functionality
+ */
+/**
+ * executeVibration - Core hapticPatterns functionality
+ */
 export const executeVibration = (
   pattern: number[] | keyof typeof HAPTIC_PATTERNS,
-  intensity: number = 1.0
+  intensity: number = 1.0,
 ): boolean => {
   try {
     // Get pattern array
@@ -51,7 +59,7 @@ export const executeVibration = (
       : HAPTIC_PATTERNS[pattern];
 
     if (!patternArray) {
-      console.warn(`Unknown haptic pattern: ${pattern}`);
+      logWarn(`Unknown haptic pattern: ${pattern}`);
       return false;
     }
 
@@ -62,13 +70,13 @@ export const executeVibration = (
 
     // Apply intensity scaling
     const scaledPattern = patternArray.map(duration =>
-      Math.round(duration * intensity)
+      Math.round(duration * intensity),
     );
 
     // Execute vibration
     return navigator.vibrate(scaledPattern);
   } catch (error) {
-    console.warn('Vibration execution failed:', error);
+    logWarn('Vibration execution failed:', error);
     return false;
   }
 };
@@ -76,9 +84,15 @@ export const executeVibration = (
 /**
  * Weather-specific vibration helper
  */
+/**
+ * executeWeatherVibration - Weather data processing and display
+ */
+/**
+ * executeWeatherVibration - Weather data processing and display
+ */
 export const executeWeatherVibration = (
   weatherCode: number,
-  intensity: number = 1.0
+  intensity: number = 1.0,
 ): boolean => {
   let patternKey: keyof typeof HAPTIC_PATTERNS;
 
@@ -99,6 +113,12 @@ export const executeWeatherVibration = (
 
 /**
  * Progressive loading vibration sequence
+ */
+/**
+ * executeProgressiveLoading - Core hapticPatterns functionality
+ */
+/**
+ * executeProgressiveLoading - Core hapticPatterns functionality
  */
 export const executeProgressiveLoading = (): void => {
   executeVibration('loading');

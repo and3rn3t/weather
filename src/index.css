@@ -1,27 +1,44 @@
-/* Import mobile optimization styles */
+/* Import core mobile foundation */
 @import './styles/mobile.css';
-@import './styles/mobileEnhancements.css';
-@import './styles/modernWeatherUI.css';
 @import './styles/iosComponents.css';
 
-/* NEW: Enhanced mobile readability styles */
-@import './styles/enhancedMobileTypography.css';
-@import './styles/enhancedMobileLayout.css';
-@import './styles/enhancedWeatherDisplay.css';
-@import './styles/enhancedForecast.css';
+/* NEW: Mobile Enhancement System - CONSOLIDATED */
+@import './styles/mobile-enhanced-consolidated.css';
 @import './styles/enhancedMobileNavigation.css';
 
-/* NEW: iOS 26 Design System Styles */
-@import './styles/iOS26DesignSystem.css';
-@import './styles/iOS26WeatherInterface.css';
+/* NEW: iOS26 Liquid Glass Navigation - Apple HIG Compliant */
+@import './liquid-glass-navigation.css';
 
-@import './navigation-fix-simple.css'; /* SINGLE CLEAN FIX */
-@import './autocomplete-emergency-fix.css'; /* AutoComplete & Background Fix */
+/* NEW: iOS26 Seamless Full-Width Navigation - Override for seamless layout */
+@import './seamless-navigation.css';
+
+/* NEW: iOS 26 Design System - CONSOLIDATED (Phase 4) */
+@import './styles/ios26-design-system-consolidated.css';
+
+/* NEW: iOS Human Interface Guidelines Enhancements */
+@import './styles/ios-hig-enhancements.css';
+
+/* NEW: Weather Readability Enhancement - Better Typography & Contrast */
+@import './styles/weather-readability-enhancement.css';
+
+/* NEW: iOS26 Text Optimization - HIG Compliant Typography */
+@import './styles/ios26-text-optimization.css';
+
+/* NEW: iOS26 Weather Details Fix - Enhanced Mobile Layout & Scrolling */
+@import './styles/ios26-weather-details-fix.css';
+
+/* NEW: Responsive Layout System - CONSOLIDATED */
+@import './styles/responsive-layout-consolidated.css';
+
+/* NEW: Horror Theme Styles - CONSOLIDATED */
+@import './styles/horror-theme-consolidated.css';
+
+/* NEW: Horror Icon Fixes - Prevents black backgrounds behind icons */
+@import './styles/horror-icon-fixes.css';
 
 :root {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

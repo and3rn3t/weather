@@ -739,6 +739,12 @@ const WeatherIconComponent: React.FC<WeatherIconProps> = ({
  * CSS styles for weather icon animations.
  * Add this to your main CSS file or include in a <style> tag.
  */
+/**
+ * weatherIconStyles - Core weatherIcons functionality
+ */
+/**
+ * weatherIconStyles - Core weatherIcons functionality
+ */
 export const weatherIconStyles = `
   .weather-icon-animated {
     transition: transform 0.3s ease;

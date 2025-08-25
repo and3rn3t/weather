@@ -7,6 +7,8 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useHapticFeedback, HapticPattern } from './useHapticFeedback';
+import { logError } from './logger';
+
 
 interface PullToRefreshOptions {
   maxPullDistance?: number;
@@ -23,9 +25,15 @@ interface PullToRefreshState {
   canRefresh: boolean;
 }
 
+/**
+ * usePullToRefresh - Custom React hook for usePullToRefresh functionality
+ */
+/**
+ * usePullToRefresh - Custom React hook for usePullToRefresh functionality
+ */
 export const usePullToRefresh = (
   onRefresh: () => Promise<void>,
-  options: PullToRefreshOptions = {}
+  options: PullToRefreshOptions = {},
 ) => {
   const {
     maxPullDistance = 120,
@@ -84,7 +92,7 @@ export const usePullToRefresh = (
         setState(prev => ({ ...prev, isPulling: true }));
       }
     },
-    [disabled, state.isRefreshing, canPull, haptic]
+    [disabled, state.isRefreshing, canPull, haptic],
   );
 
   // Handle touch move
@@ -135,7 +143,7 @@ export const usePullToRefresh = (
       refreshThreshold,
       resetState,
       haptic,
-    ]
+    ],
   );
 
   // Handle touch end
@@ -158,7 +166,7 @@ export const usePullToRefresh = (
         // Success haptic when refresh completes
         haptic.triggerHaptic(HapticPattern.SUCCESS);
       } catch (error) {
-        console.error('Pull-to-refresh error:', error);
+        logError('Pull-to-refresh error:', error);
         // Error haptic when refresh fails
         haptic.triggerHaptic(HapticPattern.ERROR);
       } finally {
@@ -217,7 +225,7 @@ export const usePullToRefresh = (
         pointerEvents: 'none' as const,
       };
     },
-    [state, refreshThreshold]
+    [state, refreshThreshold],
   );
 
   // Get refresh icon rotation

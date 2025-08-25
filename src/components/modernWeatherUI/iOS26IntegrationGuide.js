@@ -20,12 +20,22 @@ const iOS26WeatherCardExample = `
 <div className="ios26-main-weather-card">
   {/* Header with location */}
   <div className="ios26-weather-header">
-    <div className="ios26-weather-location" onClick={handleLocationChange}>
+    <button
+      className="ios26-weather-location"
+      onClick={handleLocationChange}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleLocationChange();
+        }
+      }}
+      aria-label="Change location"
+    >
       <span className="ios26-text-headline ios26-text-primary ios26-text-semibold">
         {currentWeather.location}
       </span>
       <span className="ios26-location-icon">📍</span>
-    </div>
+    </button>
     <div className="ios26-text-caption2 ios26-text-tertiary ios26-last-updated">
       Updated {lastUpdated}
     </div>
@@ -34,24 +44,24 @@ const iOS26WeatherCardExample = `
   {/* Main temperature display */}
   <div className="ios26-temperature-section">
     <div className="ios26-weather-icon-container">
-      <WeatherIcon 
-        code={currentWeather.weatherCode} 
+      <WeatherIcon
+        code={currentWeather.weatherCode}
         size={Math.min(window.innerWidth * 0.25, 120)}
         animate={true}
       />
     </div>
-    
+
     <div className="ios26-temperature-display">
       <span className="ios26-temperature-value">
         {Math.round(currentWeather.temperature)}°
       </span>
       <span className="ios26-temperature-unit">F</span>
     </div>
-    
+
     <div className="ios26-text-title3 ios26-text-primary ios26-text-medium ios26-weather-condition">
       {currentWeather.condition}
     </div>
-    
+
     <div className="ios26-text-subheadline ios26-text-secondary ios26-feels-like">
       Feels like {Math.round(currentWeather.feelsLike)}°F
     </div>
@@ -73,7 +83,7 @@ const iOS26WeatherCardExample = `
       </div>
     </div>
   </div>
-  
+
   <div className="ios26-weather-metric">
     <div className="ios26-weather-metric-content">
       <div className="ios26-weather-metric-icon">💨</div>
@@ -87,7 +97,7 @@ const iOS26WeatherCardExample = `
       </div>
     </div>
   </div>
-  
+
   <div className="ios26-weather-metric">
     <div className="ios26-weather-metric-content">
       <div className="ios26-weather-metric-icon">📊</div>
@@ -111,22 +121,22 @@ const iOS26WeatherCardExample = `
   <div className="ios26-text-headline ios26-text-primary ios26-text-semibold ios26-forecast-title">
     24-Hour Forecast
   </div>
-  
+
   <div className="ios26-forecast-scroll">
     {hourlyForecast.map((hour, index) => (
       <div key={index} className="ios26-forecast-item">
         <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time">
           {hour.time}
         </div>
-        
+
         <div className="ios26-forecast-icon">
-          <WeatherIcon 
-            code={hour.weatherCode} 
+          <WeatherIcon
+            code={hour.weatherCode}
             size={28}
             animate={true}
           />
         </div>
-        
+
         <div className="ios26-forecast-temperature">
           <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
             {Math.round(hour.temperature)}°
@@ -170,7 +180,7 @@ const iOS26WeatherCardExample = `
 const iOS26NavigationExample = `
 {/* Enhanced mobile navigation with iOS 26 styling */}
 <div className="mobile-navigation ios26-material-regular" role="navigation">
-  <div 
+  <div
     className="nav-item ios26-button ios26-button-ghost"
     onClick={() => setCurrentScreen('home')}
     role="button"
@@ -180,8 +190,8 @@ const iOS26NavigationExample = `
     <span className="nav-icon">🏠</span>
     <span className="ios26-text-caption ios26-text-center ios26-text-semibold">Home</span>
   </div>
-  
-  <div 
+
+  <div
     className="nav-item ios26-button ios26-button-ghost"
     onClick={() => setCurrentScreen('weather')}
     role="button"
@@ -191,8 +201,8 @@ const iOS26NavigationExample = `
     <span className="nav-icon">☀️</span>
     <span className="ios26-text-caption ios26-text-center ios26-text-semibold">Weather</span>
   </div>
-  
-  <div 
+
+  <div
     className="nav-item ios26-button ios26-button-ghost"
     onClick={() => setCurrentScreen('settings')}
     role="button"

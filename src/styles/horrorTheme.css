@@ -1,0 +1,1338 @@
+/**
+ * Horror Movie Theme CSS
+ * Inspired by classic horror films like Friday the 13th, The Shining, etc.
+ * Features: Blood effects, eerie animations, gothic typography, and atmospheric elements
+ */
+
+/* Horror Theme Root Variables */
+:root.horror-theme {
+  /* Blood red color palette */
+  --horror-blood-red: #8b0000;
+  --horror-dark-red: #4c0000;
+  --horror-light-red: #ff6b6b;
+
+  /* Gothic blacks */
+  --horror-midnight: #0f0f0f;
+  --horror-shadow: #1a0000;
+  --horror-void: #000000;
+
+  /* Eerie effects */
+  --horror-glow: 0 0 20px rgba(139, 0, 0, 0.6);
+  --horror-shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.8);
+  --horror-flicker: flickering 2s infinite;
+}
+
+/* MAIN APP HORROR BACKGROUND - Dark Crystal Lake gradient */
+html.horror-theme,
+body.horror-theme,
+.horror-theme #root,
+#root.horror-theme {
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%) !important;
+  background-color: #0d0d0d !important;
+  color: #ff6b6b !important;
+  min-height: 100vh !important;
+}
+
+/* NUCLEAR BACKGROUND OVERRIDE - Force horror theme on all elements */
+body.horror-theme,
+body.horror-theme #root,
+body.horror-theme .app-container,
+body.horror-theme .main-content,
+body.horror-theme main,
+body.horror-theme section,
+html.horror-theme,
+html.horror-theme body {
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%) !important;
+  background-color: #0d0d0d !important;
+  background-attachment: fixed !important;
+}
+
+/* Horror activator and status indicator styles */
+.horror-activator {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.horror-activate-button {
+  background: linear-gradient(135deg, #4c0000 0%, #1a0000 100%);
+  border: 2px solid rgba(139, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #ff6b6b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+}
+
+.horror-activate-button:hover {
+  background: linear-gradient(135deg, #7f1d1d 0%, #4c0000 100%);
+  border-color: rgba(139, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+  animation: horrorGlow 1s infinite;
+}
+
+.horror-activate-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+}
+
+.horror-status-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.horror-status-content {
+  background: rgba(26, 0, 0, 0.95);
+  border: 2px solid rgba(139, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #ff6b6b;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  animation: horrorPulse 2s infinite;
+}
+
+@keyframes horrorGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(139, 0, 0, 1), 0 0 30px rgba(139, 0, 0, 0.8);
+  }
+}
+
+@keyframes horrorPulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.4);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 40px rgba(139, 0, 0, 0.8);
+  }
+}
+
+/* Film grain overlay for horror atmosphere */
+body.horror-film-grain::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 4px 4px, 6px 6px, 8px 8px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.8;
+  animation: filmGrainFlicker 0.1s infinite;
+}
+
+@keyframes filmGrainFlicker {
+  0% {
+    opacity: 0.8;
+  }
+  25% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+/* Enhanced blood drip animation */
+.horror-blood-drip {
+  animation: bloodDrip 4s infinite ease-in-out;
+  filter: drop-shadow(0 2px 10px rgba(139, 0, 0, 0.8));
+}
+
+@keyframes bloodDrip {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(139, 0, 0, 0.8));
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  }
+  25% {
+    filter: drop-shadow(0 1px 8px rgba(139, 0, 0, 0.9));
+    text-shadow: 0 1px 15px rgba(139, 0, 0, 0.9);
+  }
+  50% {
+    filter: drop-shadow(0 2px 10px rgba(139, 0, 0, 1));
+    text-shadow: 0 2px 20px rgba(139, 0, 0, 1);
+  }
+  75% {
+    filter: drop-shadow(0 1px 8px rgba(139, 0, 0, 0.9));
+    text-shadow: 0 1px 15px rgba(139, 0, 0, 0.9);
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(139, 0, 0, 0.8));
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  }
+}
+
+/* Enhanced flickering animation for horror atmosphere */
+.horror-flicker {
+  animation: flickeringHorror 3s infinite ease-in-out;
+}
+
+/* Apply film flicker to key elements */
+.horror-theme .city-name,
+.horror-theme .temperature,
+.horror-theme .temp-display,
+.horror-theme h1,
+.horror-theme h2,
+.horror-theme h3,
+.horror-theme .weather-card,
+.horror-theme .forecast-card {
+  animation: flickeringHorror 4s infinite ease-in-out !important;
+}
+
+@keyframes flickeringHorror {
+  0%,
+  94% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  }
+  95% {
+    opacity: 0.8;
+    text-shadow: 0 0 15px rgba(139, 0, 0, 0.9);
+  }
+  96% {
+    opacity: 0.95;
+    text-shadow: 0 0 8px rgba(139, 0, 0, 0.7);
+  }
+  97% {
+    opacity: 0.85;
+    text-shadow: 0 0 20px rgba(139, 0, 0, 1);
+  }
+  98% {
+    opacity: 0.98;
+    text-shadow: 0 0 12px rgba(139, 0, 0, 0.8);
+  }
+  99% {
+    opacity: 0.9;
+    text-shadow: 0 0 18px rgba(139, 0, 0, 0.9);
+  }
+}
+
+/* Mobile responsiveness for horror controls */
+@media (max-width: 480px) {
+  .horror-activator {
+    top: 10px;
+    left: 10px;
+  }
+
+  .horror-activate-button {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+
+  .horror-status-indicator {
+    top: 10px;
+    right: 10px;
+  }
+
+  .horror-status-content {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
+
+/* Root app container */
+.horror-theme #root,
+.horror-theme .app-container,
+.horror-theme .main-app-container {
+  background: linear-gradient(
+    135deg,
+    var(--horror-midnight) 0%,
+    var(--horror-shadow) 50%,
+    var(--horror-void) 100%
+  ) !important;
+  min-height: 100vh;
+  color: var(--horror-light-red) !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}
+
+/* Fix scrollbar issues */
+.horror-theme {
+  overflow-x: hidden !important;
+}
+
+.horror-theme * {
+  box-sizing: border-box !important;
+}
+
+/* Single scrollbar control */
+.horror-theme html,
+.horror-theme body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Horror-themed scrollbars */
+.horror-theme ::-webkit-scrollbar {
+  width: 12px;
+}
+
+.horror-theme ::-webkit-scrollbar-track {
+  background: var(--horror-midnight);
+  border-radius: 6px;
+}
+
+.horror-theme ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--horror-blood-red), var(--horror-dark-red));
+  border-radius: 6px;
+  border: 1px solid var(--horror-shadow);
+}
+
+/* FIX COMPONENT GAPS AND BORDERS - TRANSPARENT TEXT APPROACH */
+.horror-theme .weather-card,
+.horror-theme .forecast-card,
+.horror-theme .glass-card,
+.horror-theme .card,
+.horror-theme .ios26-weather-card,
+.horror-theme .modern-weather-card {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 1px solid rgba(139, 0, 0, 0.15) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 0 20px rgba(139, 0, 0, 0.1) !important;
+  margin: 16px !important;
+  padding: 20px !important;
+  color: #ff6b6b !important;
+  text-shadow: 0 0 12px rgba(139, 0, 0, 0.8) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* NUCLEAR OVERRIDE - Remove all black backgrounds from text containers */
+.horror-theme *:not(.mobile-navigation):not(.nav-button) {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #ff6b6b !important;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.7) !important;
+}
+
+/* Transparent text containers for clean look */
+.horror-theme .weather-info,
+.horror-theme .forecast-item,
+.horror-theme .weather-detail,
+.horror-theme .metric-item,
+.horror-theme .temperature-display,
+.horror-theme .weather-description,
+.horror-theme .weather-summary,
+.horror-theme .forecast-list,
+.horror-theme .metrics-grid,
+.horror-theme div:not(.mobile-navigation):not(.theme-toggle-btn) {
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  color: #ff6b6b !important;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.7) !important;
+}
+
+/* Subtle hover effects only */
+.horror-theme .weather-card:hover,
+.horror-theme .forecast-card:hover {
+  background: rgba(139, 0, 0, 0.05) !important;
+  box-shadow: 0 0 30px rgba(139, 0, 0, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Fix main container borders */
+.horror-theme .main-content,
+.horror-theme .app-container,
+.horror-theme .screen-container,
+.horror-theme .weather-app {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 8px !important;
+  margin: 0 !important;
+}
+
+/* Fix component spacing */
+.horror-theme .weather-display,
+.horror-theme .forecast-container,
+.horror-theme .weather-metrics {
+  gap: 8px !important;
+  margin: 8px 0 !important;
+  padding: 8px !important;
+  background: transparent !important;
+}
+
+/* Horror icons styling - FIXED: No black backgrounds */
+.horror-theme .weather-icon,
+.horror-theme svg,
+.horror-theme .icon {
+  filter: drop-shadow(0 0 8px rgba(139, 0, 0, 0.8)) !important;
+  color: var(--horror-light-red) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.horror-theme ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--horror-light-red), var(--horror-blood-red));
+  box-shadow: var(--horror-glow);
+}
+
+/* Enhanced film grain texture for horror atmosphere */
+.horror-theme #root::before,
+.horror-theme .app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.12) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 4px 4px, 6px 6px, 8px 8px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.7;
+  animation: filmGrainFlicker 0.1s infinite;
+}
+
+/* Enhanced film grain flickering */
+@keyframes filmGrainFlicker {
+  0% {
+    opacity: 0.7;
+  }
+  25% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Blood drip effect for headers */
+.horror-theme h1,
+.horror-theme h2,
+.horror-theme h3,
+.horror-theme .weather-header,
+.horror-theme .city-name {
+  position: relative;
+  color: var(--horror-light-red) !important;
+  text-shadow: 0 0 15px rgba(139, 0, 0, 0.9), 0 0 30px rgba(139, 0, 0, 0.5) !important;
+  background: transparent !important;
+  font-weight: bold !important;
+}
+
+/* Enhanced text readability on transparent background */
+.horror-theme p,
+.horror-theme span,
+.horror-theme .temperature,
+.horror-theme .weather-text,
+.horror-theme .forecast-text {
+  color: var(--horror-light-red) !important;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  background: transparent !important;
+  font-weight: 500 !important;
+}
+
+.horror-theme h1::after,
+.horror-theme .weather-header::after,
+.horror-theme .city-name::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 15px;
+  background: linear-gradient(to bottom, var(--horror-blood-red) 0%, var(--horror-blood-red) 30%, transparent 100%);
+  border-radius: 0 0 50% 50%;
+  animation: bloodDripRealistic 4s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+/* Horror card styling */
+.horror-theme .weather-card,
+.horror-theme .forecast-card,
+.horror-theme .glass-card,
+.horror-theme .card {
+  background: rgba(26, 0, 0, 0.95) !important;
+  border: 1px solid var(--horror-blood-red) !important;
+  box-shadow: var(--horror-shadow-deep), inset 0 1px 0 rgba(139, 0, 0, 0.3) !important;
+  transition: all 0.3s ease !important;
+  color: var(--horror-light-red) !important;
+}
+
+.horror-theme .weather-card:hover,
+.horror-theme .forecast-card:hover,
+.horror-theme .glass-card:hover {
+  box-shadow: var(--horror-glow), var(--horror-shadow-deep) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Flickering text effect for spooky atmosphere */
+.horror-theme .city-name,
+.horror-theme .temperature,
+.horror-theme .temp-display {
+  animation: var(--horror-flicker) !important;
+  color: var(--horror-light-red) !important;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
+}
+
+/* Horror navigation styling - iOS26 compatible */
+.horror-theme .mobile-navigation,
+.horror-theme .navigation-container,
+.horror-theme .ios26-navigation,
+.horror-theme .tab-bar {
+  background: rgba(15, 15, 15, 0.75) !important;
+  backdrop-filter: blur(25px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+  border-top: 1px solid rgba(139, 0, 0, 0.3) !important;
+  box-shadow: 0 -8px 32px rgba(139, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0 !important;
+  padding: 8px 16px !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 80px !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+}
+
+/* iOS26 Tab Buttons - Clean Horror Style */
+.horror-theme .nav-button,
+.horror-theme .navigation-button,
+.horror-theme .tab-item,
+.horror-theme .ios26-tab {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 16px !important;
+  color: rgba(255, 107, 107, 0.6) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 64px !important;
+  height: 64px !important;
+  margin: 0 8px !important;
+  padding: 8px !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  backdrop-filter: none !important;
+}
+
+/* Active Tab State - Horror iOS26 Style */
+.horror-theme .nav-button.active,
+.horror-theme .navigation-button.active,
+.horror-theme .tab-item.active,
+.horror-theme .ios26-tab.active {
+  background: rgba(139, 0, 0, 0.2) !important;
+  background-color: rgba(139, 0, 0, 0.2) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  color: #ff6b6b !important;
+  transform: scale(1.05) translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(139, 0, 0, 0.4), inset 0 1px 0 rgba(255, 107, 107, 0.2), 0 0 20px rgba(139, 0, 0, 0.3) !important;
+  border: 1px solid rgba(139, 0, 0, 0.3) !important;
+  text-shadow: 0 0 15px rgba(139, 0, 0, 0.9) !important;
+}
+
+/* Hover State */
+.horror-theme .nav-button:hover,
+.horror-theme .navigation-button:hover,
+.horror-theme .tab-item:hover {
+  background: rgba(139, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  color: rgba(255, 107, 107, 0.8) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.2) !important;
+}
+
+/* Tab Icons with Horror Glow */
+.horror-theme .nav-button svg,
+.horror-theme .tab-item svg,
+.horror-theme .navigation-icon {
+  width: 24px !important;
+  height: 24px !important;
+  filter: drop-shadow(0 0 8px rgba(139, 0, 0, 0.6)) !important;
+  color: inherit !important;
+  fill: currentColor !important;
+  margin-bottom: 4px !important;
+}
+
+/* Navigation Labels */
+.horror-theme .nav-button span,
+.horror-theme .tab-item span {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: inherit !important;
+  text-shadow: inherit !important;
+  letter-spacing: 0.3px !important;
+}
+
+.horror-theme .nav-button,
+.horror-theme .navigation-button {
+  color: var(--horror-light-red) !important;
+  transition: all 0.3s ease !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.horror-theme .nav-button:hover,
+.horror-theme .nav-button.active,
+.horror-theme .navigation-button:hover {
+  color: #ffffff !important;
+  text-shadow: var(--horror-glow) !important;
+  transform: scale(1.1) !important;
+  background: rgba(139, 0, 0, 0.3) !important;
+}
+
+/* Horror button styling */
+.horror-theme button,
+.horror-theme .btn,
+.horror-theme .button {
+  background: rgba(139, 0, 0, 0.8) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--horror-light-red) !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.horror-theme button:hover,
+.horror-theme .btn:hover {
+  background: rgba(139, 0, 0, 1) !important;
+  box-shadow: var(--horror-glow) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Fix theme toggle button */
+.horror-theme .theme-toggle-btn {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid var(--horror-blood-red) !important;
+  color: var(--horror-light-red) !important;
+}
+
+/* Remove blue borders and fix spacing */
+.horror-theme * {
+  border-color: var(--horror-blood-red) !important;
+}
+
+.horror-theme .weather-container,
+.horror-theme .forecast-grid,
+.horror-theme .metrics-grid {
+  gap: 12px !important;
+  padding: 12px !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Eerie loading animations */
+.horror-theme .loading-skeleton,
+.horror-theme .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--horror-shadow) 25%,
+    var(--horror-dark-red) 50%,
+    var(--horror-shadow) 75%
+  ) !important;
+  animation: horrorPulse 1.5s ease-in-out infinite !important;
+}
+
+/* Horror weather quotes container - Enhanced styling for better readability */
+.horror-weather-quote {
+  background: rgba(0, 0, 0, 0.92) !important;
+  border: 2px solid var(--horror-blood-red) !important;
+  border-radius: 12px !important;
+  padding: 20px 24px !important;
+  margin: 20px auto !important;
+  max-width: 90% !important;
+  font-style: italic !important;
+  color: var(--horror-light-red) !important;
+  text-align: center !important;
+  box-shadow: var(--horror-glow), 0 8px 32px rgba(0, 0, 0, 0.8) !important;
+  position: relative !important;
+  backdrop-filter: blur(8px) !important;
+  z-index: 10 !important;
+  animation: horrorGlow 3s ease-in-out infinite !important;
+}
+
+/* Force override any inherited gradients or backgrounds */
+.horror-theme .horror-weather-quote,
+.horror-theme .horror-quote-overlay .horror-weather-quote {
+  background: rgba(0, 0, 0, 0.92) !important;
+  background-image: none !important;
+  background-color: rgba(0, 0, 0, 0.92) !important;
+}
+
+/* Better positioned quotation marks */
+.horror-weather-quote::before {
+  content: '"';
+  font-size: 3em;
+  position: absolute;
+  top: -15px;
+  left: 15px;
+  color: var(--horror-blood-red);
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  animation: flickering 2s infinite;
+}
+
+.horror-weather-quote::after {
+  content: '"';
+  font-size: 3em;
+  position: absolute;
+  bottom: -25px;
+  right: 15px;
+  color: var(--horror-blood-red);
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+  animation: flickering 2s infinite;
+}
+
+/* Horror quote overlay positioning - In content flow at bottom */
+.horror-quote-overlay {
+  position: relative !important;
+  margin: 30px auto 100px auto !important; /* Bottom margin for mobile nav space */
+  width: calc(100% - 40px) !important;
+  max-width: 600px !important;
+  z-index: 10 !important;
+  display: block !important;
+  clear: both !important; /* Ensure it appears below all other content */
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .horror-quote-overlay {
+    margin: 20px auto 120px auto !important; /* Extra space for mobile nav */
+    width: calc(100% - 30px) !important;
+    max-width: 90% !important;
+  }
+}
+
+/* Desktop positioning when no mobile nav */
+@media (min-width: 769px) {
+  .horror-quote-overlay {
+    margin: 30px auto 40px auto !important; /* Less bottom margin on desktop */
+    max-width: 600px !important;
+  }
+}
+
+/* Horror quote text styling */
+.horror-weather-quote .quote-text {
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  margin-bottom: 8px !important;
+  color: var(--horror-light-red) !important;
+  text-shadow: 0 0 8px rgba(139, 0, 0, 0.6) !important;
+}
+
+.horror-weather-quote .quote-attribution {
+  font-size: 14px !important;
+  opacity: 0.9 !important;
+  color: rgba(255, 107, 107, 0.8) !important;
+}
+
+.horror-weather-quote .quote-author,
+.horror-weather-quote .quote-movie {
+  font-style: normal !important;
+  font-weight: 600 !important;
+}
+
+/* Theme toggle button horror styling */
+.horror-theme .theme-toggle,
+.horror-theme .theme-toggle-btn {
+  background: var(--horror-shadow) !important;
+  border: 2px solid var(--horror-blood-red) !important;
+  color: var(--horror-light-red) !important;
+  box-shadow: var(--horror-glow) !important;
+}
+
+.horror-theme .theme-toggle:hover,
+.horror-theme .theme-toggle-btn:hover {
+  background: var(--horror-dark-red) !important;
+  transform: scale(1.05) rotate(5deg) !important;
+  box-shadow: var(--horror-glow), var(--horror-shadow-deep) !important;
+}
+
+/* Horror buttons */
+.horror-theme button,
+.horror-theme .button,
+.horror-theme input[type='button'] {
+  background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important;
+  border: 1px solid var(--horror-blood-red) !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease !important;
+}
+
+.horror-theme button:hover {
+  background: linear-gradient(135deg, #991b1b, #7f1d1d) !important;
+  box-shadow: var(--horror-glow) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Horror text styling */
+.horror-theme p,
+.horror-theme span,
+.horror-theme div {
+  color: var(--horror-light-red) !important;
+}
+
+/* Crystal Lake NJ specific styling */
+.horror-theme .crystal-lake-bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(26, 0, 0, 0.8)),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,1000 Q250,800 500,900 Q750,1000 1000,800 L1000,1000 Z" fill="%23001122"/></svg>') !important;
+  background-size: cover !important;
+  background-position: bottom !important;
+}
+
+/* Realistic Blood Drip Animation */
+@keyframes bloodDripRealistic {
+  0% {
+    transform: translateX(-50%) scaleY(0);
+    opacity: 0;
+  }
+  10% {
+    transform: translateX(-50%) scaleY(0.3);
+    opacity: 0.6;
+  }
+  30% {
+    transform: translateX(-50%) scaleY(0.8);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateX(-50%) scaleY(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(-50%) scaleY(1.2) translateY(2px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) scaleY(0.8) translateY(5px);
+    opacity: 0;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes bloodDrip {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  50% {
+    height: 20px;
+    opacity: 1;
+  }
+  100% {
+    height: 40px;
+    opacity: 0;
+  }
+}
+
+@keyframes flickering {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  2% {
+    opacity: 0.9;
+  }
+  4% {
+    opacity: 1;
+  }
+  6% {
+    opacity: 0.8;
+  }
+  8% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.85;
+  }
+  98% {
+    opacity: 1;
+  }
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-1px, -1px);
+  }
+  20% {
+    transform: translate(1px, -1px);
+  }
+  30% {
+    transform: translate(-1px, 1px);
+  }
+  40% {
+    transform: translate(1px, 1px);
+  }
+  50% {
+    transform: translate(-1px, -1px);
+  }
+  60% {
+    transform: translate(1px, -1px);
+  }
+  70% {
+    transform: translate(-1px, 1px);
+  }
+  80% {
+    transform: translate(1px, 1px);
+  }
+  90% {
+    transform: translate(-1px, -1px);
+  }
+}
+
+@keyframes horrorPulse {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Horror mode scrollbar */
+.horror-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.horror-theme ::-webkit-scrollbar-track {
+  background: var(--horror-midnight);
+}
+
+.horror-theme ::-webkit-scrollbar-thumb {
+  background: var(--horror-blood-red);
+  border-radius: 4px;
+}
+
+.horror-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--horror-light-red);
+}
+
+/* Halloween/Friday the 13th special effects - CONSOLIDATED ICON RULES */
+.horror-theme .weather-icon {
+  filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6)) sepia(0.3) contrast(1.2) !important;
+  transition: all 0.3s ease !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.horror-theme .weather-icon:hover {
+  filter: drop-shadow(0 0 20px rgba(139, 0, 0, 0.8)) sepia(0.5) contrast(1.4) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Force horror theme on all containers */
+.horror-theme .container,
+.horror-theme .screen-container,
+.horror-theme .main-container {
+  background: var(--horror-midnight) !important;
+  color: var(--horror-light-red) !important;
+}
+
+/* Responsive horror adjustments */
+@media (max-width: 768px) {
+  .horror-theme .weather-header::after {
+    height: 15px;
+  }
+
+  .horror-weather-quote {
+    font-size: 0.9em;
+    margin: 12px 0;
+  }
+
+  .horror-weather-quote::before,
+  .horror-weather-quote::after {
+    font-size: 1.5em;
+  }
+}
+
+/* Horror accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .horror-theme * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .horror-theme {
+    --horror-light-red: #ff0000;
+    --horror-blood-red: #cc0000;
+  }
+}
+
+/* Horror Theme Root Variables */
+:root.horror-theme {
+  /* Blood red color palette */
+  --horror-blood-red: #8b0000;
+  --horror-dark-red: #4c0000;
+  --horror-light-red: #ff6b6b;
+
+  /* Gothic blacks */
+  --horror-midnight: #0f0f0f;
+  --horror-shadow: #1a0000;
+  --horror-void: #000000;
+
+  /* Eerie effects */
+  --horror-glow: 0 0 20px rgba(139, 0, 0, 0.6);
+  --horror-shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.8);
+  --horror-flicker: flickering 2s infinite;
+}
+
+/* Horror Background Effects */
+.horror-theme .app-container {
+  background: linear-gradient(135deg, var(--horror-midnight) 0%, var(--horror-shadow) 50%, var(--horror-void) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add subtle film grain texture */
+.horror-theme .app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+  animation: grain 0.2s steps(10) infinite;
+}
+
+/* Blood drip effect for headers */
+.horror-theme .weather-header {
+  position: relative;
+  color: var(--horror-light-red);
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+}
+
+.horror-theme .weather-header::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(to bottom, var(--horror-blood-red) 0%, transparent 100%);
+  animation: bloodDrip 3s ease-in-out infinite;
+}
+
+/* Horror card styling */
+.horror-theme .weather-card,
+.horror-theme .forecast-card {
+  background: rgba(26, 0, 0, 0.95);
+  border: 1px solid var(--horror-blood-red);
+  box-shadow: var(--horror-shadow-deep), inset 0 1px 0 rgba(139, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.horror-theme .weather-card:hover,
+.horror-theme .forecast-card:hover {
+  box-shadow: var(--horror-glow), var(--horror-shadow-deep);
+  transform: translateY(-2px);
+}
+
+/* Flickering text effect for spooky atmosphere */
+.horror-theme .city-name,
+.horror-theme .temperature {
+  animation: var(--horror-flicker);
+  color: var(--horror-light-red);
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+/* Horror navigation styling */
+.horror-theme .mobile-navigation {
+  background: rgba(15, 15, 15, 0.95);
+  border-top: 2px solid var(--horror-blood-red);
+  box-shadow: 0 -10px 30px rgba(139, 0, 0, 0.3);
+}
+
+.horror-theme .nav-button {
+  color: var(--horror-light-red);
+  transition: all 0.3s ease;
+}
+
+.horror-theme .nav-button:hover,
+.horror-theme .nav-button.active {
+  color: #ffffff;
+  text-shadow: var(--horror-glow);
+  transform: scale(1.1);
+}
+
+/* Eerie loading animations */
+.horror-theme .loading-skeleton {
+  background: linear-gradient(90deg, var(--horror-shadow) 25%, var(--horror-dark-red) 50%, var(--horror-shadow) 75%);
+  animation: horrorPulse 1.5s ease-in-out infinite;
+}
+
+/* Horror weather quotes container */
+.horror-weather-quote {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--horror-blood-red);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 16px 0;
+  font-style: italic;
+  color: var(--horror-light-red);
+  text-align: center;
+  box-shadow: var(--horror-glow);
+  position: relative;
+}
+
+.horror-weather-quote::before {
+  content: '"';
+  font-size: 2em;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  color: var(--horror-blood-red);
+}
+
+.horror-weather-quote::after {
+  content: '"';
+  font-size: 2em;
+  position: absolute;
+  bottom: -20px;
+  right: 10px;
+  color: var(--horror-blood-red);
+}
+
+/* Theme toggle button horror styling */
+.horror-theme .theme-toggle {
+  background: var(--horror-shadow);
+  border: 2px solid var(--horror-blood-red);
+  color: var(--horror-light-red);
+  box-shadow: var(--horror-glow);
+}
+
+.horror-theme .theme-toggle:hover {
+  background: var(--horror-dark-red);
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: var(--horror-glow), var(--horror-shadow-deep);
+}
+
+/* Crystal Lake NJ specific styling */
+.horror-theme .crystal-lake-bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(26, 0, 0, 0.8)),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,1000 Q250,800 500,900 Q750,1000 1000,800 L1000,1000 Z" fill="%23001122"/></svg>');
+  background-size: cover;
+  background-position: bottom;
+}
+
+/* Keyframe Animations */
+@keyframes bloodDrip {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  50% {
+    height: 20px;
+    opacity: 1;
+  }
+  100% {
+    height: 40px;
+    opacity: 0;
+  }
+}
+
+@keyframes flickering {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  2% {
+    opacity: 0.9;
+  }
+  4% {
+    opacity: 1;
+  }
+  6% {
+    opacity: 0.8;
+  }
+  8% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.85;
+  }
+  98% {
+    opacity: 1;
+  }
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-1px, -1px);
+  }
+  20% {
+    transform: translate(1px, -1px);
+  }
+  30% {
+    transform: translate(-1px, 1px);
+  }
+  40% {
+    transform: translate(1px, 1px);
+  }
+  50% {
+    transform: translate(-1px, -1px);
+  }
+  60% {
+    transform: translate(1px, -1px);
+  }
+  70% {
+    transform: translate(-1px, 1px);
+  }
+  80% {
+    transform: translate(1px, 1px);
+  }
+  90% {
+    transform: translate(-1px, -1px);
+  }
+}
+
+@keyframes horrorPulse {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Horror mode scrollbar */
+.horror-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.horror-theme ::-webkit-scrollbar-track {
+  background: var(--horror-midnight);
+}
+
+.horror-theme ::-webkit-scrollbar-thumb {
+  background: var(--horror-blood-red);
+  border-radius: 4px;
+}
+
+.horror-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--horror-light-red);
+}
+
+/* Halloween/Friday the 13th special effects */
+.horror-theme .weather-icon {
+  filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6)) sepia(0.3) contrast(1.2);
+  transition: all 0.3s ease;
+}
+
+.horror-theme .weather-icon:hover {
+  filter: drop-shadow(0 0 20px rgba(139, 0, 0, 0.8)) sepia(0.5) contrast(1.4);
+  transform: scale(1.05);
+}
+
+/* Responsive horror adjustments */
+@media (max-width: 768px) {
+  .horror-theme .weather-header::after {
+    height: 15px;
+  }
+
+  .horror-weather-quote {
+    font-size: 0.9em;
+    margin: 12px 0;
+  }
+
+  .horror-weather-quote::before,
+  .horror-weather-quote::after {
+    font-size: 1.5em;
+  }
+}
+
+/* Horror accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .horror-theme * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .horror-theme {
+    --horror-light-red: #ff0000;
+    --horror-blood-red: #cc0000;
+  }
+}

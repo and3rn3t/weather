@@ -27,6 +27,12 @@ interface DeviceInfo {
   pixelRatio: number;
 }
 
+/**
+ * useDeviceDetection - Custom React hook for useMobileOptimizations functionality
+ */
+/**
+ * useDeviceDetection - Custom React hook for useMobileOptimizations functionality
+ */
 export const useDeviceDetection = (): DeviceInfo => {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>(() => {
     if (typeof window === 'undefined') {
@@ -119,6 +125,12 @@ interface ViewportInfo {
   isScrolling: boolean;
 }
 
+/**
+ * useViewport - Custom React hook for useMobileOptimizations functionality
+ */
+/**
+ * useViewport - Custom React hook for useMobileOptimizations functionality
+ */
 export const useViewport = (): ViewportInfo => {
   const [viewport, setViewport] = useState<ViewportInfo>(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
@@ -174,9 +186,15 @@ interface TouchGestureConfig {
   pinchThreshold?: number;
 }
 
+/**
+ * useTouchGestures - Custom React hook for useMobileOptimizations functionality
+ */
+/**
+ * useTouchGestures - Custom React hook for useMobileOptimizations functionality
+ */
 export const useTouchGestures = (
   elementRef: React.RefObject<HTMLElement>,
-  config: TouchGestureConfig
+  config: TouchGestureConfig,
 ) => {
   const {
     onSwipeLeft,
@@ -211,7 +229,7 @@ export const useTouchGestures = (
         const touch2 = e.touches[1];
         initialDistance = Math.sqrt(
           Math.pow(touch2.clientX - touch1.clientX, 2) +
-            Math.pow(touch2.clientY - touch1.clientY, 2)
+            Math.pow(touch2.clientY - touch1.clientY, 2),
         );
       }
     };
@@ -222,7 +240,7 @@ export const useTouchGestures = (
         const touch2 = e.touches[1];
         const currentDistance = Math.sqrt(
           Math.pow(touch2.clientX - touch1.clientX, 2) +
-            Math.pow(touch2.clientY - touch1.clientY, 2)
+            Math.pow(touch2.clientY - touch1.clientY, 2),
         );
         const scale = currentDistance / initialDistance;
 
@@ -306,6 +324,12 @@ export const useTouchGestures = (
 // MOBILE PERFORMANCE OPTIMIZATIONS
 // ============================================================================
 
+/**
+ * useMobilePerformance - Custom React hook for useMobileOptimizations functionality
+ */
+/**
+ * useMobilePerformance - Custom React hook for useMobileOptimizations functionality
+ */
 export const useMobilePerformance = () => {
   const deviceInfo = useDeviceDetection();
 
@@ -330,7 +354,7 @@ export const useMobilePerformance = () => {
       // Memory optimization
       maxCachedItems: deviceInfo.isMobile ? 5 : 20,
     }),
-    [deviceInfo]
+    [deviceInfo],
   );
 
   const optimizeForMobile = useCallback(
@@ -345,7 +369,7 @@ export const useMobilePerformance = () => {
         element.style.overscrollBehavior = 'contain';
       }
     },
-    [deviceInfo.isMobile]
+    [deviceInfo.isMobile],
   );
 
   return {
@@ -359,6 +383,12 @@ export const useMobilePerformance = () => {
 // MOBILE-FIRST RESPONSIVE UTILITIES
 // ============================================================================
 
+/**
+ * useMobileBreakpoints - Custom React hook for useMobileOptimizations functionality
+ */
+/**
+ * useMobileBreakpoints - Custom React hook for useMobileOptimizations functionality
+ */
 export const useMobileBreakpoints = () => {
   const viewport = useViewport();
 
@@ -389,6 +419,6 @@ export const useMobileBreakpoints = () => {
         return values.mobile;
       },
     }),
-    [viewport.width]
+    [viewport.width],
   );
 };

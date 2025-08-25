@@ -1,0 +1,96 @@
+/* Progressive Loading Styles - Phase 3: August 22, 2025 */
+
+.ios26-progressive-loading {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ios26-loading-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.ios26-stage {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.ios26-stage-pending {
+  background: rgba(128, 128, 128, 0.1);
+  color: rgba(128, 128, 128, 0.7);
+  border: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.ios26-stage-loading {
+  background: rgba(0, 122, 255, 0.15);
+  color: #007aff;
+  border: 1px solid rgba(0, 122, 255, 0.3);
+  animation: ios26-pulse-loading 1.5s ease-in-out infinite alternate;
+}
+
+.ios26-stage-complete {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34c759;
+  border: 1px solid rgba(52, 199, 89, 0.3);
+}
+
+@keyframes ios26-pulse-loading {
+  0% {
+    background: rgba(0, 122, 255, 0.15);
+    transform: scale(1);
+  }
+  100% {
+    background: rgba(0, 122, 255, 0.25);
+    transform: scale(1.02);
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme='dark'] .ios26-progressive-loading {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+[data-theme='dark'] .ios26-stage-pending {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .ios26-stage-loading {
+  background: rgba(64, 156, 255, 0.2);
+  color: #409cff;
+  border: 1px solid rgba(64, 156, 255, 0.4);
+}
+
+[data-theme='dark'] .ios26-stage-complete {
+  background: rgba(48, 209, 88, 0.2);
+  color: #30d158;
+  border: 1px solid rgba(48, 209, 88, 0.4);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .ios26-progressive-loading {
+    padding: 16px;
+    margin: 0 8px;
+  }
+
+  .ios26-loading-stages {
+    gap: 6px;
+  }
+
+  .ios26-stage {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}

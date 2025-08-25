@@ -1,8 +1,14 @@
 import { useContext } from 'react';
-import { ThemeContext } from './themeContext';
 import { createResponsiveTheme } from './responsiveUtils';
+import { ThemeContext } from './themeContext';
 import { useBreakpoint, useMobilePerformance } from './useMobileOptimization';
 
+/**
+ * useTheme - Custom React hook for useTheme functionality
+ */
+/**
+ * useTheme - Custom React hook for useTheme functionality
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
@@ -18,6 +24,8 @@ export const useTheme = () => {
   return {
     ...context,
     theme: responsiveTheme,
+    // Add horror theme helper
+    isHorror: context.themeName === 'horror',
     // Add responsive information
     ...breakpointInfo,
     // Add performance settings
@@ -29,13 +37,13 @@ export const useTheme = () => {
         mobile: string;
         tablet?: string;
         desktop?: string;
-      }
+      },
     ) => responsiveTheme.responsive.createResponsiveProperty(property, values),
 
     // Mobile-optimized component creators
     createMobileButton: (
       isPrimary = true,
-      size: 'small' | 'medium' | 'large' = 'medium'
+      size: 'small' | 'medium' | 'large' = 'medium',
     ) => responsiveTheme.responsive.createMobileButton(isPrimary, size),
 
     createMobileCard: (isWeatherCard = false) =>

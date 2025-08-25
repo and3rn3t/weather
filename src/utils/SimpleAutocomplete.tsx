@@ -3,7 +3,9 @@
  * Simple, bulletproof autocomplete that definitely works
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { logError } from './logger';
+import './SimpleAutocomplete.css';
 
 interface SimpleAutocompleteProps {
   onCitySelected: (cityName: string, lat: number, lon: number) => void;
@@ -30,7 +32,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Simple search function
@@ -57,7 +59,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
           headers: {
             'User-Agent': 'WeatherApp/1.0',
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -66,7 +68,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
         setIsOpen(data.length > 0);
       }
     } catch (error) {
-      console.error('Search error:', error);
+      logError('Search error:', error);
       setResults([]);
       setIsOpen(false);
     } finally {
@@ -100,7 +102,7 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
       setResults([]);
       onCitySelected(cityName, parseFloat(result.lat), parseFloat(result.lon));
     },
-    [onCitySelected]
+    [onCitySelected],
   );
 
   // Click outside to close
@@ -127,53 +129,12 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
         placeholder={placeholder}
         disabled={disabled}
         className="simple-autocomplete-input"
-        style={{
-          width: '100%',
-          padding: '16px',
-          border: '2px solid rgba(255,255,255,0.2)',
-          borderRadius: '12px',
-          background: 'rgba(255,255,255,0.1)',
-          color: theme?.primaryText || '#333',
-          fontSize: '16px',
-          outline: 'none',
-        }}
       />
 
-      {isLoading && (
-        <div
-          style={{
-            position: 'absolute',
-            right: '16px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: '20px',
-            height: '20px',
-            border: '2px solid #ccc',
-            borderTop: '2px solid #667eea',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-          }}
-        />
-      )}
+      {isLoading && <div className="simple-autocomplete-spinner" />}
 
       {isOpen && results.length > 0 && (
-        <div
-          className="simple-autocomplete-dropdown"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: '8px',
-            background: 'rgba(255,255,255,0.95)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '12px',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-            zIndex: 1000,
-            maxHeight: '300px',
-            overflow: 'auto',
-          }}
-        >
+        <div className="simple-autocomplete-dropdown">
           {results.map(result => (
             <button
               key={result.place_id}
@@ -182,40 +143,13 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
                 e.stopPropagation();
                 handleSelect(result);
               }}
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: 'none',
-                background: 'transparent',
-                textAlign: 'left',
-                cursor: 'pointer',
-                color: theme?.primaryText || '#333',
-                fontSize: '14px',
-              }}
-              onMouseEnter={e => {
-                (e.target as HTMLElement).style.background =
-                  'rgba(102,126,234,0.1)';
-              }}
-              onMouseLeave={e => {
-                (e.target as HTMLElement).style.background = 'transparent';
-              }}
+              className="simple-autocomplete-item"
             >
               {result.display_name.split(',').slice(0, 3).join(', ')}
             </button>
           ))}
         </div>
       )}
-
-      <style>{`
-        @keyframes spin {
-          0% { transform: translateY(-50%) rotate(0deg); }
-          100% { transform: translateY(-50%) rotate(360deg); }
-        }
-        .simple-autocomplete {
-          position: relative;
-          width: 100%;
-        }
-      `}</style>
     </div>
   );
 };

@@ -10,8 +10,8 @@
  */
 
 import React from 'react';
-import WeatherIcon from '../../utils/weatherIcons';
 import type { ThemeColors } from '../../utils/themeConfig';
+import WeatherIcon from '../../utils/weatherIcons';
 
 interface EnhancedWeatherDisplayProps {
   weatherData: {
@@ -72,7 +72,7 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
           <WeatherIcon
             code={weatherData.weatherCode}
             size={Math.min(window.innerWidth * 0.2, 120)}
-            animate={true}
+            animated={true}
           />
         </div>
 

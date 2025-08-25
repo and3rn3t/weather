@@ -4,6 +4,12 @@
  * Predefined SVG icons for iOS-style navigation components
  */
 
+/**
+ * NavigationIcons - Core NavigationIcons functionality
+ */
+/**
+ * NavigationIcons - Core NavigationIcons functionality
+ */
 export const NavigationIcons = {
   Back: () => (
     <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">

@@ -25,7 +25,8 @@
  * - Next-generation accessibility
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useDash0Telemetry } from '../../dash0/hooks/useDash0Telemetry';
 import type { ThemeColors } from '../../utils/themeConfig';
 
 // ============================================================================
@@ -83,7 +84,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         setIsVisible(true);
       }
     },
-    [disabled]
+    [disabled],
   );
 
   const handleContextMenu = useCallback(
@@ -101,7 +102,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       setPosition({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
     },
-    [disabled]
+    [disabled],
   );
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -128,7 +129,9 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       : 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(30px)',
     borderRadius: '14px',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    border: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
     minWidth: '200px',
     padding: '8px',
@@ -143,7 +146,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     if (action.destructive) {
       textColor = '#FF3B30';
     } else if (action.disabled) {
-      textColor = theme.secondaryText + '60';
+      textColor = `${theme.secondaryText}60`;
     } else {
       textColor = theme.primaryText;
     }
@@ -263,14 +266,18 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({
       : 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(30px)',
     borderRadius: isExpanded ? '24px' : '32px',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`,
+    border: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
     padding: isExpanded ? '16px 20px' : '12px 20px',
     minWidth: isExpanded ? '280px' : '200px',
     maxWidth: '320px',
     cursor: onTap ? 'pointer' : 'default',
     opacity: isVisible ? 1 : 0,
-    transform: `translateX(-50%) translateY(${isVisible ? '0' : '-100%'}) scale(${isVisible ? 1 : 0.8})`,
+    transform: `translateX(-50%) translateY(${
+      isVisible ? '0' : '-100%'
+    }) scale(${isVisible ? 1 : 0.8})`,
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     pointerEvents: isVisible ? 'auto' : 'none',
   };
@@ -402,7 +409,9 @@ export const InteractiveWidget: React.FC<WidgetProps> = ({
       : 'rgba(255, 255, 255, 0.7)',
     backdropFilter: 'blur(20px)',
     borderRadius: '20px',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    border: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     boxShadow: isPressed
       ? '0 5px 15px rgba(0, 0, 0, 0.2)'
       : '0 10px 30px rgba(0, 0, 0, 0.15)',
@@ -534,11 +543,39 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
   children,
 }) => {
   const [currentDetent, setCurrentDetent] = useState<'medium' | 'large'>(
-    'medium'
+    'medium',
   );
+  const telemetry = useDash0Telemetry();
+
   const isDark =
     theme.appBackground.includes('28, 28, 30') ||
     theme.appBackground.includes('#1c1c1e');
+
+  // Track modal sheet visibility changes
+  useEffect(() => {
+    if (isVisible) {
+      telemetry.trackUserInteraction({
+        action: 'modal_sheet_opened',
+        component: 'ModalSheet',
+        metadata: {
+          title,
+          detents: detents.join(','),
+          initialDetent: currentDetent,
+          isDarkMode: isDark,
+        },
+      });
+
+      telemetry.trackMetric({
+        name: 'modal_sheet_display',
+        value: 1,
+        tags: {
+          title,
+          detent_count: String(detents.length),
+          initial_size: currentDetent,
+        },
+      });
+    }
+  }, [isVisible, title, detents, currentDetent, isDark, telemetry]);
 
   const detentHeights = {
     medium: '50vh',
@@ -570,7 +607,9 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     backdropFilter: 'blur(30px)',
     borderTopLeftRadius: '20px',
     borderTopRightRadius: '20px',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    border: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.3)',
     transform: `translateY(${isVisible ? '0' : '100%'})`,
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -590,7 +629,9 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
 
   const headerStyle: React.CSSProperties = {
     padding: '20px 24px 0',
-    borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    borderBottom: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     paddingBottom: '16px',
     marginBottom: '0',
   };
@@ -611,9 +652,34 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
 
   const handleDetentChange = () => {
     if (detents.length > 1) {
+      const previousDetent = currentDetent;
       const currentIndex = detents.indexOf(currentDetent);
       const nextIndex = (currentIndex + 1) % detents.length;
-      setCurrentDetent(detents[nextIndex]);
+      const nextDetent = detents[nextIndex];
+
+      setCurrentDetent(nextDetent);
+
+      // Track detent change
+      telemetry.trackUserInteraction({
+        action: 'modal_sheet_detent_change',
+        component: 'ModalSheet',
+        metadata: {
+          fromDetent: previousDetent,
+          toDetent: nextDetent,
+          title,
+          method: 'handle_interaction',
+        },
+      });
+
+      telemetry.trackMetric({
+        name: 'modal_sheet_resize',
+        value: 1,
+        tags: {
+          from_size: previousDetent,
+          to_size: nextDetent,
+          interaction_type: 'handle_drag',
+        },
+      });
 
       // Haptic feedback
       if (navigator.vibrate) {
@@ -622,13 +688,44 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
     }
   };
 
+  const handleOverlayKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
+  const handleDetentKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleDetentChange();
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
     <>
-      <div style={overlayStyle} onClick={onClose} />
+      <div
+        style={overlayStyle}
+        onClick={onClose}
+        onKeyDown={handleOverlayKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-label="Close modal"
+      />
       <div style={sheetStyle} className="ios26-modal-sheet">
-        <div style={handleStyle} onClick={handleDetentChange} />
+        <button
+          style={{
+            ...handleStyle,
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+          }}
+          onClick={handleDetentChange}
+          onKeyDown={handleDetentKeyDown}
+          aria-label="Adjust modal size"
+        />
 
         <div style={headerStyle}>
           <h2 style={titleStyle}>{title}</h2>
@@ -686,7 +783,7 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     const deltaX = touch.clientX - containerRect.left - containerRect.width / 2;
     const clampedOffset = Math.max(
       -maxSwipeDistance,
-      Math.min(maxSwipeDistance, deltaX)
+      Math.min(maxSwipeDistance, deltaX),
     );
     setSwipeOffset(clampedOffset);
   };
@@ -723,7 +820,11 @@ export const SwipeActions: React.FC<SwipeActionsProps> = ({
     display: 'flex',
     alignItems: 'center',
     opacity: Math.abs(swipeOffset) > 30 ? 1 : 0,
-    transform: `translateX(${side === 'left' ? swipeOffset - maxSwipeDistance : swipeOffset + maxSwipeDistance}px)`,
+    transform: `translateX(${
+      side === 'left'
+        ? swipeOffset - maxSwipeDistance
+        : swipeOffset + maxSwipeDistance
+    }px)`,
     transition: isDragging ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   });
 
