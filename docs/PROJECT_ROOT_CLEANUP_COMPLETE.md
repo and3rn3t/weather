@@ -267,4 +267,46 @@ broken dependencies **Professional Status**: ✅ Enterprise-level project organi
 
 ---
 
+## Archive Update — August 25, 2025
+
+We archived several unused development variants and legacy configs to `docs/archive` (stored as .txt
+to avoid lint/TS processing). Active app remains `src/App.tsx` with `src/App-diagnostic.tsx` as
+fallback only.
+
+Archived copies:
+
+- docs/archive/dev-apps/
+  - App-test.tsx.txt
+  - App-simple.tsx.txt
+  - App-progressive.tsx.txt
+  - App-minimal.tsx.txt
+- docs/archive/components/
+  - AppNavigatorWithTelemetry.tsx.txt
+- docs/archive/pwa/
+  - serviceWorkerEnhancements.ts.txt
+  - enhancedServiceWorker.js.txt
+- docs/archive/dev-html/
+  - test.html.txt
+  - test-static.html.txt
+- docs/archive/configs/
+  - vite.config.optimized.ts.txt
+  - vite.config.optimized-clean.ts.txt
+  - vite.config.backup.ts.txt
+  - jest.config.js.txt
+
+Verification (post-archive):
+
+- Type-check: PASS
+- Lint: PASS
+- Build: PASS
+
+Notes:
+
+- Originals have now been removed in branch `chore/archive-delete-unused-variants` and archived
+  under `docs/archive` as .txt for reference.
+- PR: <https://github.com/and3rn3t/weather/pull/new/chore/archive-delete-unused-variants>
+- Keeping archives ensures a quick restore path if needed.
+
+---
+
 _Project Root Cleanup_ _Completed: August 21, 2025_ _Result: Professional Project Organization_
