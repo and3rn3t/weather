@@ -47,7 +47,7 @@ class BundleOptimizationManager {
     const userAgent = navigator.userAgent.toLowerCase();
     const isMobile =
       /mobile|android|iphone|ipad|ipod|blackberry|windows phone/i.test(
-        userAgent,
+        userAgent
       );
     const isTablet = /ipad|tablet|kindle|playbook|silk/i.test(userAgent);
     const isDesktop = !isMobile && !isTablet;
@@ -152,7 +152,7 @@ class BundleOptimizationManager {
   private async loadCSSChunk(chunkName: string): Promise<void> {
     return new Promise(resolve => {
       const existingLink = document.querySelector(
-        `link[data-chunk="${chunkName}"]`,
+        `link[data-chunk="${chunkName}"]`
       );
       if (existingLink) {
         resolve();
@@ -266,7 +266,7 @@ class BundleOptimizationManager {
     if (window.__PERFORMANCE_MONITOR__) {
       window.__PERFORMANCE_MONITOR__.recordEvent(
         'bundle_optimization',
-        metrics,
+        metrics
       );
     }
 

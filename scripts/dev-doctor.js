@@ -6,10 +6,10 @@
  */
 
 import { exec } from 'child_process';
-import { promisify } from 'util';
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -368,9 +368,13 @@ class DevelopmentDoctor {
 
   async checkEnvironmentFiles() {
     const envFiles = ['.env', '.env.local', '.env.development'];
-    const foundEnvFiles = envFiles.filter(file =>
-      existsSync(join(projectRoot, file))
-    );
+    const envDir = join(projectRoot, '.env');
+    // Check both root and .env directory for environment files
+    const foundEnvFiles = envFiles.filter(file => {
+      const rootPath = join(projectRoot, file);
+      const envDirPath = join(envDir, file);
+      return existsSync(rootPath) || existsSync(envDirPath);
+    });
 
     if (foundEnvFiles.length === 0) {
       return {

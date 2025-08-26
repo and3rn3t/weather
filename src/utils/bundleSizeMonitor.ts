@@ -2,6 +2,7 @@
  * Bundle Size and Performance Monitor
  * Tracks bundle performance and lazy loading efficiency
  */
+import { logDebug, logWarn } from './logger';
 
 interface BundleMetrics {
   totalBundleSize: number;
@@ -29,11 +30,12 @@ class BundleSizeMonitor {
    */
   recordBundleMetrics(): void {
     try {
-      const navigationEntries = performance.getEntriesByType(
-        'navigation',
+      // Navigation entries available if needed in future
+      performance.getEntriesByType(
+        'navigation'
       ) as PerformanceNavigationTiming[];
       const resourceEntries = performance.getEntriesByType(
-        'resource',
+        'resource'
       ) as PerformanceResourceTiming[];
 
       // Calculate total bundle size from resource entries
@@ -42,12 +44,15 @@ class BundleSizeMonitor {
           entry =>
             entry.name.includes('.js') ||
             entry.name.includes('.css') ||
-            entry.name.includes('.wasm'),
+            entry.name.includes('.wasm')
         )
         .reduce((total, entry) => {
           // Use transferSize if available, otherwise decodedBodySize
-          const size =
-            (entry as any).transferSize || (entry as any).decodedBodySize || 0;
+          const resource = entry as PerformanceResourceTiming & {
+            transferSize?: number;
+            decodedBodySize?: number;
+          };
+          const size = resource.transferSize ?? resource.decodedBodySize ?? 0;
           return total + size;
         }, 0);
 
@@ -74,7 +79,7 @@ class BundleSizeMonitor {
       this.cleanup();
       this.persistMetrics();
     } catch (error) {
-      // Silently fail if performance API is not available
+      logDebug('bundleSizeMonitor.recordBundleMetrics failed', error);
     }
   }
 
@@ -112,11 +117,14 @@ class BundleSizeMonitor {
    */
   private getCurrentMemoryUsage(): number {
     try {
-      if ('memory' in performance && (performance as any).memory) {
-        return (performance as any).memory.usedJSHeapSize;
+      const perfWithMemory = performance as Performance & {
+        memory?: { usedJSHeapSize: number };
+      };
+      if (perfWithMemory.memory) {
+        return perfWithMemory.memory.usedJSHeapSize;
       }
     } catch (error) {
-      // Memory API not available
+      logDebug('bundleSizeMonitor.getCurrentMemoryUsage failed', error);
     }
     return 0;
   }
@@ -145,7 +153,7 @@ class BundleSizeMonitor {
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
-      // Storage failed - continue without persistence
+      logWarn('bundleSizeMonitor.persistMetrics failed', error);
     }
   }
 
@@ -161,7 +169,7 @@ class BundleSizeMonitor {
         this.lazyLoadMetrics = data.lazyLoadMetrics || [];
       }
     } catch (error) {
-      // Failed to load - start fresh
+      logDebug('bundleSizeMonitor.loadPersistedMetrics failed', error);
     }
   }
 
@@ -188,7 +196,7 @@ class BundleSizeMonitor {
     // Average bundle size
     const totalSize = this.metrics.reduce(
       (sum, m) => sum + m.totalBundleSize,
-      0,
+      0
     );
     const averageBundleSize = totalSize / this.metrics.length;
 
@@ -271,7 +279,7 @@ class BundleSizeMonitor {
     if (stats.averageLazyLoadTime > 1000) {
       // > 1 second
       recommendations.push(
-        'Lazy loaded components are taking too long to load',
+        'Lazy loaded components are taking too long to load'
       );
     }
 
@@ -300,7 +308,7 @@ class BundleSizeMonitor {
     try {
       localStorage.removeItem(this.STORAGE_KEY);
     } catch (error) {
-      // Failed to clear storage
+      logWarn('bundleSizeMonitor.clearMetrics storage remove failed', error);
     }
   }
 }

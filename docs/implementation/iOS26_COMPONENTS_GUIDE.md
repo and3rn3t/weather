@@ -325,8 +325,9 @@ const triggerWeatherAlert = (type: 'update' | 'warning' | 'error') => {
 .live-activity {
   transform: scale(0.8) translateY(-20px);
   opacity: 0;
-  animation: liveActivityAppear 0.3s ease-out forwards, liveActivityDismiss 0.3s ease-in 3.7s
-      forwards;
+  animation:
+    liveActivityAppear 0.3s ease-out forwards,
+    liveActivityDismiss 0.3s ease-in 3.7s forwards;
 }
 ```
 

@@ -1,0 +1,34 @@
+.horror-status-indicator {
+  padding: 8px;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  background: rgba(139, 0, 0, 0.15);
+  border-radius: 8px;
+}
+.horror-status-content {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.horror-status-subtext {
+  font-size: 10px;
+  color: #ff9b9b;
+  margin-top: 4px;
+}
+.horror-activator {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.horror-activate-button,
+.horror-force-button {
+  padding: 4px 8px;
+  font-size: 12px;
+  background: #8b0000;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.horror-force-button {
+  display: inline-block;
+}

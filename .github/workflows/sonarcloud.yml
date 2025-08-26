@@ -1,0 +1,153 @@
+name: SonarCloud Code Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  NODE_VERSION: '22'
+  SONAR_PROJECT_KEY: and3rn3t_weather_ci
+  SONAR_ORG: and3rn3t
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Code Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: sonarcloud-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: 🔑 Check SONAR_TOKEN presence
+        id: token
+        run: |
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::SONAR_TOKEN not set; skipping SonarCloud analysis."
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 🚚 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history for better PR analysis
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund --silent
+
+      - name: 🧪 Run tests to produce coverage
+        if: steps.token.outputs.present == 'true'
+        run: |
+          npm run test:ci || npm run test:coverage || npm run test:fast
+
+      - name: 🔎 Check coverage artifact exists
+        if: steps.token.outputs.present == 'true'
+        run: |
+          if [ ! -f coverage/lcov.info ]; then
+            echo "LCOV not found; listing coverage directory:" && ls -la coverage || true
+            echo "::warning::No LCOV file found at coverage/lcov.info"
+          else
+            echo "Found LCOV at coverage/lcov.info"
+          fi
+
+      - name: 🔎 Ensure Sonar project exists and detect default branch
+        id: ensure_project
+        if: ${{ steps.token.outputs.present == 'true' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -euo pipefail
+          ORG="${{ env.SONAR_ORG }}"
+          KEY="${{ env.SONAR_PROJECT_KEY }}"
+          BASE="https://sonarcloud.io"
+          auth() { curl -sS -u "$SONAR_TOKEN:" "$@"; }
+          echo "Checking if project $KEY exists in org $ORG..."
+          if ! auth "$BASE/api/projects/search?projects=$KEY&organization=$ORG" | grep -q "\"key\":\"$KEY\""; then
+            echo "Project not found. Attempting to create..."
+            if auth -X POST "$BASE/api/projects/create" \
+              -d "name=Premium Weather App (CI)" \
+              -d "project=$KEY" \
+              -d "organization=$ORG" \
+              -d "visibility=public" >/dev/null; then
+              echo "project_exists=true" >> "$GITHUB_OUTPUT"
+              echo "Project created."
+            else
+              echo "::notice::Unable to create SonarCloud project (insufficient permissions or org mismatch). Skipping analysis."
+              echo "project_exists=false" >> "$GITHUB_OUTPUT"
+              # still proceed to write needs_bootstrap=false to satisfy subsequent conditionals
+              echo "needs_bootstrap=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            echo "project_exists=true" >> "$GITHUB_OUTPUT"
+            echo "Project exists."
+          fi
+
+          echo "Checking branches to determine if default branch exists..."
+          # If branches list is empty or there is no isMain=true, mark bootstrap required
+          BRANCHES_JSON=$(auth "$BASE/api/project_branches/list?project=$KEY" || true)
+          if echo "$BRANCHES_JSON" | grep -q '"isMain":true'; then
+            echo "needs_bootstrap=false" >> "$GITHUB_OUTPUT"
+            echo "Default branch already present."
+          else
+            echo "needs_bootstrap=true" >> "$GITHUB_OUTPUT"
+            echo "No default branch yet — bootstrap analysis required."
+          fi
+
+      - name: 🔰 Bootstrap default branch on Sonar (main)
+        if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists == 'true' && steps.ensure_project.outputs.needs_bootstrap == 'true' }}
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >-
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ env.SONAR_ORG }}
+            -Dsonar.branch.name=main
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+      - name: 🔎 SonarCloud Scan
+        if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists == 'true' }}
+        # Don't fail main pushes if Sonar has a transient or permission error
+        continue-on-error: ${{ github.event_name == 'push' }}
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >-
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ env.SONAR_ORG }}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+      - name: 💤 Sonar skipped summary
+        if: steps.token.outputs.present != 'true'
+        run: |
+          echo "## 💤 SonarCloud Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "Reason: SONAR_TOKEN not configured in repository secrets." >> $GITHUB_STEP_SUMMARY
+
+      - name: 💤 Sonar project missing summary
+        if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists != 'true' }}
+        run: |
+          echo "## 💤 SonarCloud Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "Reason: SonarCloud project '${{ env.SONAR_PROJECT_KEY }}' in org '${{ env.SONAR_ORG }}' doesn't exist and couldn't be auto-created with the provided token." >> $GITHUB_STEP_SUMMARY
+  # Note: Ensure SonarCloud Automatic Analysis is disabled for this project to avoid conflicts.

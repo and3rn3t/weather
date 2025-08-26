@@ -59,22 +59,8 @@ export const HorrorWeatherIcon: React.FC<{
   );
 };
 
-// Export the main function for compatibility
-export const getHorrorWeatherIcon = (
-  code: number,
-  size: number = 48,
-  isDay: boolean = true,
-  animated: boolean = true,
-): React.ReactElement => {
-  return (
-    <HorrorWeatherIcon
-      code={code}
-      size={size}
-      isDay={isDay}
-      animated={animated}
-    />
-  );
-};
+// Helper function was previously exported but is unused; removed to satisfy
+// react-refresh/only-export-components.
 
 // Horror weather icon CSS animations
 export const horrorIconStyles = `

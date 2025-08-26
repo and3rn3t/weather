@@ -1,5 +1,9 @@
 # 🌤️ Premium Weather App
 
+[![CI/CD](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml)
+[![Dev Deploy](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml)
+[![Test & Build](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml)
+
 A cutting-edge React-TypeScript weather application featuring iOS26 UI components, comprehensive
 mobile optimization, and production-ready deployment infrastructure.
 
@@ -93,21 +97,32 @@ implementation**, production deployment, comprehensive testing, and professional
 
 ### Project Structure
 
-```text
-src/
-├── components/           # React components
-│   ├── modernWeatherUI/  # Premium UI components
-│   ├── MobileNavigation/ # Mobile navigation system
-│   └── ...
-├── utils/               # Utilities and hooks
-│   ├── haptic*/         # Haptic feedback system
-│   ├── location*/       # Location services
-│   ├── weather*/        # Weather data management
-│   └── ...
-├── styles/              # CSS and design tokens
-├── navigation/          # App navigation logic
-└── __tests__/           # Test suites
+```mermaid
+flowchart TD
+  subgraph SRC[src/]
+    C[components/\nReact components]
+    U[utils/\nUtilities & hooks]
+    STY[styles/\nCSS & tokens]
+    NAV[navigation/\nApp navigation]
+    TEST[__tests__/\nTest suites]
+  end
+
+  subgraph COMP[components/]
+    C1[modernWeatherUI/\nPremium UI]
+    C2[MobileNavigation/\nMobile nav system]
+  end
+
+  C --> C1
+  C --> C2
+  U --> U1[haptic*/\nHaptic system]
+  U --> U2[location*/\nLocation services]
+  U --> U3[weather*/\nWeather data]
 ```
+
+#### Archive Policy
+
+- `/archive` — for code/assets you want kept locally but excluded from Git and builds (ignored).
+- `docs/archive` — for historical documents that should remain versioned and searchable.
 
 ## 🎯 Installation & Development
 
@@ -166,7 +181,7 @@ npx cap open ios
 ### Environment Variables
 
 ```bash
-# .env.local
+# .env/.env.local
 VITE_WEATHER_API_URL=https://api.open-meteo.com/v1
 VITE_GEOCODING_API_URL=https://nominatim.openstreetmap.org
 VITE_APP_NAME=Premium Weather App

@@ -49,22 +49,32 @@
 
 ### **Chunk Distribution Strategy:**
 
-```
-🎯 Critical Path (First Load):
-  ├── react-vendor-DJG_os-6.js (12KB) - React core
-  ├── index-D1fH4tz1.js (225KB) - App core
-  └── index-yk_kzbru.css (63KB) - Essential styles
-
-⚡ On-Demand Loading:
-  ├── capacitor-vendor-tCENxUp2.js (9KB) - Mobile features
-  ├── haptic-features-BZBqGZ2Z.js (11KB) - Mobile interactions
-  ├── weather-core-C0Da8VBX.js (10KB) - Weather logic
-  └── ui-utils-BGOkVs33.js (103KB) - Shared utilities
-
-🎨 Conditional CSS:
-  ├── horror-*.css (41KB total) - Dark theme chunks
-  ├── mobile-*.css (27KB total) - Mobile-specific styles
-  └── ios26-*.css (6KB total) - iOS design system
+```mermaid
+flowchart TD
+  subgraph CP[Critical Path (First Load)]
+    R[react-vendor-DJG_os-6.js\n12KB\nReact core]
+    I[index-D1fH4tz1.js\n225KB\nApp core]
+    C[index-yk_kzbru.css\n63KB\nEssential styles]
+  end
+  subgraph OD[On-Demand Loading]
+    M1[capacitor-vendor-tCENxUp2.js\n9KB\nMobile features]
+    M2[haptic-features-BZBqGZ2Z.js\n11KB\nMobile interactions]
+    W[weather-core-C0Da8VBX.js\n10KB\nWeather logic]
+    U[ui-utils-BGOkVs33.js\n103KB\nShared utilities]
+  end
+  subgraph CSS[Conditional CSS]
+    H[horror-*.css\n41KB\nDark theme]
+    MB[mobile-*.css\n27KB\nMobile styles]
+    IOS[ios26-*.css\n6KB\niOS design]
+  end
+  R --> I --> C
+  U -. optional .- I
+  M1 -. mobile .- I
+  M2 -. mobile .- I
+  W -. domain .- I
+  H -. theme .- C
+  MB -. device .- C
+  IOS -. device .- C
 ```
 
 ## 🔧 Technical Implementation
@@ -134,14 +144,14 @@
 
 ## 🏆 Phase 4A Summary
 
-**PHASE 4A COMPLETE: Bundle Optimization Foundation ✅**
+### PHASE 4A COMPLETE: Bundle Optimization Foundation ✅
 
 ✅ **Bundle Architecture**: Advanced chunk splitting implemented ✅ **React Optimization**: 93%
 vendor chunk reduction achieved ✅ **Mobile Focus**: Capacitor features optimized for mobile-only
 loading ✅ **CSS Strategy**: 14 conditional chunks for device-specific loading ✅ **Performance
 Ready**: Production-optimized bundle configuration
 
-**Ready for Phase 4B: Deep Bundle Analysis & Tree Shaking**
+#### Ready for Phase 4B: Deep Bundle Analysis & Tree Shaking
 
 ---
 

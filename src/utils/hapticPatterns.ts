@@ -50,7 +50,7 @@ export const HAPTIC_PATTERNS = {
  */
 export const executeVibration = (
   pattern: number[] | keyof typeof HAPTIC_PATTERNS,
-  intensity: number = 1.0,
+  intensity: number = 1.0
 ): boolean => {
   try {
     // Get pattern array
@@ -70,7 +70,7 @@ export const executeVibration = (
 
     // Apply intensity scaling
     const scaledPattern = patternArray.map(duration =>
-      Math.round(duration * intensity),
+      Math.round(duration * intensity)
     );
 
     // Execute vibration
@@ -92,7 +92,7 @@ export const executeVibration = (
  */
 export const executeWeatherVibration = (
   weatherCode: number,
-  intensity: number = 1.0,
+  intensity: number = 1.0
 ): boolean => {
   let patternKey: keyof typeof HAPTIC_PATTERNS;
 

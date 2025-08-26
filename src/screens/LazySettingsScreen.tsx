@@ -9,7 +9,8 @@ interface LazySettingsScreenProps {
  * Lazy-loaded Settings Screen Component
  * Future implementation for app settings
  */
-function LazySettingsScreen({ theme, navigate }: LazySettingsScreenProps) {
+function LazySettingsScreen(props: Readonly<LazySettingsScreenProps>) {
+  const { navigate } = props;
   return (
     <div className="ios26-weather-details-container ios26-container ios26-p-4">
       <div className="ios26-navigation-bar">

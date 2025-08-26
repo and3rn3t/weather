@@ -32,7 +32,7 @@ interface EnhancedWeatherDisplayProps {
 
 const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
   weatherData,
-  theme,
+  theme: _theme,
   className = '',
 }) => {
   const formatWindSpeed = (speed: number): string => {

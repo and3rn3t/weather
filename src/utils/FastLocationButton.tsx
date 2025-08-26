@@ -71,7 +71,7 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
             city: locationData.city,
             accuracy: locationData.accuracy,
             fromCache: locationData.fromCache,
-          },
+          }
         );
 
         setLoadingState('completed');
@@ -79,13 +79,13 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
         const cityName =
           locationData.city ||
           `${locationData.latitude.toFixed(
-            4,
+            4
           )}, ${locationData.longitude.toFixed(4)}`;
 
         onLocationReceived(
           cityName,
           locationData.latitude,
-          locationData.longitude,
+          locationData.longitude
         );
 
         // Brief success state before reset
@@ -179,8 +179,8 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
         loadingState === 'getting-gps'
           ? 0.8
           : loadingState === 'getting-city'
-          ? 0.9
-          : 0.6;
+            ? 0.9
+            : 0.6;
       return {
         ...baseStyle,
         backgroundColor:
@@ -272,8 +272,8 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
           !isSupported
             ? 'Location services not supported in this browser'
             : loadingState !== 'idle'
-            ? 'Getting your location...'
-            : 'Get weather for your current location (optimized for speed)'
+              ? 'Getting your location...'
+              : 'Get weather for your current location (optimized for speed)'
         }
         onMouseEnter={e => {
           if (!disabled && loadingState === 'idle' && isSupported) {
@@ -349,8 +349,8 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
                 loadingState === 'getting-gps'
                   ? '40%'
                   : loadingState === 'getting-city'
-                  ? '70%'
-                  : '100%',
+                    ? '70%'
+                    : '100%',
               transition: 'width 0.3s ease',
             }}
           />

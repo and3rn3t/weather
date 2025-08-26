@@ -419,7 +419,7 @@ export const createResponsiveProperty = (
     mobile: string;
     tablet?: string;
     desktop?: string;
-  },
+  }
 ) => ({
   [property]: values.mobile,
 

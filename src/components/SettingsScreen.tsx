@@ -84,7 +84,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
         // Load performance settings
         const performanceSettings = localStorage.getItem(
-          'performance-settings',
+          'performance-settings'
         );
         if (performanceSettings) {
           const parsed = JSON.parse(performanceSettings);
@@ -247,16 +247,16 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
             });
             if (permission.state === 'denied') {
               alert(
-                'Location access is blocked. Please enable location permissions in your browser settings.',
+                'Location access is blocked. Please enable location permissions in your browser settings.'
               );
             } else {
               navigator.geolocation.getCurrentPosition(
                 () => alert('Location permission granted successfully!'),
                 () =>
                   alert(
-                    'Failed to get location. Please check your browser settings.',
+                    'Failed to get location. Please check your browser settings.'
                   ),
-                { enableHighAccuracy: highAccuracyGPS, timeout: 8000 },
+                { enableHighAccuracy: highAccuracyGPS, timeout: 8000 }
               );
             }
           }
@@ -275,7 +275,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           alert(
             `Favorite Cities (${cities.length}):\n\n${
               cityNames || 'No favorite cities saved yet.'
-            }`,
+            }`
           );
         } catch (error) {
           logWarn('Failed to load favorite cities:', error);
@@ -293,7 +293,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
               preferences.enableSounds ? 'Enabled' : 'Disabled'
             }\nVibration: ${
               preferences.enableVibration ? 'Enabled' : 'Disabled'
-            }`,
+            }`
           );
         } catch (error) {
           logWarn('Failed to load alert preferences:', error);
@@ -317,14 +317,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         haptic.buttonPress();
         // Show version details
         alert(
-          'Weather App v1.0.0\n\nPhase 5C Complete:\n✅ Location Services\n✅ Offline Support\n✅ Weather Alerts\n✅ Enhanced Settings',
+          'Weather App v1.0.0\n\nPhase 5C Complete:\n✅ Location Services\n✅ Offline Support\n✅ Weather Alerts\n✅ Enhanced Settings'
         );
         break;
       case 'feedback':
         haptic.buttonPress();
         // Open feedback form
         alert(
-          'Feedback feature coming soon!\n\nFor now, please use GitHub issues or contact support.',
+          'Feedback feature coming soon!\n\nFor now, please use GitHub issues or contact support.'
         );
         break;
     }
@@ -702,7 +702,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     value: string,
     options: string[],
     onChange: (value: string) => void,
-    label: string = 'Selection',
+    label: string = 'Selection'
   ) => (
     <select
       value={value}
@@ -795,7 +795,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   <div style={{ marginLeft: '16px' }}>
                     {item.type === 'toggle' &&
                       renderToggle(item.value as boolean, value =>
-                        handleToggleChange(item.id, value),
+                        handleToggleChange(item.id, value)
                       )}
                     {item.type === 'selection' &&
                       item.options &&
@@ -803,7 +803,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         item.value as string,
                         item.options,
                         value => handleSelectionChange(item.id, value),
-                        item.title,
+                        item.title
                       )}
                     {item.type === 'action' && (
                       <div

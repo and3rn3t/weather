@@ -28,7 +28,7 @@ import {
  */
 export const useBreakpoint = () => {
   const [currentBreakpoint, setCurrentBreakpoint] = useState(() =>
-    getCurrentBreakpoint(),
+    getCurrentBreakpoint()
   );
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
@@ -114,7 +114,7 @@ export const useInteractionCapabilities = () => {
 export const useOptimizedScroll = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(
-    null,
+    null
   );
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -354,14 +354,14 @@ export const useMobileOptimizedAPI = () => {
           }
           if (error.name === 'TypeError' && error.message.includes('fetch')) {
             throw new Error(
-              'Network error - please check your internet connection',
+              'Network error - please check your internet connection'
             );
           }
         }
         throw error;
       }
     },
-    [isSlowConnection],
+    [isSlowConnection]
   );
 
   return {
@@ -419,7 +419,7 @@ export const useTouchGestures = () => {
         }));
       };
     },
-    [touchState.lastTap],
+    [touchState.lastTap]
   );
 
   useEffect(() => {
@@ -439,7 +439,7 @@ export const useTouchGestures = () => {
     handleDoubleTap,
     createSwipeHandler: (
       onSwipeLeft?: () => void,
-      onSwipeRight?: () => void,
+      onSwipeRight?: () => void
     ) => {
       let startX = 0;
       let startY = 0;

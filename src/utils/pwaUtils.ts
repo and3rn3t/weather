@@ -6,7 +6,6 @@
 import React from 'react';
 import { logError, logInfo } from './logger';
 
-
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -126,10 +125,35 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
     return 'serviceWorker' in navigator;
   };
 
+  // Helper: determine if running on localhost
+  const isLocalhost = (hostname: string): boolean => {
+    return (
+      hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1'
+    );
+  };
+
+  const isSecureContext = (): boolean => {
+    // Allow HTTPS and production hostnames; skip localhost during dev to avoid SW caching issues
+    const { protocol, hostname } = window.location;
+    const isLocal =
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1';
+    return protocol === 'https:' || (!isLocal && protocol === 'http:');
+  };
+
   // Register service worker
   const register = async (): Promise<void> => {
     if (!isSupported()) {
       logInfo('Service Worker: Not supported');
+      return;
+    }
+
+    // Skip SW registration on localhost/preview to avoid stale caches interfering with dev
+    const { hostname } = window.location;
+    const isLocal = isLocalhost(hostname);
+    if (isLocal || !isSecureContext()) {
+      logInfo('Service Worker: Skipped in development/localhost');
       return;
     }
 
@@ -142,11 +166,12 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
       registration.addEventListener('updatefound', () => {
         logInfo('Service Worker: Update found');
 
-        const newWorker = registration!.installing;
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
+        if (!registration) return;
+        const installing = registration.installing;
+        if (installing) {
+          installing.addEventListener('statechange', () => {
             if (
-              newWorker.state === 'installed' &&
+              installing.state === 'installed' &&
               navigator.serviceWorker.controller
             ) {
               logInfo('Service Worker: Update available');
@@ -184,7 +209,7 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
 
   // Skip waiting and activate new service worker
   const skipWaiting = (): void => {
-    if (registration && registration.waiting) {
+    if (registration?.waiting) {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       logInfo('Service Worker: Skip waiting triggered');
     }
@@ -237,7 +262,7 @@ export const useNetworkStatus = () => {
     window.addEventListener('offline', handleOffline);
     window.addEventListener(
       'connectivity-restored',
-      handleConnectivityRestored,
+      handleConnectivityRestored
     );
 
     return () => {
@@ -245,7 +270,7 @@ export const useNetworkStatus = () => {
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener(
         'connectivity-restored',
-        handleConnectivityRestored,
+        handleConnectivityRestored
       );
     };
   }, []);

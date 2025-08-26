@@ -24,7 +24,7 @@ class PreCommitHook {
 
   private log(
     message: string,
-    type: 'info' | 'success' | 'warning' | 'error' = 'info',
+    type: 'info' | 'success' | 'warning' | 'error' = 'info'
   ) {
     const icons = {
       info: 'ℹ️',
@@ -46,7 +46,7 @@ class PreCommitHook {
 
   private async runCommand(
     command: string,
-    description: string,
+    description: string
   ): Promise<boolean> {
     try {
       this.log(`Running ${description}...`, 'info');
@@ -113,7 +113,7 @@ class PreCommitHook {
       } else {
         this.log(
           'Some checks failed. Please fix the issues before committing.',
-          'error',
+          'error'
         );
         console.log('\n💡 Tips:');
         console.log('   • Run "npm run lint:fix" to auto-fix linting issues');

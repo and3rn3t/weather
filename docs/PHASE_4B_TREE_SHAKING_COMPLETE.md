@@ -1,6 +1,6 @@
 # Phase 4B: Deep Tree Shaking Results ✅
 
-## 🎯 PHASE 4B COMPLETE: Dependency Optimization Success!
+## 🎯 PHASE 4B COMPLETE: Dependency Optimization Success
 
 ### 📊 Bundle Optimization Results
 
@@ -36,21 +36,25 @@
 
 ### **Bundle Structure Optimized:**
 
+```mermaid
+flowchart TD
+  A[index-D1fH4tz1.js\n225KB\nMain app]
+  B[ui-utils-BGOkVs33.js\n103KB\nShared utilities]
+  C[react-vendor-DJG_os-6.js\n12KB\nReact core]
+  D[haptic-features-BZBqGZ2Z.js\n11KB\nMobile interactions]
+  E[weather-core-C0Da8VBX.js\n10KB\nWeather logic]
+  F[capacitor-vendor-tCENxUp2.js\n9KB\nMobile only]
+  G[web-DLUzKRcr.js\n1KB\nWeb utilities]
+  A --- B --- C --- D --- E --- F --- G
 ```
-📦 Optimized Bundle Architecture:
-  ├── index-D1fH4tz1.js (225KB) - Main application
-  ├── ui-utils-BGOkVs33.js (103KB) - Shared utilities
-  ├── react-vendor-DJG_os-6.js (12KB) - React core (optimal size!)
-  ├── haptic-features-BZBqGZ2Z.js (11KB) - Mobile interactions
-  ├── weather-core-C0Da8VBX.js (10KB) - Weather logic
-  ├── capacitor-vendor-tCENxUp2.js (9KB) - Essential mobile only
-  └── web-DLUzKRcr.js (1KB) - Web utilities
 
-🎨 CSS Structure:
-  ├── index-yk_kzbru.css (63KB) - Core styles
-  ├── horror-*.css (42KB total) - Dark theme chunks
-  ├── mobile-*.css (27KB total) - Mobile-specific
-  └── ios26-*.css (6KB total) - iOS design system
+```mermaid
+flowchart TD
+  CS[index-yk_kzbru.css\n63KB\nCore styles]
+  HT[horror-*.css\n42KB\nDark theme]
+  MB[mobile-*.css\n27KB\nMobile-specific]
+  IOS[ios26-*.css\n6KB\niOS design]
+  CS --- HT --- MB --- IOS
 ```
 
 ### **Dependency Tree Cleaned:**
@@ -110,7 +114,7 @@
 
 ### **JavaScript Distribution:**
 
-```
+```text
 📈 Optimal Chunk Sizes:
   • Main App: 225KB (well-structured)
   • UI Utils: 103KB (shared efficiently)
@@ -122,7 +126,7 @@
 
 ### **CSS Distribution:**
 
-```
+```text
 🎨 Style Architecture:
   • Core: 63KB (essential styles)
   • Theme: 42KB (conditional dark mode)
@@ -166,7 +170,7 @@ Now that dependencies are cleaned, we can implement:
 
 ## 🏆 Phase 4B Summary
 
-**PHASE 4B COMPLETE: Deep Tree Shaking & Dependency Optimization ✅**
+### PHASE 4B COMPLETE: Deep Tree Shaking & Dependency Optimization ✅
 
 ✅ **Dependencies Cleaned**: 7 unused packages removed, 485 total packages eliminated ✅ **Build
 Optimized**: Jest → Vitest foundation, faster builds ✅ **Architecture Improved**: Cleaner

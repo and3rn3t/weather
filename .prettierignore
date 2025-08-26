@@ -80,6 +80,9 @@ archive/
 *.temp
 *.tmp
 
+# Large static dumps
+html/**
+
 # Config files that shouldn't be formatted
 package-lock.json
 yarn.lock

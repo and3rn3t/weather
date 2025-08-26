@@ -86,17 +86,33 @@ export default tseslint.config([
       'object-shorthand': 'error',
       'prefer-template': 'error',
 
-      // Code style (should match Prettier)
+      // Code style (delegate to Prettier formatting)
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
-      'comma-dangle': ['error', 'always-multiline'],
-      'trailing-comma': 'off', // Let Prettier handle this
+      // Avoid style conflicts; Prettier handles trailing commas
+      'comma-dangle': 'off',
     },
   },
   {
     files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
+    // Dev-only diagnostics: allow console usage without warnings
+    files: [
+      'src/App-diagnostic.tsx',
+      'src/utils/logger.ts',
+      'src/utils/horrorEffectsDebug.ts',
+      'src/utils/locationDiagnostic.ts',
+      'src/components/Dash0ErrorBoundary.tsx',
+      'src/dash0/components/Dash0ErrorBoundary.tsx',
+      'src/utils/performanceMonitor.ts',
+      'src/utils/backgroundSyncManager.ts',
+    ],
+    rules: {
       'no-console': 'off',
     },
   },

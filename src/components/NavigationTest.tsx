@@ -14,7 +14,6 @@ import InteractiveWeatherWidget from './modernWeatherUI/InteractiveWeatherWidget
 import { useTheme } from '../utils/useTheme';
 import { logInfo } from '../utils/logger';
 
-
 const NavigationTest: React.FC = () => {
   const { theme } = useTheme();
   const [currentScreen, setCurrentScreen] =
