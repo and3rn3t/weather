@@ -113,6 +113,8 @@ import '../styles/ios26-design-system-consolidated.css';
 import '../styles/ios26-text-optimization.css';
 // Phase 3: Progressive Loading Styles
 import '../styles/progressive-loading.css';
+// Local styles for Favorites/Admin sheets
+import '../styles/favorites-admin-sheets.css';
 // Horror Theme Components
 import HorrorThemeActivator from '../components/HorrorThemeActivator';
 // Horror Theme Styles - Essential for blood drips and film flicker effects
@@ -136,6 +138,9 @@ import OptimizedMobileWeatherDisplay from '../components/optimized/OptimizedMobi
 import '../styles/ios-typography-enhancement.css';
 import '../styles/iosComponents.css';
 import '../styles/modernWeatherUI.css';
+import type { FavoriteCity } from '../utils/useFavorites';
+import { useFavorites } from '../utils/useFavorites';
+import { geocode } from '../utils/useGeocode';
 // Navigation & UI Fixes - August 21, 2025
 // navigation-fixes.css was removed after consolidating nav styles into mobile.css
 import { logError, logInfo, logWarn } from '../utils/logger';
@@ -146,7 +151,6 @@ import {
   getAdaptiveBorderRadius,
   getAdaptiveFontSizes,
   getAdaptiveSpacing,
-  getMobileOptimizedContainer,
   getScreenInfo,
   getTouchOptimizedButton,
   handleOrientationChange,
@@ -410,15 +414,28 @@ function HomeScreen({
       {/* iOS 26 Navigation Bar */}
       <div className="ios26-navigation-bar">
         <h1 className="ios-title1 ios26-text-primary">Today's Weather</h1>
-        <button
-          className="ios26-button ios26-button-secondary"
-          onClick={() => {
-            haptic.buttonPress();
-            navigate('Settings');
-          }}
-        >
-          ⚙️
-        </button>
+        <div className="ios26-nav-actions">
+          <button
+            className="ios26-button ios26-button-secondary"
+            onClick={() => {
+              haptic.buttonPress();
+              window.dispatchEvent(new CustomEvent('toggle-favorites'));
+            }}
+            aria-label="Open Favorites"
+            title="Favorites"
+          >
+            ⭐
+          </button>
+          <button
+            className="ios26-button ios26-button-secondary"
+            onClick={() => {
+              haptic.buttonPress();
+              navigate('Settings');
+            }}
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
 
       {/* Quick Actions Panel */}
@@ -430,7 +447,7 @@ function HomeScreen({
         }}
         onFavorites={() => {
           haptic.buttonPress();
-          navigate('Favorites');
+          window.dispatchEvent(new CustomEvent('toggle-favorites'));
         }}
         onSettings={() => {
           haptic.buttonPress();
@@ -438,12 +455,17 @@ function HomeScreen({
         }}
         onRadar={() => {
           haptic.buttonPress();
-          // Future radar implementation
+          if (import.meta.env.MODE !== 'production') {
+            window.dispatchEvent(new CustomEvent('open-admin-tools'));
+          }
         }}
       />
 
       {/* iOS 26 Weather Demo - Simple Integration */}
       <IOS26WeatherDemo theme={theme} />
+      {/* Mount auxiliary sheets */}
+      <FavoritesSheetMount />
+      {import.meta.env.MODE !== 'production' && <AdminToolsSheetMount />}
     </div>
   );
 }
@@ -1454,6 +1476,242 @@ const DailyForecastSection = React.memo(
   }
 );
 
+function FavoritesSheetMount() {
+  const { theme } = useTheme();
+  const haptic = useHaptic();
+  const { favorites, loading, error, add, remove, refresh } = useFavorites();
+  const [isVisible, setIsVisible] = useState(false);
+  const [newCity, setNewCity] = useState('');
+  const [adding, setAdding] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const toggle = () => setIsVisible((v: boolean) => !v);
+    window.addEventListener('toggle-favorites', toggle as EventListener);
+    return () =>
+      window.removeEventListener('toggle-favorites', toggle as EventListener);
+  }, []);
+
+  const handleAdd = useCallback(async () => {
+    const city = newCity.trim();
+    if (!city) return;
+    haptic.buttonPress();
+    setAdding(true);
+    setStatus(null);
+    try {
+      const g = await geocode(city);
+      await add(city, g.lat, g.lon);
+      setNewCity('');
+      setStatus('Added to favorites');
+      if (navigator.vibrate) navigator.vibrate(10);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Failed to add';
+      setStatus(message);
+    } finally {
+      setAdding(false);
+    }
+  }, [newCity, add, haptic]);
+
+  const removeCity = useCallback(
+    async (city: string) => {
+      haptic.buttonPress();
+      try {
+        await remove(city);
+        setStatus('Removed');
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'Failed to remove';
+        setStatus(message);
+      }
+    },
+    [remove, haptic]
+  );
+
+  return (
+    <ModalSheet
+      isVisible={isVisible}
+      onClose={() => setIsVisible(false)}
+      title="Favorites"
+      detents={['medium', 'large']}
+      theme={theme}
+    >
+      <div className="ios26-text-body ios26-text-secondary ios26-mb-3">
+        Manage your favorite locations
+      </div>
+
+      {/* Add new favorite */}
+      <div className="fas-row gap-2 mb-3">
+        <input
+          value={newCity}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setNewCity(e.target.value)
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') handleAdd();
+          }}
+          placeholder="Add a city"
+          aria-label="City name"
+          className="fas-input"
+        />
+        <button
+          className="ios26-button ios26-button-primary"
+          onClick={handleAdd}
+          disabled={adding}
+        >
+          {adding ? 'Adding…' : 'Add'}
+        </button>
+      </div>
+
+      {/* Status / error */}
+      {error && <div className="ios-caption2 fas-error">{error}</div>}
+      {status && !error && (
+        <div
+          className="ios-caption2 ios26-text-tertiary fas-status"
+          aria-live="polite"
+        >
+          {status}
+        </div>
+      )}
+
+      {/* Favorites list */}
+      {!loading && favorites.length === 0 ? (
+        <div className="ios26-text-secondary">No favorites yet.</div>
+      ) : (
+        <ul className="fas-list">
+          {favorites.map((item: FavoriteCity) => (
+            <li key={item.city} className="fas-list-item">
+              <div className="fas-col">
+                <div className="ios-body ios26-text-primary">{item.city}</div>
+                <div className="ios-caption2 ios26-text-tertiary">
+                  {item.lat.toFixed(3)}, {item.lon.toFixed(3)}
+                </div>
+              </div>
+              <div className="fas-actions">
+                <button
+                  className="ios26-button ios26-button-primary"
+                  onClick={() => {
+                    haptic.buttonPress();
+                    window.dispatchEvent(
+                      new CustomEvent('favorite-selected', {
+                        detail: {
+                          city: item.city,
+                          lat: item.lat,
+                          lon: item.lon,
+                        },
+                      })
+                    );
+                    setIsVisible(false);
+                  }}
+                  aria-label={`Open ${item.city}`}
+                >
+                  Open
+                </button>
+                <button
+                  className="ios26-button ios26-button-secondary"
+                  onClick={() => removeCity(item.city)}
+                  aria-label={`Remove ${item.city}`}
+                >
+                  Remove
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="fas-row gap-2 mt-3">
+        <button
+          className="ios26-button ios26-button-secondary"
+          onClick={() => refresh()}
+        >
+          Refresh
+        </button>
+        <button className="ios26-button" onClick={() => setIsVisible(false)}>
+          Close
+        </button>
+      </div>
+    </ModalSheet>
+  );
+}
+
+function AdminToolsSheetMount() {
+  const { theme } = useTheme();
+  const haptic = useHaptic();
+  const [isVisible, setIsVisible] = useState(false);
+  const [busy, setBusy] = useState<'prewarm' | 'cleanup' | null>(null);
+  const [result, setResult] = useState<string | null>(null);
+
+  useEffect(() => {
+    const open = () => setIsVisible(true);
+    window.addEventListener('open-admin-tools', open as EventListener);
+    return () =>
+      window.removeEventListener('open-admin-tools', open as EventListener);
+  }, []);
+
+  const callEndpoint = useCallback(
+    async (path: string, kind: 'prewarm' | 'cleanup') => {
+      haptic.buttonPress();
+      setBusy(kind);
+      setResult(null);
+      try {
+        const res = await fetch(path, { method: 'POST' });
+        const text = await res.text();
+        setResult(res.ok ? text || 'OK' : `Error ${res.status}: ${text}`);
+        if (res.ok && navigator.vibrate) navigator.vibrate(10);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'Request failed';
+        setResult(message);
+      } finally {
+        setBusy(null);
+      }
+    },
+    [haptic]
+  );
+
+  return (
+    <ModalSheet
+      isVisible={isVisible}
+      onClose={() => setIsVisible(false)}
+      title="Admin Tools"
+      detents={['medium', 'large']}
+      theme={theme}
+    >
+      <div className="ios26-text-body ios26-text-secondary ios26-mb-3">
+        Dev/Preview maintenance actions
+      </div>
+      <div className="fas-actions">
+        <button
+          className="ios26-button ios26-button-primary"
+          onClick={() => callEndpoint('/api/admin-prewarm', 'prewarm')}
+          disabled={busy !== null}
+        >
+          {busy === 'prewarm' ? 'Prewarming…' : 'Prewarm Popular Cities'}
+        </button>
+        <button
+          className="ios26-button ios26-button-secondary"
+          onClick={() => callEndpoint('/api/admin-cleanup', 'cleanup')}
+          disabled={busy !== null}
+        >
+          {busy === 'cleanup' ? 'Cleaning…' : 'Cleanup Stale Cache'}
+        </button>
+      </div>
+      {result && (
+        <div
+          className="ios-caption2 ios26-text-tertiary fas-result"
+          aria-live="polite"
+        >
+          {result}
+        </div>
+      )}
+
+      <div className="fas-spacer-top">
+        <button className="ios26-button" onClick={() => setIsVisible(false)}>
+          Close
+        </button>
+      </div>
+    </ModalSheet>
+  );
+}
+
 const AppNavigator = () => {
   // Dash0 Telemetry Integration
   const telemetry = useDash0Telemetry();
@@ -2198,6 +2456,27 @@ const AppNavigator = () => {
     [haptic, fetchWeatherData, setCurrentCity, addToRecent]
   );
 
+  // Favorites sheet -> open favorite navigation
+  useEffect(() => {
+    const onFavoriteSelected = (e: Event) => {
+      const detail = (e as CustomEvent).detail as
+        | { city: string; lat: number; lon: number }
+        | undefined;
+      if (detail) {
+        getWeatherByLocation(detail.city, detail.lat, detail.lon);
+      }
+    };
+    window.addEventListener(
+      'favorite-selected',
+      onFavoriteSelected as EventListener
+    );
+    return () =>
+      window.removeEventListener(
+        'favorite-selected',
+        onFavoriteSelected as EventListener
+      );
+  }, [getWeatherByLocation]);
+
   // Background refresh for weather data with native app lifecycle integration
   const refreshWeatherData = useCallback(async () => {
     // Only refresh if we have valid weather data to refresh
@@ -2353,11 +2632,6 @@ const AppNavigator = () => {
           onSwipeLeft={handleSwipeLeft}
           onSwipeRight={handleSwipeRight}
           className="safe-area-container"
-          style={{
-            ...getMobileOptimizedContainer(theme, screenInfo),
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          }}
         >
           {/* Native API Status Display - Shows native capabilities when on mobile */}
           <React.Suspense
@@ -2687,34 +2961,12 @@ const AppNavigator = () => {
           {/* Phase 5C: Weather Alerts Floating Action Button */}
           <button
             onClick={() => setShowWeatherAlertPanel(true)}
-            style={{
-              position: 'fixed',
-              bottom: '80px',
-              right: '20px',
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              backgroundColor: '#ff6b35',
-              border: 'none',
-              color: 'white',
-              fontSize: '24px',
-              boxShadow: '0 4px 12px rgba(255, 107, 53, 0.4)',
-              cursor: 'pointer',
-              zIndex: 1000,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease',
+            className="alerts-fab"
+            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.currentTarget.classList.add('hover');
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow =
-                '0 6px 16px rgba(255, 107, 53, 0.6)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow =
-                '0 4px 12px rgba(255, 107, 53, 0.4)';
+            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.currentTarget.classList.remove('hover');
             }}
             aria-label="Open weather alerts"
             title="Weather Alerts"
@@ -2740,21 +2992,9 @@ const AppNavigator = () => {
           {process.env.NODE_ENV === 'development' &&
             memoryOptimization.memoryInfo && (
               <div
-                style={{
-                  position: 'fixed',
-                  top: '10px',
-                  right: '10px',
-                  backgroundColor: memoryOptimization.isMemoryPressure
-                    ? 'rgba(255, 0, 0, 0.9)'
-                    : 'rgba(0, 0, 0, 0.8)',
-                  color: 'white',
-                  padding: '8px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontFamily: 'monospace',
-                  zIndex: 9999,
-                  minWidth: '200px',
-                }}
+                className={`memory-overlay ${
+                  memoryOptimization.isMemoryPressure ? 'pressure' : ''
+                }`}
               >
                 <div>
                   Memory: {memoryOptimization.memoryUsagePercent.toFixed(1)}%
@@ -2778,7 +3018,7 @@ const AppNavigator = () => {
                   MB
                 </div>
                 {memoryOptimization.isMemoryPressure && (
-                  <div style={{ color: '#ffcccb' }}>⚠️ Memory Pressure</div>
+                  <div className="warning">⚠️ Memory Pressure</div>
                 )}
               </div>
             )}

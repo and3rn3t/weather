@@ -1323,6 +1323,13 @@ body.dark-theme .today-card {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+
+/* iOS26 navigation bar actions container */
+.ios26-nav-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 .mobile-navigation .nav-tab:hover {
   transform: translateY(-1px);
 }

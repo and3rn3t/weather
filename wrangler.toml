@@ -7,6 +7,21 @@ compatibility_date = "2024-01-01"
 # Pages build output directory
 pages_build_output_dir = "dist"
 
+# Cloudflare D1 database binding
+[[d1_databases]]
+# Binding used in Functions via env.DB
+binding = "DB"
+# Local dev uses this name; in production, set database_id after creating the DB
+database_name = "weather-db"
+# database_id can be filled by CI/CD or manual setup once created in Cloudflare
+# database_id = "REPLACE_WITH_PROD_DB_ID"
+
+# KV namespace for feature flags/config
+[[kv_namespaces]]
+binding = "CONFIG"
+# id = "REPLACE_WITH_PROD_KV_ID"
+# preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+
 # Environment variables
 [env.production.vars]
 ENVIRONMENT = "production"

@@ -290,6 +290,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Built with ❤️ using React, TypeScript, and modern web technologies
 
+## Optional Persistence: Cloudflare D1
+
+This project can optionally persist user favorites and speed up geocoding using Cloudflare Pages Functions with a D1 database. See `docs/D1_INTEGRATION.md` for setup and API details.
+
 ## 🧪 Testing Excellence
 
 - **185+ tests passing** across 13 test files with 100% success rate

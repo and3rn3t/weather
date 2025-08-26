@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "include": [
+  "/api/favorites",
+  "/api/geocode",
+  "/api/config",
+  "/api/admin-prewarm",
+  "/api/admin-cleanup"
+  ]
+}
