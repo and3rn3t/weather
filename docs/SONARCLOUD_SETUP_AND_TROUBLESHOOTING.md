@@ -44,12 +44,12 @@ Important:
   - Ensure `SONAR_TOKEN` has access to org `and3rn3t` and the project.
   - Confirm default branch on SonarCloud is set to `main` and GitHub ALM binding is enabled.
 
-2. Coverage = 0%
+1. Coverage = 0%
 
 - Ensure `coverage/lcov.info` exists before the scan. The workflow prints a warning if not found.
 - Make sure Vitest ran with coverage in CI (we run `test:ci` with coverage and fallbacks).
 
-3. CSS parse errors
+1. CSS parse errors
 
 - If Sonar flags parse errors on certain CSS, exclude the file temporarily in `sonar.exclusions` and
   track a follow-up to clean it up.
