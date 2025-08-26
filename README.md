@@ -3,6 +3,8 @@
 [![CI/CD](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml)
 [![Dev Deploy](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml)
 [![Test & Build](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=and3rn3t_weather_ci)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=coverage)](https://sonarcloud.io/summary/new_code?id=and3rn3t_weather_ci)
 
 A cutting-edge React-TypeScript weather application featuring iOS26 UI components, comprehensive
 mobile optimization, and production-ready deployment infrastructure.
