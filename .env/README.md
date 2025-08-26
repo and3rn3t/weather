@@ -1,6 +1,7 @@
 # Environment Files Organization
 
-This project organizes all environment files in a dedicated `.env/` directory for better project structure and organization.
+This project organizes all environment files in a dedicated `.env/` directory for better project
+structure and organization.
 
 ## Structure
 
