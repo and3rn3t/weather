@@ -368,8 +368,7 @@ class DevelopmentDoctor {
 
   async checkEnvironmentFiles() {
     const envFiles = ['.env', '.env.local', '.env.development'];
-    const envDir = join(projectRoot, '.env');
-
+  const envDir = join(projectRoot, '.env');
     // Check both root and .env directory for environment files
     const foundEnvFiles = envFiles.filter(file => {
       const rootPath = join(projectRoot, file);
