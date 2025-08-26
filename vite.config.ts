@@ -9,6 +9,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
+
+  // Configure Vite to load .env files from .env directory
+  envDir: '.env',
+
   build: {
     rollupOptions: {
       output: {
