@@ -75,7 +75,11 @@ export function useFavorites() {
   );
 
   useEffect(() => {
-    load().catch(() => undefined);
+    load().catch(err => {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
+      console.error('Failed to load favorites:', err);
+    });
   }, [load]);
 
   return { favorites, loading, error, add, remove, refresh: load } as const;

@@ -455,6 +455,7 @@ function HomeScreen({
         }}
         onRadar={() => {
           haptic.buttonPress();
+          // Only show in development mode, clarify label
           if (import.meta.env.MODE !== 'production') {
             window.dispatchEvent(new CustomEvent('open-admin-tools'));
           }

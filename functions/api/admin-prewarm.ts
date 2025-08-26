@@ -40,13 +40,7 @@ export const onRequest = async ({
       ? body.cities
       : DEFAULT_CITIES;
 
-  const results: Array<{
-    city: string;
-    ok: boolean;
-    source?: string;
-    error?: string;
-  }> = [];
-  for (const city of cities) {
+  const promises = cities.map(async city => {
     try {
       const url = new URL(request.url);
       url.pathname = '/api/geocode';
@@ -54,12 +48,19 @@ export const onRequest = async ({
       const res = await fetch(url.toString());
       const data = (await res.json()) as { source?: string } | unknown;
       const source = (data as { source?: string } | null)?.source;
-      results.push({ city, ok: res.ok, source });
+      return { city, ok: res.ok, source };
     } catch (e) {
       const message = e instanceof Error ? e.message : 'error';
-      results.push({ city, ok: false, error: message });
+      return { city, ok: false, error: message };
     }
-  }
+  });
 
-  return json({ count: results.length, results });
+  const results = await Promise.allSettled(promises);
+  const formattedResults = results.map(result =>
+    result.status === 'fulfilled'
+      ? result.value
+      : { city: '', ok: false, error: 'Promise rejected' }
+  );
+
+  return json({ count: formattedResults.length, results: formattedResults });
 };

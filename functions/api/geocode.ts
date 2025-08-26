@@ -80,7 +80,11 @@ export const onRequest = async ({
         'UPDATE geocoding_cache SET hits = hits + 1, updated_at = ? WHERE query = ?'
       )
         .bind(Date.now(), normalized)
-        .run();
+        .run()
+        .catch(err => {
+          // Log error but do not block response
+          console.error('Failed to update geocoding_cache hit count:', err);
+        });
       return json({ lat: cached.lat, lon: cached.lon, source: 'cache' });
     }
 
