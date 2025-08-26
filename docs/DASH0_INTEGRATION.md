@@ -148,7 +148,7 @@ await dash0Telemetry.trackOperation(
 | `VITE_DASH0_AUTH_TOKEN`      | Your Dash0 authentication token | Required                              |
 | `VITE_DASH0_ENDPOINT`        | Dash0 ingestion endpoint        | `https://ingress.dash0.com/v1/traces` |
 | `VITE_DASH0_ENVIRONMENT`     | Environment name                | `development`                         |
-| `VITE_DASH0_SERVICE_NAME`    | Service name in Dash0           | `premium-weather-app`                 |
+| `VITE_DASH0_SERVICE_NAME`    | Service name in Dash0           | `weather                              |
 | `VITE_DASH0_SERVICE_VERSION` | Service version                 | `1.0.0`                               |
 | `VITE_DASH0_ENABLED`         | Enable/disable telemetry        | `true`                                |
 | `VITE_DASH0_DEBUG`           | Enable debug logging            | `false`                               |
