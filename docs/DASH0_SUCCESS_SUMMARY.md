@@ -58,7 +58,7 @@ Your weather app now has **comprehensive observability** with the official Dash0
 ### **2. Add Environment Variables**
 
 ```bash
-# Create .env.local
+# Create .env/.env.local
 VITE_DASH0_ENDPOINT_URL=https://ingress.dash0.dev
 VITE_DASH0_AUTH_TOKEN=auth_your_token_here
 ```
