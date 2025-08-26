@@ -14,6 +14,7 @@ env:
   NODE_VERSION: '22'
   SONAR_PROJECT_KEY: and3rn3t_weather_ci
   SONAR_ORG: and3rn3t
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 jobs:
   sonarcloud:
@@ -25,6 +26,16 @@ jobs:
       cancel-in-progress: true
 
     steps:
+      - name: 🔑 Check SONAR_TOKEN presence
+        id: token
+        run: |
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::SONAR_TOKEN not set; skipping SonarCloud analysis."
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 🚚 Checkout
         uses: actions/checkout@v4
         with:
@@ -41,10 +52,12 @@ jobs:
           npm ci --prefer-offline --no-audit --no-fund --silent
 
       - name: 🧪 Run tests to produce coverage
+        if: steps.token.outputs.present == 'true'
         run: |
           npm run test:ci || npm run test:coverage || npm run test:fast
 
       - name: 🔎 Check coverage artifact exists
+        if: steps.token.outputs.present == 'true'
         run: |
           if [ ! -f coverage/lcov.info ]; then
             echo "LCOV not found; listing coverage directory:" && ls -la coverage || true
@@ -55,7 +68,7 @@ jobs:
 
       - name: � Ensure Sonar project exists and detect default branch
         id: ensure_project
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && steps.token.outputs.present == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -89,7 +102,7 @@ jobs:
           fi
 
       - name: 🔰 Bootstrap default branch on Sonar (main)
-        if: ${{ github.event_name == 'pull_request' && steps.ensure_project.outputs.needs_bootstrap == 'true' }}
+        if: ${{ github.event_name == 'pull_request' && steps.token.outputs.present == 'true' && steps.ensure_project.outputs.needs_bootstrap == 'true' }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -103,6 +116,7 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
 
       - name: 🔎 SonarCloud Scan
+        if: steps.token.outputs.present == 'true'
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -115,4 +129,10 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.pullrequest.provider=github
             -Dsonar.pullrequest.github.repository=and3rn3t/weather
+
+      - name: 💤 Sonar skipped summary
+        if: steps.token.outputs.present != 'true'
+        run: |
+          echo "## 💤 SonarCloud Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "Reason: SONAR_TOKEN not configured in repository secrets." >> $GITHUB_STEP_SUMMARY
   # Note: Ensure SonarCloud Automatic Analysis is disabled for this project to avoid conflicts.

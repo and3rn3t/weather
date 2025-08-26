@@ -5,7 +5,7 @@
  * into a unified system for comprehensive offline capabilities and performance optimization.
  */
 
-/* eslint-disable comma-dangle */
+// eslint rule adjusted: trailing commas handled by Prettier; no disable needed
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { networkResilienceManager } from './networkResilienceManager';

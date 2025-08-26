@@ -1,6 +1,7 @@
 # Environment Files Organization
 
-This project organizes all environment files in a dedicated `.env/` directory for better project structure and organization.
+This project organizes all environment files in a dedicated `.env/` directory for better project
+structure and organization.
 
 ## Structure
 
@@ -15,7 +16,8 @@ This project organizes all environment files in a dedicated `.env/` directory fo
 
 ## Usage
 
-Environment variables are automatically loaded by Vite from the `.env/` directory thanks to the `envDir: '.env'` configuration in `vite.config.ts`.
+Environment variables are automatically loaded by Vite from the `.env/` directory thanks to the
+`envDir: '.env'` configuration in `vite.config.ts`.
 
 ### Creating Local Overrides
 
@@ -25,7 +27,7 @@ Create local environment files in the `.env/` directory:
 # For local development overrides
 .env/.env.local
 
-# For environment-specific local overrides  
+# For environment-specific local overrides
 .env/.env.development.local
 .env/.env.production.local
 ```
@@ -39,7 +41,6 @@ The `vite.config.ts` file is configured with:
 ```typescript
 export default defineConfig({
   plugins: [react()],
-  
   // Configure Vite to load .env files from .env directory
   envDir: '.env',
   // ... rest of config
