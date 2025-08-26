@@ -51,7 +51,13 @@ export const iOS26ForecastItem: React.FC<{
   weatherCode: number;
   precipitation?: number;
   isDaily?: boolean;
-}> = ({ time, temperature, weatherCode, precipitation, isDaily = false }) => {
+}> = ({
+  time,
+  temperature,
+  weatherCode,
+  precipitation,
+  isDaily: _isDaily = false,
+}) => {
   return (
     <div className="ios26-forecast-item">
       <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time">

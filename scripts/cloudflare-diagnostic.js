@@ -53,7 +53,7 @@ if (fs.existsSync(distPath)) {
 }
 
 // Check workflow file
-const workflowPath = path.join(projectRoot, '.github/workflows/deploy.yml');
+const workflowPath = path.join(projectRoot, '.github/workflows/ci-cd.yml');
 if (fs.existsSync(workflowPath)) {
   console.log('✅ Deploy workflow found');
   const content = fs.readFileSync(workflowPath, 'utf8');

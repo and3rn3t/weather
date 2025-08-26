@@ -213,7 +213,7 @@ export const useSpringAnimation = (initialValue: number = 0) => {
         onUpdate: setValue,
       });
     },
-    [animation],
+    [animation]
   );
 
   return {
@@ -291,7 +291,7 @@ export const SpringAnimationUtils = {
    */
   createSlideAnimation: (
     element: HTMLElement,
-    direction: 'up' | 'down' | 'left' | 'right' = 'up',
+    direction: 'up' | 'down' | 'left' | 'right' = 'up'
   ) => {
     const animation = new SpringAnimation(0);
 

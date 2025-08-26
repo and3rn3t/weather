@@ -35,7 +35,7 @@ export class Dash0ErrorBoundary extends Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: { componentStack: string }) {
     console.debug('Error caught (no-op):', error.message, errorInfo);
   }
 

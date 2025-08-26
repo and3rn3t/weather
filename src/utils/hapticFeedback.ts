@@ -6,7 +6,6 @@
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { logInfo } from './logger';
 
-
 export type HapticType =
   | 'light'
   | 'medium'

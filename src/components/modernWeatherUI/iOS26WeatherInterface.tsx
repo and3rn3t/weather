@@ -79,10 +79,9 @@ interface iOS26WeatherInterfaceProps {
 // MAIN iOS 26 WEATHER INTERFACE COMPONENT
 // ============================================================================
 
- 
 const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   weatherData,
-  theme,
+  theme: _theme,
   className = '',
   onRefresh,
   onLocationTap,

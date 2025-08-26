@@ -9,7 +9,8 @@ interface LazySearchScreenProps {
  * Lazy-loaded Search Screen Component
  * Future implementation for advanced search functionality
  */
-function LazySearchScreen({ theme, navigate }: LazySearchScreenProps) {
+function LazySearchScreen(props: Readonly<LazySearchScreenProps>) {
+  const { navigate } = props;
   return (
     <div className="ios26-weather-details-container ios26-container ios26-p-4">
       <div className="ios26-navigation-bar">

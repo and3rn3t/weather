@@ -37,13 +37,13 @@ export const useTheme = () => {
         mobile: string;
         tablet?: string;
         desktop?: string;
-      },
+      }
     ) => responsiveTheme.responsive.createResponsiveProperty(property, values),
 
     // Mobile-optimized component creators
     createMobileButton: (
       isPrimary = true,
-      size: 'small' | 'medium' | 'large' = 'medium',
+      size: 'small' | 'medium' | 'large' = 'medium'
     ) => responsiveTheme.responsive.createMobileButton(isPrimary, size),
 
     createMobileCard: (isWeatherCard = false) =>

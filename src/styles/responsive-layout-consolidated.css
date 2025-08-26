@@ -15,13 +15,13 @@
   --content-padding: 16px;
   --content-padding-small: 12px;
   --content-padding-tiny: 8px;
-  
+
   /* Safe area calculations */
   --safe-top: max(env(safe-area-inset-top), 12px);
   --safe-bottom: max(env(safe-area-inset-bottom), 12px);
   --safe-left: max(env(safe-area-inset-left), var(--content-padding));
   --safe-right: max(env(safe-area-inset-right), var(--content-padding));
-  
+
   /* Responsive breakpoints */
   --mobile-small: 375px;
   --mobile-tiny: 320px;
@@ -34,7 +34,8 @@
    ============================================================================ */
 
 /* Root and body setup */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -138,10 +139,18 @@ body {
 }
 
 /* iOS26 spacing utilities */
-.ios26-p-0 { padding: 0; }
-.ios26-p-4 { padding: 16px; }
-.ios26-mb-4 { margin-bottom: 16px; }
-.ios26-w-full { width: 100%; }
+.ios26-p-0 {
+  padding: 0;
+}
+.ios26-p-4 {
+  padding: 16px;
+}
+.ios26-mb-4 {
+  margin-bottom: 16px;
+}
+.ios26-w-full {
+  width: 100%;
+}
 
 /* iOS26 navigation bar */
 .ios26-navigation-bar {
@@ -227,7 +236,7 @@ body {
 }
 
 .ios26-button-primary {
-  background: #007AFF;
+  background: #007aff;
   color: white;
 }
 
@@ -245,7 +254,7 @@ body {
   :root {
     --content-padding: var(--content-padding-small);
   }
-  
+
   .main-content-area,
   .safe-area-container,
   .screen-container,
@@ -281,7 +290,7 @@ body {
   :root {
     --content-padding: var(--content-padding-tiny);
   }
-  
+
   .main-content-area,
   .safe-area-container,
   .screen-container,
@@ -328,7 +337,7 @@ body {
     --content-padding: var(--content-padding-tiny);
     --mobile-nav-height: 60px;
   }
-  
+
   .main-content-area,
   .safe-area-container,
   .screen-container,
@@ -443,7 +452,7 @@ html {
   html {
     scroll-behavior: auto;
   }
-  
+
   * {
     scroll-behavior: auto !important;
   }

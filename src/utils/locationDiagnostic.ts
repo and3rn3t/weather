@@ -39,7 +39,7 @@ export class LocationDiagnostic {
         message: 'Geolocation API is not supported in this browser',
       });
       recommendations.push(
-        'Use a modern browser that supports geolocation (Chrome, Firefox, Safari, Edge)',
+        'Use a modern browser that supports geolocation (Chrome, Firefox, Safari, Edge)'
       );
     }
 
@@ -57,7 +57,7 @@ export class LocationDiagnostic {
         message: 'Not running in secure context - location may not work',
       });
       recommendations.push(
-        'Access the site via HTTPS for location services to work',
+        'Access the site via HTTPS for location services to work'
       );
     }
 
@@ -79,7 +79,7 @@ export class LocationDiagnostic {
             message: 'Location permission denied',
           });
           recommendations.push(
-            'Enable location permissions in browser settings',
+            'Enable location permissions in browser settings'
           );
           recommendations.push('Refresh the page after enabling permissions');
           break;
@@ -90,7 +90,7 @@ export class LocationDiagnostic {
             message: 'Location permission not yet requested',
           });
           recommendations.push(
-            'Click the location button to request permission',
+            'Click the location button to request permission'
           );
           break;
         default:
@@ -100,7 +100,7 @@ export class LocationDiagnostic {
             message: `Permission state: ${permission}`,
           });
       }
-    } catch (error) {
+    } catch {
       details.push({
         check: 'Permissions',
         status: 'warning',
@@ -119,7 +119,7 @@ export class LocationDiagnostic {
         status: 'pass',
         message: 'Can reach geocoding service',
       });
-    } catch (error) {
+    } catch {
       details.push({
         check: 'Network Connectivity',
         status: 'warning',
@@ -134,17 +134,22 @@ export class LocationDiagnostic {
     const isAndroid = /Android/.test(userAgent);
     const isMobile = isIOS || isAndroid || /Mobile/.test(userAgent);
 
+    let platform = 'Other';
+    if (isIOS) {
+      platform = 'iOS';
+    } else if (isAndroid) {
+      platform = 'Android';
+    }
+    const device = isMobile ? 'Mobile' : 'Desktop';
     details.push({
       check: 'Environment',
       status: 'pass',
-      message: `Device: ${isMobile ? 'Mobile' : 'Desktop'}, Platform: ${
-        isIOS ? 'iOS' : isAndroid ? 'Android' : 'Other'
-      }`,
+      message: `Device: ${device}, Platform: ${platform}`,
     });
 
     if (isMobile) {
       recommendations.push(
-        'On mobile devices, make sure location services are enabled in device settings',
+        'On mobile devices, make sure location services are enabled in device settings'
       );
     }
 
@@ -182,12 +187,9 @@ export class LocationDiagnostic {
 
       console.group('✅ Detailed Checks');
       result.details.forEach(detail => {
-        const icon =
-          detail.status === 'pass'
-            ? '✅'
-            : detail.status === 'fail'
-            ? '❌'
-            : '⚠️';
+        let icon = '⚠️';
+        if (detail.status === 'pass') icon = '✅';
+        else if (detail.status === 'fail') icon = '❌';
         console.log(`${icon} ${detail.check}: ${detail.message}`);
       });
       console.groupEnd();
@@ -225,17 +227,12 @@ export class LocationDiagnostic {
       console.log(
         `🎯 Accuracy: ${
           result.accuracy ? `${Math.round(result.accuracy)}m` : 'Unknown'
-        }`,
+        }`
       );
       console.log(`🏙️ City: ${result.cityName || 'Not determined'}`);
       console.log(`⏱️ Time taken: ${Math.round(endTime - startTime)}ms`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Location test failed:', error);
-      console.log('Error details:', {
-        code: error.code,
-        message: error.message,
-        userMessage: error.userMessage,
-      });
 
       // Run diagnostic for troubleshooting
       console.log('');
@@ -249,10 +246,11 @@ export class LocationDiagnostic {
 
 // Expose diagnostic tools globally in development
 if (process.env.NODE_ENV === 'development') {
-  (window as any).locationDiagnostic = LocationDiagnostic;
+  (window as unknown as { locationDiagnostic?: unknown }).locationDiagnostic =
+    LocationDiagnostic;
   console.log('📍 Location diagnostic tools available:');
   console.log('- locationDiagnostic.logDiagnostic() - Run diagnostic checks');
   console.log(
-    '- locationDiagnostic.testLocationAcquisition() - Test location acquisition',
+    '- locationDiagnostic.testLocationAcquisition() - Test location acquisition'
   );
 }

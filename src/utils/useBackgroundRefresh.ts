@@ -64,7 +64,7 @@ export interface BackgroundRefreshHook {
  */
 export const useBackgroundRefresh = (
   refreshCallback: () => Promise<void>,
-  options: UseBackgroundRefreshOptions = {},
+  options: UseBackgroundRefreshOptions = {}
 ): BackgroundRefreshHook => {
   const {
     enabled = true,
@@ -145,7 +145,7 @@ export const useBackgroundRefresh = (
         serviceRef.current.updateConfig(newConfig);
       }
     },
-    [],
+    []
   );
 
   // Get current status and stats
@@ -207,7 +207,7 @@ export const useBackgroundRefresh = (
  */
 export const useSimpleBackgroundRefresh = (
   refreshCallback: () => Promise<void>,
-  enabled: boolean = true,
+  enabled: boolean = true
 ) => {
   return useBackgroundRefresh(refreshCallback, {
     enabled,
@@ -245,7 +245,7 @@ export const useAdvancedBackgroundRefresh = (
     debugMode?: boolean;
     onStatusChange?: (status: RefreshStatusEvent) => void;
     customConfig?: Partial<BackgroundRefreshConfig>;
-  } = {},
+  } = {}
 ) => {
   const {
     enabled = true,
@@ -289,7 +289,7 @@ export const useAdvancedBackgroundRefresh = (
       active: refreshHook.isAppActive,
       refreshing: refreshHook.hasActiveRefresh,
       lastRefresh: new Date(
-        Date.now() - refreshHook.lastRefreshAge,
+        Date.now() - refreshHook.lastRefreshAge
       ).toLocaleTimeString(),
       totalRefreshes: refreshHook.stats.totalRefreshes,
     }),
@@ -307,7 +307,7 @@ export const useAdvancedBackgroundRefresh = (
  */
 export const useWeatherBackgroundRefresh = (
   fetchWeatherData: () => Promise<void>,
-  enabled: boolean = true,
+  enabled: boolean = true
 ) => {
   return useAdvancedBackgroundRefresh(fetchWeatherData, {
     enabled,

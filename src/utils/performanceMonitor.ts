@@ -182,7 +182,7 @@ export class PerformanceMonitor {
   startSearchOperation(
     operationId: string,
     type: string,
-    details?: Record<string, unknown>,
+    details?: Record<string, unknown>
   ): void {
     const startTime = performance.now();
     this.activeOperations.set(operationId, startTime);
@@ -208,7 +208,7 @@ export class PerformanceMonitor {
   endSearchOperation(
     operationId: string,
     type: string,
-    data: Partial<SearchPerformanceData>,
+    data: Partial<SearchPerformanceData>
   ): number {
     const endTime = performance.now();
     const startTime = this.activeOperations.get(operationId);
@@ -260,7 +260,7 @@ export class PerformanceMonitor {
   recordSearchError(
     type: string,
     error: Error,
-    details?: Record<string, unknown>,
+    details?: Record<string, unknown>
   ): void {
     this.errorCount++;
 
@@ -284,7 +284,18 @@ export class PerformanceMonitor {
    */
   recordMemoryUsage(context: string, details?: Record<string, unknown>): void {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const perf = performance as unknown as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+      const memory = perf.memory ?? {
+        usedJSHeapSize: 0,
+        totalJSHeapSize: 0,
+        jsHeapSizeLimit: PERFORMANCE_CONFIG.THRESHOLDS.MEMORY_USAGE,
+      };
 
       this.recordMetric({
         id: this.generateId(),
@@ -316,7 +327,18 @@ export class PerformanceMonitor {
 
     // Browser memory API
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const perf = performance as unknown as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+      const memory = perf.memory ?? {
+        usedJSHeapSize: 0,
+        totalJSHeapSize: 0,
+        jsHeapSizeLimit: PERFORMANCE_CONFIG.THRESHOLDS.MEMORY_USAGE,
+      };
       memoryMetric = {
         ...memoryMetric,
         used: memory.usedJSHeapSize,
@@ -345,7 +367,7 @@ export class PerformanceMonitor {
     // Limit stored memory metrics
     if (this.memoryMetrics.length > PERFORMANCE_CONFIG.MAX_MEMORY_SAMPLES) {
       this.memoryMetrics = this.memoryMetrics.slice(
-        -PERFORMANCE_CONFIG.MAX_MEMORY_SAMPLES,
+        -PERFORMANCE_CONFIG.MAX_MEMORY_SAMPLES
       );
     }
 
@@ -431,7 +453,7 @@ export class PerformanceMonitor {
    * Extract additional details from performance entries
    */
   private extractPerformanceDetails(
-    entry: PerformanceEntry,
+    entry: PerformanceEntry
   ): Record<string, unknown> {
     const details: Record<string, unknown> = {};
 
@@ -508,7 +530,6 @@ export class PerformanceMonitor {
 
     // Log summary for development
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
       console.log('📊 Performance Summary:', summary);
     }
 
@@ -529,7 +550,7 @@ export class PerformanceMonitor {
     // Search time penalty (0-30 points)
     const searchTimePenalty = Math.min(
       30,
-      (metrics.averageSearchTime / 1000) * 10,
+      (metrics.averageSearchTime / 1000) * 10
     );
     score -= searchTimePenalty;
 
@@ -561,19 +582,19 @@ export class PerformanceMonitor {
 
     if (metrics.averageSearchTime > 500) {
       recommendations.push(
-        'Consider optimizing search algorithms or implementing better caching',
+        'Consider optimizing search algorithms or implementing better caching'
       );
     }
 
     if (metrics.cacheHitRate < 0.5) {
       recommendations.push(
-        'Improve cache strategy to increase hit rate above 50%',
+        'Improve cache strategy to increase hit rate above 50%'
       );
     }
 
     if (metrics.errorRate > 0.05) {
       recommendations.push(
-        'Investigate and fix search errors (>5% error rate detected)',
+        'Investigate and fix search errors (>5% error rate detected)'
       );
     }
 
@@ -586,7 +607,7 @@ export class PerformanceMonitor {
 
     if (recommendations.length === 0) {
       recommendations.push(
-        'Performance is optimal - no immediate improvements needed',
+        'Performance is optimal - no immediate improvements needed'
       );
     }
 
@@ -609,21 +630,21 @@ export class PerformanceMonitor {
 
     this.metrics = this.metrics.filter(metric => metric.timestamp >= cutoff);
     this.memoryMetrics = this.memoryMetrics.filter(
-      metric => metric.timestamp >= cutoff,
+      metric => metric.timestamp >= cutoff
     );
 
     // Clear old search cache entries
     const oldOperations = Array.from(this.searchCache.entries())
       .filter(
         ([, data]) =>
-          Date.now() - data.duration > PERFORMANCE_CONFIG.METRICS_TTL,
+          Date.now() - data.duration > PERFORMANCE_CONFIG.METRICS_TTL
       )
       .map(([id]) => id);
 
     oldOperations.forEach(id => this.searchCache.delete(id));
 
     console.log(
-      `🧹 Cleaned up ${oldOperations.length} old performance metrics`,
+      `🧹 Cleaned up ${oldOperations.length} old performance metrics`
     );
   }
 
@@ -631,7 +652,7 @@ export class PerformanceMonitor {
    * Generate unique identifier
    */
   private generateId(): string {
-    return `perf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `perf_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   /**
@@ -649,17 +670,16 @@ export class PerformanceMonitor {
     }
 
     if (filter?.timeRange) {
+      const start = filter.timeRange?.start ?? Number.NEGATIVE_INFINITY;
+      const end = filter.timeRange?.end ?? Number.POSITIVE_INFINITY;
       filtered = filtered.filter(
-        m =>
-          m.timestamp >= filter.timeRange!.start &&
-          m.timestamp <= filter.timeRange!.end,
+        m => m.timestamp >= start && m.timestamp <= end
       );
     }
 
     if (filter?.tags && filter.tags.length > 0) {
-      filtered = filtered.filter(m =>
-        m.tags?.some(tag => filter.tags!.includes(tag)),
-      );
+      const tags = filter.tags ?? [];
+      filtered = filtered.filter(m => m.tags?.some(tag => tags.includes(tag)));
     }
 
     return filtered;

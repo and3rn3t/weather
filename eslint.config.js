@@ -89,14 +89,40 @@ export default tseslint.config([
       // Code style (should match Prettier)
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
-      'comma-dangle': ['error', 'always-multiline'],
-      'trailing-comma': 'off', // Let Prettier handle this
+      // Trailing commas aligned with Prettier; ESLint core rule supports TS in v9+
+      'comma-dangle': [
+        'error',
+        {
+          arrays: 'always-multiline',
+          objects: 'always-multiline',
+          imports: 'always-multiline',
+          exports: 'always-multiline',
+          functions: 'always-multiline',
+          // NOTE: ESLint core handles TS constructs via typescript-eslint parser
+        },
+      ],
     },
   },
   {
     files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
+    // Dev-only diagnostics: allow console usage without warnings
+    files: [
+      'src/App-diagnostic.tsx',
+      'src/utils/logger.ts',
+      'src/utils/horrorEffectsDebug.ts',
+      'src/utils/locationDiagnostic.ts',
+      'src/components/Dash0ErrorBoundary.tsx',
+      'src/dash0/components/Dash0ErrorBoundary.tsx',
+      'src/utils/performanceMonitor.ts',
+      'src/utils/backgroundSyncManager.ts',
+    ],
+    rules: {
       'no-console': 'off',
     },
   },

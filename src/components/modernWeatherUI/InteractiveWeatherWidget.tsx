@@ -139,7 +139,7 @@ interface WidgetContentProps {
 const createBaseStyles = (
   isDark: boolean,
   isCompact: boolean,
-  isExpanded: boolean,
+  isExpanded: boolean
 ) => ({
   header: {
     display: 'flex',
@@ -180,7 +180,7 @@ const createBaseStyles = (
 const createDetailStyles = (
   isDark: boolean,
   isCompact: boolean,
-  isExpanded: boolean,
+  isExpanded: boolean
 ) => ({
   grid: {
     display: isCompact ? 'none' : 'grid',

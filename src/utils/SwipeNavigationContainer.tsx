@@ -53,7 +53,7 @@ export const SwipeNavigationContainer: React.FC<SwipeNavigationProps> = ({
     onSwipeLeft,
     onSwipeRight,
     canSwipeLeft,
-    canSwipeRight,
+    canSwipeRight
   );
 
   // Calculate transform for drag feedback

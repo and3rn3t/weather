@@ -108,7 +108,7 @@ class LocationPermissionManager {
           });
         } catch {
           logWarn(
-            '⚠️ LocationPermission: Permissions API error, using fallback',
+            '⚠️ LocationPermission: Permissions API error, using fallback'
           );
           permissionState.prompt = true; // Assume we need to prompt
         }
@@ -128,7 +128,7 @@ class LocationPermissionManager {
     } catch (error) {
       logError(
         '❌ LocationPermission: Error checking permission status',
-        error,
+        error
       );
       permissionState.unavailable = true;
       return permissionState;
@@ -139,7 +139,7 @@ class LocationPermissionManager {
    * Request location permission with user-friendly handling
    */
   async requestPermission(
-    config: LocationPermissionConfig = {},
+    config: LocationPermissionConfig = {}
   ): Promise<PermissionRequestResult> {
     const {
       enableHighAccuracy = false,
@@ -230,7 +230,7 @@ class LocationPermissionManager {
    * Execute the actual permission request
    */
   private async executePermissionRequest(
-    enableHighAccuracy: boolean,
+    enableHighAccuracy: boolean
   ): Promise<PermissionRequestResult> {
     return new Promise(resolve => {
       const options: PositionOptions = {
@@ -277,7 +277,7 @@ class LocationPermissionManager {
             message: this.getErrorMessage(error.code),
           });
         },
-        options,
+        options
       );
     });
   }
@@ -347,7 +347,7 @@ class LocationPermissionManager {
    * Check if location permission is required for current feature
    */
   isPermissionRequired(
-    feature: 'auto-weather' | 'background-updates' | 'location-search',
+    feature: 'auto-weather' | 'background-updates' | 'location-search'
   ): boolean {
     switch (feature) {
       case 'auto-weather':
@@ -377,7 +377,7 @@ export function useLocationPermission() {
   const resetCache = () => manager.resetPermissionCache();
   const getRecommendations = () => manager.getPermissionRecommendations();
   const isRequired = (
-    feature: 'auto-weather' | 'background-updates' | 'location-search',
+    feature: 'auto-weather' | 'background-updates' | 'location-search'
   ) => manager.isPermissionRequired(feature);
 
   return {

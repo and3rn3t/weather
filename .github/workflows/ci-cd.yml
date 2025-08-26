@@ -1,0 +1,120 @@
+name: ⚡ Ultra-Fast Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_quality:
+        description: 'Skip quality checks for emergency deploys'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '22'
+  # Ultra-fast npm settings
+  NPM_CONFIG_PREFER_OFFLINE: true
+  NPM_CONFIG_NO_AUDIT: true
+  NPM_CONFIG_NO_FUND: true
+  NPM_CONFIG_PROGRESS: false
+  NPM_CONFIG_LOGLEVEL: error
+  # Vite optimizations
+  VITE_CJS_IGNORE_WARNING: true
+  NODE_OPTIONS: '--max-old-space-size=4096'
+
+jobs:
+  ultra-deploy:
+    name: ⚡ Ultra Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - name: ⚡ Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # Minimal checkout
+
+      - name: ⚡ Setup Node.js + Cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: ⚡ Restore build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.vite
+            dist
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**/*', 'vite.config.ts') }}
+          restore-keys: |
+            build-${{ runner.os }}-
+
+      - name: ♻️ Cache ESLint
+        uses: actions/cache@v4
+        with:
+          path: .eslintcache
+          key: eslint-${{ runner.os }}-${{ hashFiles('**/*.ts', '**/*.tsx', 'eslint.config.js', 'package-lock.json') }}
+          restore-keys: |
+            eslint-${{ runner.os }}-
+
+      - name: ⚡ Install dependencies (turbo mode)
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund --silent
+
+      - name: ⚡ Fast quality check
+        if: ${{ !inputs.skip_quality }}
+        run: |
+          # Run essential checks (non-blocking for speed) with ESLint cache
+          npx eslint . --cache --cache-location .eslintcache || echo "⚠️ Lint warnings (non-blocking)"
+        continue-on-error: true
+        timeout-minutes: 1
+
+      - name: 🔍 Lint (main - blocking)
+        if: ${{ github.ref_name == 'main' && !inputs.skip_quality }}
+        run: |
+          npm run lint:check
+
+      - name: ✨ Prettier check
+        if: ${{ !inputs.skip_quality }}
+        run: |
+          npm run format:check
+        timeout-minutes: 1
+
+      - name: 🔒 Type-check (PRs)
+        if: ${{ github.event_name == 'pull_request' && !inputs.skip_quality }}
+        run: |
+          npm run type-check
+
+      - name: ⚡ Turbo build
+        run: |
+          # Ultra-fast build without TypeScript compilation check
+          npm run build:ultra
+
+      - name: 🚀 Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=premium-weather-app --branch=${{ github.ref_name }}
+
+      - name: ⚡ Success notification
+        if: success()
+        run: |
+          echo "## ⚡ Ultra-Fast Deploy Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "**⏱️ Total time: <2 minutes**" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "🚀 **Production**: https://weather.andernet.dev" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 **Cloudflare**: https://premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🧪 **Development**: https://weather-dev.andernet.dev" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 **Cloudflare**: https://${{ github.ref_name }}.premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+          fi

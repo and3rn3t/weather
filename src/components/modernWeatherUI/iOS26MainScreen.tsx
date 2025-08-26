@@ -14,8 +14,8 @@
 
 import React, { useState } from 'react';
 import type { ThemeColors } from '../../utils/themeConfig';
-import { ContextMenu } from './iOS26Components';
 import WeatherIcon from '../../utils/weatherIcons';
+import { ContextMenu } from './iOS26Components';
 
 // ============================================================================
 // MAIN WEATHER CARD WITH iOS 26 ENHANCEMENTS
@@ -33,7 +33,7 @@ interface IOS26WeatherCardProps {
   onLocationTap?: () => void;
 }
 
-const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
+export const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
   temperature,
   weatherCode,
   location,
@@ -55,7 +55,9 @@ const IOS26WeatherCard: React.FC<IOS26WeatherCardProps> = ({
       : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%)',
     backdropFilter: 'blur(30px)',
     borderRadius: '28px',
-    border: `2px solid ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)'}`,
+    border: `2px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)'
+    }`,
     boxShadow: isDark
       ? '0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
       : '0 20px 60px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
@@ -234,7 +236,7 @@ interface QuickActionsPanelProps {
   onRadar?: () => void;
 }
 
-const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
+export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
   theme,
   onLocationSearch,
   onFavorites,
@@ -256,7 +258,9 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
   const actionButtonStyle: React.CSSProperties = {
     background: isDark ? 'rgba(44, 44, 46, 0.8)' : 'rgba(255, 255, 255, 0.8)',
     backdropFilter: 'blur(20px)',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    border: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     borderRadius: '20px',
     padding: '20px',
     cursor: 'pointer',
@@ -330,7 +334,7 @@ interface WeatherMetricsGridProps {
   theme: ThemeColors;
 }
 
-const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
+export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
   metrics,
   theme,
 }) => {
@@ -349,7 +353,9 @@ const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
   const metricCardStyle: React.CSSProperties = {
     background: isDark ? 'rgba(44, 44, 46, 0.6)' : 'rgba(255, 255, 255, 0.7)',
     backdropFilter: 'blur(20px)',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
+    border: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'
+    }`,
     borderRadius: '18px',
     padding: '20px',
     display: 'flex',
@@ -455,7 +461,7 @@ interface IOS26NavigationBarProps {
   onBack?: () => void;
 }
 
-const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
+export const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
   title,
   theme,
   leftAction,
@@ -470,7 +476,9 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
   const containerStyle: React.CSSProperties = {
     background: isDark ? 'rgba(28, 28, 30, 0.8)' : 'rgba(248, 250, 252, 0.8)',
     backdropFilter: 'blur(30px)',
-    borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    borderBottom: `1px solid ${
+      isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+    }`,
     padding: '16px 20px',
     display: 'flex',
     alignItems: 'center',
@@ -577,18 +585,4 @@ const IOS26NavigationBar: React.FC<IOS26NavigationBarProps> = ({
   );
 };
 
-// Export all components
-export {
-  IOS26WeatherCard as iOS26WeatherCard,
-  QuickActionsPanel,
-  WeatherMetricsGrid,
-  IOS26NavigationBar as iOS26NavigationBar,
-};
-
-export type {
-  IOS26WeatherCardProps as iOS26WeatherCardProps,
-  QuickActionsPanelProps,
-  WeatherMetricsGridProps,
-  IOS26NavigationBarProps as iOS26NavigationBarProps,
-  WeatherMetric,
-};
+// File now only exports React components

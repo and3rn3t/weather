@@ -124,7 +124,7 @@ export class WeatherIconMorpher {
    */
   async morphTo(
     weatherType: string,
-    options: MorphingOptions = {},
+    options: MorphingOptions = {}
   ): Promise<void> {
     if (this.isTransitioning) {
       // Stop current transition
@@ -149,19 +149,19 @@ export class WeatherIconMorpher {
           'scale',
           targetState.scale,
           springConfig,
-          stagger * 1,
+          stagger * 1
         ),
         this.animateProperty(
           'opacity',
           targetState.opacity,
           springConfig,
-          stagger * 2,
+          stagger * 2
         ),
         this.animateProperty(
           'shadow',
           targetState.shadow,
           springConfig,
-          stagger * 3,
+          stagger * 3
         ),
         this.animateColor(targetState.color, springConfig, stagger * 4),
       ];
@@ -189,7 +189,7 @@ export class WeatherIconMorpher {
     property: string,
     targetValue: number,
     springConfig: (typeof SpringPresets)[keyof typeof SpringPresets],
-    delay: number = 0,
+    delay: number = 0
   ): Promise<void> {
     return new Promise(resolve => {
       const animation = this.animations.get(property);
@@ -222,7 +222,7 @@ export class WeatherIconMorpher {
   private animateColor(
     targetColor: string,
     _springConfig: (typeof SpringPresets)[keyof typeof SpringPresets],
-    delay: number = 0,
+    delay: number = 0
   ): Promise<void> {
     return new Promise(resolve => {
       const startColorAnimation = () => {
@@ -252,7 +252,7 @@ export class WeatherIconMorpher {
     // Example: If using CSS classes for icons
     this.element.className = this.element.className.replace(
       /weather-icon-\w+/,
-      `weather-icon-${iconType}`,
+      `weather-icon-${iconType}`
     );
 
     // Example: If using data attributes for icon selection
@@ -285,7 +285,7 @@ export class WeatherIconMorpher {
    */
   private applyState(
     state: WeatherIconState,
-    immediate: boolean = false,
+    immediate: boolean = false
   ): void {
     if (immediate) {
       this.element.style.transform = `rotate(${state.rotation}deg) scale(${state.scale})`;
@@ -401,7 +401,7 @@ export class WeatherIconMorpher {
  */
 export const useWeatherIconMorpher = (
   elementRef: React.RefObject<HTMLElement>,
-  initialWeatherType: string = 'clear-day',
+  initialWeatherType: string = 'clear-day'
 ) => {
   const [morpher, setMorpher] = useState<WeatherIconMorpher | null>(null);
   const [currentWeatherType, setCurrentWeatherType] =
@@ -411,7 +411,7 @@ export const useWeatherIconMorpher = (
     if (elementRef.current && !morpher) {
       const newMorpher = new WeatherIconMorpher(
         elementRef.current,
-        initialWeatherType,
+        initialWeatherType
       );
       newMorpher.addHoverEffect();
       newMorpher.addClickEffect();
@@ -430,7 +430,7 @@ export const useWeatherIconMorpher = (
         setCurrentWeatherType(weatherType);
       }
     },
-    [morpher, currentWeatherType],
+    [morpher, currentWeatherType]
   );
 
   return {

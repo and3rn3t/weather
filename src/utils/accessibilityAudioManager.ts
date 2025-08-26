@@ -192,7 +192,7 @@ export class AccessibilityAudioManager {
         this.availableVoices = this.speechSynthesis?.getVoices() || [];
         if (this.availableVoices.length > 0) {
           logger.info(
-            `Found ${this.availableVoices.length} speech synthesis voices`,
+            `Found ${this.availableVoices.length} speech synthesis voices`
           );
           resolve();
         } else {
@@ -218,7 +218,7 @@ export class AccessibilityAudioManager {
       // Check for common screen reader indicators
       const hasScreenReaderLandmarks =
         document.querySelectorAll(
-          '[role="main"], [role="navigation"], [aria-live]',
+          '[role="main"], [role="navigation"], [aria-live]'
         ).length > 0;
       const hasAriaLabels =
         document.querySelectorAll('[aria-label], [aria-describedby]').length >
@@ -240,7 +240,7 @@ export class AccessibilityAudioManager {
   async announceWeatherCondition(
     condition: string,
     temperature?: number,
-    location?: string,
+    location?: string
   ): Promise<void> {
     if (!this.config.enabled || !this.config.weatherDescriptions) return;
 
@@ -255,7 +255,7 @@ export class AccessibilityAudioManager {
 
     if (temperature !== undefined) {
       announcement += `Current temperature: ${Math.round(
-        temperature,
+        temperature
       )} degrees. `;
     }
 
@@ -273,7 +273,7 @@ export class AccessibilityAudioManager {
    */
   async announceNavigationElement(
     elementId: string,
-    includeinstructions: boolean = false,
+    includeinstructions: boolean = false
   ): Promise<void> {
     if (!this.config.enabled || !this.config.navigationCues) return;
 
@@ -301,7 +301,7 @@ export class AccessibilityAudioManager {
       condition: string;
       high: number;
       low: number;
-    }>,
+    }>
   ): Promise<void> {
     if (!this.config.enabled || !this.config.weatherDescriptions) return;
 
@@ -328,7 +328,7 @@ export class AccessibilityAudioManager {
    */
   async announceWeatherAlert(
     alertLevel: 'info' | 'warning' | 'severe' | 'emergency',
-    message: string,
+    message: string
   ): Promise<void> {
     if (!this.config.enabled) return;
 
@@ -381,7 +381,7 @@ export class AccessibilityAudioManager {
   private async speak(
     text: string,
     category: string,
-    priority: 'low' | 'normal' | 'high' = 'normal',
+    priority: 'low' | 'normal' | 'high' = 'normal'
   ): Promise<void> {
     if (!this.speechSynthesis || !this.isInitialized) return;
 
@@ -408,7 +408,7 @@ export class AccessibilityAudioManager {
       // Add event listeners
       utterance.onstart = () => {
         logger.debug(
-          `Started speaking ${category}: ${text.substring(0, 50)}...`,
+          `Started speaking ${category}: ${text.substring(0, 50)}...`
         );
       };
 
@@ -475,7 +475,7 @@ export class AccessibilityAudioManager {
     await this.speak(
       'Accessibility audio is working. This is a test of the speech synthesis system.',
       'test',
-      'high',
+      'high'
     );
   }
 

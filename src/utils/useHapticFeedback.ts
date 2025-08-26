@@ -8,7 +8,6 @@
 import { useCallback, useRef } from 'react';
 import { logError, logInfo } from './logger';
 
-
 // ============================================================================
 // HAPTIC FEEDBACK PATTERNS
 // ============================================================================
@@ -101,7 +100,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
 
     // Check if device likely supports haptics
     const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone/i.test(
-      userAgent,
+      userAgent
     );
     const isIOS = /iphone|ipad|ipod/i.test(userAgent);
     const isAndroid = /android/i.test(userAgent);
@@ -181,7 +180,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
         return false;
       }
     },
-    [getCapabilities, respectSystemSettings, debugMode],
+    [getCapabilities, respectSystemSettings, debugMode]
   );
 
   // ============================================================================
@@ -200,49 +199,49 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
 
       return executeVibration(vibrationPattern);
     },
-    [executeVibration],
+    [executeVibration]
   );
 
   // Convenience methods for common patterns
   const light = useCallback(
     () => triggerHaptic(HapticPattern.LIGHT),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const medium = useCallback(
     () => triggerHaptic(HapticPattern.MEDIUM),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const heavy = useCallback(
     () => triggerHaptic(HapticPattern.HEAVY),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const success = useCallback(
     () => triggerHaptic(HapticPattern.SUCCESS),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const error = useCallback(
     () => triggerHaptic(HapticPattern.ERROR),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const notification = useCallback(
     () => triggerHaptic(HapticPattern.NOTIFICATION),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const selection = useCallback(
     () => triggerHaptic(HapticPattern.SELECTION),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const refresh = useCallback(
     () => triggerHaptic(HapticPattern.REFRESH),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const navigation = useCallback(
     () => triggerHaptic(HapticPattern.NAVIGATION),
-    [triggerHaptic],
+    [triggerHaptic]
   );
   const longPress = useCallback(
     () => triggerHaptic(HapticPattern.LONG_PRESS),
-    [triggerHaptic],
+    [triggerHaptic]
   );
 
   // ============================================================================
@@ -285,7 +284,7 @@ export const useHapticFeedback = (config: HapticConfig = {}) => {
         // Silently fail for audio fallback
       }
     },
-    [fallbackToAudio],
+    [fallbackToAudio]
   );
 
   // ============================================================================

@@ -25,7 +25,7 @@ interface EnhancedPullToRefreshOptions {
  */
 export const useEnhancedPullToRefresh = (
   onRefresh: () => Promise<void>,
-  options: EnhancedPullToRefreshOptions = {},
+  options: EnhancedPullToRefreshOptions = {}
 ) => {
   const { enableHaptics = true, ...pullOptions } = options;
 

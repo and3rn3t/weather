@@ -39,7 +39,7 @@ jobs:
     timeout-minutes: 8
     environment:
       name: ${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'development' }}
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ github.event_name == 'pull_request' && format('https://{0}.premium-weather-app.pages.dev', github.ref_name) || '' }}
 
     steps:
       - name: ⚡ Checkout
@@ -53,14 +53,31 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: ♻️ Cache ESLint
+        uses: actions/cache@v4
+        with:
+          path: .eslintcache
+          key: eslint-${{ runner.os }}-${{ hashFiles('**/*.ts', '**/*.tsx', 'eslint.config.js', 'package-lock.json') }}
+          restore-keys: |
+            eslint-${{ runner.os }}-
+
       - name: ⚡ Install dependencies
         run: |
           npm ci --prefer-offline --no-audit --no-fund --silent
 
-      - name: 🔍 Quality checks
+      - name: 🔍 Quality checks (non-blocking)
         run: |
-          npm run lint --silent || echo "⚠️ Lint warnings (non-blocking)"
+          npx eslint . --cache --cache-location .eslintcache || echo "⚠️ Lint warnings (non-blocking)"
         continue-on-error: true
+
+      - name: ✨ Prettier check
+        run: |
+          npm run format:check
+
+      - name: 🔒 Type-check (PRs)
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run type-check
 
       - name: 🏗️ Build for development
         run: |

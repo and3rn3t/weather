@@ -42,11 +42,25 @@ export const ThemeProvider = ({
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('weather-app-theme') as ThemeName;
       // Validate the saved theme and fallback to 'light' if invalid
-      return savedTheme === 'light' ||
+      const valid =
+        savedTheme === 'light' ||
         savedTheme === 'dark' ||
         savedTheme === 'horror'
-        ? savedTheme
-        : 'light';
+          ? savedTheme
+          : 'light';
+
+      // Development safeguard: temporarily neutralize horror theme
+      // Development safeguard: optionally neutralize horror theme in development.
+      // To enable/disable this override, set VITE_DISABLE_HORROR_THEME_IN_DEV in your .env file.
+      if (
+        valid === 'horror' &&
+        import.meta.env.MODE !== 'production' &&
+        import.meta.env.VITE_DISABLE_HORROR_THEME_IN_DEV === 'true'
+      ) {
+        return 'dark';
+      }
+
+      return valid;
     }
     return 'light';
   });
@@ -84,7 +98,7 @@ export const ThemeProvider = ({
       // NUCLEAR FIX: Completely disable automatic background changes
       // Let the nuclear system in index.html handle all background changes
       logInfo(
-        '🚫 React theme context disabled - nuclear system handling background',
+        '🚫 React theme context disabled - nuclear system handling background'
       );
 
       // Remove all theme classes first
@@ -94,17 +108,28 @@ export const ThemeProvider = ({
       if (themeName === 'dark') {
         document.body.classList.add('dark-theme');
       } else if (themeName === 'horror') {
-        document.body.classList.add('horror-theme');
-        // Load horror theme CSS dynamically
-        loadThemeCSS('horror').catch(error => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load horror theme CSS:', error);
-        });
+        // In development, skip loading horror CSS to prevent visual overlays
+        if (import.meta.env.MODE === 'production') {
+          document.body.classList.add('horror-theme');
+          // Load horror theme CSS dynamically
+          loadThemeCSS('horror').catch(error => {
+            // eslint-disable-next-line no-console
+            console.error('Failed to load horror theme CSS:', error);
+          });
+        } else {
+          document.body.classList.remove('horror-theme');
+          document.body.classList.add('dark-theme');
+        }
       }
 
       // Store theme info for nuclear system but don't apply background
       document.body.setAttribute('data-theme', themeName);
       document.body.setAttribute('data-theme-bg', theme.appBackground);
+
+      // Ensure any horror overlay classes are cleared in development
+      if (import.meta.env.MODE !== 'production') {
+        document.body.classList.remove('film-grain-overlay');
+      }
     }
   }, [theme.appBackground, themeName]);
 
@@ -117,7 +142,7 @@ export const ThemeProvider = ({
       isDark,
       isHorror,
     }),
-    [theme, themeName, toggleTheme, isDark, isHorror],
+    [theme, themeName, toggleTheme, isDark, isHorror]
   );
 
   return (
