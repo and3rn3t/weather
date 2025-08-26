@@ -40,9 +40,18 @@ jobs:
         run: |
           npm ci --prefer-offline --no-audit --no-fund --silent
 
-      - name: 🧪 Run tests to produce coverage (fast)
+      - name: 🧪 Run tests to produce coverage
         run: |
-          npm run test:ci || npm run test:fast
+          npm run test:ci || npm run test:coverage || npm run test:fast
+
+      - name: 🔎 Check coverage artifact exists
+        run: |
+          if [ ! -f coverage/lcov.info ]; then
+            echo "LCOV not found; listing coverage directory:" && ls -la coverage || true
+            echo "::warning::No LCOV file found at coverage/lcov.info"
+          else
+            echo "Found LCOV at coverage/lcov.info"
+          fi
 
       - name: � Ensure Sonar project exists and detect default branch
         id: ensure_project
