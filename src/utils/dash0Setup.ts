@@ -23,7 +23,7 @@ export interface Dash0Config {
 const defaultConfig: Dash0Config = {
   endpoint: 'https://ingress.dash0.com/v1/traces', // Replace with your Dash0 endpoint
   authToken: process.env.VITE_DASH0_AUTH_TOKEN || 'your-auth-token-here', // Use environment variable
-  serviceName: 'premium-weather-app',
+  serviceName: 'weather',
   serviceVersion: '1.0.0',
   environment: process.env.NODE_ENV || 'development',
 };

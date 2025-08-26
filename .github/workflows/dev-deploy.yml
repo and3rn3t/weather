@@ -3,8 +3,14 @@ name: 🧪 Development Deploy
 on:
   push:
     branches: [dev, develop, staging]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
     inputs:
       environment:
@@ -21,6 +27,10 @@ permissions:
   contents: read
   deployments: write
   pull-requests: write
+
+concurrency:
+  group: dev-deploy-${{ github.ref_name }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '22'
@@ -39,7 +49,7 @@ jobs:
     timeout-minutes: 8
     environment:
       name: ${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'development' }}
-      url: ${{ github.event_name == 'pull_request' && format('https://{0}.premium-weather-app.pages.dev', github.ref_name) || '' }}
+      url: ${{ github.event_name == 'pull_request' && format('https://{0}.weather.pages.dev', github.ref_name) || '' }}
 
     steps:
       - name: ⚡ Checkout
@@ -79,21 +89,51 @@ jobs:
         run: |
           npm run type-check
 
-      - name: 🏗️ Build for development
+      - name: 🏗️ Build for development (with fallback)
         run: |
-          npm run build:ultra
+          npm run build:ultra || npm run build:fallback
         env:
           VITE_ENVIRONMENT: ${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'development' }}
 
-      - name: 🚀 Deploy to Cloudflare Pages
+      - name: Deploy preflight (secrets present)
+        if: ${{ github.event_name == 'push' && (github.ref_name == 'dev' || github.ref_name == 'develop' || github.ref_name == 'staging') && github.repository == 'and3rn3t/weather' }}
+        run: |
+          missing=0
+          [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && echo "❌ Missing secret: CLOUDFLARE_API_TOKEN" && missing=1 || echo "✅ CLOUDFLARE_API_TOKEN present"
+          [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ] && echo "❌ Missing secret: CLOUDFLARE_ACCOUNT_ID" && missing=1 || echo "✅ CLOUDFLARE_ACCOUNT_ID present"
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Required Cloudflare secrets are missing; aborting deploy." && exit 1
+          fi
+
+      - name: 🚀 Deploy to Cloudflare Pages (pipeline only)
+        if: ${{ github.event_name == 'push' && (github.ref_name == 'dev' || github.ref_name == 'develop' || github.ref_name == 'staging') && github.repository == 'and3rn3t/weather' }}
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=premium-weather-app --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }}
+          command: pages deploy dist --project-name=weather --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }}
+
+      - name: Dry-run preflight (manual dispatch)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "# Dev Dry-run preflight" >> $GITHUB_STEP_SUMMARY
+          echo "Event: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "❌ Missing secret: CLOUDFLARE_API_TOKEN" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ CLOUDFLARE_API_TOKEN present" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "❌ Missing secret: CLOUDFLARE_ACCOUNT_ID" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ CLOUDFLARE_ACCOUNT_ID present" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+          echo "Deploy step is gated: event=push AND branch in [dev,develop,staging] AND repo=and3rn3t/weather" >> $GITHUB_STEP_SUMMARY
 
       - name: 📋 Deployment Summary
+        if: ${{ github.event_name == 'push' }}
         run: |
           echo "## 🧪 Development Deploy Complete!" >> $GITHUB_STEP_SUMMARY
           echo "**Environment**: ${{ github.event_name == 'pull_request' && 'Preview' || inputs.environment || 'Development' }}" >> $GITHUB_STEP_SUMMARY
@@ -102,10 +142,10 @@ jobs:
           if [ "${{ github.ref_name }}" = "dev" ] || [ "${{ github.ref_name }}" = "develop" ]; then
             echo "🧪 **Development**: https://weather-dev.andernet.dev" >> $GITHUB_STEP_SUMMARY
           fi
-          echo "🔗 **Cloudflare**: https://${{ github.ref_name }}.premium-weather-app.pages.dev" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Cloudflare**: https://${{ github.ref_name }}.weather.pages.dev" >> $GITHUB_STEP_SUMMARY
 
-      - name: 💬 PR Comment
-        if: github.event_name == 'pull_request'
+      - name: 💬 PR Comment (no-op; Cloudflare App disabled, pipeline-only)
+        if: false
         uses: actions/github-script@v7
         with:
           script: |
@@ -115,7 +155,7 @@ jobs:
               repo: context.repo.repo,
               body: `## 🚀 Preview Deployment Ready!
 
-              **Preview URL**: https://${{ github.ref_name }}.premium-weather-app.pages.dev
+              **Preview URL**: https://${{ github.ref_name }}.weather.pages.dev
               **Branch**: \`${{ github.ref_name }}\`
               **Commit**: \`${{ github.sha }}\`
 

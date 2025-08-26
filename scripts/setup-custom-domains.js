@@ -63,15 +63,11 @@ console.log('\n🔧 Manual Setup Steps Required:');
 console.log('\n1. 📡 DNS Configuration (in Cloudflare DNS):');
 console.log('   Add these CNAME records in your andernet.dev zone:');
 console.log('   ');
-console.log(
-  '   weather.andernet.dev     CNAME   premium-weather-app.pages.dev'
-);
-console.log(
-  '   weather-dev.andernet.dev CNAME   premium-weather-app.pages.dev'
-);
+console.log('   weather.andernet.dev     CNAME   weather.pages.dev');
+console.log('   weather-dev.andernet.dev CNAME   weather.pages.dev');
 
 console.log('\n2. 🔗 Custom Domains (in Cloudflare Pages):');
-console.log('   Go to: https://dash.cloudflare.com/pages/premium-weather-app');
+console.log('   Go to: https://dash.cloudflare.com/pages/weather');
 console.log('   Navigate to: Custom domains tab');
 console.log('   ');
 console.log('   Add these custom domains:');
@@ -107,7 +103,7 @@ console.log('   npm run deploy:diagnostic  # Verify configuration');
 console.log('\n🔍 Verification URLs:');
 console.log(`   Production:  https://${domains.production.domain}`);
 console.log(`   Development: https://${domains.development.domain}`);
-console.log('   Cloudflare:  https://premium-weather-app.pages.dev');
+console.log('   Cloudflare:  https://weather.pages.dev');
 
 console.log('\n📚 Documentation:');
 console.log(
