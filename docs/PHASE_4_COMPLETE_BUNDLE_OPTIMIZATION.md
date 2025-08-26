@@ -41,32 +41,34 @@ optimal bundle architecture and dependency cleanup while maintaining full functi
 
 ### **JavaScript Bundle Structure (387KB total)**
 
-```
-📦 Production Bundle:
-├── index-D1fH4tz1.js (225KB) ← Main application logic
-├── ui-utils-BGOkVs33.js (103KB) ← Shared utilities & themes
-├── react-vendor-DJG_os-6.js (12KB) ← React core (optimal!)
-├── haptic-features-BZBqGZ2Z.js (11KB) ← Mobile interactions
-├── weather-core-C0Da8VBX.js (10KB) ← Weather API logic
-├── capacitor-vendor-tCENxUp2.js (9KB) ← Essential mobile only
-├── web-DLUzKRcr.js (1KB) ← Web utilities
-└── sw.js (16KB) ← Service worker
+```mermaid
+flowchart TD
+  A[index-D1fH4tz1.js\n225KB\nMain app]
+  B[ui-utils-BGOkVs33.js\n103KB\nShared utilities]
+  C[react-vendor-DJG_os-6.js\n12KB\nReact core]
+  D[haptic-features-BZBqGZ2Z.js\n11KB\nMobile interactions]
+  E[weather-core-C0Da8VBX.js\n10KB\nWeather API]
+  F[capacitor-vendor-tCENxUp2.js\n9KB\nMobile only]
+  G[web-DLUzKRcr.js\n1KB\nWeb utils]
+  H[sw.js\n16KB\nService worker]
+  A --- B --- C --- D --- E --- F --- G --- H
 ```
 
 ### **CSS Bundle Structure (161KB total)**
 
-```
-🎨 Conditional Style Loading:
-├── index-yk_kzbru.css (63KB) ← Core styles
-├── horror-*.css (42KB) ← Dark theme (3 chunks)
-├── mobile-*.css (27KB) ← Mobile-specific (4 chunks)
-├── ios-*.css (18KB) ← iOS design system (3 chunks)
-└── layout-*.css (11KB) ← Layout fixes (3 chunks)
+```mermaid
+flowchart TD
+  CS[index-yk_kzbru.css\n63KB\nCore styles]
+  HT[horror-*.css\n42KB\nDark theme]
+  MB[mobile-*.css\n27KB\nMobile]
+  IOS[ios-*.css\n18KB\niOS design]
+  LY[layout-*.css\n11KB\nLayout]
+  CS --- HT --- MB --- IOS --- LY
 ```
 
 ### **Gzipped Performance (Critical)**
 
-```
+```text
 ⚡ Network Transfer Sizes:
 • Main bundle: 70.43KB gzipped
 • React vendor: 4.24KB gzipped
@@ -207,7 +209,7 @@ The bundle is now optimized for production deployment with:
 
 ## 🏆 Phase 4 Summary
 
-**PHASE 4 COMPLETE: Advanced Bundle Optimization Success ✅**
+### PHASE 4 COMPLETE: Advanced Bundle Optimization Success ✅
 
 ### **Major Achievements:**
 
@@ -229,4 +231,4 @@ performance, maintainability, and user experience.**
 
 ---
 
-_Generated: Phase 4 Complete - Advanced Bundle Optimization Achievement_
+Generated: Phase 4 Complete - Advanced Bundle Optimization Achievement

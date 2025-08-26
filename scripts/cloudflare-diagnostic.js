@@ -53,7 +53,7 @@ if (fs.existsSync(distPath)) {
 }
 
 // Check workflow file
-const workflowPath = path.join(projectRoot, '.github/workflows/deploy.yml');
+const workflowPath = path.join(projectRoot, '.github/workflows/ci-cd.yml');
 if (fs.existsSync(workflowPath)) {
   console.log('✅ Deploy workflow found');
   const content = fs.readFileSync(workflowPath, 'utf8');
@@ -86,9 +86,7 @@ console.log('\n📋 Recommended Commands:');
 console.log('   npm run build:ultra  # Test build locally');
 console.log('   npm run deploy:production  # Deploy to production');
 console.log('   npm run deploy:dev  # Deploy to development');
-console.log(
-  '   npx wrangler pages deploy dist --project-name=premium-weather-app  # Test deploy locally'
-);
+console.log('   npx wrangler pages deploy dist --project-name=weather');
 
 console.log('\n🌐 Useful Links:');
 console.log('   Cloudflare Pages: https://dash.cloudflare.com/pages');

@@ -34,7 +34,7 @@ export function useDash0Telemetry() {
     dash0Telemetry.trackPerformance(
       'component_mount_time',
       mountDuration,
-      'ms',
+      'ms'
     );
 
     return () => {
@@ -49,7 +49,7 @@ export function useDash0Telemetry() {
     (event: WeatherTelemetryEvents['weatherDataRequested']) => {
       dash0Telemetry.trackWeatherApiCall(event.city, event.apiType);
     },
-    [],
+    []
   );
 
   // Track successful weather data
@@ -62,10 +62,10 @@ export function useDash0Telemetry() {
       dash0Telemetry.trackPerformance(
         'weather_api_response_time',
         event.responseTime,
-        'ms',
+        'ms'
       );
     },
-    [],
+    []
   );
 
   // Track weather API errors
@@ -74,7 +74,7 @@ export function useDash0Telemetry() {
       const error = new Error(`Weather API Error: ${event.error}`);
       dash0Telemetry.trackError(error, `Weather data for ${event.city}`);
     },
-    [],
+    []
   );
 
   // Track theme changes
@@ -84,7 +84,7 @@ export function useDash0Telemetry() {
         theme: event.theme,
       });
     },
-    [],
+    []
   );
 
   // Track location requests
@@ -94,7 +94,7 @@ export function useDash0Telemetry() {
         method: event.method,
       });
     },
-    [],
+    []
   );
 
   // Track general user interactions
@@ -104,7 +104,7 @@ export function useDash0Telemetry() {
         component: event.component,
       });
     },
-    [],
+    []
   );
 
   // Track performance metrics
@@ -112,7 +112,7 @@ export function useDash0Telemetry() {
     (event: WeatherTelemetryEvents['performanceMetric']) => {
       dash0Telemetry.trackPerformance(event.name, event.value, event.unit);
     },
-    [],
+    []
   );
 
   // Track complex operations with automatic timing
@@ -120,15 +120,15 @@ export function useDash0Telemetry() {
     <T>(
       operationName: string,
       operation: () => Promise<T>,
-      attributes?: Record<string, string | number>,
+      attributes?: Record<string, string | number>
     ): Promise<T> => {
       return dash0Telemetry.trackOperation(
         operationName,
         operation,
-        attributes,
+        attributes
       );
     },
-    [],
+    []
   );
 
   // Track page views / screen changes
@@ -139,7 +139,7 @@ export function useDash0Telemetry() {
         ...properties,
       });
     },
-    [],
+    []
   );
 
   // Track errors with automatic context
@@ -186,10 +186,10 @@ export function useWeatherTelemetry() {
           telemetry.trackLocationRequest({ method: 'search' });
           return city;
         },
-        { search_city: city },
+        { search_city: city }
       );
     },
-    [telemetry],
+    [telemetry]
   );
 
   const trackGeolocation = useCallback(async () => {
@@ -203,7 +203,7 @@ export function useWeatherTelemetry() {
     async <T>(
       apiType: 'weather' | 'geocoding',
       city: string,
-      apiCall: () => Promise<T>,
+      apiCall: () => Promise<T>
     ): Promise<T> => {
       telemetry.trackWeatherApi({ city, apiType });
 
@@ -223,10 +223,10 @@ export function useWeatherTelemetry() {
             throw error;
           }
         },
-        { city, api_type: apiType },
+        { city, api_type: apiType }
       );
     },
-    [telemetry],
+    [telemetry]
   );
 
   return {

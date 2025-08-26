@@ -5,11 +5,11 @@
  */
 
 import { useContext } from 'react';
+import { useEnhancedHaptics, type HapticConfig } from './enhancedHapticService';
 import {
   HapticFeedbackContext,
   type HapticFeedbackContextType,
 } from './hapticContext';
-import { useEnhancedHaptics, type HapticConfig } from './enhancedHapticService';
 
 // ============================================================================
 // CONTEXT HOOK
@@ -26,7 +26,7 @@ export const useHapticContext = (): HapticFeedbackContextType => {
 
   if (context === undefined) {
     throw new Error(
-      'useHapticContext must be used within a HapticFeedbackProvider',
+      'useHapticContext must be used within a HapticFeedbackProvider'
     );
   }
 
@@ -48,8 +48,22 @@ export const useHapticContext = (): HapticFeedbackContextType => {
  * useHaptic - Custom React hook for hapticHooks functionality
  */
 export const useHaptic = (config?: HapticConfig) => {
-  const context = useHapticContext();
-  const { haptic: hapticCore, isSupported, isEnabled } = context;
+  // Read provider with a safe fallback in dev so UI can render without provider
+  let hapticCore: ReturnType<typeof useEnhancedHaptics> | undefined;
+  let isSupported = false;
+  let isEnabled = false;
+
+  try {
+    const ctx = useHapticContext();
+    hapticCore = ctx.haptic as unknown as ReturnType<typeof useEnhancedHaptics>;
+    isSupported = ctx.isSupported;
+    isEnabled = ctx.isEnabled;
+  } catch {
+    if (import.meta?.env?.DEV) {
+      // eslint-disable-next-line no-console
+      console.warn('[useHaptic] provider missing, using local fallback');
+    }
+  }
 
   // Get enhanced haptics service
   const enhancedHaptics = useEnhancedHaptics(config);
@@ -67,7 +81,7 @@ export const useHaptic = (config?: HapticConfig) => {
 
   return {
     // Core haptic functions (legacy support)
-    ...hapticCore,
+    ...(hapticCore ?? ({} as ReturnType<typeof useEnhancedHaptics>)),
 
     // Enhanced haptic functions
     ...enhancedHaptics,
@@ -166,5 +180,5 @@ export const useUIHaptics = (config?: HapticConfig) => {
 };
 
 // Re-export for convenience
-export { useHapticFeedback } from './useHapticFeedback';
 export { useEnhancedHaptics } from './enhancedHapticService';
+export { useHapticFeedback } from './useHapticFeedback';

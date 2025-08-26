@@ -55,8 +55,8 @@ interface ThemeColors {
 
 ```javascript
 // Implement dynamic imports for large components
-const iOS26WeatherInterface = lazy(() =>
-  import('./components/modernWeatherUI/iOS26WeatherInterface')
+const iOS26WeatherInterface = lazy(
+  () => import('./components/modernWeatherUI/iOS26WeatherInterface')
 );
 const WeatherChart = lazy(() => import('./components/WeatherChart'));
 

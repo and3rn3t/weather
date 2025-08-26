@@ -179,11 +179,11 @@ export const getAdaptiveSpacing = (screenInfo: ScreenInfo) => ({
   // Top/bottom margins with safe area consideration
   topMargin: Math.max(
     screenInfo.safeAreaTop,
-    screenInfo.isVerySmallScreen ? 8 : 12,
+    screenInfo.isVerySmallScreen ? 8 : 12
   ),
   bottomMargin: Math.max(
     screenInfo.safeAreaBottom,
-    screenInfo.isVerySmallScreen ? 8 : 12,
+    screenInfo.isVerySmallScreen ? 8 : 12
   ),
 });
 
@@ -220,7 +220,7 @@ export const getTouchOptimizedButton = (
   theme: ThemeColors,
   screenInfo: ScreenInfo,
   variant: 'primary' | 'secondary' = 'primary',
-  size: 'small' | 'medium' | 'large' = 'medium',
+  size: 'small' | 'medium' | 'large' = 'medium'
 ): React.CSSProperties => {
   const spacing = getAdaptiveSpacing(screenInfo);
   const borderRadius = getAdaptiveBorderRadius(screenInfo);
@@ -297,7 +297,7 @@ export const getTouchOptimizedButton = (
  */
 export const getResponsiveGrid = (
   screenInfo: ScreenInfo,
-  itemMinWidth: number = 120,
+  itemMinWidth: number = 120
 ) => {
   const spacing = getAdaptiveSpacing(screenInfo);
   const availableWidth =
@@ -307,7 +307,7 @@ export const getResponsiveGrid = (
   const maxColumns = Math.floor(availableWidth / itemMinWidth);
   const optimalColumns = Math.max(
     1,
-    Math.min(maxColumns, screenInfo.isVerySmallScreen ? 2 : 3),
+    Math.min(maxColumns, screenInfo.isVerySmallScreen ? 2 : 3)
   );
 
   return {
@@ -331,7 +331,7 @@ export const getResponsiveGrid = (
  * getSafeAreaStyles - Retrieves safeareastyles data
  */
 export const getSafeAreaStyles = (
-  screenInfo: ScreenInfo,
+  screenInfo: ScreenInfo
 ): React.CSSProperties => ({
   paddingTop: screenInfo.hasNotch
     ? 'env(safe-area-inset-top)'
@@ -354,7 +354,7 @@ export const getSafeAreaStyles = (
  */
 export const getMobileOptimizedContainer = (
   theme: ThemeColors,
-  screenInfo: ScreenInfo,
+  screenInfo: ScreenInfo
 ): React.CSSProperties => {
   const spacing = getAdaptiveSpacing(screenInfo);
   const safeArea = getSafeAreaStyles(screenInfo);
@@ -391,7 +391,7 @@ export const getMobileOptimizedContainer = (
  */
 export const getMobileOptimizedCard = (
   theme: ThemeColors,
-  screenInfo: ScreenInfo,
+  screenInfo: ScreenInfo
 ): React.CSSProperties => {
   const spacing = getAdaptiveSpacing(screenInfo);
   const borderRadius = getAdaptiveBorderRadius(screenInfo);
@@ -432,7 +432,7 @@ export const getMobileOptimizedCard = (
  * handleOrientationChange - Handles orientationchange events
  */
 export const handleOrientationChange = (
-  callback: (screenInfo: ScreenInfo) => void,
+  callback: (screenInfo: ScreenInfo) => void
 ) => {
   const handleChange = () => {
     // Small delay to ensure viewport dimensions are updated
@@ -488,7 +488,7 @@ export const getOptimizedImageProps = (screenInfo: ScreenInfo) => ({
  * getOptimalViewportContent - Retrieves optimalviewportcontent data
  */
 export const getOptimalViewportContent = (
-  allowZoom: boolean = true,
+  allowZoom: boolean = true
 ): string => {
   const baseContent =
     'width=device-width, initial-scale=1.0, viewport-fit=cover';
@@ -514,7 +514,7 @@ export const getOptimalViewportContent = (
  * getAccessibilityStyles - Retrieves accessibilitystyles data
  */
 export const getAccessibilityStyles = (
-  screenInfo: ScreenInfo,
+  screenInfo: ScreenInfo
 ): React.CSSProperties => ({
   // Ensure readable text sizes
   fontSize: screenInfo.isVerySmallScreen ? '16px' : '18px', // Prevent zoom on iOS

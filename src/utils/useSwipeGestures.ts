@@ -79,7 +79,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
         ? maxDrag + resistedOverDrag
         : -(maxDrag + resistedOverDrag);
     },
-    [maxDrag, resistance],
+    [maxDrag, resistance]
   );
 
   const triggerHapticFeedback = useCallback(
@@ -101,7 +101,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
         lastHapticFeedback.current = now;
       }
     },
-    [enableHaptic, haptics],
+    [enableHaptic, haptics]
   );
 
   const createSwipeHandler = useCallback(
@@ -109,7 +109,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
       onSwipeLeft?: () => void,
       onSwipeRight?: () => void,
       canSwipeLeft: boolean = true,
-      canSwipeRight: boolean = true,
+      canSwipeRight: boolean = true
     ): SwipeHandlers => {
       let startX = 0;
       let startY = 0;
@@ -269,7 +269,7 @@ export const useSwipeGestures = (options: SwipeGestureOptions = {}) => {
       enableHaptic,
       calculateDragOffset,
       triggerHapticFeedback,
-    ],
+    ]
   );
 
   return {

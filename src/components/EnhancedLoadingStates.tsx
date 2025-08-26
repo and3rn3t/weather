@@ -91,7 +91,7 @@ export const OperationProgress: React.FC<OperationProgressProps> = ({
         showPercentage={size >= 48}
         className={className}
         ariaLabel={`${operation} progress: ${Math.round(
-          loadingState.progress || 0,
+          loadingState.progress || 0
         )}%`}
       />
     );
@@ -234,7 +234,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
             variant="primary"
             showPercentage
             ariaLabel={`${title} progress: ${Math.round(
-              loadingState.progress || 0,
+              loadingState.progress || 0
             )}%`}
           />
         ) : (

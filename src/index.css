@@ -2,43 +2,16 @@
 @import './styles/mobile.css';
 @import './styles/iosComponents.css';
 
-/* NEW: Mobile Enhancement System - CONSOLIDATED */
-@import './styles/mobile-enhanced-consolidated.css';
-@import './styles/enhancedMobileNavigation.css';
-
-/* NEW: iOS26 Liquid Glass Navigation - Apple HIG Compliant */
-@import './liquid-glass-navigation.css';
-
-/* NEW: iOS26 Seamless Full-Width Navigation - Override for seamless layout */
-@import './seamless-navigation.css';
-
-/* NEW: iOS 26 Design System - CONSOLIDATED (Phase 4) */
-@import './styles/ios26-design-system-consolidated.css';
-
-/* NEW: iOS Human Interface Guidelines Enhancements */
-@import './styles/ios-hig-enhancements.css';
-
-/* NEW: Weather Readability Enhancement - Better Typography & Contrast */
-@import './styles/weather-readability-enhancement.css';
-
-/* NEW: iOS26 Text Optimization - HIG Compliant Typography */
-@import './styles/ios26-text-optimization.css';
-
-/* NEW: iOS26 Weather Details Fix - Enhanced Mobile Layout & Scrolling */
-@import './styles/ios26-weather-details-fix.css';
-
-/* NEW: Responsive Layout System - CONSOLIDATED */
-@import './styles/responsive-layout-consolidated.css';
+/* TEMP: Heavy consolidated CSS imports removed while isolating overlay issue */
 
 /* NEW: Horror Theme Styles - CONSOLIDATED */
-@import './styles/horror-theme-consolidated.css';
 
 /* NEW: Horror Icon Fixes - Prevents black backgrounds behind icons */
-@import './styles/horror-icon-fixes.css';
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
-    'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -60,6 +33,64 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   --safe-area-inset-left: env(safe-area-inset-left);
   --safe-area-inset-right: env(safe-area-inset-right);
+}
+
+/* DEV-ONLY RESCUE OVERRIDES: ensure content is visible and not covered */
+[data-env='dev'] body,
+[data-env='dev'] #root {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Dev shell strip styling to avoid inline styles in JSX */
+[data-env='dev'] .dev-shell-strip {
+  position: relative;
+  padding: 16px;
+  color: #111;
+  background: #e0f2fe;
+  border-bottom: 1px solid #7dd3fc;
+  font:
+    600 14px/1.4 -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+/* Ensure the dev boot banner never sticks around in development */
+[data-env='dev'] #dev-boot-banner {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Kill any full-viewport fixed overlays in dev except explicit allowlist */
+[data-env='dev'] body *[data-allow-overlay='true'] {
+  /* components can opt back in */
+  pointer-events: inherit !important;
+}
+[data-env='dev'] body * {
+  /* allow normal interaction unless explicitly disabled and flatten z-index */
+  pointer-events: auto !important;
+  z-index: auto !important;
+}
+[data-env='dev'] .mobile-navigation,
+[data-env='dev'] .offline-status-indicator,
+[data-env='dev'] .theme-toggle-button {
+  /* Allowed elevated elements */
+  z-index: 1000 !important;
+}
+
+/* Neutralize horror overlays in development */
+[data-env='dev'] .film-grain-overlay::before,
+[data-env='dev'] body.horror-film-grain::before {
+  content: none !important;
+}
+[data-env='dev'] .horror-theme,
+[data-env='dev'] body.horror-theme,
+[data-env='dev'] html.horror-theme {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  background: inherit !important;
 }
 
 /* Ensure all interactive elements are touch-friendly */
@@ -136,7 +167,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  /* Avoid centering everything; use normal document flow */
+  display: block;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -234,46 +266,7 @@ button:focus-visible {
   }
 }
 
-/* FINAL OVERRIDE: Eliminate ALL possible active states on navigation */
-nav.mobile-navigation,
-nav.mobile-navigation *,
-nav.mobile-navigation button,
-nav.mobile-navigation button[role='tab'],
-nav.mobile-navigation > *,
-nav.mobile-navigation div,
-.mobile-navigation,
-.mobile-navigation *,
-.mobile-navigation button {
-  /* Nuclear option for :active states */
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-}
-
-/* Specifically target active states with maximum specificity */
-nav.mobile-navigation:active,
-nav.mobile-navigation *:active,
-nav.mobile-navigation button:active,
-nav.mobile-navigation button[role='tab']:active,
-nav.mobile-navigation > *:active,
-nav.mobile-navigation div:active {
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  text-decoration: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-}
-
-/* Allow only our specific button styling */
-nav.mobile-navigation button[role='tab']:active {
-  background: rgba(120, 97, 255, 0.1) !important;
-}
+/* (nav-specific nuclear active overrides removed to prevent visual conflicts) */
 
 /* REAL FIX: The blue rectangle was coming from content area and scrollbar! */
 /* Disable :active styling on ALL content elements */
@@ -308,8 +301,4 @@ div:not(.mobile-navigation) *:active,
   outline: none !important;
 }
 
-/* Ensure navigation still works */
-.mobile-navigation *:active {
-  /* Allow our navigation styling to work normally */
-  background: inherit;
-}
+/* End of nav overrides cleanup */

@@ -46,30 +46,30 @@ index-BKWn3aDA.css: 71.48KB (gzip: 12.88KB)
 
 ### Conditional CSS Chunks
 
-```text
-Horror Theme Features:
-├── horrorTheme-CT72XXrO.css: 22.74KB
-├── horror-icon-fixes-D87jrpHc.css: 11.84KB
-└── horror-theme-consolidated-Cwi-fcwh.css: 7.23KB
-Total: 41.81KB (loads only with horror theme)
+```mermaid
+flowchart TD
 
-Mobile Enhancements:
-├── enhancedMobileLayout-D-B3pFzq.css: 8.21KB
-├── enhancedMobileNavigation-vcMGT481.css: 5.87KB
-├── mobile-enhanced-consolidated-DwamjX9h.css: 6.35KB
-└── enhancedMobileTypography-W093MIAv.css: 4.49KB
-Total: 24.92KB (loads only on mobile)
+subgraph HT[Horror Theme Features\nTotal: 41.81KB]
 
-iOS Advanced Features:
-├── ios-hig-enhancements-Db_uoTaP.css: 10.07KB
-├── ios26-weather-details-fix-C0Flu52q.css: 3.55KB
-└── ios26-text-optimization-DdxcrOAZ.css: 2.93KB
-Total: 16.55KB (loads only on iOS)
-
-Layout Enhancements:
-├── responsive-layout-consolidated-Bu96QhtH.css: 6.40KB
-└── layout-fixes-jux7xT1X.css: 3.85KB
-Total: 10.25KB (loads conditionally)
+HT1[horrorTheme-CT72XXrO.css\n22.74KB]
+HT2[horror-icon-fixes-D87jrpHc.css\n11.84KB]
+HT3[horror-theme-consolidated-Cwi-fcwh.css\n7.23KB]
+end
+subgraph MB[Mobile Enhancements\nTotal: 24.92KB]
+MB1[enhancedMobileLayout-D-B3pFzq.css\n8.21KB]
+MB2[enhancedMobileNavigation-vcMGT481.css\n5.87KB]
+MB3[mobile-enhanced-consolidated-DwamjX9h.css\n6.35KB]
+MB4[enhancedMobileTypography-W093MIAv.css\n4.49KB]
+end
+subgraph IOS[iOS Advanced Features\nTotal: 16.55KB]
+I1[ios-hig-enhancements-Db_uoTaP.css\n10.07KB]
+I2[ios26-weather-details-fix-C0Flu52q.css\n3.55KB]
+I3[ios26-text-optimization-DdxcrOAZ.css\n2.93KB]
+end
+subgraph LY[Layout Enhancements\nTotal: 10.25KB]
+L1[responsive-layout-consolidated-Bu96QhtH.css\n6.40KB]
+L2[layout-fixes-jux7xT1X.css\n3.85KB]
+end
 ```
 
 ## 🚀 Performance Benefits

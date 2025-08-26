@@ -299,7 +299,7 @@ export const SimpleIOSDemo: React.FC<SimpleIOSDemoProps> = ({ theme }) => {
                   </div>
                 </div>
               </SimpleCard>
-            ),
+            )
           )}
         </div>
       </div>

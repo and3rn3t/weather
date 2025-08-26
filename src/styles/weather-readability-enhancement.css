@@ -368,24 +368,20 @@
 .horror-theme .ios26-temperature-section-card,
 .horror-theme .ios26-weather-metrics-section {
   /* Much more visible background with stronger contrast */
-  background: linear-gradient(
-    135deg, 
-    rgba(26, 10, 10, 0.95), 
-    rgba(10, 5, 5, 0.98)
-  ) !important;
-  
+  background: linear-gradient(135deg, rgba(26, 10, 10, 0.95), rgba(10, 5, 5, 0.98)) !important;
+
   /* Enhanced border visibility */
   border: 2px solid rgba(220, 20, 60, 0.6) !important;
-  
+
   /* Professional shadows with better contrast */
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(220, 20, 60, 0.25),
     0 2px 8px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(220, 20, 60, 0.1) !important;
-  
+
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  
+
   /* Ensure text is readable */
   color: #e8e8e8 !important;
 }
@@ -395,19 +391,15 @@
 .horror-theme .ios26-weather-header-card:hover,
 .horror-theme .ios26-temperature-section-card:hover,
 .horror-theme .ios26-weather-metrics-section:hover {
-  background: linear-gradient(
-    135deg, 
-    rgba(30, 12, 12, 0.98), 
-    rgba(15, 8, 8, 1)
-  ) !important;
-  
+  background: linear-gradient(135deg, rgba(30, 12, 12, 0.98), rgba(15, 8, 8, 1)) !important;
+
   border: 2px solid rgba(220, 20, 60, 0.8) !important;
-  
-  box-shadow: 
+
+  box-shadow:
     0 6px 24px rgba(220, 20, 60, 0.35),
     0 3px 12px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(220, 20, 60, 0.2) !important;
-  
+
   transform: translateY(-2px) !important;
 }
 
@@ -415,20 +407,20 @@
 .horror-theme .ios26-weather-metric.enhanced-readability {
   background: rgba(26, 10, 10, 0.85) !important;
   border: 1px solid rgba(220, 20, 60, 0.5) !important;
-  
-  box-shadow: 
+
+  box-shadow:
     0 2px 8px rgba(220, 20, 60, 0.2),
     0 1px 4px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(220, 20, 60, 0.1) !important;
-    
+
   color: #e8e8e8 !important;
 }
 
 .horror-theme .ios26-weather-metric.enhanced-readability:hover {
   background: rgba(30, 12, 12, 0.9) !important;
   border: 1px solid rgba(220, 20, 60, 0.7) !important;
-  
-  box-shadow: 
+
+  box-shadow:
     0 4px 12px rgba(220, 20, 60, 0.3),
     0 2px 6px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(220, 20, 60, 0.15) !important;
@@ -438,19 +430,19 @@
 .horror-theme .ios26-forecast-item.enhanced-readability {
   background: rgba(26, 10, 10, 0.8) !important;
   border: 1px solid rgba(220, 20, 60, 0.4) !important;
-  
-  box-shadow: 
+
+  box-shadow:
     0 2px 6px rgba(220, 20, 60, 0.15),
     0 1px 3px rgba(0, 0, 0, 0.2) !important;
-    
+
   color: #e8e8e8 !important;
 }
 
 .horror-theme .ios26-forecast-item.enhanced-readability:hover {
   background: rgba(30, 12, 12, 0.85) !important;
   border: 1px solid rgba(220, 20, 60, 0.6) !important;
-  
-  box-shadow: 
+
+  box-shadow:
     0 3px 9px rgba(220, 20, 60, 0.25),
     0 2px 5px rgba(0, 0, 0, 0.3) !important;
 }

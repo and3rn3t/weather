@@ -90,7 +90,7 @@ export class InteractionFeedbackManager {
 
   constructor(
     element: HTMLElement,
-    pattern: keyof typeof InteractionPatterns | InteractionFeedbackConfig,
+    pattern: keyof typeof InteractionPatterns | InteractionFeedbackConfig
   ) {
     this.element = element;
     this.config =
@@ -120,19 +120,19 @@ export class InteractionFeedbackManager {
     if (this.config.visual.scale) {
       this.animations.set(
         'scale',
-        new SpringAnimation(this.config.visual.scale.from),
+        new SpringAnimation(this.config.visual.scale.from)
       );
     }
     if (this.config.visual.opacity) {
       this.animations.set(
         'opacity',
-        new SpringAnimation(this.config.visual.opacity.from),
+        new SpringAnimation(this.config.visual.opacity.from)
       );
     }
     if (this.config.visual.shadow) {
       this.animations.set(
         'shadow',
-        new SpringAnimation(this.config.visual.shadow.from),
+        new SpringAnimation(this.config.visual.shadow.from)
       );
     }
   }
@@ -145,7 +145,7 @@ export class InteractionFeedbackManager {
     this.element.addEventListener(
       'touchstart',
       this.handleTouchStart.bind(this),
-      { passive: false },
+      { passive: false }
     );
     this.element.addEventListener('touchend', this.handleTouchEnd.bind(this), {
       passive: false,
@@ -153,7 +153,7 @@ export class InteractionFeedbackManager {
     this.element.addEventListener(
       'touchcancel',
       this.handleTouchCancel.bind(this),
-      { passive: false },
+      { passive: false }
     );
 
     // Mouse events for desktop
@@ -161,7 +161,7 @@ export class InteractionFeedbackManager {
     this.element.addEventListener('mouseup', this.handleMouseUp.bind(this));
     this.element.addEventListener(
       'mouseleave',
-      this.handleMouseLeave.bind(this),
+      this.handleMouseLeave.bind(this)
     );
 
     // Prevent context menu on long press
@@ -434,10 +434,10 @@ export class InteractionFeedbackManager {
  */
 export const useInteractionFeedback = (
   elementRef: React.RefObject<HTMLElement>,
-  pattern: keyof typeof InteractionPatterns | InteractionFeedbackConfig,
+  pattern: keyof typeof InteractionPatterns | InteractionFeedbackConfig
 ) => {
   const [manager, setManager] = useState<InteractionFeedbackManager | null>(
-    null,
+    null
   );
   const hapticManager = useHapticFeedback();
 
@@ -445,7 +445,7 @@ export const useInteractionFeedback = (
     if (elementRef.current && !manager) {
       const newManager = new InteractionFeedbackManager(
         elementRef.current,
-        pattern,
+        pattern
       );
       newManager.setHapticManager(hapticManager);
       setManager(newManager);
@@ -460,7 +460,7 @@ export const useInteractionFeedback = (
     (newConfig: Partial<InteractionFeedbackConfig>) => {
       manager?.updateConfig(newConfig);
     },
-    [manager],
+    [manager]
   );
 
   return {

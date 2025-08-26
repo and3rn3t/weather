@@ -97,7 +97,7 @@ const IOSHIGWeatherDisplay: React.FC<IOSHIGWeatherDisplayProps> = ({
             className="ios-hig-temperature"
             id="current-temp"
             aria-label={`Current temperature ${Math.round(
-              weather.main.temp,
+              weather.main.temp
             )} degrees Fahrenheit`}
           >
             {Math.round(weather.main.temp)}
@@ -132,7 +132,7 @@ const IOSHIGWeatherDisplay: React.FC<IOSHIGWeatherDisplayProps> = ({
           <div
             className="ios-hig-weather-detail-value"
             aria-label={`Wind speed ${Math.round(
-              weather.wind.speed,
+              weather.wind.speed
             )} miles per hour`}
           >
             {Math.round(weather.wind.speed)} mph
@@ -144,7 +144,7 @@ const IOSHIGWeatherDisplay: React.FC<IOSHIGWeatherDisplayProps> = ({
           <div
             className="ios-hig-weather-detail-value"
             aria-label={`Pressure ${Math.round(
-              weather.main.pressure,
+              weather.main.pressure
             )} hectopascals`}
           >
             {Math.round(weather.main.pressure)} hPa
@@ -169,7 +169,7 @@ const IOSHIGWeatherDisplay: React.FC<IOSHIGWeatherDisplayProps> = ({
             <div
               className="ios-hig-weather-detail-value"
               aria-label={`Visibility ${Math.round(
-                weather.visibility / 1000,
+                weather.visibility / 1000
               )} kilometers`}
             >
               {Math.round(weather.visibility / 1000)} km

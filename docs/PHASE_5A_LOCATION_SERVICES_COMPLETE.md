@@ -124,7 +124,6 @@ management, and multi-city favorites system for enhanced mobile weather experien
 ### **Permission Prompt Variants:**
 
 1. **Full Prompt** (First-time users)
-
    - Clear benefits explanation
    - Privacy assurance
    - Step-by-step guidance

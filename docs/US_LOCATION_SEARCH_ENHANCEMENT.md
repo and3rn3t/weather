@@ -140,13 +140,13 @@ Created `src/utils/enhancedUSSearch.ts` with:
 
 ## 🧪 Testing Results
 
-### Before Enhancement:
+### Before Enhancement
 
 - Searching "Phoenix" → Mixed international results
 - Searching "Atlanta" → Poor result quality
 - Searching "Austin" → Inconsistent results
 
-### After Enhancement:
+### After Enhancement
 
 - Searching "Phoenix" → Phoenix, AZ first result ✅
 - Searching "Atlanta" → Atlanta, GA first result ✅
@@ -170,18 +170,13 @@ Returns Phoenix, Arizona as the first result with proper US prioritization.
 
 ## 🔧 Technical Architecture
 
-```
-Enhanced Search Flow:
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│ User Query      │───▶│ Enhanced Search  │───▶│ US-Optimized    │
-│ (e.g. "Austin") │    │ Parameters       │    │ API Request     │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│ Popular Cities  │◀───│ Result Merger    │◀───│ Filtered &      │
-│ Cache Match     │    │ & Deduplication  │    │ Sorted Results  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+```mermaid
+flowchart TD
+  U[User Query\n(e.g. "Austin")] --> S[Enhanced Search\nParameters]
+  S --> R[US-Optimized\nAPI Request]
+  R --> D[Result Merger\n& Deduplication]
+  D --> F[Filtered &\nSorted Results]
+  P[Popular Cities\nCache Match] --> D
 ```
 
 ## 🚀 Next Steps (Optional Enhancements)

@@ -28,7 +28,7 @@ const DEFAULT_CONFIG: Dash0Config = {
     import.meta.env.VITE_DASH0_ENDPOINT_URL || 'https://ingress.dash0.dev',
   authToken:
     import.meta.env.VITE_DASH0_AUTH_TOKEN || 'your-dash0-auth-token-here',
-  serviceName: 'premium-weather-app',
+  serviceName: 'weather',
   serviceVersion: '1.0.0',
   environment: import.meta.env.MODE || 'development',
   dataset: 'default',
@@ -53,7 +53,7 @@ export const initializeDash0 = (config: Partial<Dash0Config> = {}) => {
   try {
     // Initialize Dash0 SDK with the correct API
     init({
-      serviceName: finalConfig.serviceName || 'premium-weather-app',
+      serviceName: finalConfig.serviceName || 'weather',
       serviceVersion: finalConfig.serviceVersion,
       environment: finalConfig.environment,
       endpoint: {

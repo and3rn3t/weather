@@ -13,6 +13,10 @@ dist-ssr
 *.local
 coverage/
 
+# Environment files - keep templates but ignore local overrides
+.env/.env.local
+.env/.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -44,11 +48,8 @@ public/simple-*.js
 public/quote-*.js
 public/mobile-nav-*.js
 
-# Documentation Archives
-docs/archive/
-docs/legacy/
-docs/backup/
-docs/deprecated/
+# Documentation (always tracked)
+# Keep all docs versioned; do not ignore documentation subfolders
 
 # Backup and Archive Files
 backup/

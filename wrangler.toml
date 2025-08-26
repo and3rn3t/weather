@@ -1,7 +1,7 @@
 # Cloudflare Pages Configuration
 # Optimized for static site deployment
 
-name = "premium-weather-app"
+name = "weather"
 compatibility_date = "2024-01-01"
 
 # Pages build output directory

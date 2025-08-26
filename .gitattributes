@@ -1,0 +1,20 @@
+# Ensure consistent line endings and diff behavior
+* text=auto eol=lf
+
+# Treat common binary assets as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.mp4 binary
+*.mov binary
+*.zip binary
+
+# Improve diffs for common text types
+*.md diff=markdown
+*.mdx diff=markdown
+*.css linguist-language=CSS
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TSX

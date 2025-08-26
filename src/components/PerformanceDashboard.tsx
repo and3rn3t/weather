@@ -16,20 +16,20 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [bundleStats, setBundleStats] = useState(
-    bundleSizeMonitor.getBundleStats(),
+    bundleSizeMonitor.getBundleStats()
   );
   const [searchStats, setSearchStats] = useState(
-    searchPerformanceMonitor.getStats(),
+    searchPerformanceMonitor.getStats()
   );
   const [cacheStats, setCacheStats] = useState(offlineStorage.getCacheStats());
 
   // Feature 4B integration
   const {
-    stats: feature4BStats,
-    getPerformanceRecommendations,
-    optimizeCache,
-    processPendingSync,
-    clearCache,
+    stats: _feature4BStats,
+    getPerformanceRecommendations: _getPerformanceRecommendations,
+    optimizeCache: _optimizeCache,
+    processPendingSync: _processPendingSync,
+    clearCache: _clearCache,
   } = useFeature4B();
 
   // Update stats periodically
@@ -135,7 +135,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
               <div>
                 Size:{' '}
                 {bundleSizeMonitor.formatBundleSize(
-                  bundleStats.averageBundleSize,
+                  bundleStats.averageBundleSize
                 )}
               </div>
               <div>Lazy Components: {bundleStats.totalLazyComponents}</div>
@@ -199,7 +199,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 Current:{' '}
                 {bundleSizeMonitor.formatBundleSize(
                   bundleStats.memoryTrend[bundleStats.memoryTrend.length - 1]
-                    ?.memory || 0,
+                    ?.memory || 0
                 )}
               </div>
             </div>
