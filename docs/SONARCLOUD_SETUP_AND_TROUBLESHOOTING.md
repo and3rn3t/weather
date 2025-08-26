@@ -1,12 +1,15 @@
 # SonarCloud: Setup, Workflow, and Troubleshooting
 
-This project uses SonarCloud for code quality. On pull requests, analysis is strict (must pass). On main pushes, analysis is non-blocking to keep deployments flowing.
+This project uses SonarCloud for code quality. On pull requests, analysis is strict (must pass). On
+main pushes, analysis is non-blocking to keep deployments flowing.
 
 ## Badges
 
 - PR Quality Gate: add in README if desired (replace org/key if you fork)
-  - Quality Gate: <https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=alert_status>
-  - Coverage: <https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=coverage>
+  - Quality Gate:
+    <https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=alert_status>
+  - Coverage:
+    <https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=coverage>
 
 ## Configuration
 
@@ -30,9 +33,10 @@ Important:
 
 ## Common issues and fixes
 
-1) Project not found
+1. Project not found
 
-- Symptoms: Sonar step ends with "Project not found" even though ensure-project step prints "Project exists."
+- Symptoms: Sonar step ends with "Project not found" even though ensure-project step prints "Project
+  exists."
 - Checks:
   - Verify `sonar.projectKey` matches exactly in both places:
     - `sonar-project.properties`
@@ -40,14 +44,15 @@ Important:
   - Ensure `SONAR_TOKEN` has access to org `and3rn3t` and the project.
   - Confirm default branch on SonarCloud is set to `main` and GitHub ALM binding is enabled.
 
-2) Coverage = 0%
+1. Coverage = 0%
 
 - Ensure `coverage/lcov.info` exists before the scan. The workflow prints a warning if not found.
 - Make sure Vitest ran with coverage in CI (we run `test:ci` with coverage and fallbacks).
 
-3) CSS parse errors
+1. CSS parse errors
 
-- If Sonar flags parse errors on certain CSS, exclude the file temporarily in `sonar.exclusions` and track a follow-up to clean it up.
+- If Sonar flags parse errors on certain CSS, exclude the file temporarily in `sonar.exclusions` and
+  track a follow-up to clean it up.
 
 ## Maintenance tips
 
