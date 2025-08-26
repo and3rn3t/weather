@@ -1,7 +1,6 @@
 # Environment Files Organization
 
-This project organizes all environment files in a dedicated `.env/` directory for better project
-structure and organization.
+This project organizes all environment files in a dedicated `.env/` directory for better project structure and organization.
 
 ## Structure
 
@@ -41,7 +40,6 @@ The `vite.config.ts` file is configured with:
 ```typescript
 export default defineConfig({
   plugins: [react()],
-
   // Configure Vite to load .env files from .env directory
   envDir: '.env',
   // ... rest of config

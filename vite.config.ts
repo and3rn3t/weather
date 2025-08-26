@@ -12,7 +12,6 @@ export default defineConfig({
 
   // Configure Vite to load .env files from .env directory
   envDir: '.env',
-
   build: {
     rollupOptions: {
       output: {
