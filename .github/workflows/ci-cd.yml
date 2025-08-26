@@ -23,7 +23,7 @@ on:
 permissions:
   contents: read
   deployments: write
-  pull-requests: write
+  pull-requests: read
 
 concurrency:
   group: deploy-${{ github.workflow }}-${{ github.ref_name }}
@@ -41,6 +41,11 @@ env:
 
 jobs:
   build_deploy:
+    if: >
+      !(
+        github.event_name == 'push' &&
+        (contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, '[ci skip]'))
+      )
     name: '🚀 Build & Deploy'
     runs-on: ubuntu-latest
     timeout-minutes: 6
@@ -55,6 +60,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Cache ESLint
+        uses: actions/cache@v4
+        with:
+          path: .eslintcache
+          key: eslint-${{ runner.os }}-${{ hashFiles('**/*.ts', '**/*.tsx', 'eslint.config.js', 'package-lock.json') }}
+          restore-keys: |
+            eslint-${{ runner.os }}-
 
       - name: Restore build cache
         id: cache-build
@@ -137,6 +151,44 @@ jobs:
           cat perf-budget.txt >> $GITHUB_STEP_SUMMARY || true
           echo "\n</details>" >> $GITHUB_STEP_SUMMARY
 
+      - name: PR bundle size delta (best-effort)
+        if: ${{ steps.meta.outputs.is_pr == 'true' }}
+        run: |
+          echo "## 📦 Bundle size delta" >> $GITHUB_STEP_SUMMARY
+          # Current manifest
+          find dist -type f -printf '%s\t%p\n' | sort -nr > dist-manifest.txt || true
+          cur_bytes=$(awk '{s+=$1} END {print s+0}' dist-manifest.txt 2>/dev/null || echo 0)
+          cur_human=$(du -sh dist 2>/dev/null | awk '{print $1}')
+          echo "- Current: ${cur_human:-n/a} (${cur_bytes:-0} bytes)" >> $GITHUB_STEP_SUMMARY
+          # Try to fetch latest main run artifact via gh
+          if command -v gh >/dev/null 2>&1; then
+            run_id=$(gh run list --workflow "⚡ Ultra-Fast Deploy" --branch main --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || echo "")
+            if [ -n "$run_id" ]; then
+              name=$(gh run view "$run_id" --json artifacts --jq '.artifacts[] | select(.name | startswith("dist-manifest-")) | .name' 2>/dev/null | head -n1 || echo "")
+              if [ -n "$name" ]; then
+                gh run download "$run_id" --name "$name" -D baseline-artifact >/dev/null 2>&1 || true
+                base_file="baseline-artifact/dist-manifest.txt"
+                [ -f "$base_file" ] || base_file="baseline-artifact/$name"
+                if [ -f "$base_file" ]; then
+                  base_bytes=$(awk '{s+=$1} END {print s+0}' "$base_file" 2>/dev/null || echo 0)
+                  delta=$((cur_bytes - base_bytes))
+                  sign="+"; [ $delta -lt 0 ] && sign=""
+                  echo "- Baseline (main): $base_bytes bytes" >> $GITHUB_STEP_SUMMARY
+                  echo "- Delta: ${sign}${delta} bytes" >> $GITHUB_STEP_SUMMARY
+                else
+                  echo "- Baseline: (artifact not found)" >> $GITHUB_STEP_SUMMARY
+                fi
+              else
+                echo "- Baseline: (no artifact listed)" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "- Baseline: (no recent main run)" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "- Baseline: (gh CLI unavailable)" >> $GITHUB_STEP_SUMMARY
+          fi
+        continue-on-error: true
+
       - name: Deploy preflight
         if: ${{ steps.meta.outputs.should_deploy == 'true' }}
         run: |
@@ -166,6 +218,7 @@ jobs:
           name: dist-manifest-${{ github.sha }}
           path: dist-manifest.txt
           if-no-files-found: ignore
+          retention-days: 14
 
       - name: Dry-run preflight
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -184,6 +237,7 @@ jobs:
           name: dist-${{ github.sha }}
           path: dist
           if-no-files-found: ignore
+          retention-days: 7
 
       - name: Lighthouse (PRs - optional)
         if: ${{ steps.meta.outputs.is_pr == 'true' }}
@@ -199,6 +253,7 @@ jobs:
           name: lighthouse-${{ github.sha }}
           path: lighthouse-reports
           if-no-files-found: ignore
+          retention-days: 7
 
       - name: Build metrics summary
         if: ${{ always() }}
