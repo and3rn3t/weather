@@ -126,6 +126,8 @@ jobs:
 
       - name: 🔎 SonarCloud Scan
         if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists == 'true' }}
+        # Don't fail main pushes if Sonar has a transient or permission error
+        continue-on-error: ${{ github.event_name == 'push' }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -136,8 +138,6 @@ jobs:
             -Dsonar.organization=${{ env.SONAR_ORG }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.pullrequest.provider=github
-            -Dsonar.pullrequest.github.repository=and3rn3t/weather
 
       - name: 💤 Sonar skipped summary
         if: steps.token.outputs.present != 'true'
