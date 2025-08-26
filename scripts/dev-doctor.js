@@ -368,9 +368,14 @@ class DevelopmentDoctor {
 
   async checkEnvironmentFiles() {
     const envFiles = ['.env', '.env.local', '.env.development'];
-    const foundEnvFiles = envFiles.filter(file =>
-      existsSync(join(projectRoot, file))
-    );
+    const envDir = join(projectRoot, '.env');
+    
+    // Check both root and .env directory for environment files
+    const foundEnvFiles = envFiles.filter(file => {
+      const rootPath = join(projectRoot, file);
+      const envDirPath = join(envDir, file);
+      return existsSync(rootPath) || existsSync(envDirPath);
+    });
 
     if (foundEnvFiles.length === 0) {
       return {

@@ -207,7 +207,7 @@ function App() {
 ### 1. Add your Dash0 token to environment files
 
 ```bash
-# .env.local, .env.development, .env.production
+# .env/.env.local, .env/.env.development, .env/.env.production
 VITE_DASH0_AUTH_TOKEN=your_actual_token_here
 ```
 

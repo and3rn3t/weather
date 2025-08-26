@@ -166,7 +166,7 @@ npx cap open ios
 ### Environment Variables
 
 ```bash
-# .env.local
+# .env/.env.local
 VITE_WEATHER_API_URL=https://api.open-meteo.com/v1
 VITE_GEOCODING_API_URL=https://nominatim.openstreetmap.org
 VITE_APP_NAME=Premium Weather App

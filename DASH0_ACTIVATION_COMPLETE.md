@@ -44,10 +44,10 @@ all critical user journeys!
 
 ### **Step 2: Configure Environment Variables**
 
-Create a `.env.local` file in your project root:
+Create a `.env.local` file in your project's `.env` directory:
 
 ```bash
-# .env.local
+# .env/.env.local
 VITE_DASH0_ENDPOINT_URL=https://ingress.dash0.dev
 VITE_DASH0_AUTH_TOKEN=auth_your_actual_token_here
 VITE_DASH0_DATASET=production
