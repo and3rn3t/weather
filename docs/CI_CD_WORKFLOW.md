@@ -78,5 +78,6 @@ Use this to validate the pipeline and secrets without deploying.
 ## SonarCloud in CI
 
 - SonarCloud runs on PRs and on main via `.github/workflows/sonarcloud.yml`.
-- PRs are strict and must pass. Main uses non-blocking analysis to avoid deployment disruption on transient Sonar issues.
+- PRs are strict and must pass. Main uses non-blocking analysis to avoid deployment disruption on
+  transient Sonar issues.
 - See `docs/SONARCLOUD_SETUP_AND_TROUBLESHOOTING.md` for setup and troubleshooting.
