@@ -115,7 +115,7 @@ export class PageTransitionChoreographer {
   addElement(
     element: HTMLElement,
     pattern: keyof typeof TransitionPatterns | ElementTransitionConfig,
-    delay: number = 0,
+    delay: number = 0
   ): void {
     const config =
       typeof pattern === 'string' ? TransitionPatterns[pattern] : pattern;
@@ -201,11 +201,11 @@ export class PageTransitionChoreographer {
         return new Promise<void>(resolve => {
           setTimeout(() => {
             this.animateElement(element, elementConfig, config.spring).then(
-              resolve,
+              resolve
             );
           }, delay);
         });
-      },
+      }
     );
 
     await Promise.all(promises);
@@ -234,7 +234,7 @@ export class PageTransitionChoreographer {
       const promise = new Promise<void>(resolve => {
         setTimeout(() => {
           this.animateElement(element, elementConfig, config.spring).then(
-            resolve,
+            resolve
           );
         }, index * stagger);
       });
@@ -250,7 +250,7 @@ export class PageTransitionChoreographer {
   private async animateElement(
     element: HTMLElement,
     config: ElementTransitionConfig,
-    globalSpring?: keyof typeof SpringPresets,
+    globalSpring?: keyof typeof SpringPresets
   ): Promise<void> {
     const elementAnimations = this.animations.get(element);
     if (!elementAnimations) return;
@@ -296,7 +296,7 @@ export class PageTransitionChoreographer {
    */
   private applyElementState(
     element: HTMLElement,
-    state: ElementTransitionConfig['from'] | ElementTransitionConfig['to'],
+    state: ElementTransitionConfig['from'] | ElementTransitionConfig['to']
   ): void {
     const transforms: string[] = [];
 
@@ -328,7 +328,7 @@ export class PageTransitionChoreographer {
   private updateElementProperty(
     element: HTMLElement,
     property: string,
-    value: number,
+    value: number
   ): void {
     const elementAnimations = this.animations.get(element);
     if (!elementAnimations) return;
@@ -417,25 +417,25 @@ export const usePageTransitionChoreographer = () => {
     (
       element: HTMLElement,
       pattern: keyof typeof TransitionPatterns | ElementTransitionConfig,
-      delay: number = 0,
+      delay: number = 0
     ) => {
       choreographer.addElement(element, pattern, delay);
     },
-    [choreographer],
+    [choreographer]
   );
 
   const removeElement = useCallback(
     (element: HTMLElement) => {
       choreographer.removeElement(element);
     },
-    [choreographer],
+    [choreographer]
   );
 
   const choreograph = useCallback(
     async (config: ChoreographyConfig) => {
       await choreographer.choreograph(config);
     },
-    [choreographer],
+    [choreographer]
   );
 
   const clearElements = useCallback(() => {

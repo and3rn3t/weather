@@ -48,7 +48,7 @@ export function useLocationPerformanceMonitor() {
         return updated;
       });
     },
-    [],
+    []
   );
 
   const recordReverseGeocoding = useCallback(() => {

@@ -58,7 +58,7 @@ class SearchCacheManager {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(
         CACHE_CONFIG.DATABASE_NAME,
-        CACHE_CONFIG.DATABASE_VERSION,
+        CACHE_CONFIG.DATABASE_VERSION
       );
 
       request.onerror = () => {
@@ -95,7 +95,7 @@ class SearchCacheManager {
     query: string,
     results: unknown[],
     source: 'api' | 'autocorrect' | 'prefetch',
-    metadata: { responseTime: number; accuracy?: number },
+    metadata: { responseTime: number; accuracy?: number }
   ): Promise<void> {
     if (!this.db) {
       console.warn('Cache not initialized');
@@ -117,9 +117,14 @@ class SearchCacheManager {
     };
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(
+      const db = this.db;
+      if (!db) {
+        resolve();
+        return;
+      }
+      const transaction = db.transaction(
         [CACHE_CONFIG.STORE_NAME],
-        'readwrite',
+        'readwrite'
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -131,8 +136,12 @@ class SearchCacheManager {
       };
 
       request.onerror = () => {
-        console.error('Failed to cache results:', request.error);
-        reject(request.error);
+        const err = request.error;
+        const message = err
+          ? `${err.name}: ${err.message}`
+          : 'Unknown IndexedDB error';
+        console.error('Failed to cache results:', err ?? 'unknown');
+        reject(new Error(message));
       };
     });
   }
@@ -147,10 +156,12 @@ class SearchCacheManager {
     const normalizedQuery = this.normalizeQuery(query);
 
     return new Promise(resolve => {
-      const transaction = this.db!.transaction(
-        [CACHE_CONFIG.STORE_NAME],
-        'readonly',
-      );
+      const db = this.db;
+      if (!db) {
+        resolve(null);
+        return;
+      }
+      const transaction = db.transaction([CACHE_CONFIG.STORE_NAME], 'readonly');
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
       const index = store.index('query');
 
@@ -184,15 +195,17 @@ class SearchCacheManager {
    * Find fuzzy matches for typos
    */
   private async findFuzzyMatch(
-    query: string,
+    query: string
   ): Promise<CachedSearchResult | null> {
     if (!this.db) return null;
 
     return new Promise(resolve => {
-      const transaction = this.db!.transaction(
-        [CACHE_CONFIG.STORE_NAME],
-        'readonly',
-      );
+      const db = this.db;
+      if (!db) {
+        resolve(null);
+        return;
+      }
+      const transaction = db.transaction([CACHE_CONFIG.STORE_NAME], 'readonly');
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
       const request = store.getAll();
@@ -248,7 +261,7 @@ class SearchCacheManager {
         matrix[i][j] = Math.min(
           matrix[i - 1][j] + 1,
           matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost,
+          matrix[i - 1][j - 1] + cost
         );
       }
     }
@@ -264,9 +277,14 @@ class SearchCacheManager {
     if (!this.db) return;
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(
+      const db = this.db;
+      if (!db) {
+        resolve();
+        return;
+      }
+      const transaction = db.transaction(
         [CACHE_CONFIG.STORE_NAME],
-        'readwrite',
+        'readwrite'
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -279,8 +297,12 @@ class SearchCacheManager {
       };
 
       request.onerror = () => {
-        console.error('Failed to clear cache:', request.error);
-        reject(request.error);
+        const err = request.error;
+        const message = err
+          ? `${err.name}: ${err.message}`
+          : 'Unknown IndexedDB error';
+        console.error('Failed to clear cache:', err ?? 'unknown');
+        reject(new Error(message));
       };
     });
   }
@@ -301,9 +323,14 @@ class SearchCacheManager {
     const currentTime = Date.now();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(
+      const db = this.db;
+      if (!db) {
+        resolve();
+        return;
+      }
+      const transaction = db.transaction(
         [CACHE_CONFIG.STORE_NAME],
-        'readwrite',
+        'readwrite'
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -312,29 +339,24 @@ class SearchCacheManager {
       request.onsuccess = () => {
         const allEntries = request.result as CachedSearchResult[];
         const expiredEntries = allEntries.filter(
-          entry => !this.isValidCache(entry),
+          entry => !this.isValidCache(entry)
         );
 
-        const deletePromises = expiredEntries.map(
-          entry =>
-            new Promise<void>(deleteResolve => {
-              const deleteRequest = store.delete(entry.id);
-              deleteRequest.onsuccess = () => deleteResolve();
-              deleteRequest.onerror = () => deleteResolve();
-            }),
-        );
-
-        Promise.all(deletePromises).then(() => {
+        this.deleteExpiredEntries(store, expiredEntries).then(count => {
           this.metrics.lastCleanup = currentTime;
           this.updateCacheSize();
-          console.log(`🧹 Cleaned up ${expiredEntries.length} expired entries`);
+          console.log(`🧹 Cleaned up ${count} expired entries`);
           resolve();
         });
       };
 
       request.onerror = () => {
-        console.error('Failed to cleanup cache:', request.error);
-        reject(request.error);
+        const err = request.error;
+        const message = err
+          ? `${err.name}: ${err.message}`
+          : 'Unknown IndexedDB error';
+        console.error('Failed to cleanup cache:', err ?? 'unknown');
+        reject(new Error(message));
       };
     });
   }
@@ -357,7 +379,7 @@ class SearchCacheManager {
 
     const transaction = this.db.transaction(
       [CACHE_CONFIG.STORE_NAME],
-      'readonly',
+      'readonly'
     );
     const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
@@ -380,7 +402,7 @@ class SearchCacheManager {
 
     const transaction = this.db.transaction(
       [CACHE_CONFIG.STORE_NAME],
-      'readwrite',
+      'readwrite'
     );
     const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
     store.delete(id);
@@ -401,6 +423,25 @@ class SearchCacheManager {
       totalRequests: 0,
       cacheHits: 0,
     };
+  }
+
+  /**
+   * Delete expired entries from the given object store
+   */
+  private deleteExpiredEntries(
+    store: IDBObjectStore,
+    entries: CachedSearchResult[]
+  ): Promise<number> {
+    const deletions = entries.map(
+      entry =>
+        new Promise<void>(resolve => {
+          const req = store.delete(entry.id);
+          req.onsuccess = () => resolve();
+          req.onerror = () => resolve();
+        })
+    );
+
+    return Promise.all(deletions).then(() => entries.length);
   }
 }
 

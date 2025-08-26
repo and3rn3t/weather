@@ -1,0 +1,239 @@
+name: ⚡ Ultra-Fast Deploy
+run-name: Build & Deploy • ${{ github.ref_name }} • ${{ github.event_name }}
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      skip_quality:
+        description: 'Skip quality checks for emergency deploys'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  NPM_CONFIG_PREFER_OFFLINE: true
+  NPM_CONFIG_NO_AUDIT: true
+  NPM_CONFIG_NO_FUND: true
+  NPM_CONFIG_PROGRESS: false
+  NPM_CONFIG_LOGLEVEL: error
+  VITE_CJS_IGNORE_WARNING: true
+  NODE_OPTIONS: '--max-old-space-size=4096'
+
+jobs:
+  build_deploy:
+    name: '🚀 Build & Deploy'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js + npm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore build cache
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.vite
+            dist
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**/*', 'vite.config.ts') }}
+          restore-keys: |
+            build-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund --silent
+
+      - name: Record start time
+        id: start
+        run: echo "ts=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Set run mode
+        id: meta
+        run: |
+          is_push_main=$([ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ] && echo true || echo false)
+          is_pr=$([ "${{ github.event_name }}" = "pull_request" ] && echo true || echo false)
+          should_deploy=$([ "$is_push_main" = true ] && [ "${{ github.repository }}" = "and3rn3t/weather" ] && echo true || echo false)
+          echo "is_push_main=$is_push_main" >> $GITHUB_OUTPUT
+          echo "is_pr=$is_pr" >> $GITHUB_OUTPUT
+          echo "should_deploy=$should_deploy" >> $GITHUB_OUTPUT
+
+      - name: Mode summary
+        run: |
+          echo "### CI Run Mode" >> $GITHUB_STEP_SUMMARY
+          echo "- Event: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Should deploy: ${{ steps.meta.outputs.should_deploy }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Quality (fast, non-blocking)
+        if: ${{ (github.event_name != 'workflow_dispatch' || !inputs.skip_quality) && steps.meta.outputs.is_pr == 'true' }}
+        run: |
+          npx eslint . --cache --cache-location .eslintcache || echo "⚠️ Lint warnings (non-blocking)"
+          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
+          npm run type-check || echo "⚠️ Type-check issues (non-blocking)"
+        continue-on-error: true
+        timeout-minutes: 2
+
+      - name: Quality (strict)
+        if: ${{ (github.event_name != 'workflow_dispatch' || !inputs.skip_quality) && steps.meta.outputs.is_push_main == 'true' }}
+        run: |
+          npm run lint:check
+          npm run format:check
+
+      - name: Run tests (PRs - fast, non-blocking)
+        if: ${{ steps.meta.outputs.is_pr == 'true' }}
+        run: |
+          npm run test:fast | tee test-output.txt || true
+        continue-on-error: true
+        timeout-minutes: 3
+
+      - name: Tests summary (PRs)
+        if: ${{ steps.meta.outputs.is_pr == 'true' }}
+        run: |
+          echo "## 🧪 Tests (fast)" >> $GITHUB_STEP_SUMMARY
+          if [ -f test-output.txt ]; then
+            tail -n 50 test-output.txt >> $GITHUB_STEP_SUMMARY || true
+          else
+            echo "(no test output captured)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Build (fast with fallback)
+        run: |
+          npm run build:ultra || npm run build:fallback
+
+      - name: Performance budget (summary)
+        if: ${{ always() }}
+        run: |
+          echo "## 🎯 Performance Budget" >> $GITHUB_STEP_SUMMARY
+          node scripts/performance-budget.cjs | tee perf-budget.txt || true
+          echo "\n<details><summary>Full output</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "\n" >> $GITHUB_STEP_SUMMARY
+          cat perf-budget.txt >> $GITHUB_STEP_SUMMARY || true
+          echo "\n</details>" >> $GITHUB_STEP_SUMMARY
+
+      - name: Deploy preflight
+        if: ${{ steps.meta.outputs.should_deploy == 'true' }}
+        run: |
+          missing=0
+          [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && echo "❌ Missing secret: CLOUDFLARE_API_TOKEN" && missing=1 || echo "✅ CLOUDFLARE_API_TOKEN present"
+          [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ] && echo "❌ Missing secret: CLOUDFLARE_ACCOUNT_ID" && missing=1 || echo "✅ CLOUDFLARE_ACCOUNT_ID present"
+          [ "$missing" -ne 0 ] && echo "::error::Missing secrets; aborting deploy." && exit 1 || true
+
+      - name: Deploy to Cloudflare Pages
+        if: ${{ steps.meta.outputs.should_deploy == 'true' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=weather --branch=${{ github.ref_name }}
+
+      - name: Dist manifest (main)
+        if: ${{ steps.meta.outputs.should_deploy == 'true' }}
+        run: |
+          find dist -type f -printf '%s\t%p\n' | sort -nr > dist-manifest.txt || true
+        continue-on-error: true
+
+      - name: Upload dist manifest (main)
+        if: ${{ steps.meta.outputs.should_deploy == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-manifest-${{ github.sha }}
+          path: dist-manifest.txt
+          if-no-files-found: ignore
+
+      - name: Dry-run preflight
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "### Dry-run preflight" >> $GITHUB_STEP_SUMMARY
+          echo "- Event: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && echo "❌ Missing: CLOUDFLARE_API_TOKEN" | tee -a $GITHUB_STEP_SUMMARY || echo "✅ CLOUDFLARE_API_TOKEN present" | tee -a $GITHUB_STEP_SUMMARY
+          [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ] && echo "❌ Missing: CLOUDFLARE_ACCOUNT_ID" | tee -a $GITHUB_STEP_SUMMARY || echo "✅ CLOUDFLARE_ACCOUNT_ID present" | tee -a $GITHUB_STEP_SUMMARY
+          echo "- Deploy gated to push main on and3rn3t/weather" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload dist (PRs)
+        if: ${{ steps.meta.outputs.is_pr == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist
+          if-no-files-found: ignore
+
+      - name: Lighthouse (PRs - optional)
+        if: ${{ steps.meta.outputs.is_pr == 'true' }}
+        run: |
+          npx lhci autorun || true
+        continue-on-error: true
+        timeout-minutes: 4
+
+      - name: Upload Lighthouse reports (PRs)
+        if: ${{ steps.meta.outputs.is_pr == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ github.sha }}
+          path: lighthouse-reports
+          if-no-files-found: ignore
+
+      - name: Build metrics summary
+        if: ${{ always() }}
+        run: |
+          echo "## 📊 Build Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Author: $GITHUB_ACTOR" >> $GITHUB_STEP_SUMMARY
+          echo "- Event: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Cache hit (build cache): ${{ steps.cache-build.outputs.cache-hit || 'false' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Node: $(node -v)" >> $GITHUB_STEP_SUMMARY
+          echo "- npm: $(npm -v)" >> $GITHUB_STEP_SUMMARY
+          echo "- Vite: $(npx vite --version || echo 'n/a')" >> $GITHUB_STEP_SUMMARY
+          start=${{ steps.start.outputs.ts || '0' }}
+          now=$(date +%s)
+          if [ "$start" -gt 0 ]; then
+            dur=$((now - start))
+            echo "- Duration (approx): ${dur}s" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -d dist ]; then
+            size=$(du -sh dist | awk '{print $1}')
+            files=$(find dist -type f | wc -l | tr -d ' ')
+            echo "- Dist size: ${size} (${files} files)" >> $GITHUB_STEP_SUMMARY
+            echo "\n<details><summary>Top 10 largest files</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "\n" >> $GITHUB_STEP_SUMMARY
+            find dist -type f -printf '%s\t%p\n' | sort -nr | head -10 | awk '{printf "- %s bytes — %s\n", $1, $2}' >> $GITHUB_STEP_SUMMARY || true
+            echo "\n</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- Dist size: (no dist directory)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Success summary
+        if: ${{ success() && steps.meta.outputs.should_deploy == 'true' }}
+        run: |
+          echo "## ✅ Build & Deploy Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: https://weather.andernet.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: production" >> $GITHUB_STEP_SUMMARY
+          echo "- Cloudflare: https://weather.pages.dev" >> $GITHUB_STEP_SUMMARY

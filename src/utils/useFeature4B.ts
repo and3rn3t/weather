@@ -138,7 +138,7 @@ export const useFeature4B = () => {
     async (
       cityName: string,
       weatherData: WeatherData,
-      priority: 'low' | 'medium' | 'high' = 'medium',
+      priority: 'low' | 'medium' | 'high' = 'medium'
     ) => {
       if (!settings.advancedCachingEnabled) return false;
 
@@ -147,10 +147,10 @@ export const useFeature4B = () => {
         cacheKey,
         weatherData,
         'weather-data',
-        priority,
+        priority
       );
     },
-    [settings.advancedCachingEnabled],
+    [settings.advancedCachingEnabled]
   );
 
   /**
@@ -163,7 +163,7 @@ export const useFeature4B = () => {
       const cacheKey = `weather-${cityName.toLowerCase().replace(/\s+/g, '-')}`;
       return await advancedCachingManager.get(cacheKey, 'weather-data');
     },
-    [settings.advancedCachingEnabled],
+    [settings.advancedCachingEnabled]
   );
 
   /**
@@ -172,15 +172,18 @@ export const useFeature4B = () => {
   const queueBackgroundSync = useCallback(
     (
       type: 'weather-update' | 'city-search' | 'location-fetch',
-      data: unknown,
-      priority: 'high' | 'medium' | 'low' = 'medium',
+      data:
+        | { cityName: string; latitude: number; longitude: number }
+        | { query: string }
+        | { latitude: number; longitude: number },
+      priority: 'high' | 'medium' | 'low' = 'medium'
     ) => {
       if (!settings.backgroundSyncEnabled) return;
 
       backgroundSyncManager.queueRequest(type, data, priority);
       updateStats();
     },
-    [settings.backgroundSyncEnabled, updateStats],
+    [settings.backgroundSyncEnabled, updateStats]
   );
 
   /**
@@ -202,7 +205,7 @@ export const useFeature4B = () => {
       title: string,
       message: string,
       priority: 'low' | 'normal' | 'high' = 'normal',
-      weatherData?: WeatherData,
+      weatherData?: WeatherData
     ) => {
       if (!settings.notificationsEnabled) return false;
 
@@ -218,7 +221,7 @@ export const useFeature4B = () => {
       updateStats();
       return result;
     },
-    [settings.notificationsEnabled, updateStats],
+    [settings.notificationsEnabled, updateStats]
   );
 
   /**
@@ -231,12 +234,12 @@ export const useFeature4B = () => {
       const alerts =
         await pushNotificationManager.checkAndSendSevereWeatherAlerts(
           weatherData,
-          cityName,
+          cityName
         );
       updateStats();
       return alerts;
     },
-    [settings.notificationsEnabled, updateStats],
+    [settings.notificationsEnabled, updateStats]
   );
 
   /**
@@ -265,12 +268,12 @@ export const useFeature4B = () => {
     (
       newSettings: Partial<
         typeof pushNotificationManager.getNotificationSettings
-      >,
+      >
     ) => {
       pushNotificationManager.updateNotificationSettings(newSettings);
       updateStats();
     },
-    [updateStats],
+    [updateStats]
   );
 
   /**
@@ -280,7 +283,7 @@ export const useFeature4B = () => {
     (newSettings: Partial<Feature4BSettings>) => {
       setSettings(prev => ({ ...prev, ...newSettings }));
     },
-    [],
+    []
   );
 
   /**

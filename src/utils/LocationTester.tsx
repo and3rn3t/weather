@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useLocationServices } from './useLocationServices';
 import { logInfo } from './logger';
 
-
 export const LocationTester: React.FC = () => {
   const {
     isLoading,
@@ -37,7 +36,7 @@ export const LocationTester: React.FC = () => {
 
       if (location) {
         addResult(
-          `✅ Location acquired: ${location.latitude}, ${location.longitude}`,
+          `✅ Location acquired: ${location.latitude}, ${location.longitude}`
         );
         addResult(`🏙️ City: ${location.city || 'Unknown'}`);
         addResult(`🌍 Country: ${location.country || 'Unknown'}`);

@@ -9,7 +9,6 @@ import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { logWarn, logInfo } from './logger';
 
-
 // ============================================================================
 // HAPTIC PATTERNS & CONFIGURATION
 // ============================================================================
@@ -213,7 +212,7 @@ export class EnhancedHapticService {
   // ============================================================================
 
   private async executeNativeHaptic(
-    pattern: HapticPatternType,
+    pattern: HapticPatternType
   ): Promise<boolean> {
     if (!this.isNative || !this.config.enabled) {
       return false;

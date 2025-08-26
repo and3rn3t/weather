@@ -92,18 +92,18 @@ class FavoriteCitiesManager {
    * Add a city to favorites
    */
   async addFavoriteCity(
-    city: Omit<FavoriteCity, 'id' | 'addedAt' | 'lastAccessed' | 'accessCount'>,
+    city: Omit<FavoriteCity, 'id' | 'addedAt' | 'lastAccessed' | 'accessCount'>
   ): Promise<FavoriteCity> {
     logInfo('⭐ FavoriteCities: Adding city to favorites', { city: city.name });
 
     // Check if city already exists
     const existingCity = this.findCityByCoordinates(
       city.latitude,
-      city.longitude,
+      city.longitude
     );
     if (existingCity) {
       logInfo(
-        '📍 FavoriteCities: City already in favorites, updating access time',
+        '📍 FavoriteCities: City already in favorites, updating access time'
       );
       return this.updateCityAccess(existingCity.id);
     }
@@ -114,7 +114,7 @@ class FavoriteCitiesManager {
         await this.cleanupOldCities();
       } else {
         throw new Error(
-          `Maximum ${this.config.maxCities} cities allowed. Please remove some cities first.`,
+          `Maximum ${this.config.maxCities} cities allowed. Please remove some cities first.`
         );
       }
     }
@@ -126,7 +126,7 @@ class FavoriteCitiesManager {
         city.name,
         city.country,
         city.latitude,
-        city.longitude,
+        city.longitude
       ),
       addedAt: Date.now(),
       lastAccessed: Date.now(),
@@ -176,7 +176,7 @@ class FavoriteCitiesManager {
    * Get all favorite cities sorted by relevance
    */
   getFavoriteCities(
-    sortBy: 'recent' | 'frequent' | 'alphabetical' | 'distance' = 'recent',
+    sortBy: 'recent' | 'frequent' | 'alphabetical' | 'distance' = 'recent'
   ): FavoriteCity[] {
     const cities = Array.from(this.favoriteCities.values());
 
@@ -344,7 +344,7 @@ class FavoriteCitiesManager {
    */
   async updateCityWeather(
     cityId: string,
-    weatherData: FavoriteCity['weatherData'],
+    weatherData: FavoriteCity['weatherData']
   ): Promise<void> {
     const city = this.favoriteCities.get(cityId);
     if (!city) {
@@ -409,7 +409,7 @@ class FavoriteCitiesManager {
   private findCityByCoordinates(
     latitude: number,
     longitude: number,
-    tolerance: number = 0.01,
+    tolerance: number = 0.01
   ): FavoriteCity | null {
     for (const city of this.favoriteCities.values()) {
       const latDiff = Math.abs(city.latitude - latitude);
@@ -429,10 +429,10 @@ class FavoriteCitiesManager {
     name: string,
     country: string,
     latitude: number,
-    longitude: number,
+    longitude: number
   ): string {
     const baseId = `${name}_${country}_${latitude.toFixed(
-      2,
+      2
     )}_${longitude.toFixed(2)}`
       .toLowerCase()
       .replace(/[^a-z0-9_]/g, '_');
@@ -476,7 +476,7 @@ class FavoriteCitiesManager {
 
       // Load current location
       const currentLocationData = localStorage.getItem(
-        this.STORAGE_KEYS.currentLocation,
+        this.STORAGE_KEYS.currentLocation
       );
       if (currentLocationData) {
         this.currentLocationId = currentLocationData;
@@ -504,7 +504,7 @@ class FavoriteCitiesManager {
       if (this.config.enableSearchHistory) {
         localStorage.setItem(
           this.STORAGE_KEYS.searchHistory,
-          JSON.stringify(this.searchHistory),
+          JSON.stringify(this.searchHistory)
         );
       }
 
@@ -512,7 +512,7 @@ class FavoriteCitiesManager {
       if (this.currentLocationId) {
         localStorage.setItem(
           this.STORAGE_KEYS.currentLocation,
-          this.currentLocationId,
+          this.currentLocationId
         );
       }
 
@@ -572,7 +572,7 @@ export function useFavoriteCities() {
       city: Omit<
         FavoriteCity,
         'id' | 'addedAt' | 'lastAccessed' | 'accessCount'
-      >,
+      >
     ) => manager.addFavoriteCity(city),
     removeCity: (cityId: string) => manager.removeFavoriteCity(cityId),
     getCities: (sortBy?: 'recent' | 'frequent' | 'alphabetical' | 'distance') =>

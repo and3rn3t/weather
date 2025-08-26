@@ -169,7 +169,7 @@ const VOICE_OPTIMIZED_CITIES = {
  * Provides complete voice search functionality with city recognition
  */
 export function useVoiceSearch(
-  config: VoiceSearchConfig = {},
+  config: VoiceSearchConfig = {}
 ): UseVoiceSearchReturn {
   // Merge with default configuration to ensure voice navigation is disabled by default
   const finalConfig = { ...DEFAULT_VOICE_SEARCH_CONFIG, ...config };
@@ -189,7 +189,7 @@ export function useVoiceSearch(
   const [confidence, setConfidence] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isSupported] = useState(
-    () => 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window,
+    () => 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window
   );
 
   // Refs for speech recognition
@@ -336,7 +336,7 @@ export function useVoiceSearch(
 
       // Direct exact matches
       for (const [cityName, variations] of Object.entries(
-        VOICE_OPTIMIZED_CITIES,
+        VOICE_OPTIMIZED_CITIES
       )) {
         if (variations.some(variation => normalizedText.includes(variation))) {
           return cityName;
@@ -346,7 +346,7 @@ export function useVoiceSearch(
       // Fuzzy matching for partial words
       const words = normalizedText.split(/\s+/);
       for (const [cityName, variations] of Object.entries(
-        VOICE_OPTIMIZED_CITIES,
+        VOICE_OPTIMIZED_CITIES
       )) {
         for (const variation of variations) {
           const variationWords = variation.split(/\s+/);
@@ -357,8 +357,8 @@ export function useVoiceSearch(
               word =>
                 word.includes(varWord) ||
                 varWord.includes(word) ||
-                levenshteinDistance(word, varWord) <= 1,
-            ),
+                levenshteinDistance(word, varWord) <= 1
+            )
           );
 
           if (allWordsPresent) {
@@ -370,7 +370,7 @@ export function useVoiceSearch(
       // Fallback: return original text for general search
       return normalizedText;
     },
-    [],
+    []
   );
 
   /**
@@ -431,7 +431,7 @@ export function useVoiceSearch(
         }
       });
     },
-    [isSupported, initializeSpeechRecognition, recognizeCityFromTranscript],
+    [isSupported, initializeSpeechRecognition, recognizeCityFromTranscript]
   );
 
   /**
@@ -492,7 +492,7 @@ function levenshteinDistance(str1: string, str2: string): number {
       matrix[j][i] = Math.min(
         matrix[j][i - 1] + 1, // deletion
         matrix[j - 1][i] + 1, // insertion
-        matrix[j - 1][i - 1] + indicator, // substitution
+        matrix[j - 1][i - 1] + indicator // substitution
       );
     }
   }

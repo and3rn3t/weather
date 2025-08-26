@@ -36,7 +36,7 @@ interface ProgressiveWeatherData {
 
 export const useProgressiveWeatherLoading = (
   latitude: number,
-  longitude: number,
+  longitude: number
 ) => {
   const [weatherData, setWeatherData] = useState<ProgressiveWeatherData>({
     current: null,
@@ -64,7 +64,7 @@ export const useProgressiveWeatherLoading = (
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`
       );
 
       if (!response.ok) throw new Error('Current weather fetch failed');
@@ -83,7 +83,7 @@ export const useProgressiveWeatherLoading = (
           weather: [
             {
               description: getWeatherDescription(
-                data.current_weather.weathercode,
+                data.current_weather.weathercode
               ),
               main: getWeatherMain(data.current_weather.weathercode),
             },
@@ -118,7 +118,7 @@ export const useProgressiveWeatherLoading = (
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature&temperature_unit=fahrenheit&forecast_days=1`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature&temperature_unit=fahrenheit&forecast_days=1`
       );
 
       if (!response.ok) throw new Error('Hourly forecast fetch failed');
@@ -167,7 +167,7 @@ export const useProgressiveWeatherLoading = (
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&forecast_days=7`
       );
 
       if (!response.ok) throw new Error('Daily forecast fetch failed');
@@ -214,7 +214,7 @@ export const useProgressiveWeatherLoading = (
 
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,surface_pressure,dew_point_2m&hourly=uv_index,visibility&temperature_unit=fahrenheit&forecast_days=1`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,surface_pressure,dew_point_2m&hourly=uv_index,visibility&temperature_unit=fahrenheit&forecast_days=1`
       );
 
       if (!response.ok) throw new Error('Metrics fetch failed');

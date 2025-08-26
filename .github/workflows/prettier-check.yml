@@ -1,0 +1,44 @@
+name: ✨ Prettier Check
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+  NPM_CONFIG_PREFER_OFFLINE: true
+  NPM_CONFIG_NO_AUDIT: true
+  NPM_CONFIG_NO_FUND: true
+  NPM_CONFIG_PROGRESS: false
+  NPM_CONFIG_LOGLEVEL: error
+
+jobs:
+  prettier:
+    name: ✨ Prettier
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 🚚 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund --silent
+
+      - name: ✨ Run Prettier check
+        run: |
+          npm run format:check

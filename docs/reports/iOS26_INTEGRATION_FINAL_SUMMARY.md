@@ -147,16 +147,13 @@ standards met ✅ **Performance Optimization** - 60fps animations, hardware acce
 ### **Interaction Enhancements**
 
 1. **Context Menu Flow**:
-
    - Right-click/long-press weather card → Context menu appears → Select action → Haptic
      confirmation
 
 2. **Interactive Widget Flow**:
-
    - Tap weather widget → Smooth animation → Data refresh → Visual feedback
 
 3. **Settings Modal Flow**:
-
    - Access settings → Modal slides up → Adjust preferences → Live test notifications
 
 4. **Live Activity Flow**:
@@ -212,13 +209,11 @@ docs/
 ### **Development Insights**
 
 1. **Component Integration Strategy**:
-
    - Start with basic components before advanced features
    - Maintain backward compatibility during integration
    - Test each component independently before combining
 
 2. **iOS Design Patterns**:
-
    - Haptic feedback is crucial for authentic iOS feel
    - Backdrop blur effects require careful CSS optimization
    - Spring physics timing must match iOS system animations

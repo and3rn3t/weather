@@ -86,15 +86,12 @@ export class Dash0ErrorBoundary extends Component<
 
       // Log to console in development
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
         console.error('Dash0 Error Tracked:', { error, context });
       }
     } catch (telemetryError) {
       // Fallback: log to console if telemetry fails
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
         console.error('Failed to track error with Dash0:', telemetryError);
-        // eslint-disable-next-line no-console
         console.error('Original error:', error);
       }
     }
@@ -104,7 +101,7 @@ export class Dash0ErrorBoundary extends Component<
     // Generate unique error ID
     const errorId = `err_${Date.now()}_${Math.random()
       .toString(36)
-      .substr(2, 9)}`;
+      .slice(2, 11)}`;
     return {
       hasError: true,
       error,
@@ -139,7 +136,7 @@ export class Dash0ErrorBoundary extends Component<
     }
   }
 
-  private handleRetry = () => {
+  private readonly handleRetry = () => {
     // Track retry attempt
     try {
       dash0Telemetry.trackUserInteraction('error_boundary_retry', {
@@ -243,8 +240,9 @@ export function usePerformanceMonitor(config: PerformanceConfig) {
 
   // Track component mount
   useEffect(() => {
+    const mountedAt = mountTimeRef.current;
     if (config.trackMount) {
-      const mountTime = Date.now() - mountTimeRef.current;
+      const mountTime = Date.now() - mountedAt;
       telemetry.trackPerformance({
         name: 'component_mount_time',
         value: mountTime,
@@ -255,7 +253,7 @@ export function usePerformanceMonitor(config: PerformanceConfig) {
     // Track component unmount
     return () => {
       if (config.trackUnmount) {
-        const totalTime = Date.now() - mountTimeRef.current;
+        const totalTime = Date.now() - mountedAt;
         telemetry.trackPerformance({
           name: 'component_total_time',
           value: totalTime,
@@ -279,7 +277,7 @@ export function usePerformanceMonitor(config: PerformanceConfig) {
 
   // Track user interactions
   const trackInteraction = useCallback(
-    (action: string, properties?: Record<string, unknown>) => {
+    (action: string, _properties?: Record<string, unknown>) => {
       if (config.trackInteractions) {
         telemetry.trackUserInteraction({
           action: `${config.componentName}_${action}`,
@@ -295,7 +293,7 @@ export function usePerformanceMonitor(config: PerformanceConfig) {
         });
       }
     },
-    [config.componentName, config.trackInteractions, telemetry],
+    [config.componentName, config.trackInteractions, telemetry]
   );
 
   return {
@@ -327,9 +325,8 @@ export class WeatherApiPerformanceMonitor {
   async monitorApiCall<T>(
     apiName: string,
     apiCall: () => Promise<T>,
-    city?: string,
+    city?: string
   ): Promise<T> {
-    const startTime = performance.now();
     const markStart = `${apiName}_start_${Date.now()}`;
     const markEnd = `${apiName}_end_${Date.now()}`;
 
@@ -359,7 +356,7 @@ export class WeatherApiPerformanceMonitor {
         dash0Telemetry.trackPerformance(
           `api_${apiName}_duration`,
           duration,
-          'milliseconds',
+          'milliseconds'
         );
         dash0Telemetry.trackUserInteraction(`api_${apiName}_success`, {
           city: city || 'unknown',
@@ -390,7 +387,7 @@ export class WeatherApiPerformanceMonitor {
           city: city || 'unknown',
           error_message: (error as Error).message.substring(0, 100),
         });
-      } catch (telemetryError) {
+      } catch (telemetryError: unknown) {
         console.error('Failed to track API error:', telemetryError);
       }
 
@@ -407,7 +404,7 @@ export class WeatherApiPerformanceMonitor {
    */
   getPerformanceSummary(): Record<string, unknown> {
     const navigation = performance.getEntriesByType(
-      'navigation',
+      'navigation'
     )[0] as PerformanceNavigationTiming;
 
     return {
@@ -425,18 +422,25 @@ export class WeatherApiPerformanceMonitor {
   private getFirstContentfulPaint(): number {
     const paintEntries = performance.getEntriesByType('paint');
     const fcp = paintEntries.find(
-      entry => entry.name === 'first-contentful-paint',
+      entry => entry.name === 'first-contentful-paint'
     );
     return fcp ? fcp.startTime : 0;
   }
 
   private getMemoryUsage(): Record<string, number> {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const perfWithMemory = performance as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+      const memory = perfWithMemory.memory;
       return {
-        usedJSHeapSize: memory.usedJSHeapSize,
-        totalJSHeapSize: memory.totalJSHeapSize,
-        jsHeapSizeLimit: memory.jsHeapSizeLimit,
+        usedJSHeapSize: memory?.usedJSHeapSize ?? 0,
+        totalJSHeapSize: memory?.totalJSHeapSize ?? 0,
+        jsHeapSizeLimit: memory?.jsHeapSizeLimit ?? 0,
       };
     }
     return {};

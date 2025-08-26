@@ -100,10 +100,7 @@ class CICDOptimizer {
     console.log('🗄️  Analyzing Cache Efficiency...');
 
     // Check for existing cache configurations
-    const workflowFile = path.join(
-      this.projectRoot,
-      '.github/workflows/deploy.yml'
-    );
+    // workflow file path not needed here; using optimizedWorkflow for checks
     const optimizedWorkflow = path.join(
       this.projectRoot,
       '.github/workflows/deploy-optimized.yml'
@@ -182,10 +179,7 @@ class CICDOptimizer {
   async analyzeParallelization() {
     console.log('🔄 Analyzing Parallelization...');
 
-    const workflowFile = path.join(
-      this.projectRoot,
-      '.github/workflows/deploy.yml'
-    );
+    // workflow file path not needed here; using optimizedWorkflow for checks
     const optimizedWorkflow = path.join(
       this.projectRoot,
       '.github/workflows/deploy-optimized.yml'
@@ -270,7 +264,7 @@ class CICDOptimizer {
 
     console.log('1. 📦 Install Optimized Workflow:');
     console.log(
-      '   - Replace .github/workflows/deploy.yml with deploy-optimized.yml'
+      '   - Replace .github/workflows/ci-cd.yml with deploy-optimized.yml'
     );
     console.log('   - Configure GitHub secrets for Cloudflare deployment');
     console.log('');

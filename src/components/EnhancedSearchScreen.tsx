@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import '../utils/locationDiagnostic'; // Load diagnostic tools in development
 import { locationService } from '../utils/locationService';
-import { logError } from '../utils/logger';
+import { logError, logInfo } from '../utils/logger';
 import { offlineStorage } from '../utils/offlineWeatherStorage';
 import { searchPerformanceMonitor } from '../utils/searchPerformanceMonitor';
 import type { ThemeColors } from '../utils/themeConfig';
@@ -95,6 +95,15 @@ function EnhancedSearchScreen({
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Type guard for custom error shapes
+  const hasUserMessage = (e: unknown): e is { userMessage: string } => {
+    if (e && typeof e === 'object' && 'userMessage' in e) {
+      const candidate = e as { userMessage: unknown };
+      return typeof candidate.userMessage === 'string';
+    }
+    return false;
+  };
+
   // Load recent searches
   useEffect(() => {
     try {
@@ -114,7 +123,7 @@ function EnhancedSearchScreen({
         const permission = await locationService.checkPermissions();
         setLocationPermission(permission);
       } catch (error) {
-        console.warn('Failed to check location permissions:', error);
+        logError('Failed to check location permissions:', error as Error);
         setLocationPermission('unknown');
       }
     };
@@ -155,14 +164,14 @@ function EnhancedSearchScreen({
                 class: 'place',
                 name: city.name,
                 address: { city: city.name },
-              } as NominatimResult),
+              }) as NominatimResult
           );
 
         setSearchResults(offlineMatches);
 
         if (offlineMatches.length === 0) {
           setError(
-            'No cached cities match your search. Connect to internet for full search.',
+            'No cached cities match your search. Connect to internet for full search.'
           );
         } else {
           setError(null);
@@ -172,7 +181,7 @@ function EnhancedSearchScreen({
         searchPerformanceMonitor.endSearch(
           trackingId,
           'offline',
-          offlineMatches.length,
+          offlineMatches.length
         );
         setIsSearching(false);
         return;
@@ -184,7 +193,7 @@ function EnhancedSearchScreen({
     try {
       // Primary API: OpenStreetMap Nominatim
       const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        query,
+        query
       )}&format=json&limit=25&addressdetails=1&extratags=1`;
 
       const controller = new AbortController();
@@ -202,7 +211,7 @@ function EnhancedSearchScreen({
 
       if (!response.ok) {
         throw new Error(
-          `Search API returned ${response.status}: ${response.statusText}`,
+          `Search API returned ${response.status}: ${response.statusText}`
         );
       }
 
@@ -287,21 +296,22 @@ function EnhancedSearchScreen({
       searchPerformanceMonitor.endSearch(
         trackingId,
         'nominatim',
-        filteredResults.length,
+        filteredResults.length
       );
-    } catch (error: any) {
-      logError('Search error:', error);
+    } catch (err) {
+      logError('Search error:', err as Error);
 
-      if (error.name === 'AbortError') {
+      if (err instanceof DOMException && err.name === 'AbortError') {
         setError(
-          'Search timed out. Please check your internet connection and try again.',
+          'Search timed out. Please check your internet connection and try again.'
         );
       } else if (
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('NetworkError')
+        err instanceof Error &&
+        (err.message?.includes('Failed to fetch') ||
+          err.message?.includes('NetworkError'))
       ) {
         setError(
-          'Network error. Please check your internet connection and try again.',
+          'Network error. Please check your internet connection and try again.'
         );
       } else {
         setError('Search failed. Please try again in a moment.');
@@ -363,7 +373,7 @@ function EnhancedSearchScreen({
       const newRecent = [
         searchResult,
         ...recentSearches.filter(
-          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon,
+          r => r.lat !== searchResult.lat || r.lon !== searchResult.lon
         ),
       ].slice(0, 5);
 
@@ -372,7 +382,7 @@ function EnhancedSearchScreen({
       try {
         localStorage.setItem(
           'weather-recent-searches',
-          JSON.stringify(newRecent),
+          JSON.stringify(newRecent)
         );
       } catch (error) {
         logError('Error saving recent searches:', error);
@@ -387,7 +397,7 @@ function EnhancedSearchScreen({
 
       onLocationSelect(cityName, latitude, longitude);
     },
-    [haptic, onLocationSelect, recentSearches],
+    [haptic, onLocationSelect, recentSearches]
   );
 
   // Handle recent search selection
@@ -406,7 +416,7 @@ function EnhancedSearchScreen({
 
       onLocationSelect(result.name, latitude, longitude);
     },
-    [haptic, onLocationSelect],
+    [haptic, onLocationSelect]
   );
 
   // Get current location with enhanced error handling
@@ -420,7 +430,7 @@ function EnhancedSearchScreen({
       if (!locationService.isSecureContext()) {
         haptic.error();
         setError(
-          'Location services require a secure connection (HTTPS). This feature may not work on non-secure websites.',
+          'Location services require a secure connection (HTTPS). This feature may not work on non-secure websites.'
         );
         return;
       }
@@ -429,7 +439,7 @@ function EnhancedSearchScreen({
       if (!locationService.isSupported()) {
         haptic.error();
         setError(
-          'Geolocation is not supported by this browser. Please search for your city manually.',
+          'Geolocation is not supported by this browser. Please search for your city manually.'
         );
         return;
       }
@@ -441,7 +451,7 @@ function EnhancedSearchScreen({
       if (permissionState === 'denied') {
         haptic.error();
         setError(
-          'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.',
+          'Location access is blocked. Please enable location permissions in your browser settings and refresh the page.'
         );
         return;
       }
@@ -457,24 +467,24 @@ function EnhancedSearchScreen({
       onLocationSelect(
         cityName,
         locationResult.latitude,
-        locationResult.longitude,
+        locationResult.longitude
       );
-    } catch (locationError: any) {
+    } catch (locationError) {
       haptic.error();
-      logError('Enhanced geolocation error:', locationError);
+      logError('Enhanced geolocation error:', locationError as Error);
 
       // Use the user-friendly message from the location service
-      if (locationError.userMessage) {
+      if (hasUserMessage(locationError)) {
         setError(locationError.userMessage);
       } else {
         setError(
-          'Failed to get your location. Please try again or search for your city manually.',
+          'Failed to get your location. Please try again or search for your city manually.'
         );
       }
 
       // Log additional troubleshooting tips
       const tips = locationService.getLocationTips();
-      console.log('Location troubleshooting tips:', tips);
+      logInfo('Location troubleshooting tips:', tips);
     } finally {
       setIsGettingLocation(false);
     }

@@ -363,7 +363,7 @@ export class MultiSensoryExperienceCoordinator {
     const plan = WeatherExperienceMappings[event.weatherCondition];
     if (!plan) {
       logger.warn(
-        `No sensory plan found for weather condition: ${event.weatherCondition}`,
+        `No sensory plan found for weather condition: ${event.weatherCondition}`
       );
       return;
     }
@@ -375,14 +375,14 @@ export class MultiSensoryExperienceCoordinator {
    * Play coordinated multi-sensory experience for interaction
    */
   async playInteractionExperience(
-    event: WeatherExperienceEvent,
+    event: WeatherExperienceEvent
   ): Promise<void> {
     if (!this.isInitialized || !event.interactionType) return;
 
     const plan = InteractionExperienceMappings[event.interactionType];
     if (!plan) {
       logger.warn(
-        `No sensory plan found for interaction: ${event.interactionType}`,
+        `No sensory plan found for interaction: ${event.interactionType}`
       );
       return;
     }
@@ -407,7 +407,7 @@ export class MultiSensoryExperienceCoordinator {
   private async executeSensoryPlan(
     experienceId: string,
     plan: SensoryFeedbackPlan,
-    event: WeatherExperienceEvent,
+    event: WeatherExperienceEvent
   ): Promise<void> {
     try {
       // Stop any existing experience with the same ID
@@ -425,7 +425,7 @@ export class MultiSensoryExperienceCoordinator {
             plan,
             event,
             timeouts,
-            plan.timing.delays,
+            plan.timing.delays
           );
           break;
         case 'haptic-first':
@@ -447,7 +447,7 @@ export class MultiSensoryExperienceCoordinator {
             plan,
             event,
             timeouts,
-            plan.timing.delays,
+            plan.timing.delays
           );
           break;
       }
@@ -466,7 +466,7 @@ export class MultiSensoryExperienceCoordinator {
     plan: SensoryFeedbackPlan,
     event: WeatherExperienceEvent,
     timeouts: NodeJS.Timeout[],
-    delays: number[],
+    delays: number[]
   ): Promise<void> {
     // Audio component
     if (plan.audio && this.config.audio.enabled) {
@@ -484,12 +484,12 @@ export class MultiSensoryExperienceCoordinator {
           if (event.weatherCondition) {
             await this.audioManager.playWeatherSound(
               event.weatherCondition,
-              audioConfig,
+              audioConfig
             );
           } else if (event.interactionType && plan.audio?.soundId) {
             await this.audioManager.playInteractionSound(
               plan.audio.soundId as never,
-              audioConfig,
+              audioConfig
             );
           }
         } catch (error) {
@@ -516,12 +516,12 @@ export class MultiSensoryExperienceCoordinator {
           if (event.weatherCondition) {
             await this.hapticManager.playWeatherHaptic(
               event.weatherCondition,
-              hapticConfig,
+              hapticConfig
             );
           } else if (event.interactionType && plan.haptic?.patternId) {
             await this.hapticManager.playInteractionHaptic(
               plan.haptic.patternId as never,
-              hapticConfig,
+              hapticConfig
             );
           }
         } catch (error) {
@@ -551,7 +551,7 @@ export class MultiSensoryExperienceCoordinator {
    * Create dynamic alert plan based on severity
    */
   private createAlertPlan(
-    alertLevel: 'info' | 'warning' | 'severe' | 'emergency',
+    alertLevel: 'info' | 'warning' | 'severe' | 'emergency'
   ): SensoryFeedbackPlan {
     const baseIntensity = {
       info: 0.3,
@@ -678,7 +678,7 @@ export class MultiSensoryExperienceCoordinator {
     try {
       // Check for reduced motion preference
       const prefersReducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)',
+        '(prefers-reduced-motion: reduce)'
       ).matches;
       if (prefersReducedMotion) {
         this.config.visual.animationsEnabled = false;
@@ -687,7 +687,7 @@ export class MultiSensoryExperienceCoordinator {
 
       // Check for high contrast preference
       const prefersHighContrast = window.matchMedia(
-        '(prefers-contrast: high)',
+        '(prefers-contrast: high)'
       ).matches;
       if (prefersHighContrast) {
         this.config.accessibility.highContrast = true;

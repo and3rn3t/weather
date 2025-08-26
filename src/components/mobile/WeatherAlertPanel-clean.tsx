@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type {
   AlertPreferences,
   AlertRule,
@@ -33,20 +33,20 @@ const WeatherAlertPanel: React.FC<WeatherAlertPanelProps> = ({
 
   const alertManager = WeatherAlertManager.getInstance();
 
+  const loadData = useCallback(() => {
+    setAlerts(alertManager.getActiveAlerts());
+    setRules(alertManager.getAlertRules());
+    setPreferences(alertManager.getPreferences());
+  }, [alertManager]);
+
   useEffect(() => {
     if (isVisible) {
       loadData();
     }
-  }, [isVisible]);
-
-  const loadData = () => {
-    setAlerts(alertManager.getActiveAlerts());
-    setRules(alertManager.getAlertRules());
-    setPreferences(alertManager.getPreferences());
-  };
+  }, [isVisible, loadData]);
 
   const unreadCount = alerts.filter(
-    (alert: WeatherAlert) => !alert.isRead,
+    (alert: WeatherAlert) => !alert.isRead
   ).length;
 
   const handleMarkAsRead = (alertId: string) => {

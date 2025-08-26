@@ -1,5 +1,9 @@
 # 📚 Weather App Documentation
 
+[![CI/CD](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml)
+[![Dev Deploy](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml)
+[![Test & Build](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml)
+
 ## 🌟 **Project Overview**
 
 Premium iOS26 weather application with cutting-edge design patterns, multi-sensory interactions, and
@@ -37,17 +41,15 @@ npm run dev
 - **[Quick Start Guide](./QUICK_START.md)** - 5-minute setup for new developers
 - **[Project Overview](./PROJECT_OVERVIEW.md)** - Complete project summary and architecture
 - **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment to Cloudflare Pages
-- **[Project Completion Summary](./PROJECT_COMPLETION_SUMMARY.md)** - Full implementation achievements and metrics
-- **[Troubleshooting Guide](./TROUBLESHOOTING_GUIDE.md)** - Comprehensive problem-solving reference
 
 ### **📖 Development Guides** (docs/guides/)
 
-- **[Development Workflow](./guides/DEVELOPMENT_WORKFLOW.md)** - Contribution guidelines and workflow
+- **[Development Workflow](./guides/DEVELOPMENT_WORKFLOW.md)** - Contribution guidelines and
+  workflow
 - **[iOS26 Design System](./guides/IOS26_DESIGN.md)** - Design patterns and component system
-- **[iOS26 Components Guide](./guides/iOS26_COMPONENTS_GUIDE.md)** - Component implementation reference
-- **[iOS HIG Compliance](./guides/IOS_HIG_COMPLIANCE.md)** - Apple Human Interface Guidelines
 - **[Mobile Development](./guides/MOBILE_GUIDE.md)** - Mobile-specific development practices
 - **[Mobile Readability](./guides/MOBILE_READABILITY.md)** - Mobile optimization and accessibility
+- **[SonarCloud Integration](./guides/SONARCLOUD_IDE_INTEGRATION.md)** - IDE integration setup
 - **[Testing Guide](./guides/TESTING_GUIDE.md)** - Testing strategies and procedures
 
 ### **⚙️ Technical Documentation** (docs/technical/)
@@ -101,54 +103,56 @@ Organized archive of project history, including:
 
 ---
 
-## 📁 **Documentation Structure** *(Optimized August 2025)*
+## 📁 **Documentation Structure**
 
-### **Root Documentation** (7 Essential Files)
+### **Root Documentation** (4 Essential Files)
 
-```
-docs/
-├── README.md                      # This documentation hub
-├── QUICK_START.md                 # 5-minute developer setup
-├── PROJECT_OVERVIEW.md            # Complete project summary  
-├── DEPLOYMENT_GUIDE.md            # Production deployment guide
-├── PROJECT_COMPLETION_SUMMARY.md  # Full implementation summary
-└── TROUBLESHOOTING_GUIDE.md       # Comprehensive problem-solving guide
+```mermaid
+flowchart TD
+  A[docs/] --> A1[README.md\nDocumentation hub]
+  A --> A2[QUICK_START.md\n5-minute setup]
+  A --> A3[PROJECT_OVERVIEW.md\nProject summary]
+  A --> A4[DEPLOYMENT_GUIDE.md\nProduction deployment]
 ```
 
-### **Active Development Documentation**
+### **Current Active Documentation**
 
-```
-docs/
-├── guides/                        # 7 Development Guides
-│   ├── DEVELOPMENT_WORKFLOW.md    # Contribution workflow
-│   ├── IOS26_DESIGN.md           # Design system patterns
-│   ├── IOS26_COMPONENTS_GUIDE.md # Component implementation
-│   ├── IOS_HIG_COMPLIANCE.md     # Apple HIG compliance
-│   ├── MOBILE_GUIDE.md           # Mobile development
-│   ├── MOBILE_READABILITY.md     # Mobile optimization
-│   └── TESTING_GUIDE.md          # Testing strategies
-│
-├── technical/                     # 1 Technical Specification
-│   └── API_INTEGRATION.md        # Weather API integration
-│
-└── reports/                       # 3 Project Reports
-    ├── FINAL_PROJECT_SUMMARY.md   # Project completion status
-    ├── iOS26_INTEGRATION_FINAL_SUMMARY.md # iOS26 implementation
-    └── iOS26_LESSONS_LEARNED.md   # Development insights
+```mermaid
+flowchart TD
+  subgraph D[docs/]
+    subgraph G[guides/ \nDevelopment Guides]
+      G1[DEVELOPMENT_WORKFLOW.md]
+      G2[IOS26_DESIGN.md]
+      G3[MOBILE_GUIDE.md]
+      G4[MOBILE_READABILITY.md]
+      G5[SONARCLOUD_IDE_INTEGRATION.md]
+      G6[TESTING_GUIDE.md]
+    end
+    subgraph T[technical/ \nTechnical Specs]
+      T1[API_INTEGRATION.md]
+    end
+    subgraph R[reports/ \nProject Summaries]
+      R1[FINAL_PROJECT_SUMMARY.md]
+      R2[iOS26_INTEGRATION_FINAL_SUMMARY.md]
+      R3[iOS26_LESSONS_LEARNED.md]
+    end
+  end
 ```
 
-### **Organized Historical Archive** *(35+ Archived Files)*
+### **Organized Historical Archive**
 
-```
-docs/archive/                      # Categorized Historical Content
-├── phases/                        # Implementation phase completions
-├── features/                      # Feature development reports  
-├── optimization/                  # Performance & build optimizations
-├── deployment/                    # Historical deployment docs
-├── css-fixes/                     # CSS fix implementations
-├── legacy/                        # Deprecated components
-├── reports/                       # Generated reports & logs
-└── security/                      # Security analysis files
+```mermaid
+flowchart TD
+  subgraph A[docs/archive/ \nCategorized Historical Content]
+    A1[phases/]
+    A2[features/]
+    A3[fixes/]
+    A4[integrations/]
+    A5[deployment-guides/]
+    A6[system-monitoring/]
+    A7[css-optimization/]
+    A8[themes/]
+  end
 ```
 
 ---

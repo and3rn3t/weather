@@ -124,6 +124,8 @@ features and animations.
 - **USE** inline components within AppNavigator.tsx - this approach is proven to work reliably
 - Current navigation uses React state (`useState`) to switch between screens
 - React Navigation was abandoned due to React Native Web compatibility issues in browser environment
+- **Single-source nav styling**: Navigation bar visuals live in `src/styles/mobile.css`. Avoid
+  creating or importing additional nav override CSS files.
 
 ### API Integration
 
@@ -177,36 +179,11 @@ src/
 │   ├── iOS26.css                 # iOS26 design system styles (primary)
 │   ├── modernWeatherUI.css       # Legacy modern UI styles (deprecated)
 │   └── mobile.css               # Mobile-specific styling utilities
-├── docs/                        # Optimized documentation structure (August 2025)
-│   ├── README.md                 # Documentation hub and navigation
-│   ├── QUICK_START.md            # 5-minute developer setup
-│   ├── PROJECT_OVERVIEW.md       # Complete project summary
-│   ├── DEPLOYMENT_GUIDE.md       # Production deployment guide
-│   ├── PROJECT_COMPLETION_SUMMARY.md # Full implementation achievements
-│   ├── TROUBLESHOOTING_GUIDE.md  # Comprehensive problem-solving guide
-│   ├── guides/                   # Development guides (7 active files)
-│   │   ├── DEVELOPMENT_WORKFLOW.md
-│   │   ├── IOS26_DESIGN.md
-│   │   ├── iOS26_COMPONENTS_GUIDE.md
-│   │   ├── IOS_HIG_COMPLIANCE.md
-│   │   ├── MOBILE_GUIDE.md
-│   │   ├── MOBILE_READABILITY.md
-│   │   └── TESTING_GUIDE.md
-│   ├── technical/                # Technical specifications (1 file)
-│   │   └── API_INTEGRATION.md
-│   ├── reports/                  # Project reports (3 files)
-│   │   ├── FINAL_PROJECT_SUMMARY.md
-│   │   ├── iOS26_INTEGRATION_FINAL_SUMMARY.md
-│   │   └── iOS26_LESSONS_LEARNED.md
-│   └── archive/                  # Historical documents (organized by category)
-│       ├── phases/               # Implementation phase completions
-│       ├── features/             # Feature development reports
-│       ├── optimization/         # Performance optimization history
-│       ├── deployment/           # Historical deployment documentation
-│       ├── css-fixes/            # Historical CSS fixes
-│       ├── legacy/               # Deprecated components and docs
-│       ├── reports/              # Generated reports and logs
-│       └── security/             # Security analysis files
+├── docs/                        # Organized documentation (August 2025)
+│   ├── guides/                  # Development and deployment guides
+│   ├── reports/                 # Project status and migration reports
+│   ├── technical/               # Technical specifications
+│   └── archive/                 # Historical documents and deprecated components
 ├── services/
 │   └── weatherService.ts         # Legacy service (archived, not actively used)
 └── screens/                     # Legacy separate components (ARCHIVED - causes blank screens)
@@ -404,42 +381,127 @@ Through comprehensive debugging with visual CSS borders, we discovered the blue 
 2. **Scrollbar pseudo-elements** getting browser default `:active` states
 3. **Main container divs** that were styled when navigation interaction occurred
 
+### **Failed Approaches** (DO NOT REPEAT)
+
+- ❌ **CSS Button Overrides**: Attempted to override button `:active` states with `!important`
+- ❌ **Navigation Element Replacement**: Changed `<nav>` to `<div>` and `<button>` to
+  `<div role="button">`
+- ❌ **Nuclear CSS Resets**: Used `all: unset !important` and `all: revert !important`
+- ❌ **Event Prevention**: Added `preventDefault()` and `stopPropagation()` to all touch/mouse
+  events
+- ❌ **Pointer Events Manipulation**: Disabled `pointer-events` on container, re-enabled on buttons
+
 ### **Successful Solution** ✅
 
-**Target the real culprits**: Content area and scrollbar `:active` states. See TROUBLESHOOTING_GUIDE.md for complete details.
+Focus fixes where they actually originate: content area and scrollbar `:active` states. The final
+implementation is consolidated inside `src/index.css` (not separate fix files) and complemented by
+the single-source nav styles in `src/styles/mobile.css`.
 
----
+#### **Consolidated Fix Location**
 
-## 📚 **Documentation Optimization** (COMPLETE - August 2025)
+- Global active-state neutralization: `src/index.css` (single source; do not reintroduce separate
+  fix files)
+- Navigation visuals and layout: `src/styles/mobile.css`
 
-### **Major Documentation Restructuring**
+#### **Critical CSS Rules (now in index.css):**
 
-The documentation has been thoroughly optimized and consolidated from 67 files to a streamlined structure:
+```css
+/* Disable :active on all content elements */
+#root:active,
+#root *:active,
+body:active,
+html:active,
+main:active,
+div:not(.mobile-navigation):active,
+.app-container:active,
+.main-content:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
 
-- **Root Level**: Reduced from 33 to 6 essential files (82% reduction)
-- **Total Files**: Maintained comprehensive coverage while improving navigation
-- **Archive System**: 35+ historical files properly categorized and preserved
-- **New Guides**: Added PROJECT_COMPLETION_SUMMARY.md and TROUBLESHOOTING_GUIDE.md
+/* Fix scrollbar active states */
+::-webkit-scrollbar:active,
+::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-track:active {
+  background: transparent !important;
+  border: none !important;
+}
 
-### **Key Documentation Files**
+/* Single scrollbar control */
+html,
+body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+```
 
-- **README.md**: Complete documentation hub with optimized navigation
-- **QUICK_START.md**: 5-minute developer setup guide
-- **PROJECT_OVERVIEW.md**: Complete project summary and architecture
-- **DEPLOYMENT_GUIDE.md**: Production deployment instructions
-- **PROJECT_COMPLETION_SUMMARY.md**: Full implementation achievements and metrics
-- **TROUBLESHOOTING_GUIDE.md**: Comprehensive problem-solving reference
+#### **CSS Import Order (Updated, Minimal):**
 
-### **Navigation Structure**
+```css
+/* In src/index.css - keep it lean and predictable */
+@import './styles/mobile.css';
+@import './styles/iosComponents.css';
+/* Avoid additional nav override files; the global fix lives here in index.css */
+```
 
-All documentation is now organized into logical categories:
-- **Essential**: Core project information and setup
-- **Guides**: Development workflows and best practices  
-- **Technical**: API integration and specifications
-- **Reports**: Project status and completion summaries
-- **Archive**: Historical documents organized by topic
+### **Debugging Technique Used**
 
----
+```css
+/* Add temporary debug borders to identify styling sources */
+*:active {
+  border: 2px solid red !important;
+  background: yellow !important;
+}
+div:active {
+  border: 3px solid green !important;
+  background: orange !important;
+}
+```
+
+### **Prevention Guidelines**
+
+1. **Always test navigation on localhost after CSS changes** - dev server restart required for CSS
+   imports
+2. **Use debug borders** when investigating mysterious styling issues
+3. **Target content elements, not just navigation** - browser styling can affect parent containers
+4. **Check scrollbar pseudo-elements** - they can receive unexpected `:active` states
+5. **Do not add new global nav overrides** - Keep nav styles in `styles/mobile.css` and the global
+   active-state fix in `index.css`
+
+### **Component Architecture Changes**
+
+- **MobileNavigation.tsx**: Replaced `<nav>` with `<div role="navigation">` and `<button>` with
+  `<div role="button">`
+- **Accessibility preserved**: All ARIA attributes maintained (`role`, `aria-pressed`, `tabIndex`)
+- **Inline style overrides**: Added nuclear inline styles as final fallback
+- **Event handling**: Enhanced with `preventDefault()` on touch/mouse events
+
+### **Verification Steps**
+
+1. Start dev server: `npx vite` (bypasses linting if needed)
+2. Test navigation clicks - should show ONLY purple highlights
+3. Verify single scrollbar only
+4. Check no blue rectangle appears on any navigation interaction
+5. Confirm haptic feedback and navigation switching still work
+
+## 📘 Lessons Learned: Blank Screen + CSS Cleanup (Aug 2025)
+
+- Blank screens often come from environment/caching or duplicate React installs. Ensure service
+  workers are unregistered on localhost and caches purged; dedupe `react`/`react-dom`.
+- Keep navigation styling in one place (`styles/mobile.css`). Competing override files caused
+  inconsistent states and UI artifacts.
+- The “blue rectangle” was caused by content and scrollbar `:active` states, not the nav itself; fix
+  globally in `index.css` rather than piling on component-level overrides.
+- When debugging CSS, progressively disable imports in `index.css`, add temporary debug borders, and
+  verify overflow/scrollbar pseudo-elements.
+- Prefer minimal, predictable CSS import order. Avoid alternate entry CSS files (e.g.,
+  `index-core.css`, `index-optimized.css`, `index-test.css`).
+- Retain development-only safeguards (dev boot banner suppression, overlay neutralization) to
+  prevent dev-only obstruction.
 
 ## Future Enhancements (Roadmap)
 

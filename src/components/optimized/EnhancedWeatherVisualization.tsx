@@ -281,7 +281,7 @@ export const UVIndexBar: React.FC<UVIndexBarProps> = ({
   className = '',
 }) => {
   const getUVLevel = (
-    index: number,
+    index: number
   ): { level: string; color: string; advice: string } => {
     if (index <= 2)
       return { level: 'Low', color: '#22C55E', advice: 'No protection needed' };
@@ -388,7 +388,7 @@ export const PrecipitationChart: React.FC<PrecipitationChartProps> = ({
                   className={`precipitation-bar ${hasRain ? 'has-rain' : ''}`}
                   style={{ height: `${Math.max(height, 2)}%` }}
                   title={`${hour.precipitation}mm at ${new Date(
-                    hour.time,
+                    hour.time
                   ).toLocaleTimeString([], { hour: 'numeric' })}`}
                 />
                 <span className="precipitation-time">
@@ -416,7 +416,7 @@ export const AirQualityIndex: React.FC<AirQualityProps> = ({
   className = '',
 }) => {
   const getAQIInfo = (
-    index: number,
+    index: number
   ): { level: string; color: string; advice: string } => {
     if (index <= 50)
       return {

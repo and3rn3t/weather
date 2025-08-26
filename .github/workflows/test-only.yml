@@ -52,6 +52,14 @@ jobs:
           npm run lint --silent || echo "⚠️ Lint warnings (non-blocking)"
         continue-on-error: true
 
+      - name: ✨ Prettier check
+        run: |
+          npm run format:check
+
+      - name: 🔒 Type-check
+        run: |
+          npm run type-check
+
       - name: 🧪 Run tests
         run: |
           if [ "${{ inputs.test_type }}" = "coverage" ]; then

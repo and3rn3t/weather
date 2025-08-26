@@ -5,7 +5,7 @@
 
 interface WeatherCacheData {
   city: string;
-  weather: any;
+  weather: unknown;
   timestamp: number;
   expires: number;
 }
@@ -25,7 +25,8 @@ export class OfflineWeatherStorage {
   /**
    * Cache weather data for offline access
    */
-  async cacheWeatherData(city: string, weatherData: any): Promise<void> {
+  async cacheWeatherData(city: string, weatherData: unknown): Promise<void> {
+    // Accept unknown weatherData to avoid explicit any; stored verbatim
     try {
       const cacheData: WeatherCacheData = {
         city,
@@ -38,8 +39,11 @@ export class OfflineWeatherStorage {
       existingData[city] = cacheData;
 
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(existingData));
+      // Dev-friendly log
+      // eslint-disable-next-line no-console
       console.log(`🗄️ Cached weather data for ${city}`);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('❌ Failed to cache weather data:', error);
     }
   }
@@ -47,7 +51,7 @@ export class OfflineWeatherStorage {
   /**
    * Retrieve cached weather data
    */
-  getCachedWeatherData(city: string): any | null {
+  getCachedWeatherData<T = unknown>(city: string): T | null {
     try {
       const data = this.getOfflineData();
       const cityData = data[city];
@@ -61,9 +65,11 @@ export class OfflineWeatherStorage {
         return null;
       }
 
+      // eslint-disable-next-line no-console
       console.log(`📱 Retrieved cached weather data for ${city}`);
-      return cityData.weather;
+      return cityData.weather as T;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('❌ Failed to retrieve cached weather data:', error);
       return null;
     }
@@ -95,6 +101,7 @@ export class OfflineWeatherStorage {
 
       localStorage.setItem(this.CITIES_KEY, JSON.stringify(updatedCities));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('❌ Failed to cache recent city:', error);
     }
   }
@@ -129,9 +136,11 @@ export class OfflineWeatherStorage {
 
       if (cleaned) {
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
+        // eslint-disable-next-line no-console
         console.log('🧹 Cleaned up expired weather cache');
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('❌ Failed to cleanup cache:', error);
     }
   }
@@ -154,7 +163,7 @@ export class OfflineWeatherStorage {
       const totalBytes = weatherDataSize + citiesSize;
 
       const oldestEntry = Object.values(weatherData).sort(
-        (a, b) => a.timestamp - b.timestamp,
+        (a, b) => a.timestamp - b.timestamp
       )[0];
 
       return {
@@ -182,8 +191,10 @@ export class OfflineWeatherStorage {
     try {
       localStorage.removeItem(this.CACHE_KEY);
       localStorage.removeItem(this.CITIES_KEY);
+      // eslint-disable-next-line no-console
       console.log('🗑️ Cleared all offline weather data');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('❌ Failed to clear cache:', error);
     }
   }

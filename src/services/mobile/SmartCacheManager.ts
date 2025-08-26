@@ -69,7 +69,7 @@ export class SmartCacheManager {
       ttl?: number;
       priority?: CacheEntry['priority'];
       compress?: boolean;
-    },
+    }
   ): Promise<boolean> {
     try {
       const {
@@ -138,7 +138,7 @@ export class SmartCacheManager {
           : String(entry.data);
 
       logger.debug(
-        `📦 Cache hit: ${key} (accessed ${entry.accessCount} times)`,
+        `📦 Cache hit: ${key} (accessed ${entry.accessCount} times)`
       );
       return JSON.parse(dataString);
     } catch (error) {
@@ -214,7 +214,7 @@ export class SmartCacheManager {
     const entriesBefore = this.getAllEntries();
     const sizeBefore = entriesBefore.reduce(
       (sum, entry) => sum + entry.size,
-      0,
+      0
     );
 
     let removed = 0;
@@ -232,7 +232,7 @@ export class SmartCacheManager {
     const entriesAfter = this.getAllEntries();
     const currentSize = entriesAfter.reduce(
       (sum, entry) => sum + entry.size,
-      0,
+      0
     );
     const maxSizeBytes = this.config.maxSize * 1024 * 1024;
 
@@ -274,8 +274,8 @@ export class SmartCacheManager {
 
     logger.info(
       `🧹 Cache cleanup complete: ${removed} entries removed, ${this.formatSize(
-        freedSpace,
-      )} freed`,
+        freedSpace
+      )} freed`
     );
 
     return { removed, freedSpace };
@@ -324,7 +324,7 @@ export class SmartCacheManager {
     const currentEntries = this.getAllEntries();
     const currentSize = currentEntries.reduce(
       (sum, entry) => sum + entry.size,
-      0,
+      0
     );
 
     if (

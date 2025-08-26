@@ -108,7 +108,7 @@ const IOSHIGNavigation: React.FC<IOSHIGNavigationProps> = ({
   const handleTabPress = useCallback(
     async (
       tabId: NavigationScreen,
-      event?: React.MouseEvent | React.TouchEvent,
+      event?: React.MouseEvent | React.TouchEvent
     ) => {
       // Prevent any default browser behavior
       if (event) {
@@ -123,7 +123,7 @@ const IOSHIGNavigation: React.FC<IOSHIGNavigationProps> = ({
 
         // Announce scroll to top action for screen readers
         await weatherAnnouncements.announceStateChange(
-          `${tabId} screen - scrolled to top`,
+          `${tabId} screen - scrolled to top`
         );
         return;
       }
@@ -134,7 +134,7 @@ const IOSHIGNavigation: React.FC<IOSHIGNavigationProps> = ({
 
       // Announce navigation change with proper accessibility
       await weatherAnnouncements.announceStateChange(
-        `Navigated to ${tabId} screen`,
+        `Navigated to ${tabId} screen`
       );
 
       // Update active state immediately for visual feedback
@@ -143,7 +143,7 @@ const IOSHIGNavigation: React.FC<IOSHIGNavigationProps> = ({
       // Navigate to new screen
       onNavigate(tabId);
     },
-    [activeTab, onNavigate, haptic, interactionFeedback, weatherAnnouncements],
+    [activeTab, onNavigate, haptic, interactionFeedback, weatherAnnouncements]
   );
 
   // Keyboard navigation handler (iOS HIG accessibility requirement)
@@ -154,7 +154,7 @@ const IOSHIGNavigation: React.FC<IOSHIGNavigationProps> = ({
         handleTabPress(tabId);
       }
     },
-    [handleTabPress],
+    [handleTabPress]
   );
 
   return (
