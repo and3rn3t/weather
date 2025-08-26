@@ -86,9 +86,7 @@ console.log('\n📋 Recommended Commands:');
 console.log('   npm run build:ultra  # Test build locally');
 console.log('   npm run deploy:production  # Deploy to production');
 console.log('   npm run deploy:dev  # Deploy to development');
-console.log(
-  '   npx wrangler pages deploy dist --project-name=weather
-);
+console.log('   npx wrangler pages deploy dist --project-name=weather');
 
 console.log('\n🌐 Useful Links:');
 console.log('   Cloudflare Pages: https://dash.cloudflare.com/pages');
