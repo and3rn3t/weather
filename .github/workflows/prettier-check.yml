@@ -35,10 +35,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📦 Install dependencies
+      - name: ✨ Run Prettier check (npx)
         run: |
-          npm ci --prefer-offline --no-audit --no-fund --silent
-
-      - name: ✨ Run Prettier check
-        run: |
-          npm run format:check
+          npx --yes prettier@^3.3.3 --check .
