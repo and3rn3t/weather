@@ -1,6 +1,6 @@
 .fav-root {
   height: 100vh;
-  background: var(--app-bg);
+  background: var(--ios26-background-primary, var(--app-bg));
   color: var(--primary-text);
   overflow: hidden;
   display: flex;
@@ -77,6 +77,16 @@
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+  padding-bottom: 96px; /* safe area for bottom nav */
+}
+
+/* iOS26 list container inside glass card */
+.fav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .fav-section-head {

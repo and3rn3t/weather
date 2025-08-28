@@ -8,6 +8,7 @@ import {
   useWeatherAnnouncements,
 } from '../utils/useMultiSensoryWeather';
 import './SearchScreen.css';
+import { NavigationBar } from './modernWeatherUI/NavigationBar';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -389,23 +390,23 @@ function SearchScreen({
   const hasTypedQuery = query.length >= 2;
 
   return (
-    <div className="enhanced-search-screen">
-      {/* Header */}
-      <header className="search-header">
-        <button
-          className="search-back-button"
-          onClick={onBack}
-          aria-label="Go back"
-        >
-          ←
-        </button>
-        <h1 className="search-title ios26-text-headline ios26-text-primary">
-          Search
-        </h1>
-      </header>
+    <div className="enhanced-search-screen ios26-container">
+      <NavigationBar
+        title="Search"
+        theme={
+          {
+            primaryText: 'var(--ios26-text-primary)',
+            secondaryText: 'var(--ios26-text-secondary)',
+            appBackground: 'var(--ios26-background-primary)',
+            weatherCardBorder: 'var(--ios26-border-tertiary)',
+          } as unknown as ThemeColors
+        }
+        isDark={false}
+        leadingButton={{ icon: '←', title: 'Back', onPress: onBack }}
+      />
 
       {/* Search Input */}
-      <div className="search-input-section">
+      <div className="search-input-section ios26-container">
         <div className="search-input-container">
           <div className="search-icon">🔍</div>
           <input
@@ -438,7 +439,7 @@ function SearchScreen({
 
       {/* Search Results */}
       {showResults && (
-        <div className="search-results-section">
+        <div className="search-results-section ios26-card ios26-liquid-glass">
           {isLoading && (
             <div className="search-loading">
               <div className="loading-spinner"></div>
@@ -499,11 +500,11 @@ function SearchScreen({
       )}
 
       {/* Content */}
-      <div className="search-content">
+      <div className="search-content ios26-container">
         {/* Current Location Button */}
         <div className="quick-actions">
           <button
-            className="current-location-button"
+            className="current-location-button ios26-list-item"
             onClick={getCurrentLocation}
             disabled={isLoading}
           >
