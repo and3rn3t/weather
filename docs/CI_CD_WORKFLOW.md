@@ -5,24 +5,33 @@ GitHub App is uninstalled/disabled to avoid duplicate builds.
 
 ## Triggers
 
+- Quality Gate (PR checks)
+  - Event: pull_request
+  - Branch: main
+  - Workflow: `.github/workflows/quality.yml`
+  - Actions: ESLint, Prettier check, Stylelint, TypeScript, Vitest fast, Build
+  - Deploy: No
+
 - Production
   - Event: push
   - Branch: main
   - Workflow: `.github/workflows/ci-cd.yml`
   - Deploy: Yes (wrangler)
+
 - Development/Staging
   - Event: push
   - Branch: dev, develop, staging
   - Workflow: `.github/workflows/dev-deploy.yml`
   - Deploy: Yes (wrangler)
-- Pull Requests
-  - Event: pull_request → main
-  - Actions: lint, format check, type-check, build, upload `dist` as artifact, and run fast tests
-    with a short summary in the job Step Summary
+
+- SonarCloud (infrequent)
+  - Event: schedule (weekly, Sunday 03:00 UTC) and manual `workflow_dispatch`
+  - Workflow: `.github/workflows/sonarcloud.yml`
   - Deploy: No
-- Manual
-  - Event: workflow_dispatch
-  - Actions: “Dry-run preflight” step summarizing secrets and gating
+
+- Prettier (on demand)
+  - Event: manual `workflow_dispatch`
+  - Workflow: `.github/workflows/prettier-check.yml`
   - Deploy: No
 
 ## Deploy gating (safety)
@@ -55,8 +64,7 @@ Use this to validate the pipeline and secrets without deploying.
 
 ### Artifacts and summaries
 
-- PRs: `dist-<sha>` artifact contains the built bundle. The job summary includes the tail of the
-  fast test output for quick signal.
+- PRs: Quality Gate builds the app; failures block merge. No deploy or artifact upload here.
 - Main pushes: a `dist-manifest-<sha>` artifact lists files and sizes from `dist` to help spot size
   regressions.
 
@@ -64,20 +72,21 @@ Use this to validate the pipeline and secrets without deploying.
 
 - Duplicate builds: Ensure the Cloudflare GitHub App is uninstalled and the Pages project has Git
   integration disabled.
-- No deploy on PRs: Expected (pipeline-only). Check PR artifact `dist-<sha>` for a built bundle.
+- No deploy on PRs: Expected (pipeline-only). Use the Quality Gate workflow status for PRs.
 - Secrets missing: Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in repo or org secrets.
 - Fork PRs deploying: Shouldn’t happen due to repo guard.
 - Broken build: The workflow falls back to esbuild; check logs for any bundler-specific errors.
 
 ## Files
 
-- `.github/workflows/ci-cd.yml` — Production workflow
-- `.github/workflows/dev-deploy.yml` — Dev/staging workflow
+- `.github/workflows/quality.yml` — PR quality checks
+- `.github/workflows/ci-cd.yml` — Production workflow (push main)
+- `.github/workflows/dev-deploy.yml` — Dev/staging workflow (push dev/develop/staging)
+- `.github/workflows/sonarcloud.yml` — Weekly/manual SonarCloud analysis
+- `.github/workflows/prettier-check.yml` — Manual Prettier only
 - `wrangler.toml` — Cloudflare pages config
 
-## SonarCloud in CI
+## SonarCloud cadence
 
-- SonarCloud runs on PRs and on main via `.github/workflows/sonarcloud.yml`.
-- PRs are strict and must pass. Main uses non-blocking analysis to avoid deployment disruption on
-  transient Sonar issues.
+- Runs weekly (Sunday 03:00 UTC) or on demand. This keeps PRs fast and avoids redundant analysis.
 - See `docs/SONARCLOUD_SETUP_AND_TROUBLESHOOTING.md` for setup and troubleshooting.

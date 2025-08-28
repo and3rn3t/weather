@@ -440,7 +440,7 @@
 }
 
 /* High DPI displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .mobile-card-enhanced {
     border-width: 0.5px;
   }

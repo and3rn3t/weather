@@ -4,7 +4,9 @@
  */
 
 import React from 'react';
+import { preseedSearchCache } from './indexedDbPreseed';
 import { logError, logInfo } from './logger';
+import { popularCitiesCache } from './popularCitiesCache';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -190,6 +192,33 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
           window.dispatchEvent(new CustomEvent('connectivity-restored'));
         }
       });
+
+      // One-time prewarm: ask SW to preload a small set of popular cities
+      try {
+        const topCities = popularCitiesCache
+          .getInstantSuggestions(8)
+          .map(c => `${c.name}, ${c.country}`);
+
+        // Wait until the SW is ready/controlling, then post the message
+        const readyReg = await navigator.serviceWorker.ready;
+        const target = readyReg.active || navigator.serviceWorker.controller;
+        if (target && topCities.length > 0) {
+          target.postMessage({
+            type: 'PRELOAD_POPULAR_CITIES',
+            payload: { cities: topCities },
+          });
+          logInfo('Service Worker: Prewarm requested for popular cities');
+        }
+      } catch (e) {
+        logError('Service Worker: Prewarm failed', e);
+      }
+
+      // Also pre-seed IndexedDB cache with the same queries (longer TTL)
+      try {
+        await preseedSearchCache();
+      } catch (e) {
+        logError('PWA: IndexedDB pre-seed failed to start', e);
+      }
     } catch (error) {
       logError('Service Worker: Registration failed', error);
     }

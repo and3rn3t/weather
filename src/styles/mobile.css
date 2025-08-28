@@ -64,7 +64,7 @@
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   50% {
     transform: translateY(-8px);
@@ -1068,7 +1068,7 @@ textarea {
   --card-border: rgba(255, 255, 255, 0.2);
   --primary-text: #1f2937;
   --secondary-text: #6b7280;
-  --inverse-text: #ffffff;
+  --inverse-text: #fff;
   --button-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --button-gradient-hover: linear-gradient(135deg, #5b6fd8, #6a4190);
   --button-gradient-disabled: linear-gradient(135deg, #a0a0a0, #808080);
@@ -1086,7 +1086,7 @@ textarea {
   --button-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
   --toggle-background: rgba(255, 255, 255, 0.2);
   --toggle-border: rgba(255, 255, 255, 0.3);
-  --toggle-icon: #ffffff;
+  --toggle-icon: #fff;
 
   /* Spacing */
   --space-xs: 4px;
@@ -1113,7 +1113,7 @@ body.dark-theme {
   --card-border: rgba(139, 92, 246, 0.3);
   --primary-text: #f8fafc;
   --secondary-text: #cbd5e1;
-  --inverse-text: #ffffff;
+  --inverse-text: #fff;
   --button-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   --button-gradient-hover: linear-gradient(135deg, #7c3aed, #6d28d9);
   --button-gradient-disabled: linear-gradient(135deg, #4b5563, #374151);
@@ -1347,6 +1347,7 @@ body.dark-theme .today-card {
   font-size: 14px;
   font-weight: 600;
 }
+
 @media (max-width: 380px) {
   .mobile-navigation .nav-label {
     display: none;

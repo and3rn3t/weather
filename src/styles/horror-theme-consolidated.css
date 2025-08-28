@@ -12,7 +12,7 @@
   /* Horror color palette */
   --horror-midnight: #0a0a0a;
   --horror-shadow: #1a0a0a;
-  --horror-void: #000000;
+  --horror-void: #000;
   --horror-blood: #8b0000;
   --horror-crimson: #dc143c;
   --horror-ember: #ff4500;
@@ -533,7 +533,7 @@ body.horror-film-grain::before {
 
 /* Crystal Lake special background (if activated) */
 .crystal-lake-bg {
-  background: radial-gradient(ellipse at center, #001a1a 0%, #000000 70%);
+  background: radial-gradient(ellipse at center, #001a1a 0%, #000 70%);
   background-attachment: fixed;
 }
 

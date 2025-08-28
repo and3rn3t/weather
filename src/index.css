@@ -15,9 +15,10 @@
   line-height: 1.5;
   font-weight: 400;
 
+  /* Default to light theme for first paint; ThemeProvider/boot script will adjust */
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #213547;
+  background-color: #fff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -73,6 +74,22 @@
   pointer-events: auto !important;
   z-index: auto !important;
 }
+[data-env='dev'] .loading-overlay,
+[data-env='dev'] .film-grain-overlay,
+[data-env='dev'] .horror-quote-overlay,
+[data-env='dev'] .horror-theme .horror-film-grain,
+[data-env='dev'] .horror-theme .film-grain-overlay,
+[data-env='dev'] #dev-boot-banner,
+/* Any top-level fixed full-screen element that doesn't explicitly opt-in */
+[data-env='dev'] body > div[style*='position:fixed']:not([data-allow-overlay='true']),
+[data-env='dev'] body > section[style*='position:fixed']:not([data-allow-overlay='true']),
+[data-env='dev'] body > aside[style*='position:fixed']:not([data-allow-overlay='true']),
+[data-env='dev'] body > header[style*='position:fixed']:not([data-allow-overlay='true']),
+[data-env='dev'] body > footer[style*='position:fixed']:not([data-allow-overlay='true']) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
 [data-env='dev'] .mobile-navigation,
 [data-env='dev'] .offline-status-indicator,
 [data-env='dev'] .theme-toggle-button {
@@ -91,6 +108,22 @@
   filter: none !important;
   mix-blend-mode: normal !important;
   background: inherit !important;
+}
+
+/* Ensure root always paints something visible in dev */
+[data-env='dev'] #root:empty::before {
+  content: 'DEV: Root mounted, waiting for content…';
+  display: block;
+  padding: 16px;
+  background: #fff7ed;
+  color: #7c2d12;
+  border-bottom: 1px solid #fdba74;
+  font:
+    600 14px/1.4 -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 /* Ensure all interactive elements are touch-friendly */
@@ -256,7 +289,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #fff;
   }
   a:hover {
     color: #747bff;

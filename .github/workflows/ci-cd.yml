@@ -7,11 +7,6 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
   workflow_dispatch:
     inputs:
       skip_quality:
@@ -30,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '22.12.0'
   NPM_CONFIG_PREFER_OFFLINE: true
   NPM_CONFIG_NO_AUDIT: true
   NPM_CONFIG_NO_FUND: true
@@ -92,11 +87,9 @@ jobs:
         id: meta
         run: |
           is_push_main=$([ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ] && echo true || echo false)
-          is_pr=$([ "${{ github.event_name }}" = "pull_request" ] && echo true || echo false)
-          should_deploy=$([ "$is_push_main" = true ] && [ "${{ github.repository }}" = "and3rn3t/weather" ] && echo true || echo false)
           echo "is_push_main=$is_push_main" >> $GITHUB_OUTPUT
-          echo "is_pr=$is_pr" >> $GITHUB_OUTPUT
-          echo "should_deploy=$should_deploy" >> $GITHUB_OUTPUT
+          echo "pr=false" >> $GITHUB_OUTPUT
+          echo "should_deploy=$is_push_main" >> $GITHUB_OUTPUT
 
       - name: Mode summary
         run: |
@@ -105,37 +98,11 @@ jobs:
           echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- Should deploy: ${{ steps.meta.outputs.should_deploy }}" >> $GITHUB_STEP_SUMMARY
 
-      - name: Quality (fast, non-blocking)
-        if: ${{ (github.event_name != 'workflow_dispatch' || !inputs.skip_quality) && steps.meta.outputs.is_pr == 'true' }}
-        run: |
-          npx eslint . --cache --cache-location .eslintcache || echo "⚠️ Lint warnings (non-blocking)"
-          npm run format:check || echo "⚠️ Prettier issues (non-blocking)"
-          npm run type-check || echo "⚠️ Type-check issues (non-blocking)"
-        continue-on-error: true
-        timeout-minutes: 2
-
       - name: Quality (strict)
-        if: ${{ (github.event_name != 'workflow_dispatch' || !inputs.skip_quality) && steps.meta.outputs.is_push_main == 'true' }}
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_quality }}
         run: |
           npm run lint:check
           npm run format:check
-
-      - name: Run tests (PRs - fast, non-blocking)
-        if: ${{ steps.meta.outputs.is_pr == 'true' }}
-        run: |
-          npm run test:fast | tee test-output.txt || true
-        continue-on-error: true
-        timeout-minutes: 3
-
-      - name: Tests summary (PRs)
-        if: ${{ steps.meta.outputs.is_pr == 'true' }}
-        run: |
-          echo "## 🧪 Tests (fast)" >> $GITHUB_STEP_SUMMARY
-          if [ -f test-output.txt ]; then
-            tail -n 50 test-output.txt >> $GITHUB_STEP_SUMMARY || true
-          else
-            echo "(no test output captured)" >> $GITHUB_STEP_SUMMARY
-          fi
 
       - name: Build (fast with fallback)
         run: |
@@ -150,44 +117,6 @@ jobs:
           echo "\n" >> $GITHUB_STEP_SUMMARY
           cat perf-budget.txt >> $GITHUB_STEP_SUMMARY || true
           echo "\n</details>" >> $GITHUB_STEP_SUMMARY
-
-      - name: PR bundle size delta (best-effort)
-        if: ${{ steps.meta.outputs.is_pr == 'true' }}
-        run: |
-          echo "## 📦 Bundle size delta" >> $GITHUB_STEP_SUMMARY
-          # Current manifest
-          find dist -type f -printf '%s\t%p\n' | sort -nr > dist-manifest.txt || true
-          cur_bytes=$(awk '{s+=$1} END {print s+0}' dist-manifest.txt 2>/dev/null || echo 0)
-          cur_human=$(du -sh dist 2>/dev/null | awk '{print $1}')
-          echo "- Current: ${cur_human:-n/a} (${cur_bytes:-0} bytes)" >> $GITHUB_STEP_SUMMARY
-          # Try to fetch latest main run artifact via gh
-          if command -v gh >/dev/null 2>&1; then
-            run_id=$(gh run list --workflow "⚡ Ultra-Fast Deploy" --branch main --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || echo "")
-            if [ -n "$run_id" ]; then
-              name=$(gh run view "$run_id" --json artifacts --jq '.artifacts[] | select(.name | startswith("dist-manifest-")) | .name' 2>/dev/null | head -n1 || echo "")
-              if [ -n "$name" ]; then
-                gh run download "$run_id" --name "$name" -D baseline-artifact >/dev/null 2>&1 || true
-                base_file="baseline-artifact/dist-manifest.txt"
-                [ -f "$base_file" ] || base_file="baseline-artifact/$name"
-                if [ -f "$base_file" ]; then
-                  base_bytes=$(awk '{s+=$1} END {print s+0}' "$base_file" 2>/dev/null || echo 0)
-                  delta=$((cur_bytes - base_bytes))
-                  sign="+"; [ $delta -lt 0 ] && sign=""
-                  echo "- Baseline (main): $base_bytes bytes" >> $GITHUB_STEP_SUMMARY
-                  echo "- Delta: ${sign}${delta} bytes" >> $GITHUB_STEP_SUMMARY
-                else
-                  echo "- Baseline: (artifact not found)" >> $GITHUB_STEP_SUMMARY
-                fi
-              else
-                echo "- Baseline: (no artifact listed)" >> $GITHUB_STEP_SUMMARY
-              fi
-            else
-              echo "- Baseline: (no recent main run)" >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "- Baseline: (gh CLI unavailable)" >> $GITHUB_STEP_SUMMARY
-          fi
-        continue-on-error: true
 
       - name: Deploy preflight
         if: ${{ steps.meta.outputs.should_deploy == 'true' }}
@@ -229,31 +158,6 @@ jobs:
           [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && echo "❌ Missing: CLOUDFLARE_API_TOKEN" | tee -a $GITHUB_STEP_SUMMARY || echo "✅ CLOUDFLARE_API_TOKEN present" | tee -a $GITHUB_STEP_SUMMARY
           [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ] && echo "❌ Missing: CLOUDFLARE_ACCOUNT_ID" | tee -a $GITHUB_STEP_SUMMARY || echo "✅ CLOUDFLARE_ACCOUNT_ID present" | tee -a $GITHUB_STEP_SUMMARY
           echo "- Deploy gated to push main on and3rn3t/weather" >> $GITHUB_STEP_SUMMARY
-
-      - name: Upload dist (PRs)
-        if: ${{ steps.meta.outputs.is_pr == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ github.sha }}
-          path: dist
-          if-no-files-found: ignore
-          retention-days: 7
-
-      - name: Lighthouse (PRs - optional)
-        if: ${{ steps.meta.outputs.is_pr == 'true' }}
-        run: |
-          npx lhci autorun || true
-        continue-on-error: true
-        timeout-minutes: 4
-
-      - name: Upload Lighthouse reports (PRs)
-        if: ${{ steps.meta.outputs.is_pr == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-${{ github.sha }}
-          path: lighthouse-reports
-          if-no-files-found: ignore
-          retention-days: 7
 
       - name: Build metrics summary
         if: ${{ always() }}
