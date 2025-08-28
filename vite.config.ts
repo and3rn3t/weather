@@ -51,6 +51,23 @@ export default defineConfig(({ mode }) => ({
             './src/utils/mobileScreenOptimization.ts',
             './src/components/MobileNavigation.tsx',
           ],
+
+          // iOS26 suite - modern UI components grouped
+          'ios26-suite': [
+            './src/components/modernWeatherUI/iOS26Components.tsx',
+            './src/components/modernWeatherUI/iOSComponents.tsx',
+            './src/components/modernWeatherUI/NavigationBar.tsx',
+            './src/components/modernWeatherUI/iOS26WeatherDemo.tsx',
+            './src/components/modernWeatherUI/iOS26WeatherInterface.tsx',
+            './src/components/modernWeatherUI/IOSComponentShowcase.tsx',
+          ],
+
+          // Optimized visualizations - charts and gauges
+          'visualizations-optimized': [
+            './src/components/optimized/EnhancedWeatherVisualization.tsx',
+            './src/components/optimized/OptimizedMobileWeatherDisplay.tsx',
+            './src/components/optimized/SmartWeatherSkeleton.tsx',
+          ],
         },
 
         chunkFileNames: 'assets/[name]-[hash].js',

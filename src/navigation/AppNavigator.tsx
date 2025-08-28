@@ -44,12 +44,18 @@ import {
 
 // Lazy-loaded heavy components for performance optimization
 import {
+  IOSComponentShowcase,
+  iOS26WeatherDemo as LazyiOS26WeatherDemo,
   MobileDebug as LazyMobileDebug,
   NativeStatusDisplay as LazyNativeStatusDisplay,
+  OptimizedMobileWeatherDisplay as LazyOptimizedMobileWeatherDisplay,
   PerformanceDashboard as LazyPerformanceDashboard,
   PrecipitationChart as LazyPrecipitationChart,
+  PWAInstallPrompt as LazyPWAInstallPrompt,
   PWAStatus as LazyPWAStatus,
   TemperatureTrend as LazyTemperatureTrend,
+  UVIndexBar as LazyUVIndexBar,
+  WindCompass as LazyWindCompass,
   trackLazyComponentLoad,
 } from '../utils/lazyComponents';
 import { useMemoryOptimization } from '../utils/memoryOptimization';
@@ -74,7 +80,7 @@ import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
 } from '../components/MobileNavigation';
-import PWAInstallPrompt from '../components/PWAInstallPrompt';
+// PWAInstallPrompt will be lazy-loaded via utils/lazyComponents
 import { ScreenContainer } from '../components/ScreenTransition';
 import SearchScreen from '../components/SearchScreen';
 import SettingsScreen from '../components/SettingsScreen';
@@ -116,12 +122,9 @@ import {
   ModalSheet,
 } from '../components/modernWeatherUI/iOS26Components';
 import { QuickActionsPanel } from '../components/modernWeatherUI/iOS26MainScreen';
-import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
+// IOS26WeatherDemo will be lazy-loaded via utils/lazyComponents
 // Weather Display Optimization Components - August 2025 (PROGRESSIVE ENABLEMENT)
-import {
-  UVIndexBar,
-  WindCompass,
-} from '../components/optimized/EnhancedWeatherVisualization';
+// UVIndexBar and WindCompass will be lazy-loaded via utils/lazyComponents
 // Lazy-loaded heavy components for performance optimization
 import SmartWeatherSkeleton from '../components/optimized/SmartWeatherSkeleton';
 import { useProgressiveWeatherLoading } from '../hooks/useProgressiveWeatherLoading';
@@ -134,14 +137,14 @@ import {
   SegmentedControl,
   StatusBadge,
 } from '../components/modernWeatherUI/IOSComponents';
-import IOSComponentShowcase from '../components/modernWeatherUI/IOSComponentShowcase';
+// IOSComponentShowcase will be lazy-loaded via utils/lazyComponents
 import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
 import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
 import {
   SimpleEnhancedButton,
   SimpleStatusBadge,
 } from '../components/modernWeatherUI/SimpleIOSComponents';
-import OptimizedMobileWeatherDisplay from '../components/optimized/OptimizedMobileWeatherDisplay';
+// OptimizedMobileWeatherDisplay will be lazy-loaded via utils/lazyComponents
 // Core styles now centralized via src/index.css to prevent overlap
 // Navigation & UI Fixes - August 21, 2025
 // navigation-fixes.css was removed after consolidating nav styles into mobile.css
@@ -283,8 +286,10 @@ function HomeScreen({
         }}
       />
 
-      {/* iOS 26 Weather Demo - Simple Integration */}
-      <IOS26WeatherDemo theme={theme} />
+      {/* iOS 26 Weather Demo - Simple Integration (lazy) */}
+      <React.Suspense fallback={null}>
+        <LazyiOS26WeatherDemo theme={theme} />
+      </React.Suspense>
     </div>
   );
 }
@@ -655,15 +660,19 @@ function WeatherDetailsScreen({
           {/* Phase 2B: Optimized Mobile Weather Display - ENABLED */}
           {weather && selectedView === 0 && (
             <div className="ios26-mb-4">
-              <OptimizedMobileWeatherDisplay
-                weather={weather}
-                hourlyForecast={hourlyForecast}
-                dailyForecast={dailyForecast}
-                locationName={city}
-                isLoading={loading}
-                onRefresh={onRefresh}
-                className="ios26-optimized-weather-display"
-              />
+              <React.Suspense
+                fallback={<SmartWeatherSkeleton variant="current" />}
+              >
+                <LazyOptimizedMobileWeatherDisplay
+                  weather={weather}
+                  hourlyForecast={hourlyForecast}
+                  dailyForecast={dailyForecast}
+                  locationName={city}
+                  isLoading={loading}
+                  onRefresh={onRefresh}
+                  className="ios26-optimized-weather-display"
+                />
+              </React.Suspense>
             </div>
           )}
 
@@ -736,19 +745,27 @@ function WeatherDetailsScreen({
 
               {/* Wind Compass */}
               <div className="ios26-mb-4">
-                <WindCompass
-                  windSpeed={weather.wind.speed}
-                  windDirection={weather.wind.deg}
-                  className="ios26-wind-compass"
-                />
+                <React.Suspense
+                  fallback={<SmartWeatherSkeleton variant="metrics" />}
+                >
+                  <LazyWindCompass
+                    windSpeed={weather.wind.speed}
+                    windDirection={weather.wind.deg}
+                    className="ios26-wind-compass"
+                  />
+                </React.Suspense>
               </div>
 
               {/* UV Index Bar */}
               <div className="ios26-mb-4">
-                <UVIndexBar
-                  uvIndex={calculateUVIndex(weather)}
-                  className="ios26-uv-index"
-                />
+                <React.Suspense
+                  fallback={<SmartWeatherSkeleton variant="metrics" />}
+                >
+                  <LazyUVIndexBar
+                    uvIndex={calculateUVIndex(weather)}
+                    className="ios26-uv-index"
+                  />
+                </React.Suspense>
               </div>
 
               {/* Precipitation Chart */}
@@ -2547,27 +2564,31 @@ const AppNavigator = () => {
           {/* iOS Component Showcase - Overlay */}
           {showIOSDemo && (
             <div className="ios26-overlay">
-              <IOSComponentShowcase
-                theme={theme}
-                themeName={themeName}
-                onBack={() => setShowIOSDemo(false)}
-              />
+              <React.Suspense fallback={null}>
+                <IOSComponentShowcase
+                  theme={theme}
+                  themeName={themeName}
+                  onBack={() => setShowIOSDemo(false)}
+                />
+              </React.Suspense>
             </div>
           )}
 
           {/* Theme variations limited to light/dark */}
 
-          {/* PWA Install Prompt - Appears when app can be installed */}
-          <PWAInstallPrompt
-            canInstall={pwaInstall.canInstall}
-            onInstall={async () => {
-              await pwaInstall.promptInstall();
-            }}
-            onDismiss={() => {
-              // User dismissed the install prompt
-              // Could store preference to not show again for some time
-            }}
-          />
+          {/* PWA Install Prompt - Appears when app can be installed (lazy) */}
+          <React.Suspense fallback={null}>
+            <LazyPWAInstallPrompt
+              canInstall={pwaInstall.canInstall}
+              onInstall={async () => {
+                await pwaInstall.promptInstall();
+              }}
+              onDismiss={() => {
+                // User dismissed the install prompt
+                // Could store preference to not show again for some time
+              }}
+            />
+          </React.Suspense>
 
           {/* Phase 5C: Weather Alerts Floating Action Button */}
           <button
