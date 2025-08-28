@@ -130,49 +130,45 @@ if (typeof window !== 'undefined' && import.meta.env.MODE !== 'production') {
 
 log('boot:start');
 
-// Service worker safety: purge stale SW and caches on localhost and on prod (one-time per session)
+// Service worker safety: in development skip purge/reload; only purge in production (one-time per session)
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   const isLocalhost =
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
     window.location.hostname === '::1';
 
-  const shouldPurgeProd =
-    !isLocalhost && !sessionStorage.getItem('sw:purged:prod');
-  const shouldPurgeDev =
-    isLocalhost && !sessionStorage.getItem('sw:purged:dev');
-
-  if (shouldPurgeDev || shouldPurgeProd) {
-    (async () => {
-      try {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        if (regs.length > 0) {
-          await Promise.all(regs.map(r => r.unregister()));
+  // Skip purge entirely on localhost to avoid dev reload delays
+  if (!isLocalhost) {
+    const shouldPurgeProd = !sessionStorage.getItem('sw:purged:prod');
+    if (shouldPurgeProd) {
+      (async () => {
+        try {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          if (regs.length > 0) {
+            await Promise.all(regs.map(r => r.unregister()));
+          }
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            const deletable = keys.filter(
+              (k: string) =>
+                k.startsWith('weather-') ||
+                k.includes('vite') ||
+                k.includes('workbox') ||
+                k.includes('static')
+            );
+            await Promise.all(deletable.map((k: string) => caches.delete(k)));
+          }
+          sessionStorage.setItem('sw:purged:prod', '1');
+          log('sw:purged -> reloading');
+          // Reload once to ensure the page is fully detached from any SW control
+          window.location.reload();
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('Service worker purge failed:', e);
+          log('sw:purge failed', String(e));
         }
-        if ('caches' in window) {
-          const keys = await caches.keys();
-          const deletable = keys.filter(
-            (k: string) =>
-              k.startsWith('weather-') ||
-              k.includes('vite') ||
-              k.includes('workbox') ||
-              k.includes('static')
-          );
-          await Promise.all(deletable.map((k: string) => caches.delete(k)));
-        }
-        sessionStorage.setItem(
-          isLocalhost ? 'sw:purged:dev' : 'sw:purged:prod',
-          '1'
-        );
-        log('sw:purged -> reloading');
-        // Reload once to ensure the page is fully detached from any SW control
-        window.location.reload();
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn('Service worker purge failed:', e);
-        log('sw:purge failed', String(e));
-      }
-    })();
+      })();
+    }
   }
 }
 

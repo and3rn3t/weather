@@ -25,7 +25,10 @@
         try {
           savedTheme = localStorage.getItem('weather-app-theme');
         } catch (e) {
-          // fallback: ignore storage errors
+          // Handle environments where storage access throws (e.g., privacy mode)
+          try {
+            console.warn('early-theme storage error', e);
+          } catch {}
           savedTheme = null;
         }
         if (savedTheme === 'dark') {
@@ -33,8 +36,16 @@
             document.body.classList.add('dark-theme');
           });
         } else if (savedTheme === 'horror') {
+          // In development (localhost), don't apply horror class early — map to dark instead
+          var host = (location && location.hostname) || '';
+          var isDevHost =
+            host === 'localhost' || host === '127.0.0.1' || host === '::1';
           document.addEventListener('DOMContentLoaded', function () {
-            document.body.classList.add('horror-theme');
+            if (isDevHost) {
+              document.body.classList.add('dark-theme');
+            } else {
+              document.body.classList.add('horror-theme');
+            }
           });
         }
       })();
@@ -96,94 +107,104 @@
       href="/icons/icon-180x180.png"
     />
 
-    <!-- Horror effects global script -->
+    <!-- Horror effects global script (disabled on localhost/dev) -->
     <script>
-      // Global horror effects force function
-      window.FORCE_HORROR_NOW = function () {
-        console.log('🎃 NUCLEAR HORROR FORCE ACTIVATED...');
+      (function () {
+        var host = (location && location.hostname) || '';
+        var isDevHost =
+          host === 'localhost' || host === '127.0.0.1' || host === '::1';
+        if (isDevHost) {
+          // In development, do not expose FORCE_HORROR_NOW to avoid accidental activation
+          console.log('💤 Horror force disabled in development');
+          return;
+        }
+        // Global horror effects force function
+        window.FORCE_HORROR_NOW = function () {
+          console.log('🎃 NUCLEAR HORROR FORCE ACTIVATED...');
 
-        // Force add horror classes to body and html
-        document.body.classList.add('horror-theme', 'horror-film-grain');
-        document.documentElement.classList.add('horror-theme');
+          // Force add horror classes to body and html
+          document.body.classList.add('horror-theme', 'horror-film-grain');
+          document.documentElement.classList.add('horror-theme');
 
-        // Force change page title
-        document.title = '🎃 Crystal Lake Weather Station - NUCLEAR FORCE';
+          // Force change page title
+          document.title = '🎃 Crystal Lake Weather Station - NUCLEAR FORCE';
 
-        // Force dark background immediately
-        document.body.style.setProperty(
-          'background',
-          'linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%)',
-          'important'
-        );
-        document.body.style.setProperty(
-          'background-color',
-          '#0d0d0d',
-          'important'
-        );
-        document.body.style.setProperty('color', '#ff6b6b', 'important');
+          // Force dark background immediately
+          document.body.style.setProperty(
+            'background',
+            'linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%)',
+            'important'
+          );
+          document.body.style.setProperty(
+            'background-color',
+            '#0d0d0d',
+            'important'
+          );
+          document.body.style.setProperty('color', '#ff6b6b', 'important');
 
-        // Force add blood drip to ALL text elements
-        const selector = '*';
-        const allElements = document.querySelectorAll(selector);
+          // Force add blood drip to ALL text elements
+          const selector = '*';
+          const allElements = document.querySelectorAll(selector);
 
-        let textElementsCount = 0;
-        allElements.forEach(element => {
-          const tagName = element.tagName.toLowerCase();
-          const hasText =
-            element.textContent && element.textContent.trim().length > 0;
+          let textElementsCount = 0;
+          allElements.forEach(element => {
+            const tagName = element.tagName.toLowerCase();
+            const hasText =
+              element.textContent && element.textContent.trim().length > 0;
 
-          if (
-            hasText &&
-            (tagName.includes('h') ||
-              element.className.includes('temp') ||
-              element.className.includes('weather') ||
-              element.className.includes('city') ||
-              element.className.includes('forecast') ||
-              element.className.includes('metric') ||
-              tagName === 'span' ||
-              tagName === 'div' ||
-              tagName === 'p')
-          ) {
-            element.style.setProperty(
-              'animation',
-              'bloodDrip 4s infinite ease-in-out',
-              'important'
-            );
-            element.style.setProperty('color', '#ff6b6b', 'important');
-            textElementsCount++;
-          }
-        });
+            if (
+              hasText &&
+              (tagName.includes('h') ||
+                element.className.includes('temp') ||
+                element.className.includes('weather') ||
+                element.className.includes('city') ||
+                element.className.includes('forecast') ||
+                element.className.includes('metric') ||
+                tagName === 'span' ||
+                tagName === 'div' ||
+                tagName === 'p')
+            ) {
+              element.style.setProperty(
+                'animation',
+                'bloodDrip 4s infinite ease-in-out',
+                'important'
+              );
+              element.style.setProperty('color', '#ff6b6b', 'important');
+              textElementsCount++;
+            }
+          });
 
-        // Add film flicker to body
-        document.body.style.setProperty(
-          'animation',
-          'filmFlicker 0.3s infinite alternate, bloodDrip 4s infinite ease-in-out',
-          'important'
-        );
+          // Add film flicker to body
+          document.body.style.setProperty(
+            'animation',
+            'filmFlicker 0.3s infinite alternate, bloodDrip 4s infinite ease-in-out',
+            'important'
+          );
 
-        // Add film grain overlay
-        document.body.classList.add('film-grain-overlay');
+          // Add film grain overlay
+          document.body.classList.add('film-grain-overlay');
 
-        console.log(
-          `🩸 Applied blood effects to ${textElementsCount} text elements`
-        );
-        console.log(
-          '💀 Horror effects force applied - Blood drips, film flicker, and dark theme activated!'
-        );
-        console.log(
-          '🎃 NUCLEAR HORROR EFFECTS ACTIVATED! Check console for details.'
-        );
-      };
+          console.log(
+            `🩸 Applied blood effects to ${textElementsCount} text elements`
+          );
+          console.log(
+            '💀 Horror effects force applied - Blood drips, film flicker, and dark theme activated!'
+          );
+          console.log(
+            '🎃 NUCLEAR HORROR EFFECTS ACTIVATED! Check console for details.'
+          );
+        };
 
-      // Also add simpler version
-      window.horror = window.FORCE_HORROR_NOW;
+        // Also add simpler version
+        window.horror = window.FORCE_HORROR_NOW;
 
-      // Auto-announce availability
-      setTimeout(() => {
-        console.log(
-          '💀 NUCLEAR HORROR READY! Type: FORCE_HORROR_NOW() or horror()'
-        );
-      }, 1000);
+        // Auto-announce availability
+        setTimeout(() => {
+          console.log(
+            '💀 NUCLEAR HORROR READY! Type: FORCE_HORROR_NOW() or horror()'
+          );
+        }, 1000);
+      })();
     </script>
   </head>
 
@@ -346,6 +367,62 @@
           { once: true }
         );
       })();
+    </script>
+
+    <!-- Dev/Prod rescue boot: if React hasn’t mounted shortly after DOM ready, render diagnostic app -->
+    <script type="module">
+      window.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          const setMarker = t => {
+            try {
+              const el = document.getElementById('early-boot-marker');
+              if (el) el.textContent = String(t);
+            } catch {}
+          };
+
+          // Only enable rescue import logic on localhost/dev
+          const host = (location && location.hostname) || '';
+          const isDevHost =
+            host === 'localhost' || host === '127.0.0.1' || host === '::1';
+
+          // Give the main module a moment to load first
+          setTimeout(async () => {
+            if (!isDevHost) return; // skip in production builds
+            try {
+              if (window.__APP_BOOTED) return; // app already mounted
+              const root = document.getElementById('root');
+              if (!root) return;
+              if (root.firstElementChild) return; // something already rendered
+
+              setMarker('HTML:rescue');
+
+              // Dynamically import React and the diagnostic app, then render
+              const React = await import('react');
+              const { createRoot } = await import('react-dom/client');
+              const diag = await import('./src/App-diagnostic.tsx');
+
+              const DiagApp = diag && diag.default ? diag.default : null;
+              if (DiagApp) {
+                const rootInstance = createRoot(root);
+                rootInstance.render(React.createElement(DiagApp));
+                setMarker('HTML:rescue-diag');
+              } else {
+                setMarker('HTML:rescue-no-diag');
+              }
+            } catch (e) {
+              try {
+                setMarker(
+                  'HTML:rescue-error ' +
+                    (e && e.message ? e.message : 'unknown')
+                );
+                console.warn('[rescue] diagnostic render failed', e);
+              } catch {}
+            }
+          }, 1400);
+        },
+        { once: true }
+      );
     </script>
 
     <!-- Additional structured data -->

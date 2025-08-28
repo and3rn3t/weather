@@ -110,6 +110,17 @@
   background: inherit !important;
 }
 
+/* Dev: neutralize aggressive horror-theme borders/glow if class slips in */
+html[data-env='dev'] .horror-theme,
+html[data-env='dev'] .horror-theme * {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  animation: none !important;
+  filter: none !important;
+}
+
 /* Ensure root always paints something visible in dev */
 [data-env='dev'] #root:empty::before {
   content: 'DEV: Root mounted, waiting for content…';

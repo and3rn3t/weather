@@ -116,8 +116,6 @@ import '../styles/progressive-loading.css';
 // Horror Theme Components
 import HorrorThemeActivator from '../components/HorrorThemeActivator';
 // Horror Theme Styles - Essential for blood drips and film flicker effects
-import '../styles/horror-icon-fixes.css';
-import '../styles/horrorTheme.css';
 // iOS HIG Components
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
 import {
@@ -139,8 +137,6 @@ import '../styles/modernWeatherUI.css';
 // Navigation & UI Fixes - August 21, 2025
 // navigation-fixes.css was removed after consolidating nav styles into mobile.css
 import { logError, logInfo, logWarn } from '../utils/logger';
-// Horror Effects Debug Utility
-import '../utils/horrorEffectsDebug';
 import type { ScreenInfo } from '../utils/mobileScreenOptimization';
 import {
   getAdaptiveBorderRadius,
@@ -2670,7 +2666,14 @@ const AppNavigator = () => {
           )}
 
           {/* Horror Theme Activator - Easy horror mode activation */}
-          <HorrorThemeActivator />
+          {/* Disable horror activator in dev/localhost to keep styles clean */}
+          {(() => {
+            const host =
+              typeof window !== 'undefined' ? window.location.hostname : '';
+            const isDevHost =
+              host === 'localhost' || host === '127.0.0.1' || host === '::1';
+            return isDevHost ? null : <HorrorThemeActivator />;
+          })()}
 
           {/* PWA Install Prompt - Appears when app can be installed */}
           <PWAInstallPrompt
