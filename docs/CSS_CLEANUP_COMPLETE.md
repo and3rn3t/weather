@@ -24,7 +24,7 @@ truth for reliability and maintainability.
   `src/styles/ios26-text-optimization.css`, `src/styles/progressive-loading.css`,
   `src/styles/modernWeatherUI.css`, `src/styles/ios-typography-enhancement.css`
 - Horror theme: `src/styles/horrorTheme.css`, `src/styles/horror-icon-fixes.css`,
-  `src/styles/horror-theme-consolidated.css`
+  `src/styles/horror-theme-consolidated.css` (retired Aug 2025; kept only in archive/history)
 - Dynamically loaded via `utils/cssOptimization.ts` and `utils/bundleOptimizationClean.ts`:
   `enhancedMobileLayout.css`, `enhancedMobileNavigation.css`, `enhancedMobileTypography.css`,
   `layout-fixes.css`, `responsive-layout-consolidated.css`, `mobile-enhanced-consolidated.css`,
@@ -36,7 +36,8 @@ truth for reliability and maintainability.
 - The “blue rectangle” mobile active-state fix is consolidated inside `src/index.css` and no longer
   relies on separate fix files.
 - Backups under `src/styles-backup-20250821-161935/` are not referenced by the app and can be
-  removed later; they don’t affect the bundle.
+  removed later; they don’t affect the bundle. See `docs/THEME_SIMPLIFICATION_AUG2025.md` for the
+  light/dark-only theme policy.
 
 ## Verification
 

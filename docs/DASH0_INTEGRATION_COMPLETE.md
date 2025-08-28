@@ -25,7 +25,7 @@ interactions and system operations.
 
 **Telemetry Added:**
 
-- ✅ Theme switching patterns - light/dark/horror mode transitions
+- ✅ Theme switching patterns - light/dark transitions (horror retired Aug 2025)
 - ✅ User preference tracking - theme selection analytics
 - ✅ Accessibility interactions - multi-sensory feedback tracking
 - ✅ Success metrics - theme change completion rates

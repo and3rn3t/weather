@@ -13,7 +13,6 @@
 export const IOSComponentShowcase = lazy(
   () => import('../components/modernWeatherUI/IOSComponentShowcase')
 );
-export const HorrorThemeActivator = lazy(() => import('../components/HorrorThemeActivator'));
 export const PerformanceDashboard = lazy(() => import('../components/PerformanceDashboard'));
 export const PWAStatus = lazy(() => import('../components/PWAStatus'));
 ```
@@ -23,7 +22,7 @@ export const PWAStatus = lazy(() => import('../components/PWAStatus'));
 **Remove unused files and components**:
 
 - `src/examples/` folder (example files not used in production)
-- Unused CSS files in archive folders
+- Unused CSS files in archive folders (including retired horror theme styles)
 - Debug components and console.log statements
 
 #### 3. CSS Optimization

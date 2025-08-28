@@ -145,21 +145,18 @@ made to ensure a premium, iOS-native user experience.
 .ios-hig-mt-16, .ios-hig-mb-16, .ios-hig-p-16;
 ```
 
-## 🌈 Fun Theme Integration
+## 🌈 Playful Enhancements (Non-core)
 
-### Horror Theme Compatibility
-
-- **Color Preservation**: Horror theme colors maintained for special modes
-- **Animation Continuity**: Spooky animations work alongside HIG patterns
-- **Icon Consistency**: Emoji icons maintain personality while being accessible
-- **Theme Switching**: Smooth transitions between fun and standard modes
+- Fun accents should not compromise HIG: keep contrast, spacing, and motion guidelines.
+- Emoji/icons may be used as secondary affordances with accessible text equivalents.
+- Theme switching supports light/dark only (Aug 2025 simplification).
 
 ### Weather Personality
 
 - **Friendly Language**: "Feels like" instead of technical terms
 - **Emoji Integration**: Weather condition icons for quick recognition
 - **Playful Interactions**: Haptic feedback for delightful user experience
-- **Location Personality**: Fun default location (Crystal Lake, NJ)
+- **Location Personality**: Friendly copy where appropriate
 
 ## 🔄 Migration Path
 

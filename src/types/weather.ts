@@ -77,7 +77,7 @@ export interface LoadingStage {
 // Enhanced visualization component props
 export interface VisualizationProps {
   className?: string;
-  theme?: 'light' | 'dark' | 'horror';
+  theme?: 'light' | 'dark';
 }
 
 export interface TemperatureTrendData {

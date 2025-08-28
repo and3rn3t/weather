@@ -23,28 +23,6 @@ function App() {
       <div style={{ marginTop: '30px' }}>
         <button
           onClick={() => {
-            if (window.FORCE_HORROR_NOW) {
-              window.FORCE_HORROR_NOW();
-            } else {
-              alert('Horror function not available');
-            }
-          }}
-          style={{
-            padding: '12px 24px',
-            fontSize: '16px',
-            backgroundColor: '#764ba2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            marginRight: '10px',
-          }}
-        >
-          🎃 Test Horror Mode
-        </button>
-
-        <button
-          onClick={() => {
             console.log('Testing console...');
             alert('App is responsive!');
           }}

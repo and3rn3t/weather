@@ -50,34 +50,10 @@ nav[role='navigation'],
   background: rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Ensure horror theme effects show above navigation */
-.horror-theme .mobile-navigation {
-  z-index: 10 !important;
-  background: rgba(19, 0, 0, 0.9) !important;
-  border-bottom: 2px solid rgba(139, 0, 0, 0.6) !important;
-}
-
-.horror-theme .mobile-navigation button {
-  border: 1px solid rgba(139, 0, 0, 0.6) !important;
-  background: rgba(75, 0, 0, 0.8) !important;
-  color: #ff6b6b !important;
-}
-
-.horror-theme .mobile-navigation button:hover {
-  background: rgba(139, 0, 0, 0.8) !important;
-  border-color: rgba(139, 0, 0, 1) !important;
-  box-shadow: 0 0 10px rgba(139, 0, 0, 0.6) !important;
-}
+/* Horror theme removed: selectors deleted (Aug 2025) */
 
 /* Ensure blood drip effects show on navigation elements */
-.horror-theme .mobile-navigation h1,
-.horror-theme .mobile-navigation h2,
-.horror-theme .mobile-navigation h3,
-.horror-theme .mobile-navigation .nav-title {
-  animation: bloodDrip 4s infinite ease-in-out !important;
-  filter: drop-shadow(0 2px 10px rgba(139, 0, 0, 0.8)) !important;
-  z-index: 20 !important;
-}
+/* Horror theme title effects removed */
 
 /* Fix main content area to show blood drip effects */
 .main-content h1,
@@ -92,25 +68,10 @@ nav[role='navigation'],
   z-index: 15 !important;
 }
 
-.horror-theme .main-content h1,
-.horror-theme .main-content h2,
-.horror-theme .main-content h3,
-.horror-theme .weather-display h1,
-.horror-theme .weather-display h2,
-.horror-theme .weather-display h3,
-.horror-theme .temperature-display,
-.horror-theme .city-name {
-  animation: bloodDrip 4s infinite ease-in-out !important;
-  filter: drop-shadow(0 2px 10px rgba(139, 0, 0, 0.8)) !important;
-  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8) !important;
-}
+/* Horror theme main content effects removed */
 
 /* Ensure flickering effects work */
-.horror-theme .weather-card,
-.horror-theme .forecast-card,
-.horror-theme .ios26-weather-card {
-  animation: flickeringHorror 4s infinite ease-in-out !important;
-}
+/* Horror theme flicker effects removed */
 
 /* Fix button styling across all themes */
 button,
@@ -153,20 +114,4 @@ button:hover,
   -webkit-backdrop-filter: blur(15px) !important;
 }
 
-/* Horror activator button styling */
-.horror-activator button {
-  background: linear-gradient(135deg, #4c0000 0%, #1a0000 100%) !important;
-  border: 2px solid rgba(139, 0, 0, 0.6) !important;
-  color: #ff6b6b !important;
-  font-weight: bold !important;
-  padding: 12px 20px !important;
-  border-radius: 12px !important;
-  text-shadow: 0 0 10px rgba(139, 0, 0, 0.8) !important;
-}
-
-.horror-activator button:hover {
-  background: linear-gradient(135deg, #8b0000 0%, #4c0000 100%) !important;
-  border-color: rgba(139, 0, 0, 1) !important;
-  box-shadow: 0 0 20px rgba(139, 0, 0, 0.6) !important;
-  transform: translateY(-2px) !important;
-}
+/* Horror activator button removed */

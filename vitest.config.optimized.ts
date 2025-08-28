@@ -50,8 +50,6 @@ export default {
       'public/*-debug.js',
       'public/*-test.js',
       'public/*-test.html',
-      'public/horror-*.js',
-      'public/horror-*.html',
       'public/theme-*.js',
       'public/test-*.js',
       'public/instant-*.js',

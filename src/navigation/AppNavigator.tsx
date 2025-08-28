@@ -108,14 +108,7 @@ import {
 import SmartWeatherSkeleton from '../components/optimized/SmartWeatherSkeleton';
 import { useProgressiveWeatherLoading } from '../hooks/useProgressiveWeatherLoading';
 import { useSmartContentPriority } from '../hooks/useSmartContentPriority';
-import '../styles/ios26-design-system-consolidated.css';
-// iOS26 Text Optimization - Clean, HIG-compliant typography
-import '../styles/ios26-text-optimization.css';
-// Phase 3: Progressive Loading Styles
-import '../styles/progressive-loading.css';
-// Horror Theme Components
-import HorrorThemeActivator from '../components/HorrorThemeActivator';
-// Horror Theme Styles - Essential for blood drips and film flicker effects
+// Theme styles consolidated in src/index.css
 // iOS HIG Components
 import { ActionSheet } from '../components/modernWeatherUI/ActionSheet';
 import {
@@ -131,9 +124,7 @@ import {
   SimpleStatusBadge,
 } from '../components/modernWeatherUI/SimpleIOSComponents';
 import OptimizedMobileWeatherDisplay from '../components/optimized/OptimizedMobileWeatherDisplay';
-import '../styles/ios-typography-enhancement.css';
-import '../styles/iosComponents.css';
-import '../styles/modernWeatherUI.css';
+// Core styles now centralized via src/index.css to prevent overlap
 // Navigation & UI Fixes - August 21, 2025
 // navigation-fixes.css was removed after consolidating nav styles into mobile.css
 import { logError, logInfo, logWarn } from '../utils/logger';
@@ -1486,7 +1477,7 @@ const AppNavigator = () => {
     return cleanup;
   }, []);
 
-  // Load Crystal Lake, NJ as default horror location (moved below deps declarations)
+  // Default location logic handled via settings and geolocation
 
   // Get adaptive styles based on current screen
   const adaptiveFonts = useMemo(
@@ -1542,7 +1533,7 @@ const AppNavigator = () => {
   const { updateAvailable, applyUpdate } = usePWAUpdate();
 
   const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
-  const [city, setCity] = useState('Crystal Lake, NJ'); // Default to horror movie location
+  const [city, setCity] = useState('San Francisco, CA');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherCode, setWeatherCode] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -2037,22 +2028,22 @@ const AppNavigator = () => {
     ]
   );
 
-  // Load Crystal Lake, NJ as default horror location (after dependencies declared)
+  // Load a neutral default location on first run (after dependencies declared)
   useEffect(() => {
-    const loadCrystalLake = async () => {
-      // Crystal Lake, NJ coordinates (approximate)
-      const crystalLakeLat = 40.913;
-      const crystalLakeLon = -74.345;
+    const loadDefaultCity = async () => {
+      // Default coordinates (San Francisco, CA)
+      const defaultLat = 37.7749;
+      const defaultLon = -122.4194;
 
       // Only load if no city is set and no user location preference
       if (!city && !localStorage.getItem('user-preferred-location')) {
         try {
-          await fetchWeatherData(crystalLakeLat, crystalLakeLon);
-          setCity('Crystal Lake, NJ');
-          logInfo('🎃 Welcome to Crystal Lake... Weather Station Online');
+          await fetchWeatherData(defaultLat, defaultLon);
+          setCity('San Francisco, CA');
+          logInfo('Default city loaded');
         } catch (error) {
           logWarn(
-            'Failed to load Crystal Lake data, user will need to search manually:',
+            'Failed to load default city data, user will need to search manually:',
             error
           );
           // Gracefully degrade - user can still search for weather manually
@@ -2064,7 +2055,7 @@ const AppNavigator = () => {
     };
 
     // Delay slightly to let other initialization complete
-    const timer = setTimeout(loadCrystalLake, 1000);
+    const timer = setTimeout(loadDefaultCity, 1000);
     return () => clearTimeout(timer);
   }, [city, fetchWeatherData]);
 
@@ -2665,15 +2656,7 @@ const AppNavigator = () => {
             </div>
           )}
 
-          {/* Horror Theme Activator - Easy horror mode activation */}
-          {/* Disable horror activator in dev/localhost to keep styles clean */}
-          {(() => {
-            const host =
-              typeof window !== 'undefined' ? window.location.hostname : '';
-            const isDevHost =
-              host === 'localhost' || host === '127.0.0.1' || host === '::1';
-            return isDevHost ? null : <HorrorThemeActivator />;
-          })()}
+          {/* Theme variations limited to light/dark */}
 
           {/* PWA Install Prompt - Appears when app can be installed */}
           <PWAInstallPrompt
@@ -2689,36 +2672,8 @@ const AppNavigator = () => {
 
           {/* Phase 5C: Weather Alerts Floating Action Button */}
           <button
+            className="weather-alert-fab"
             onClick={() => setShowWeatherAlertPanel(true)}
-            style={{
-              position: 'fixed',
-              bottom: '80px',
-              right: '20px',
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              backgroundColor: '#ff6b35',
-              border: 'none',
-              color: 'white',
-              fontSize: '24px',
-              boxShadow: '0 4px 12px rgba(255, 107, 53, 0.4)',
-              cursor: 'pointer',
-              zIndex: 1000,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow =
-                '0 6px 16px rgba(255, 107, 53, 0.6)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow =
-                '0 4px 12px rgba(255, 107, 53, 0.4)';
-            }}
             aria-label="Open weather alerts"
             title="Weather Alerts"
           >
@@ -2742,23 +2697,7 @@ const AppNavigator = () => {
           {/* Memory Optimization Display - August 2025 */}
           {process.env.NODE_ENV === 'development' &&
             memoryOptimization.memoryInfo && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: '10px',
-                  right: '10px',
-                  backgroundColor: memoryOptimization.isMemoryPressure
-                    ? 'rgba(255, 0, 0, 0.9)'
-                    : 'rgba(0, 0, 0, 0.8)',
-                  color: 'white',
-                  padding: '8px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontFamily: 'monospace',
-                  zIndex: 9999,
-                  minWidth: '200px',
-                }}
-              >
+              <div className="memory-stats-panel">
                 <div>
                   Memory: {memoryOptimization.memoryUsagePercent.toFixed(1)}%
                 </div>
@@ -2781,7 +2720,7 @@ const AppNavigator = () => {
                   MB
                 </div>
                 {memoryOptimization.isMemoryPressure && (
-                  <div style={{ color: '#ffcccb' }}>⚠️ Memory Pressure</div>
+                  <div className="warning">⚠️ Memory Pressure</div>
                 )}
               </div>
             )}

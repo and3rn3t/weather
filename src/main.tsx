@@ -293,7 +293,7 @@ onReady(() => {
             style.setAttribute('data-dev-hide', 'full-overlays');
             style.textContent = `
               html[data-env='dev'] body > *[style*="position:fixed"]:not([data-allow-overlay='true']){display:none!important;visibility:hidden!important;opacity:0!important}
-              html[data-env='dev'] .film-grain-overlay,html[data-env='dev'] .horror-quote-overlay{display:none!important}
+              html[data-env='dev'] .film-grain-overlay{display:none!important}
               html[data-env='dev'] #root{min-height:60vh!important}
             `;
             document.head.appendChild(style);

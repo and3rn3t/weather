@@ -1,12 +1,11 @@
 /* Import core mobile foundation */
 @import './styles/mobile.css';
 @import './styles/iosComponents.css';
+@import './styles/ios26-design-system-consolidated.css';
 
 /* TEMP: Heavy consolidated CSS imports removed while isolating overlay issue */
 
-/* NEW: Horror Theme Styles - CONSOLIDATED */
-
-/* NEW: Horror Icon Fixes - Prevents black backgrounds behind icons */
+/* Horror theme removed (Aug 2025): all related selectors and imports purged */
 
 :root {
   font-family:
@@ -76,9 +75,6 @@
 }
 [data-env='dev'] .loading-overlay,
 [data-env='dev'] .film-grain-overlay,
-[data-env='dev'] .horror-quote-overlay,
-[data-env='dev'] .horror-theme .horror-film-grain,
-[data-env='dev'] .horror-theme .film-grain-overlay,
 [data-env='dev'] #dev-boot-banner,
 /* Any top-level fixed full-screen element that doesn't explicitly opt-in */
 [data-env='dev'] body > div[style*='position:fixed']:not([data-allow-overlay='true']),
@@ -97,28 +93,9 @@
   z-index: 1000 !important;
 }
 
-/* Neutralize horror overlays in development */
-[data-env='dev'] .film-grain-overlay::before,
-[data-env='dev'] body.horror-film-grain::before {
+/* Neutralize dev-only overlays */
+[data-env='dev'] .film-grain-overlay::before {
   content: none !important;
-}
-[data-env='dev'] .horror-theme,
-[data-env='dev'] body.horror-theme,
-[data-env='dev'] html.horror-theme {
-  filter: none !important;
-  mix-blend-mode: normal !important;
-  background: inherit !important;
-}
-
-/* Dev: neutralize aggressive horror-theme borders/glow if class slips in */
-html[data-env='dev'] .horror-theme,
-html[data-env='dev'] .horror-theme * {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  border-width: 1px !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  animation: none !important;
-  filter: none !important;
 }
 
 /* Ensure root always paints something visible in dev */
@@ -346,3 +323,48 @@ div:not(.mobile-navigation) *:active,
 }
 
 /* End of nav overrides cleanup */
+
+/* App-level UI helpers (centralized to avoid scattered inline styles) */
+.weather-alert-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #ff6b35;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.weather-alert-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.6);
+}
+
+/* Dev-only memory stats panel */
+[data-env='dev'] .memory-stats-panel {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: monospace;
+  z-index: 9999;
+  min-width: 200px;
+}
+[data-env='dev'] .memory-stats-panel .warning {
+  color: #ffcccb;
+}

@@ -24,11 +24,12 @@ _Generated: August 22, 2025_
   - iOS26WeatherInterface, iOS26WeatherDemo (Heavy UI components)
   - PrecipitationChart, TemperatureTrend, UVIndexBar, WindCompass (Visualization components)
   - OptimizedMobileWeatherDisplay, IOSComponentShowcase (Advanced components)
-  - AnimatedWeatherCard, HorrorThemeActivator (Feature-specific components)
+  - AnimatedWeatherCard (Feature-specific)
 - **Features**:
   - Bundle size tracking for lazy components
   - Performance monitoring for load times
   - Development-only console logging
+  - Note: HorrorThemeActivator removed in Aug 2025 during theme simplification
 
 #### 3. **Memory Management System** ✅
 

@@ -10,34 +10,17 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
     // Get current theme
     const currentTheme = localStorage.getItem('weather-app-theme') || 'light';
 
-    // Cycle through themes
-    let nextTheme: string;
-    switch (currentTheme) {
-      case 'light':
-        nextTheme = 'dark';
-        break;
-      case 'dark':
-        nextTheme = 'horror';
-        break;
-      case 'horror':
-      default:
-        nextTheme = 'light';
-        break;
-    }
+    // Cycle through light/dark only
+    const nextTheme: string = currentTheme === 'light' ? 'dark' : 'light';
 
     // Save theme
     localStorage.setItem('weather-app-theme', nextTheme);
 
     // Apply theme classes
-    document.body.classList.remove('light-theme', 'dark-theme', 'horror-theme');
+    document.body.classList.remove('light-theme', 'dark-theme');
     document.body.classList.add(`${nextTheme}-theme`);
 
-    // Update title for horror theme
-    if (nextTheme === 'horror') {
-      document.title = '🎃 Crystal Lake Weather Station';
-    } else {
-      document.title = 'Weather App';
-    }
+    document.title = 'Weather App';
 
     // Dispatch event for other components
     window.dispatchEvent(
@@ -56,30 +39,12 @@ const SimpleThemeToggle = ({ className = '' }: SimpleThemeToggleProps) => {
 
   const getThemeIcon = () => {
     const theme = getCurrentTheme();
-    switch (theme) {
-      case 'light':
-        return '☀️';
-      case 'dark':
-        return '🌙';
-      case 'horror':
-        return '💀';
-      default:
-        return '☀️';
-    }
+    return theme === 'dark' ? '🌙' : '☀️';
   };
 
   const getThemeTitle = () => {
     const theme = getCurrentTheme();
-    switch (theme) {
-      case 'light':
-        return 'Switch to Dark Theme';
-      case 'dark':
-        return 'Switch to Horror Theme';
-      case 'horror':
-        return 'Switch to Light Theme';
-      default:
-        return 'Toggle Theme';
-    }
+    return theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme';
   };
 
   return React.createElement(

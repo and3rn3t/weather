@@ -26,7 +26,7 @@
 
 - **Core CSS**: Reduced from 70KB → 63KB (10% reduction)
 - **Conditional Loading**: 14 CSS chunks for device-specific loading
-- **Horror Theme**: Optimized to 22KB + 12KB + 7KB chunks
+- (Aug 2025) Horror theme removed; CSS consolidated into core/mobile/iOS sets
 - **Mobile Enhancements**: Split into 6KB + 7KB + 8KB chunks
 
 ### 3. **Bundle Loading Strategy** ✅
@@ -63,7 +63,6 @@ flowchart TD
     U[ui-utils-BGOkVs33.js\n103KB\nShared utilities]
   end
   subgraph CSS[Conditional CSS]
-    H[horror-*.css\n41KB\nDark theme]
     MB[mobile-*.css\n27KB\nMobile styles]
     IOS[ios26-*.css\n6KB\niOS design]
   end
@@ -72,7 +71,6 @@ flowchart TD
   M1 -. mobile .- I
   M2 -. mobile .- I
   W -. domain .- I
-  H -. theme .- C
   MB -. device .- C
   IOS -. device .- C
 ```

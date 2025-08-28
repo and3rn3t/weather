@@ -76,6 +76,11 @@ Organized archive of project history, including:
 - **deployment-guides/** - Historical deployment documentation
 - **system-monitoring/** - System monitoring and compliance reports
 
+Additional notes:
+
+- [Theme Simplification (Aug 2025)](./THEME_SIMPLIFICATION_AUG2025.md) — legacy “horror” theme
+  retired; light/dark only.
+
 ---
 
 ## 🎯 **Project Highlights**

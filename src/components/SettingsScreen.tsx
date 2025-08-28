@@ -57,7 +57,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [hapticFeedback, setHapticFeedback] = useState(true);
 
   // UI settings state
-  const [horrorTheme, setHorrorTheme] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
   // Load settings from localStorage on mount
@@ -93,11 +92,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           setHapticFeedback(parsed.hapticFeedback ?? true);
         }
 
-        // Load UI settings
+        // Load UI settings (horror removed Aug 2025)
         const uiSettings = localStorage.getItem('ui-settings');
         if (uiSettings) {
           const parsed = JSON.parse(uiSettings);
-          setHorrorTheme(parsed.horrorTheme ?? false);
           setReduceMotion(parsed.reduceMotion ?? false);
         }
       } catch (error) {
@@ -117,6 +115,42 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
       logWarn(`Failed to save ${category} settings:`, error);
     }
   }, []);
+
+  const handleSelectionChange = (id: string, value: string) => {
+    haptic.buttonPress();
+    switch (id) {
+      case 'units':
+        setUnits(value);
+        break;
+      case 'refresh':
+        setRefreshInterval(value);
+        break;
+      case 'location-timeout':
+        setLocationTimeout(value);
+        saveSettings('location', {
+          highAccuracy: highAccuracyGPS,
+          timeout: value,
+          backgroundLocation,
+        });
+        break;
+      case 'cache-duration':
+        setCacheDuration(value);
+        saveSettings('cache', {
+          offlineMode,
+          duration: value,
+          autoSync,
+        });
+        break;
+      case 'auto-sync':
+        setAutoSync(value);
+        saveSettings('cache', {
+          offlineMode,
+          duration: cacheDuration,
+          autoSync: value,
+        });
+        break;
+    }
+  };
 
   const handleToggleChange = async (id: string, value: boolean) => {
     haptic.buttonPress();
@@ -180,55 +214,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           hapticFeedback: value,
         });
         break;
-      case 'horror-theme':
-        setHorrorTheme(value);
-        saveSettings('ui', {
-          horrorTheme: value,
-          reduceMotion,
-        });
-        break;
       case 'reduce-motion':
         setReduceMotion(value);
         saveSettings('ui', {
-          horrorTheme,
           reduceMotion: value,
-        });
-        break;
-    }
-  };
-
-  const handleSelectionChange = (id: string, value: string) => {
-    haptic.buttonPress();
-
-    switch (id) {
-      case 'units':
-        setUnits(value);
-        break;
-      case 'refresh':
-        setRefreshInterval(value);
-        break;
-      case 'location-timeout':
-        setLocationTimeout(value);
-        saveSettings('location', {
-          highAccuracy: highAccuracyGPS,
-          timeout: value,
-          backgroundLocation,
-        });
-        break;
-      case 'cache-duration':
-        setCacheDuration(value);
-        saveSettings('cache', {
-          offlineMode,
-          duration: value,
-          autoSync,
-        });
-        break;
-      case 'auto-sync':
-        setAutoSync(value);
-        saveSettings('cache', {
-          offlineMode,
-          duration: cacheDuration,
-          autoSync: value,
         });
         break;
     }
@@ -342,14 +331,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           type: 'toggle' as const,
           value: themeName === 'dark',
         },
-        {
-          id: 'horror-theme',
-          title: 'Horror Theme',
-          subtitle: 'Enable spooky visual effects',
-          icon: '🎃',
-          type: 'toggle' as const,
-          value: horrorTheme,
-        },
+        // Horror Theme removed (Aug 2025)
         {
           id: 'reduce-motion',
           title: 'Reduce Motion',

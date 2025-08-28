@@ -63,9 +63,6 @@ export default defineConfig({
             if (assetName.includes('ios26')) {
               return 'styles/ios26-[hash].css';
             }
-            if (assetName.includes('horror')) {
-              return 'styles/horror-[hash].css';
-            }
             return 'styles/[name]-[hash].css';
           }
           return 'assets/[name]-[hash][extname]';

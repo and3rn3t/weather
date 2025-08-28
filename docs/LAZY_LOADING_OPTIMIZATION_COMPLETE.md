@@ -19,7 +19,8 @@ from 2 lazy components to 9+ strategically chosen components.
 - ✅ **MobileDebug** - Mobile debugging utilities
 - ✅ **NativeStatusDisplay** - Native API status component
 - ✅ **PWAInstallPrompt** - PWA installation component
-- ✅ **HorrorThemeActivator** - Theme switching component
+- ~~✅ **HorrorThemeActivator** - Theme switching component~~ (removed Aug 2025; theme simplified to
+  light/dark)
 
 ### Bundle Size Optimization Results
 
@@ -49,7 +50,6 @@ export const PWAStatus = lazy(() => import('../components/PWAStatus'));
 export const MobileDebug = lazy(() => import('../utils/MobileDebug'));
 export const NativeStatusDisplay = lazy(() => import('../utils/NativeStatusDisplay'));
 export const PWAInstallPrompt = lazy(() => import('../components/PWAInstallPrompt'));
-export const HorrorThemeActivator = lazy(() => import('../components/HorrorThemeActivator'));
 ```
 
 ### AppNavigator Integration
@@ -107,7 +107,7 @@ import {
 - **Development Components**: Only load in development mode
 - **PWA Components**: Load only when PWA features are needed
 - **Mobile Components**: Load based on device detection
-- **Theme Components**: Load only when theme switching occurs
+- **Theme Components**: Not applicable (light/dark handled by core CSS)
 
 ## 🔄 Integration with Existing Systems
 

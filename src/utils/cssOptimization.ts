@@ -17,11 +17,7 @@ export const loadCSSModule = async (moduleName: string): Promise<void> => {
 
   try {
     switch (moduleName) {
-      case 'horror-theme':
-        await import('../styles/horrorTheme.css');
-        await import('../styles/horror-icon-fixes.css');
-        await import('../styles/horror-theme-consolidated.css');
-        break;
+      // horror-theme removed
 
       case 'enhanced-mobile':
         await import('../styles/enhancedMobileLayout.css');
@@ -59,19 +55,8 @@ export const loadCSSModule = async (moduleName: string): Promise<void> => {
 /**
  * Load CSS based on theme selection
  */
-export const loadThemeCSS = async (theme: string): Promise<void> => {
-  switch (theme) {
-    case 'horror':
-      await loadCSSModule('horror-theme');
-      break;
-    case 'dark':
-    case 'light':
-      // Core themes already loaded
-      break;
-    default:
-      // eslint-disable-next-line no-console
-      console.warn(`Unknown theme: ${theme}`);
-  }
+export const loadThemeCSS = async (_theme: string): Promise<void> => {
+  // Only light/dark themes are supported and loaded via index.css
 };
 
 /**
@@ -123,7 +108,7 @@ export const getCSSLoadingStatus = (): {
   loadedModules: string[];
   estimatedSavings: string;
 } => {
-  const totalModules = 4; // horror-theme, enhanced-mobile, ios-advanced, layout-enhancements
+  const totalModules = 3; // enhanced-mobile, ios-advanced, layout-enhancements
   const loadedCount = loadedCSSModules.size;
   const savingsPercent = Math.round(
     ((totalModules - loadedCount) / totalModules) * 100

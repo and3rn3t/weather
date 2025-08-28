@@ -32,7 +32,6 @@ export const LazySettingsScreen = lazy(
 );
 
 // Feature Components - Feature-based code splitting for modular loading
-export const HorrorModeFeature = lazy(() => import('../features/HorrorMode'));
 export const VoiceSearchFeature = lazy(() => import('../features/VoiceSearch'));
 export const AdvancedChartsFeature = lazy(
   () => import('../features/AdvancedCharts')
@@ -98,10 +97,7 @@ export const PWAInstallPrompt = lazy(
   () => import('../components/PWAInstallPrompt')
 );
 
-// Horror Theme Components - Loaded only in horror mode
-export const HorrorThemeActivator = lazy(
-  () => import('../components/HorrorThemeActivator')
-);
+// Theme-specific components removed; only light/dark supported
 
 /**
  * Bundle size tracking for lazy components

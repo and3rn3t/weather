@@ -5,8 +5,6 @@
 
 declare global {
   interface Window {
-    FORCE_HORROR_NOW?: () => void;
-    horror?: () => void;
     bundleSizeMonitor?: {
       trackLazyComponent: (name: string) => void;
       recordBundleMetrics: () => void;

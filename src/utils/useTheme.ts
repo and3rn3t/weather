@@ -24,8 +24,6 @@ export const useTheme = () => {
   return {
     ...context,
     theme: responsiveTheme,
-    // Add horror theme helper
-    isHorror: context.themeName === 'horror',
     // Add responsive information
     ...breakpointInfo,
     // Add performance settings

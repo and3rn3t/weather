@@ -169,7 +169,7 @@ class BundleOptimizationManager {
         tablet: '/styles/responsive-layout-consolidated.css',
         desktop: '/styles/ios-hig-enhancements.css',
         light: '/styles/light-theme.css',
-        dark: '/styles/horror-theme-consolidated.css',
+        dark: '/styles/ios26-design-system-consolidated.css',
         advanced: '/styles/ios26-weather-details-fix.css',
       };
 

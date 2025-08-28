@@ -4,8 +4,7 @@
  */
 
 import React from 'react';
-import HorrorThemeActivator from '../components/HorrorThemeActivator';
-// Horror CSS is loaded dynamically via ThemeProvider when the theme is set
+// Horror feature removed for simplicity; component returns null
 
 export interface HorrorModeFeatureProps {
   enabled?: boolean;
@@ -15,18 +14,6 @@ export interface HorrorModeFeatureProps {
  * Horror Mode Feature Component
  * Encapsulates all horror theme related functionality
  */
-export const HorrorModeFeature: React.FC<HorrorModeFeatureProps> = ({
-  enabled = true,
-}) => {
-  // Do not render activator by default on localhost/dev to keep dev clean
-  const host = typeof window !== 'undefined' ? window.location.hostname : '';
-  const isDevHost =
-    host === 'localhost' || host === '127.0.0.1' || host === '::1';
-  if (!enabled || isDevHost) {
-    return null;
-  }
-
-  return <HorrorThemeActivator />;
-};
+export const HorrorModeFeature: React.FC<HorrorModeFeatureProps> = () => null;
 
 export default HorrorModeFeature;

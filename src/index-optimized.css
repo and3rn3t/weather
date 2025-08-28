@@ -79,7 +79,7 @@ body {
 @import './styles/typography.css'; /* Enhanced typography */
 
 /* 5. THEME VARIATIONS */
-/* Horror theme is dynamically loaded by ThemeProvider in production when selected */
+/* Only light/dark themes are supported */
 
 /* 6. UTILITY AND FIXES */
 @import './styles/accessibility.css'; /* Accessibility enhancements */

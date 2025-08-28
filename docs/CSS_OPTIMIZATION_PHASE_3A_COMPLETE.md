@@ -21,14 +21,12 @@ Our new CSS optimization system loads styles based on:
 
 #### 2. Theme Selection
 
-- **Horror Theme:** Dynamically loads 37KB of horror-specific CSS
 - **Light/Dark:** Uses core CSS only
 - **Feature-based:** Loads only required visual enhancements
 
 #### 3. Performance Impact
 
 - **Initial Load:** 71.48KB vs 127.09KB = 43.7% faster
-- **Horror Theme:** +37KB only when selected
 - **Mobile Enhancements:** +15KB only on mobile devices
 - **iOS Features:** +13KB only on iOS devices
 
@@ -49,12 +47,6 @@ index-BKWn3aDA.css: 71.48KB (gzip: 12.88KB)
 ```mermaid
 flowchart TD
 
-subgraph HT[Horror Theme Features\nTotal: 41.81KB]
-
-HT1[horrorTheme-CT72XXrO.css\n22.74KB]
-HT2[horror-icon-fixes-D87jrpHc.css\n11.84KB]
-HT3[horror-theme-consolidated-Cwi-fcwh.css\n7.23KB]
-end
 subgraph MB[Mobile Enhancements\nTotal: 24.92KB]
 MB1[enhancedMobileLayout-D-B3pFzq.css\n8.21KB]
 MB2[enhancedMobileNavigation-vcMGT481.css\n5.87KB]
@@ -82,7 +74,6 @@ end
 
 ### 2. Smart Loading
 
-- Horror theme: 37KB loads only when selected (not in initial load)
 - Mobile features: 25KB loads only on mobile devices
 - iOS features: 17KB loads only on iOS devices
 - Desktop features: 10KB loads only on larger screens
@@ -115,14 +106,14 @@ File: `src/index-core.css`
 
 ### Integration Points
 
-- **Theme Context:** Loads horror CSS when horror theme selected
+- **Theme Context:** Manages light/dark theme only
 - **Main App:** Initializes CSS optimization system
 - **Responsive Loading:** Detects device type and loads appropriate CSS
 
 ## ✅ Success Metrics
 
 1. **Bundle Size:** 43.7% reduction achieved ✅
-2. **Conditional Loading:** Horror theme, mobile, iOS features load separately ✅
+2. **Conditional Loading:** Mobile, iOS, and layout features load separately ✅
 3. **Performance:** Faster initial load, smart resource loading ✅
 4. **Maintainability:** Organized CSS chunks, clear loading logic ✅
 

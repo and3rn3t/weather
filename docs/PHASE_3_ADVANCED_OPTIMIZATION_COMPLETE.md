@@ -36,7 +36,7 @@ After Phase 3 Optimization:
 ├── Core CSS: 71.48KB (12.88KB gzipped) ↓43.7%
 ├── JS Main: 83.34KB (23.63KB gzipped) ↑10% (added features)
 └── Conditional CSS Chunks: Load on-demand only
-    ├── Horror Theme: 37KB (loads only when selected)
+  ├── (Aug 2025) Horror theme retired; consolidated into core styles
     ├── Mobile Features: 25KB (loads only on mobile)
     ├── iOS Enhancements: 17KB (loads only on iOS)
     └── Layout Features: 10KB (loads conditionally)
@@ -63,7 +63,7 @@ After Phase 3 Optimization:
 ├── src/styles/enhanced-mobile.css        // Mobile-specific features
 ├── src/styles/ios-advanced.css           // iOS-specific enhancements
 ├── src/styles/layout-enhancements.css    // Desktop layout features
-└── src/styles/horror-theme.css           // Horror theme styles
+// (Aug 2025) Horror theme styles retired; see THEME_SIMPLIFICATION_AUG2025.md
 
 // Integration Points:
 ├── src/main.tsx                          // CSS optimization initialization
@@ -124,10 +124,7 @@ if (isTablet || !isMobile) {
 ### **Theme-Based Loading**
 
 ```javascript
-// Horror Theme Selection
-if (themeName === 'horror') {
-  await loadThemeCSS('horror'); // 37KB horror-specific CSS
-}
+// Theme selection simplified to light/dark only (Aug 2025)
 ```
 
 ### **Cache Strategy Selection**
@@ -137,7 +134,7 @@ if (themeName === 'horror') {
 CacheFirst: index-*.css (71.48KB core)
 
 // Conditional CSS - Background Updates
-StaleWhileRevalidate: horrorTheme-*.css, ios-hig-*.css
+StaleWhileRevalidate: ios-hig-*.css
 
 // Dynamic Chunks - Smart Loading
 LoadOnDemand: Based on device type and user preferences
@@ -155,7 +152,6 @@ LoadOnDemand: Based on device type and user preferences
 
 ### **2. Conditional Resource Loading**
 
-- **Horror Theme:** 37KB loads only when selected (not in initial load)
 - **Mobile Features:** 25KB loads only on mobile devices
 - **iOS Features:** 17KB loads only on iOS devices
 - **Desktop Features:** 10KB loads only on larger screens
@@ -200,12 +196,7 @@ LoadOnDemand: Based on device type and user preferences
 - **Savings:** 37KB horror theme not loaded
 - **Total Savings:** ~37KB (29% reduction from original 127KB)
 
-### **Horror Theme Users**
-
-- **Core CSS:** 71.48KB (always loaded)
-- **Horror CSS:** 37KB (loads when theme selected)
-- **Device CSS:** Mobile/iOS features load as needed
-- **Result:** Full functionality with optimized loading
+<!-- Horror Theme Users section removed (theme retired Aug 2025) -->
 
 ---
 
