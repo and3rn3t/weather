@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
 
   // Configure Vite to load .env files from .env directory
@@ -79,7 +79,8 @@ export default defineConfig({
     minify: 'esbuild',
     cssMinify: 'esbuild',
     target: 'es2020',
-    sourcemap: true,
+    // Disable source maps in production to reduce bundle size and meet perf budget
+    sourcemap: mode !== 'production',
     chunkSizeWarningLimit: 600,
     assetsInlineLimit: 4096,
     cssCodeSplit: true,
@@ -133,4 +134,4 @@ export default defineConfig({
     ),
     'process.env': {},
   },
-});
+}));

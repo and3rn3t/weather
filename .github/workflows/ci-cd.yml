@@ -135,13 +135,23 @@ jobs:
           [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ] && echo "❌ Missing secret: CLOUDFLARE_ACCOUNT_ID" && missing=1 || echo "✅ CLOUDFLARE_ACCOUNT_ID present"
           [ "$missing" -ne 0 ] && echo "::error::Missing secrets; aborting deploy." && exit 1 || true
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages (retry up to 3x)
         if: ${{ steps.meta.outputs.should_deploy == 'true' }}
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=weather --branch=${{ github.ref_name }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "Starting deploy with retries via npx wrangler..."
+          success=0
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt: wrangler pages deploy"
+            npx --yes wrangler pages deploy dist --project-name=weather --branch=${{ github.ref_name }} && success=1 && break || success=0
+            echo "Deploy attempt $attempt failed. Waiting before retry..."
+            sleep $((attempt * 5))
+          done
+          if [ "$success" -ne 1 ]; then
+            echo "::error::Cloudflare Pages deploy failed after 3 attempts." && exit 1
+          fi
 
       - name: Dist manifest (main)
         if: ${{ steps.meta.outputs.should_deploy == 'true' }}
