@@ -34,6 +34,7 @@ export default defineConfig({
             './src/utils/themeConfig.ts',
             './src/utils/themeContext.tsx',
             './src/utils/ThemeToggle.tsx',
+            './src/utils/hapticContext.tsx',
           ],
 
           // Weather functionality - core features
