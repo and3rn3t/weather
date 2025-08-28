@@ -69,7 +69,17 @@ jobs:
         run: npm run lint
 
       - name: Prettier check
-        run: npm run format:check
+        run: |
+          npx prettier --check --ignore-unknown \
+            "src/**/*.{ts,tsx,css,json,md,html}" \
+            "scripts/**/*.{ts,js}" \
+            eslint.config.js \
+            package.json \
+            tsconfig.json \
+            tsconfig.node.json \
+            tsconfig.app.json \
+            vite.config.ts \
+            vitest.config.optimized.ts
 
       - name: Stylelint (CSS)
         run: npm run stylelint
