@@ -22,6 +22,8 @@ mobile optimization, and production-ready deployment infrastructure.
   caching, headers
 - [Production Networking Strategy](./docs/technical/PRODUCTION_NETWORKING_STRATEGY.md) — policies,
   retries, compliance
+- [Headers Configuration](./docs/HEADERS_CONFIGURATION.md) — Cloudflare Pages \_headers rules and
+  verification
 - [Documentation Hub](./docs/README.md) — all guides, reports, and technical docs
 
 ## �🚀 Quick Start
