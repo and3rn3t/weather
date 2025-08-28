@@ -18,6 +18,71 @@
     <link rel="preconnect" href="https://nominatim.openstreetmap.org" />
 
     <title>Weather App - Premium Weather Forecasts</title>
+    <!-- Early theme boot: apply saved theme class before React mounts to avoid FOUC/blank look -->
+    <script>
+      (function () {
+        var savedTheme;
+        try {
+          savedTheme = localStorage.getItem('weather-app-theme');
+        } catch (e) {
+          // fallback: ignore storage errors
+          savedTheme = null;
+        }
+        if (savedTheme === 'dark') {
+          document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('dark-theme');
+          });
+        } else if (savedTheme === 'horror') {
+          document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('horror-theme');
+          });
+        }
+      })();
+    </script>
+
+    <!-- Ultra-early boot beacon: shows even if module fails to load -->
+    <script>
+      (function () {
+        function addEarlyBootMarker(text) {
+          try {
+            var el = document.getElementById('early-boot-marker');
+            if (!el) {
+              el = document.createElement('div');
+              el.id = 'early-boot-marker';
+              el.setAttribute(
+                'style',
+                [
+                  'position:fixed',
+                  'top:8px',
+                  'left:8px',
+                  'z-index:2147483646',
+                  'background:#dcfce7', // green-100
+                  'color:#065f46', // emerald-800
+                  'border:1px solid #86efac',
+                  'border-radius:6px',
+                  'padding:4px 8px',
+                  'font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif',
+                  'box-shadow:0 1px 4px rgba(0,0,0,.2)',
+                ].join(';')
+              );
+              document.addEventListener(
+                'DOMContentLoaded',
+                function () {
+                  if (!el.parentElement) document.body.appendChild(el);
+                },
+                { once: true }
+              );
+            }
+            el.textContent = text || 'HTML:ready';
+          } catch (e) {
+            try {
+              console.warn('early-boot-marker error', e);
+            } catch {}
+          }
+        }
+        addEarlyBootMarker('HTML:boot');
+      })();
+    </script>
 
     <!-- Apple Touch Icons -->
     <link
@@ -123,37 +188,165 @@
   </head>
 
   <body>
-    <style>
-      /* DEV-only boot banner styles */
-      #dev-boot-banner {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 2147483647;
-        background: #fffbeb;
-        color: #92400e;
-        border-bottom: 1px solid #f59e0b;
-        font:
-          600 12px -apple-system,
-          BlinkMacSystemFont,
-          'Segoe UI',
-          Roboto,
-          sans-serif;
-        padding: 6px 10px;
-        text-align: center;
-        pointer-events: none;
-      }
-    </style>
-    <!-- DEV-ONLY hardcoded debug banner to verify visibility before React/CSS -->
-    <div id="dev-boot-banner">
-      DEV: index.html banner. If you can't see this, something is covering the
-      whole page before React.
-    </div>
-
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- HTML fallback to prove DOM is visible even if module fails -->
+    <script>
+      (function () {
+        function setMarker(text) {
+          var el = document.getElementById('early-boot-marker');
+          if (el) el.textContent = text;
+        }
+        // Surface global errors early (before module executes)
+        try {
+          window.addEventListener('error', function (e) {
+            try {
+              setMarker(
+                'HTML:error ' + (e && e.message ? e.message : 'unknown')
+              );
+              console.warn('[early] window error', e);
+            } catch {}
+          });
+          window.addEventListener('unhandledrejection', function (e) {
+            try {
+              var reason = e && e.reason ? String(e.reason) : 'unknown';
+              setMarker('HTML:reject ' + reason);
+              console.warn('[early] unhandledrejection', e);
+            } catch {}
+          });
+        } catch {}
+        document.addEventListener(
+          'DOMContentLoaded',
+          function () {
+            setMarker('HTML:dom-ready');
+            try {
+              var root = document.getElementById('root');
+              if (root && !root.firstChild) {
+                var box = document.createElement('div');
+                box.id = 'html-fallback';
+                box.setAttribute(
+                  'style',
+                  [
+                    'padding:20px',
+                    'min-height:100vh',
+                    'background:#f8fafc',
+                    'color:#1f2937',
+                    'font:600 16px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif',
+                  ].join(';')
+                );
+                box.innerHTML = 'HTML Fallback: DOM is ready. Waiting for App…';
+                root.appendChild(box);
+              }
+            } catch (e) {
+              try {
+                console.warn('html-fallback error', e);
+              } catch {}
+            }
+          },
+          { once: true }
+        );
+      })();
+    </script>
+    <!-- Production rescue: if the module bundle never runs, retry with cache-busting -->
+    <script>
+      (function () {
+        function text(msg) {
+          try {
+            var el = document.getElementById('early-boot-marker');
+            if (el) el.textContent = 'HTML:' + msg;
+          } catch {}
+        }
+        // Diagnostic: probe the built entry to verify it is served as JS and not HTML
+        function probeBundle() {
+          try {
+            var preload = document.querySelector(
+              'link[rel="modulepreload"][href*="/assets/index-"]'
+            );
+            var src = preload && preload.getAttribute('href');
+            if (!src) {
+              var mod = document.querySelector(
+                'script[type="module"][src*="/assets/index-"]'
+              );
+              if (mod) src = mod.getAttribute('src');
+            }
+            if (!src) return;
+            fetch(src, { method: 'HEAD' })
+              .then(function (res) {
+                var ct =
+                  (res.headers &&
+                    res.headers.get &&
+                    res.headers.get('content-type')) ||
+                  '';
+                if (!res.ok) {
+                  text('bundle-fetch ' + res.status);
+                  return;
+                }
+                if (ct && ct.indexOf('javascript') !== -1) {
+                  text('bundle-ok');
+                } else if (ct && ct.indexOf('text/html') !== -1) {
+                  text('served-html');
+                } else {
+                  text('bundle-ct ' + ct);
+                }
+              })
+              .catch(function (e) {
+                try {
+                  text('bundle-error');
+                  console.warn('bundle probe error', e);
+                } catch {}
+              });
+          } catch (e) {
+            try {
+              console.warn('bundle probe failure', e);
+            } catch {}
+          }
+        }
+        document.addEventListener(
+          'DOMContentLoaded',
+          function () {
+            // Run the probe shortly after DOM ready
+            setTimeout(probeBundle, 200);
+            setTimeout(function () {
+              // If the main module set this flag, do nothing
+              if (window.__APP_BOOTED) return;
+
+              // Try to find the built entry path from preload or script
+              var preload = document.querySelector(
+                'link[rel="modulepreload"][href*="/assets/index-"]'
+              );
+              var src = preload && preload.getAttribute('href');
+              if (!src) {
+                var mod = document.querySelector(
+                  'script[type="module"][src*="/assets/index-"]'
+                );
+                if (mod) src = mod.getAttribute('src');
+              }
+              if (src) {
+                try {
+                  text('retry-module');
+                  var s = document.createElement('script');
+                  s.type = 'module';
+                  s.setAttribute('data-allow-overlay', 'true');
+                  s.src =
+                    src +
+                    (src.indexOf('?') > -1 ? '&' : '?') +
+                    'v=' +
+                    Date.now();
+                  document.body.appendChild(s);
+                } catch (e) {
+                  try {
+                    console.warn('module-retry error', e);
+                  } catch {}
+                }
+              }
+            }, 800);
+          },
+          { once: true }
+        );
+      })();
+    </script>
 
     <!-- Additional structured data -->
     <script type="application/ld+json">

@@ -3,10 +3,10 @@
 [![CI/CD](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/and3rn3t/weather/actions/workflows/ci-cd.yml)
 [![Dev Deploy](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/dev-deploy.yml)
 [![Test & Build](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml/badge.svg)](https://github.com/and3rn3t/weather/actions/workflows/test-only.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=and3rn3t_weather_ci)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=coverage)](https://sonarcloud.io/summary/new_code?id=and3rn3t_weather_ci)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=and3rn3t_weather_ci)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=and3rn3t_weather_ci&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=and3rn3t_weather_ci)
+[![Quality Gate](https://github.com/and3rn3t/weather/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/and3rn3t/weather/actions/workflows/quality.yml)
+
+<sub>Note: SonarCloud analysis runs weekly and on demand; badges are omitted to avoid stale
+indicators.</sub>
 
 A cutting-edge React-TypeScript weather application featuring iOS26 UI components, comprehensive
 mobile optimization, and production-ready deployment infrastructure.

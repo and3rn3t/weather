@@ -1,13 +1,14 @@
 name: ✨ Prettier Check
 
 on:
-  push:
-    branches: ['**']
-  pull_request:
-    branches: ['**']
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: prettier-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '22'

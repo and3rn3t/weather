@@ -470,7 +470,7 @@
   border-radius: 24px;
 }
 
-.toggle-slider:before {
+.toggle-slider::before {
   position: absolute;
   content: '';
   height: 18px;
@@ -486,7 +486,7 @@ input:checked + .toggle-slider {
   background-color: #3498db;
 }
 
-input:checked + .toggle-slider:before {
+input:checked + .toggle-slider::before {
   transform: translateX(20px);
 }
 

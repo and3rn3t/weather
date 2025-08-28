@@ -86,6 +86,35 @@ export default tseslint.config([
       'object-shorthand': 'error',
       'prefer-template': 'error',
 
+      // Block imports from specific legacy screens which cause blank screens
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'src/screens/HomeScreen',
+              message:
+                'Use inline screens in src/navigation/AppNavigator.tsx. Importing HomeScreen from screens/ is prohibited.',
+            },
+            {
+              name: 'src/screens/WeatherDetailsScreen',
+              message:
+                'Use inline screens in src/navigation/AppNavigator.tsx. Importing WeatherDetailsScreen from screens/ is prohibited.',
+            },
+            {
+              name: '../screens/HomeScreen',
+              message:
+                'Use inline screens in src/navigation/AppNavigator.tsx. Importing HomeScreen from screens/ is prohibited.',
+            },
+            {
+              name: '../screens/WeatherDetailsScreen',
+              message:
+                'Use inline screens in src/navigation/AppNavigator.tsx. Importing WeatherDetailsScreen from screens/ is prohibited.',
+            },
+          ],
+        },
+      ],
+
       // Code style (delegate to Prettier formatting)
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],

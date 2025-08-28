@@ -53,11 +53,11 @@
 }
 
 .ios-search-input.light {
-  color: #000000;
+  color: #000;
 }
 
 .ios-search-input.dark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .ios-search-input::placeholder {
@@ -84,12 +84,12 @@
 
 .ios-clear-button.light {
   background: #c7c7cc;
-  color: #ffffff;
+  color: #fff;
 }
 
 .ios-clear-button.dark {
   background: #8e8e93;
-  color: #000000;
+  color: #000;
 }
 
 .ios-loading-spinner {
@@ -105,12 +105,12 @@
 
 .ios-loading-spinner.light {
   border: 2px solid #c7c7cc;
-  border-top: 2px solid #000000;
+  border-top: 2px solid #000;
 }
 
 .ios-loading-spinner.dark {
   border: 2px solid #8e8e93;
-  border-top: 2px solid #ffffff;
+  border-top: 2px solid #fff;
 }
 
 .ios-results-dropdown {
@@ -183,11 +183,11 @@
 }
 
 .ios-result-city-name.light {
-  color: #000000;
+  color: #000;
 }
 
 .ios-result-city-name.dark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .ios-result-location {

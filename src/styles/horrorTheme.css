@@ -14,7 +14,7 @@
   /* Gothic blacks */
   --horror-midnight: #0f0f0f;
   --horror-shadow: #1a0000;
-  --horror-void: #000000;
+  --horror-void: #000;
 
   /* Eerie effects */
   --horror-glow: 0 0 20px rgba(139, 0, 0, 0.6);
@@ -27,7 +27,7 @@ html.horror-theme,
 body.horror-theme,
 .horror-theme #root,
 #root.horror-theme {
-  background: linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%) !important;
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000 100%) !important;
   background-color: #0d0d0d !important;
   color: #ff6b6b !important;
   min-height: 100vh !important;
@@ -42,7 +42,7 @@ body.horror-theme main,
 body.horror-theme section,
 html.horror-theme,
 html.horror-theme body {
-  background: linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000000 100%) !important;
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a0000 50%, #000 100%) !important;
   background-color: #0d0d0d !important;
   background-attachment: fixed !important;
 }
@@ -335,7 +335,7 @@ body.horror-film-grain::before {
 }
 
 /* NUCLEAR OVERRIDE - Remove all black backgrounds from text containers */
-.horror-theme *:not(.mobile-navigation):not(.nav-button) {
+.horror-theme *:not(.mobile-navigation, .nav-button) {
   background: transparent !important;
   background-color: transparent !important;
   color: #ff6b6b !important;
@@ -352,7 +352,7 @@ body.horror-film-grain::before {
 .horror-theme .weather-summary,
 .horror-theme .forecast-list,
 .horror-theme .metrics-grid,
-.horror-theme div:not(.mobile-navigation):not(.theme-toggle-btn) {
+.horror-theme div:not(.mobile-navigation, .theme-toggle-btn) {
   background: transparent !important;
   background-color: transparent !important;
   backdrop-filter: none !important;
@@ -643,7 +643,7 @@ body.horror-film-grain::before {
 .horror-theme .nav-button:hover,
 .horror-theme .nav-button.active,
 .horror-theme .navigation-button:hover {
-  color: #ffffff !important;
+  color: #fff !important;
   text-shadow: var(--horror-glow) !important;
   transform: scale(1.1) !important;
   background: rgba(139, 0, 0, 0.3) !important;
@@ -654,7 +654,7 @@ body.horror-film-grain::before {
 .horror-theme .btn,
 .horror-theme .button {
   background: rgba(139, 0, 0, 0.8) !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: 1px solid var(--horror-light-red) !important;
   border-radius: 8px !important;
   padding: 8px 16px !important;
@@ -824,7 +824,7 @@ body.horror-film-grain::before {
 .horror-theme input[type='button'] {
   background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important;
   border: 1px solid var(--horror-blood-red) !important;
-  color: #ffffff !important;
+  color: #fff !important;
   transition: all 0.3s ease !important;
 }
 
@@ -1040,8 +1040,8 @@ body.horror-film-grain::before {
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .horror-theme {
-    --horror-light-red: #ff0000;
-    --horror-blood-red: #cc0000;
+    --horror-light-red: #f00;
+    --horror-blood-red: #c00;
   }
 }
 
@@ -1055,7 +1055,7 @@ body.horror-film-grain::before {
   /* Gothic blacks */
   --horror-midnight: #0f0f0f;
   --horror-shadow: #1a0000;
-  --horror-void: #000000;
+  --horror-void: #000;
 
   /* Eerie effects */
   --horror-glow: 0 0 20px rgba(139, 0, 0, 0.6);
@@ -1143,7 +1143,7 @@ body.horror-film-grain::before {
 
 .horror-theme .nav-button:hover,
 .horror-theme .nav-button.active {
-  color: #ffffff;
+  color: #fff;
   text-shadow: var(--horror-glow);
   transform: scale(1.1);
 }
@@ -1359,7 +1359,7 @@ body.horror-film-grain::before {
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .horror-theme {
-    --horror-light-red: #ff0000;
-    --horror-blood-red: #cc0000;
+    --horror-light-red: #f00;
+    --horror-blood-red: #c00;
   }
 }

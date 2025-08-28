@@ -8,7 +8,10 @@ function App() {
         minHeight: '100vh',
         textAlign: 'center',
         fontSize: '20px',
+        position: 'relative',
+        zIndex: 2147483645,
       }}
+      data-allow-overlay="true"
     >
       <h1>🌤️ Weather App - Loading Main Components...</h1>
       <div style={{ marginTop: '20px' }}>

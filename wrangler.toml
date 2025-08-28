@@ -14,10 +14,9 @@ ENVIRONMENT = "production"
 [env.preview.vars]
 ENVIRONMENT = "preview"
 
-# Optional: Add functions support for future API endpoints
+# Optional: Add functions support for future API endpoints (kept disabled for Pages-only app)
 # [env.production.vars]
 # API_KEY = "your-api-key"
-# DATABASE_URL = "your-database-url"
 
 # Optional: Add KV namespaces for data storage
 # [[kv_namespaces]]

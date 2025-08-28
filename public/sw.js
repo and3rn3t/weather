@@ -68,10 +68,16 @@ self.addEventListener('activate', event => {
   console.log('✅ Service Worker activating...');
 
   event.waitUntil(
-    Promise.all([
-      cleanupOldCaches(),
-      self.clients.claim(), // Take control immediately
-    ])
+    (async () => {
+      await Promise.all([cleanupOldCaches(), self.clients.claim()]);
+      // Minimal fallback prewarm: in case the app doesn't send a message, seed a few cities
+      try {
+        const minimalCities = ['New York, US', 'London, GB', 'Tokyo, JP'];
+        await handlePreloadPopularCities(minimalCities);
+      } catch (e) {
+        console.warn('SW fallback prewarm failed:', e);
+      }
+    })()
   );
 });
 

@@ -1,10 +1,9 @@
 name: SonarCloud Code Analysis
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  schedule:
+    - cron: '0 3 * * 0' # Sundays at 03:00 UTC
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -39,7 +38,7 @@ jobs:
       - name: 🚚 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # full history for better PR analysis
+          fetch-depth: 0 # full history for better analysis
 
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
@@ -90,7 +89,6 @@ jobs:
             else
               echo "::notice::Unable to create SonarCloud project (insufficient permissions or org mismatch). Skipping analysis."
               echo "project_exists=false" >> "$GITHUB_OUTPUT"
-              # still proceed to write needs_bootstrap=false to satisfy subsequent conditionals
               echo "needs_bootstrap=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
@@ -100,7 +98,6 @@ jobs:
           fi
 
           echo "Checking branches to determine if default branch exists..."
-          # If branches list is empty or there is no isMain=true, mark bootstrap required
           BRANCHES_JSON=$(auth "$BASE/api/project_branches/list?project=$KEY" || true)
           if echo "$BRANCHES_JSON" | grep -q '"isMain":true'; then
             echo "needs_bootstrap=false" >> "$GITHUB_OUTPUT"
@@ -126,8 +123,6 @@ jobs:
 
       - name: 🔎 SonarCloud Scan
         if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists == 'true' }}
-        # Don't fail main pushes if Sonar has a transient or permission error
-        continue-on-error: ${{ github.event_name == 'push' }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -150,4 +145,5 @@ jobs:
         run: |
           echo "## 💤 SonarCloud Skipped" >> $GITHUB_STEP_SUMMARY
           echo "Reason: SonarCloud project '${{ env.SONAR_PROJECT_KEY }}' in org '${{ env.SONAR_ORG }}' doesn't exist and couldn't be auto-created with the provided token." >> $GITHUB_STEP_SUMMARY
-  # Note: Ensure SonarCloud Automatic Analysis is disabled for this project to avoid conflicts.
+
+# Note: Ensure SonarCloud Automatic Analysis is disabled to avoid conflicts.

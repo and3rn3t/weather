@@ -7,7 +7,6 @@
 /* Primary fix: Ensure proper positioning in content flow */
 .horror-quote-overlay,
 .horror-weather-quote {
-  position: relative !important;
   display: block !important;
   margin: 20px auto 100px auto !important;
   max-width: 85% !important;

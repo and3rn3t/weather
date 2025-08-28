@@ -2,9 +2,12 @@
  * Horror Theme Icon Fixes
  *
  * This CSS file specifically targets and fixes black background issues
- * behind weather icons in the horror them/* ============================================================================
-   UNIVERSAL ICON BACKGROUND REMOVAL
-   ============================================================================ */
+ * behind weather icons in the horror theme.
+ *
+ * =========================================================================
+ * UNIVERSAL ICON BACKGROUND REMOVAL
+ * =========================================================================
+ */
 
 /* Remove ANY background from icon-related elements */
 .horror-theme *[class*='icon'],
@@ -30,8 +33,6 @@
   box-shadow: none !important;
   border-radius: 0 !important;
 }
-components.
- */
 
 /* ============================================================================
    HORROR THEME ICON CONTAINER FIXES
@@ -219,7 +220,7 @@ components.
 @keyframes horrorIconFloat {
   0%,
   100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(0) rotate(0deg);
     filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6));
   }
   50% {
@@ -535,7 +536,7 @@ components.
 }
 
 /* SUPER SPECIFIC: Clean default state only */
-.horror-theme .mobile-navigation .nav-tab:not(:hover):not(.active) .nav-icon {
+.horror-theme .mobile-navigation .nav-tab:not(:hover, .active) .nav-icon {
   text-shadow: none !important;
   box-shadow: none !important;
   filter: none !important;

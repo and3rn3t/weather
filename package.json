@@ -113,8 +113,8 @@
     "start": "npm run dev",
     "start:prod": "npm run build && npm run preview",
     "workflow": "powershell -ExecutionPolicy Bypass -File scripts/dev-workflow.ps1",
-    "precommit": "node scripts/pre-commit-hook.ts",
-    "precommit:fix": "node scripts/pre-commit-hook.ts --fix",
+    "precommit": "tsx scripts/pre-commit-hook.ts",
+    "precommit:fix": "tsx scripts/pre-commit-hook.ts --fix",
     "prepare-release": "powershell -ExecutionPolicy Bypass -File scripts/release-prep.ps1",
     "build:optimize": "powershell -ExecutionPolicy Bypass -File scripts/build-optimization-clean.ps1",
     "build:analyze": "powershell -ExecutionPolicy Bypass -File scripts/build-optimization-clean.ps1 -Analyze",
@@ -125,6 +125,7 @@
     "deploy:dev": "npm run build && npx wrangler pages deploy dist --project-name weather-dev",
     "deploy:test": "npm run build:ultra && npx wrangler pages deploy dist --project-name weather",
     "deploy:diagnostic": "node scripts/cloudflare-diagnostic.js",
+    "devdomain:wait": "node scripts/poll-dev-domain.mjs --url https://weather-dev.andernet.dev --max 24 --delay 10",
     "deploy:domains": "node scripts/setup-custom-domains.js",
     "predeploy:production": "npm run qa",
     "_comment_mobile": "Mobile Development Scripts",
@@ -175,7 +176,9 @@
     "release:major": "npm version major && npm run deploy:production",
     "postversion": "git push && git push --tags",
     "ci:health": "npm run health && npm run test:apis",
-    "ci:deploy": "npm run build && npm run performance:monitor"
+    "ci:deploy": "npm run build && npm run performance:monitor",
+    "stylelint": "stylelint \"src/**/*.css\"",
+    "stylelint:fix": "stylelint \"src/**/*.css\" --fix"
   },
   "dependencies": {
     "@capacitor/app": "^7.0.1",
@@ -209,18 +212,23 @@
     "eslint": "^9.34.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "fake-indexeddb": "^6.0.0",
     "globals": "^16.3.0",
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.4",
     "jsdom": "^26.1.0",
+    "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "rollup": "^4.20.0",
+    "simple-git-hooks": "^2.11.1",
+    "stylelint": "^16.23.1",
+    "stylelint-config-standard": "^39.0.0",
+    "tsx": "^4.19.0",
     "ts-jest": "^29.4.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.1.3",
     "vitest": "^3.2.4",
-    "prettier": "^3.3.3",
     "wrangler": "^4.25.0"
   },
   "overrides": {
@@ -230,5 +238,8 @@
     "@rollup/rollup-darwin-arm64": "^4.20.0",
     "@rollup/rollup-darwin-x64": "^4.20.0",
     "@rollup/rollup-win32-x64-msvc": "^4.20.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run precommit"
   }
 }

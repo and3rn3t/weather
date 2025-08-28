@@ -8,11 +8,20 @@
 // Cache configuration
 const CACHE_CONFIG = {
   DATABASE_NAME: 'WeatherAppSearchCache',
-  DATABASE_VERSION: 1,
+  // v3 adds a unique index for normalized query and dedupes existing records
+  DATABASE_VERSION: 3,
   STORE_NAME: 'searchResults',
-  DEFAULT_TTL: 24 * 60 * 60 * 1000, // 24 hours
+  DEFAULT_TTL: 24 * 60 * 60 * 1000, // 24 hours fallback
+  // Optional per-source TTL overrides (ms)
+  SOURCE_TTL: {
+    api: 12 * 60 * 60 * 1000, // 12h
+    autocorrect: 30 * 24 * 60 * 60 * 1000, // 30d (stable)
+    prefetch: 7 * 24 * 60 * 60 * 1000, // 7d
+  } as Record<'api' | 'autocorrect' | 'prefetch', number>,
   MAX_CACHE_SIZE: 1000,
   CLEANUP_THRESHOLD: 0.8,
+  // When over threshold, trim to this fraction via LRU
+  EVICT_TARGET_RATIO: 0.6,
 } as const;
 
 // Types
@@ -28,6 +37,9 @@ interface CachedSearchResult {
     accuracy?: number;
     queryNormalized?: string;
   };
+  // v2 additions (optional for backward compatibility)
+  lastAccessed?: number;
+  accessCount?: number;
 }
 
 interface CacheMetrics {
@@ -62,8 +74,9 @@ class SearchCacheManager {
       );
 
       request.onerror = () => {
-        console.error('Failed to open cache database:', request.error);
-        reject(request.error);
+        const err = request.error ?? new Error('IndexedDB open error');
+        console.error('Failed to open cache database:', err);
+        reject(err instanceof Error ? err : new Error(String(err)));
       };
 
       request.onsuccess = () => {
@@ -72,9 +85,11 @@ class SearchCacheManager {
         resolve();
       };
 
-      request.onupgradeneeded = event => {
+      request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
         const db = (event.target as IDBOpenDBRequest).result;
+        const oldVersion = event.oldVersion || 0;
 
+        // Create store if missing (fresh install)
         if (!db.objectStoreNames.contains(CACHE_CONFIG.STORE_NAME)) {
           const store = db.createObjectStore(CACHE_CONFIG.STORE_NAME, {
             keyPath: 'id',
@@ -83,9 +98,89 @@ class SearchCacheManager {
           store.createIndex('query', 'query', { unique: false });
           store.createIndex('timestamp', 'timestamp', { unique: false });
           store.createIndex('source', 'source', { unique: false });
+          // v2: indices for LRU and access metrics
+          store.createIndex('lastAccessed', 'lastAccessed', { unique: false });
+          store.createIndex('accessCount', 'accessCount', { unique: false });
+          return;
+        }
+
+        // v2 upgrade: add missing indices if upgrading from v1
+        if (oldVersion < 2) {
+          const tx = (event.target as IDBOpenDBRequest).transaction;
+          if (tx) this.applyUpgradeV2(tx);
+        }
+
+        if (oldVersion < 3) {
+          const tx = (event.target as IDBOpenDBRequest).transaction;
+          if (tx) this.applyUpgradeV3(tx);
         }
       };
     });
+  }
+
+  // v2: add indices for lastAccessed/accessCount if missing
+  private applyUpgradeV2(tx: IDBTransaction): void {
+    try {
+      const store = tx.objectStore(CACHE_CONFIG.STORE_NAME);
+      if (!store.indexNames.contains('lastAccessed')) {
+        store.createIndex('lastAccessed', 'lastAccessed', { unique: false });
+      }
+      if (!store.indexNames.contains('accessCount')) {
+        store.createIndex('accessCount', 'accessCount', { unique: false });
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // v3: dedupe by query and create unique index
+  private applyUpgradeV3(tx: IDBTransaction): void {
+    try {
+      const store = tx.objectStore(CACHE_CONFIG.STORE_NAME);
+      const getAllReq = store.getAll();
+      getAllReq.onsuccess = () => {
+        const records = (getAllReq.result || []) as CachedSearchResult[];
+        const byQuery = new Map<string, CachedSearchResult>();
+        for (const rec of records) {
+          const key = rec.query;
+          const existing = byQuery.get(key);
+          if (!existing || rec.timestamp > existing.timestamp) {
+            byQuery.set(key, rec);
+          }
+        }
+        // Delete duplicates (older ones)
+        for (const rec of records) {
+          const keeper = byQuery.get(rec.query);
+          if (keeper && keeper.id !== rec.id) {
+            try {
+              store.delete(rec.id);
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+
+        // Create unique index if not present
+        try {
+          if (!store.indexNames.contains('query_unique')) {
+            store.createIndex('query_unique', 'query', { unique: true });
+          }
+        } catch {
+          // ignore (may still be duplicates)
+        }
+      };
+      getAllReq.onerror = () => {
+        try {
+          if (!store.indexNames.contains('query_unique')) {
+            store.createIndex('query_unique', 'query', { unique: true });
+          }
+        } catch {
+          /* ignore */
+        }
+      };
+    } catch {
+      // ignore migration issues
+    }
   }
 
   /**
@@ -103,20 +198,13 @@ class SearchCacheManager {
     }
 
     const normalizedQuery = this.normalizeQuery(query);
-    const cacheEntry: CachedSearchResult = {
-      id: this.generateCacheKey(normalizedQuery),
-      query: normalizedQuery,
-      results,
-      timestamp: Date.now(),
-      ttl: CACHE_CONFIG.DEFAULT_TTL,
-      source,
-      metadata: {
-        ...metadata,
-        queryNormalized: normalizedQuery,
-      },
-    };
+    const now = Date.now();
+    const ttl = this.getTTLForSource(source);
 
-    return new Promise((resolve, reject) => {
+    // We'll upsert by query (stable id from query) to avoid duplicates
+    const stableId = this.generateDeterministicKey(normalizedQuery);
+
+    return new Promise(resolve => {
       const db = this.db;
       if (!db) {
         resolve();
@@ -128,20 +216,58 @@ class SearchCacheManager {
       );
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
 
-      const request = store.put(cacheEntry);
+      // First check for existing entry by query (prefer unique index when available)
+      const idx = store.indexNames.contains('query_unique')
+        ? store.index('query_unique')
+        : store.index('query');
+      const getReq = idx.get(normalizedQuery);
+      getReq.onsuccess = () => {
+        const existing = getReq.result as CachedSearchResult | undefined;
+        const entry: CachedSearchResult = {
+          id: existing?.id ?? stableId,
+          query: normalizedQuery,
+          results,
+          timestamp: now,
+          ttl,
+          source,
+          metadata: {
+            ...metadata,
+            queryNormalized: normalizedQuery,
+          },
+          lastAccessed: now,
+          accessCount: existing?.accessCount ? existing.accessCount + 1 : 1,
+        };
 
-      request.onsuccess = () => {
-        this.updateCacheSize();
-        resolve();
+        const putReq = store.put(entry);
+        putReq.onsuccess = () => {
+          this.updateCacheSize();
+          resolve();
+        };
+        putReq.onerror = () => {
+          const err = putReq.error;
+          console.error('Failed to cache results:', err ?? 'unknown');
+          resolve(); // don't reject to avoid cascading failures
+        };
       };
-
-      request.onerror = () => {
-        const err = request.error;
-        const message = err
-          ? `${err.name}: ${err.message}`
-          : 'Unknown IndexedDB error';
-        console.error('Failed to cache results:', err ?? 'unknown');
-        reject(new Error(message));
+      getReq.onerror = () => {
+        // Fallback: write anyway with stable id
+        const entry: CachedSearchResult = {
+          id: stableId,
+          query: normalizedQuery,
+          results,
+          timestamp: now,
+          ttl,
+          source,
+          metadata: { ...metadata, queryNormalized: normalizedQuery },
+          lastAccessed: now,
+          accessCount: 1,
+        };
+        const putReq = store.put(entry);
+        putReq.onsuccess = () => {
+          this.updateCacheSize();
+          resolve();
+        };
+        putReq.onerror = () => resolve();
       };
     });
   }
@@ -163,7 +289,9 @@ class SearchCacheManager {
       }
       const transaction = db.transaction([CACHE_CONFIG.STORE_NAME], 'readonly');
       const store = transaction.objectStore(CACHE_CONFIG.STORE_NAME);
-      const index = store.index('query');
+      const index = store.indexNames.contains('query_unique')
+        ? store.index('query_unique')
+        : store.index('query');
 
       const request = index.get(normalizedQuery);
 
@@ -173,7 +301,13 @@ class SearchCacheManager {
         if (result && this.isValidCache(result)) {
           this.metrics.cacheHits++;
           this.updateHitRate();
-          resolve(result);
+          // Update access metrics (best effort)
+          this.touchEntry(result.id);
+          resolve({
+            ...result,
+            lastAccessed: Date.now(),
+            accessCount: (result.accessCount ?? 0) + 1,
+          });
         } else if (result) {
           // Expired cache, remove it
           this.removeCacheEntry(result.id);
@@ -392,7 +526,10 @@ class SearchCacheManager {
         this.metrics.cacheSize >
         CACHE_CONFIG.MAX_CACHE_SIZE * CACHE_CONFIG.CLEANUP_THRESHOLD
       ) {
-        this.cleanupExpiredEntries();
+        this.cleanupExpiredEntries()
+          .then(() => this.cleanupLRUExcess())
+          .then(() => this.ensureWithinQuota())
+          .catch(() => void 0);
       }
     };
   }
@@ -442,6 +579,89 @@ class SearchCacheManager {
     );
 
     return Promise.all(deletions).then(() => entries.length);
+  }
+
+  // Get per-source TTL or default
+  private getTTLForSource(source: CachedSearchResult['source']): number {
+    try {
+      return CACHE_CONFIG.SOURCE_TTL[source] ?? CACHE_CONFIG.DEFAULT_TTL;
+    } catch {
+      return CACHE_CONFIG.DEFAULT_TTL;
+    }
+  }
+
+  // Update access metadata for an entry (best effort)
+  private touchEntry(id: string): void {
+    if (!this.db) return;
+    try {
+      const tx = this.db.transaction([CACHE_CONFIG.STORE_NAME], 'readwrite');
+      const store = tx.objectStore(CACHE_CONFIG.STORE_NAME);
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        const rec = getReq.result as CachedSearchResult | undefined;
+        if (!rec) return;
+        rec.lastAccessed = Date.now();
+        rec.accessCount = (rec.accessCount ?? 0) + 1;
+        store.put(rec);
+      };
+    } catch {
+      // ignore
+    }
+  }
+
+  // Deterministic key from query to avoid duplicates across writes
+  private generateDeterministicKey(query: string): string {
+    return `q_${btoa(encodeURIComponent(query))}`;
+  }
+
+  // LRU cleanup when cache too large: delete oldest by lastAccessed
+  private async cleanupLRUExcess(): Promise<void> {
+    if (!this.db) return;
+    const targetSize = Math.floor(
+      CACHE_CONFIG.MAX_CACHE_SIZE * CACHE_CONFIG.EVICT_TARGET_RATIO
+    );
+
+    if (this.metrics.cacheSize <= targetSize) return;
+
+    return new Promise(resolve => {
+      const db = this.db;
+      if (!db) return resolve();
+      const tx = db.transaction([CACHE_CONFIG.STORE_NAME], 'readwrite');
+      const store = tx.objectStore(CACHE_CONFIG.STORE_NAME);
+      const idx = store.index('lastAccessed');
+      const toDelete = this.metrics.cacheSize - targetSize;
+      let deleted = 0;
+      const cursorReq = idx.openCursor();
+      cursorReq.onsuccess = () => {
+        const cursor = cursorReq.result;
+        if (cursor && deleted < toDelete) {
+          const key = (cursor.value as CachedSearchResult).id;
+          store.delete(key);
+          deleted++;
+          cursor.continue();
+        } else {
+          resolve();
+        }
+      };
+      cursorReq.onerror = () => resolve();
+    });
+  }
+
+  // Best-effort quota check and cleanup to prevent StorageError
+  private async ensureWithinQuota(): Promise<void> {
+    if (typeof navigator === 'undefined' || !('storage' in navigator)) return;
+    try {
+      const nav = navigator as Navigator & { storage?: StorageManager };
+      const estimate = await nav.storage?.estimate?.();
+      const usage = estimate?.usage ?? 0;
+      const quota = estimate?.quota ?? 0;
+      if (quota > 0 && usage / quota > 0.9) {
+        // Under pressure: aggressively evict by LRU
+        await this.cleanupLRUExcess();
+      }
+    } catch {
+      // ignore
+    }
   }
 }
 

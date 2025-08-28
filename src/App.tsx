@@ -130,7 +130,12 @@ const SimpleWeatherApp: React.FC = () => {
       const geoResponse = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           city
-        )}&format=json&limit=1`
+        )}&format=json&limit=1`,
+        {
+          headers: {
+            'User-Agent': 'WeatherApp/1.0 (https://weather-dev.andernet.dev)',
+          },
+        }
       );
       const geoData = await geoResponse.json();
 

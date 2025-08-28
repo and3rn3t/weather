@@ -20,15 +20,15 @@
     X-Content-Type-Options = "nosniff"
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    
-    # Performance headers
-    Cache-Control = "public, max-age=31536000, immutable"
+  # Performance headers (set broadly but overridden for HTML below)
+  Cache-Control = "public, max-age=31536000, immutable"
 
 # Specific headers for index.html
 [[headers]]
   for = "/index.html"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+  # Never cache the shell HTML so updates propagate
+  Cache-Control = "no-cache, no-store, must-revalidate"
 
 # Headers for API calls (if needed)
 [[headers]]
@@ -36,11 +36,8 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
-# Redirects for SPA routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+## Note: SPA routing should be configured in wrangler/pages project settings.
+## Avoid in-file catch-all redirects that can rewrite asset URLs to /index.html.
 
 # Functions configuration (if needed for future API endpoints)
 [functions]

@@ -4,8 +4,7 @@
  * Provides global haptic feedback configuration and access throughout the app.
  * Integrates with theme system and user preferences.
  */
-import type { ReactNode } from 'react';
-import { createContext, useMemo } from 'react';
+import React, { createContext, useMemo, type ReactNode } from 'react';
 import {
   HapticPattern,
   useHapticFeedback,

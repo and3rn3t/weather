@@ -103,11 +103,11 @@
 }
 
 .mobile-text-secondary {
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary, #666);
 }
 
 .mobile-text-muted {
-  color: var(--text-muted, #999999);
+  color: var(--text-muted, #999);
 }
 
 /* Weather-specific typography */
