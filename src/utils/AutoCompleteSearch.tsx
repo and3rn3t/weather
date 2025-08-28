@@ -44,7 +44,7 @@ interface AutoCompleteSearchProps {
 }
 
 const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
-  theme,
+  theme: _theme,
   isMobile,
   onCitySelected,
   onError,
