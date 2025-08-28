@@ -109,16 +109,26 @@ const CityCard: React.FC<CityCardProps> = React.memo(
             )}
           </div>
 
-          {/* Favorite toggle */}
-          <button
-            onClick={handleFavoriteClick}
+          {/* Favorite toggle (accessible control, not a nested button) */}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={
+              handleFavoriteClick as unknown as React.MouseEventHandler<HTMLDivElement>
+            }
+            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleFavoriteClick(e as unknown as React.MouseEvent);
+              }
+            }}
             aria-label={
               city.isFavorite ? 'Remove from favorites' : 'Add to favorites'
             }
             className="fav-btn"
           >
             {city.isFavorite ? '❤️' : '🤍'}
-          </button>
+          </div>
         </div>
 
         {/* Last accessed info */}

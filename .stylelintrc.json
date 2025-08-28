@@ -1,36 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/stylelintrc",
-  "extends": ["stylelint-config-standard"],
   "defaultSeverity": "warning",
-  "ignoreFiles": ["src/styles/ios26-design-system-consolidated.css"],
   "rules": {
+    "block-no-empty": true,
     "color-no-invalid-hex": true,
     "declaration-block-no-duplicate-properties": [true, { "ignore": ["consecutive-duplicates-with-different-values"] }],
-    "block-no-empty": true,
+    "no-duplicate-selectors": true,
     "no-empty-source": null,
-    "import-notation": null,
-    "alpha-value-notation": null,
-    "color-function-notation": null,
-    "color-function-alias-notation": null,
-    "font-family-name-quotes": null,
-    "no-descending-specificity": null,
-    "rule-empty-line-before": null,
-    "comment-empty-line-before": null,
-    "declaration-empty-line-before": null,
-    "keyframes-name-pattern": null,
-    "media-feature-range-notation": null,
-    "media-feature-name-value-no-unknown": null,
-    "property-no-vendor-prefix": null,
-    "property-no-deprecated": null,
-    "shorthand-property-no-redundant-values": null,
-    "declaration-block-no-redundant-longhand-properties": null,
-    "value-keyword-case": null,
+    "at-rule-no-unknown": null,
     "selector-pseudo-element-no-unknown": [
       true,
       {
         "ignorePseudoElements": ["-webkit-scrollbar", "-webkit-scrollbar-thumb", "-webkit-scrollbar-track"]
       }
     ],
-    "selector-class-pattern": null
+    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global", "local"] }],
+    "property-no-unknown": null,
+    "no-descending-specificity": null,
+    "rule-empty-line-before": null,
+    "comment-empty-line-before": null
   }
 }

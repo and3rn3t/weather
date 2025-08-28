@@ -534,7 +534,7 @@ function SearchScreen({
               {recentSearches.map(result => (
                 <li key={result.id}>
                   <button
-                    className="recent-item"
+                    className="recent-item ios26-list-item"
                     onClick={() => handleRecentSelect(result)}
                   >
                     <div className="recent-icon">🕒</div>

@@ -25,49 +25,7 @@
    HEADER SECTION
    ============================================================================ */
 
-.search-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.search-back-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: manipulation;
-}
-
-.search-back-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
-}
-
-.search-back-button:active {
-  transform: scale(0.95);
-}
-
-.search-title {
-  /* Typography handled by ios26-text-* classes */
-  margin: 0;
-  flex: 1;
-}
+/* Header visuals are provided by <NavigationBar> */
 
 /* ============================================================================
    SEARCH INPUT SECTION
@@ -262,12 +220,11 @@
 }
 
 .search-result-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--ios26-hover-bg, rgba(255, 255, 255, 0.05));
 }
 
 .search-result-item:active {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(0.98);
+  background: var(--ios26-active-bg, rgba(255, 255, 255, 0.08));
 }
 
 .result-icon {
@@ -464,29 +421,14 @@
 
 .recent-item {
   width: 100%;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
+  padding: 16px 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
   font-family: inherit;
-  backdrop-filter: blur(10px);
-}
-
-.recent-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
-
-.recent-item:active {
-  transform: scale(0.98);
 }
 
 .recent-icon {

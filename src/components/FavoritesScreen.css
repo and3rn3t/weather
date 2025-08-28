@@ -9,7 +9,7 @@
 
 .fav-header {
   padding: 16px;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--ios26-separator, var(--card-border));
   background: var(--card-bg);
   backdrop-filter: blur(10px);
 }
@@ -50,7 +50,7 @@
 .fav-tabs {
   display: flex;
   margin-top: 16px;
-  background: var(--card-border);
+  background: var(--ios26-surface-secondary, var(--card-border));
   border-radius: 12px;
   padding: 4px;
 }
@@ -63,14 +63,16 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
   background: transparent;
-  color: var(--primary-text);
+  color: var(--ios26-text-secondary, var(--primary-text));
 }
 
 .fav-tab.is-active {
-  background: #667eea;
-  color: #fff;
+  background: var(--ios26-accent, #667eea);
+  color: var(--ios26-on-accent, #fff);
 }
 
 .fav-content {
@@ -124,28 +126,22 @@
 }
 
 .city-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
+  /* Visuals provided by ios26-list-item inside glass card */
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 20px;
+  margin: 0;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: background 0.2s ease;
   position: relative;
   overflow: hidden;
   width: 100%;
   text-align: left;
 }
 
-.city-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
 .city-card.is-current {
-  background: rgba(103, 126, 234, 0.2);
-  border-color: #667eea;
+  background: color-mix(in oklab, #667eea 10%, transparent);
 }
 
 .city-card-current {
@@ -229,7 +225,7 @@
 
 .fav-footer {
   padding: 16px;
-  border-top: 1px solid var(--card-border);
+  border-top: 1px solid var(--ios26-separator, var(--card-border));
   background: var(--card-bg);
   backdrop-filter: blur(10px);
   text-align: center;
