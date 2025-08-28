@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 
@@ -227,7 +228,11 @@ onReady(() => {
         DEV SHELL: React root mounted. Loading App…
       </div>
     );
-    root.render(<DevShell />);
+    root.render(
+      <StrictMode>
+        <DevShell />
+      </StrictMode>
+    );
     log('shell:rendered');
   }
 
@@ -239,7 +244,11 @@ onReady(() => {
       try {
         const diag = await import('./App-diagnostic');
         const DiagApp = diag.default as React.ComponentType;
-        root.render(<DiagApp />);
+        root.render(
+          <StrictMode>
+            <DiagApp />
+          </StrictMode>
+        );
         log('fallback:diagnostic-render:done');
         // Keep the marker small and subtle once diagnostic is visible
         if (prodMarker) prodMarker.style.opacity = '0.6';
@@ -254,7 +263,11 @@ onReady(() => {
       const mod = await import('./App');
       log('app:imported');
       const App = mod.default;
-      root.render(<App />);
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
       appRendered = true;
       window.__APP_BOOTED = true;
       log('app:rendered');
@@ -267,7 +280,11 @@ onReady(() => {
             log('fallback:html-still-present -> rendering diagnostic app');
             const diag = await import('./App-diagnostic');
             const DiagApp = diag.default as React.ComponentType;
-            root.render(<DiagApp />);
+            root.render(
+              <StrictMode>
+                <DiagApp />
+              </StrictMode>
+            );
           }
         } catch (e) {
           log('fallback:html-check-error', String(e));
@@ -302,7 +319,11 @@ onReady(() => {
             try {
               const diag = await import('./App-diagnostic');
               const DiagApp = diag.default as React.ComponentType;
-              root.render(<DiagApp />);
+              root.render(
+                <StrictMode>
+                  <DiagApp />
+                </StrictMode>
+              );
               log('watchdog:diagnostic-rendered');
             } catch (e) {
               log('watchdog:diag-import-failed', String(e));

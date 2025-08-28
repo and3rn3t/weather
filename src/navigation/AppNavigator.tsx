@@ -50,6 +50,10 @@ import type {
   WeatherContext,
   WeatherData,
 } from '../types/weather';
+import {
+  getWeatherDescription,
+  getWeatherMainCategory,
+} from '../utils/weatherCodes';
 
 import FavoritesScreen from '../components/FavoritesScreen';
 import LocationManager from '../components/LocationManager';
@@ -176,51 +180,7 @@ interface DailyData {
   windspeed_10m_max: number[];
 }
 
-/**
- * Maps OpenMeteo weather codes to human-readable descriptions
- * Reference: https://open-meteo.com/en/docs
- */
-const getWeatherDescription = (code: number): string => {
-  const descriptions: { [key: number]: string } = {
-    0: 'clear sky',
-    1: 'mainly clear',
-    2: 'partly cloudy',
-    3: 'overcast',
-    45: 'fog',
-    48: 'depositing rime fog',
-    51: 'light drizzle',
-    53: 'moderate drizzle',
-    55: 'dense drizzle',
-    61: 'light rain',
-    63: 'moderate rain',
-    65: 'heavy rain',
-    71: 'light snow',
-    73: 'moderate snow',
-    75: 'heavy snow',
-    80: 'light rain showers',
-    81: 'moderate rain showers',
-    82: 'violent rain showers',
-    95: 'thunderstorm',
-    96: 'thunderstorm with slight hail',
-    99: 'thunderstorm with heavy hail',
-  };
-  return descriptions[code] || 'unknown';
-};
-
-/**
- * Maps OpenMeteo weather codes to main weather categories
- * Used for unified weather type compatibility
- */
-const getWeatherMainCategory = (code: number): string => {
-  if (code === 0 || code === 1) return 'Clear';
-  if (code >= 2 && code <= 3) return 'Clouds';
-  if (code >= 45 && code <= 48) return 'Mist';
-  if (code >= 51 && code <= 67) return 'Rain';
-  if (code >= 71 && code <= 77) return 'Snow';
-  if (code >= 80 && code <= 82) return 'Rain';
-  if (code >= 95 && code <= 99) return 'Thunderstorm';
-  return 'Clear';
-};
+// Weather code helpers now centralized in utils/weatherCodes
 
 /**
  * AppNavigator - Main Weather App Component
@@ -303,14 +263,6 @@ const processHourlyForecast = (hourlyData: HourlyData): HourlyForecast[] => {
   }
 
   return next24Hours;
-};
-
-/** Format time for hourly forecast display */
-const formatHourTime = (timeString: string): string => {
-  return new Date(timeString).toLocaleTimeString([], {
-    hour: 'numeric',
-    hour12: true,
-  });
 };
 
 /** Format date for daily forecast display */
@@ -1309,7 +1261,7 @@ const HourlyForecastSection = React.memo(
           </div>
           <div className="ios26-forecast-scroll enhanced-readability">
             {hourlyForecast.slice(0, 24).map((hour, index) => {
-              const timeStr = formatHourTime(hour.time);
+              const timeStr = formatTimeForHourly(hour.time);
               return (
                 <div
                   key={`hour-${hour.time}-${index}`}
@@ -2340,11 +2292,7 @@ const AppNavigator = () => {
           onSwipeLeft={handleSwipeLeft}
           onSwipeRight={handleSwipeRight}
           className="safe-area-container"
-          style={{
-            ...getMobileOptimizedContainer(theme, screenInfo),
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          }}
+          style={getMobileOptimizedContainer(theme, screenInfo)}
         >
           {/* Native API Status Display - Shows native capabilities when on mobile */}
           <React.Suspense

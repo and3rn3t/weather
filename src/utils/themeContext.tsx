@@ -78,8 +78,27 @@ export const ThemeProvider = ({
 
       // Ensure any legacy overlay classes are cleared
       document.body.classList.remove('film-grain-overlay');
+
+      // Expose theme colors as CSS variables for class-based styling
+      const root = document.documentElement;
+      root.style.setProperty('--primary-text', theme.primaryText);
+      root.style.setProperty('--secondary-text', theme.secondaryText);
+      root.style.setProperty('--card-bg', theme.cardBackground);
+      root.style.setProperty('--weather-card-bg', theme.weatherCardBackground);
+      root.style.setProperty('--weather-card-border', theme.weatherCardBorder);
+      root.style.setProperty('--card-border', theme.cardBorder);
+      root.style.setProperty('--app-bg', theme.appBackground);
     }
-  }, [theme.appBackground, themeName]);
+  }, [
+    themeName,
+    theme.appBackground,
+    theme.primaryText,
+    theme.secondaryText,
+    theme.cardBackground,
+    theme.cardBorder,
+    theme.weatherCardBackground,
+    theme.weatherCardBorder,
+  ]);
 
   // Memoize context value to prevent unnecessary re-renders
   const value: ThemeContextType = useMemo(

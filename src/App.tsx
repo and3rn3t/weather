@@ -21,6 +21,7 @@ import { getScreenInfo } from './utils/mobileScreenOptimization';
 import { ThemeProvider } from './utils/themeContext';
 import ThemeToggle from './utils/ThemeToggle';
 import { useTheme } from './utils/useTheme';
+import { getWeatherDescription as describeWeather } from './utils/weatherCodes';
 import WeatherIcon from './utils/weatherIcons';
 
 // Interfaces for type safety
@@ -162,7 +163,7 @@ const SimpleWeatherApp: React.FC = () => {
         },
         weather: [
           {
-            description: getWeatherDescription(weatherData.current.weathercode),
+            description: describeWeather(weatherData.current.weathercode),
           },
         ],
         wind: {
@@ -270,7 +271,7 @@ const SimpleWeatherApp: React.FC = () => {
         },
         weather: [
           {
-            description: getWeatherDescription(weatherData.current.weathercode),
+            description: describeWeather(weatherData.current.weathercode),
           },
         ],
         wind: {
@@ -344,32 +345,7 @@ const SimpleWeatherApp: React.FC = () => {
     }
   };
 
-  const getWeatherDescription = (code: number): string => {
-    const descriptions: { [key: number]: string } = {
-      0: 'clear sky',
-      1: 'mainly clear',
-      2: 'partly cloudy',
-      3: 'overcast',
-      45: 'fog',
-      48: 'depositing rime fog',
-      51: 'light drizzle',
-      53: 'moderate drizzle',
-      55: 'dense drizzle',
-      61: 'light rain',
-      63: 'moderate rain',
-      65: 'heavy rain',
-      71: 'light snow',
-      73: 'moderate snow',
-      75: 'heavy snow',
-      80: 'light rain showers',
-      81: 'moderate rain showers',
-      82: 'violent rain showers',
-      95: 'thunderstorm',
-      96: 'thunderstorm with slight hail',
-      99: 'thunderstorm with heavy hail',
-    };
-    return descriptions[code] || 'unknown weather';
-  };
+  // Weather description now centralized in utils/weatherCodes
 
   const handleRefresh = async () => {
     if (!weather) return; // Only refresh if we have weather data
@@ -510,7 +486,7 @@ const SimpleWeatherApp: React.FC = () => {
         },
         weather: [
           {
-            description: getWeatherDescription(weatherData.current.weathercode),
+            description: describeWeather(weatherData.current.weathercode),
           },
         ],
         wind: {
@@ -608,79 +584,20 @@ const SimpleWeatherApp: React.FC = () => {
 
   // Home Screen - Welcome/Overview
   const renderHomeScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-    >
-      <h1
-        style={{
-          color: theme.primaryText,
-          textAlign: 'center',
-          marginBottom: '30px',
-          fontSize: '28px',
-          fontWeight: '700',
-        }}
-      >
-        🌤️ Weather App
-      </h1>
+    <div className="app-section">
+      <h1 className="app-title text-primary">🌤️ Weather App</h1>
 
-      <div
-        style={{
-          background: theme.weatherCardBackground,
-          padding: '30px 20px',
-          borderRadius: '16px',
-          border: `1px solid ${theme.weatherCardBorder}`,
-          textAlign: 'center',
-          marginBottom: '20px',
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>☀️</div>
-        <h2
-          style={{
-            color: theme.primaryText,
-            margin: '0 0 12px 0',
-            fontSize: '20px',
-            fontWeight: '600',
-          }}
-        >
-          Welcome to Weather
-        </h2>
-        <p
-          style={{
-            color: theme.secondaryText,
-            margin: '0 0 20px 0',
-            fontSize: '16px',
-            lineHeight: '1.5',
-          }}
-        >
+      <div className="card card-large border-weather">
+        <div className="emoji-xl">☀️</div>
+        <h2 className="subtitle text-primary">Welcome to Weather</h2>
+        <p className="paragraph text-secondary">
           Get real-time weather updates, forecasts, and alerts for any location
           worldwide.
         </p>
 
         <button
           onClick={() => handleNavigate('Weather')}
-          style={{
-            width: '100%',
-            padding: '14px',
-            borderRadius: '12px',
-            border: 'none',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            marginBottom: '12px',
-            transition: 'transform 0.2s ease',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
+          className="btn-primary"
         >
           Check Weather
         </button>
@@ -688,51 +605,19 @@ const SimpleWeatherApp: React.FC = () => {
         <button
           onClick={getCurrentLocation}
           disabled={locationLoading}
-          style={{
-            width: '100%',
-            padding: '14px',
-            borderRadius: '12px',
-            border: `2px solid ${theme.secondaryText}`,
-            background: 'transparent',
-            color: theme.primaryText,
-            fontSize: '16px',
-            fontWeight: '500',
-            cursor: locationLoading ? 'not-allowed' : 'pointer',
-          }}
+          className="btn-outline text-primary"
         >
           {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
         </button>
       </div>
 
       {weather && (
-        <div
-          style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            textAlign: 'center',
-          }}
-        >
-          <h3 style={{ color: theme.primaryText, margin: '0 0 10px 0' }}>
-            Current Weather
-          </h3>
-          <div
-            style={{
-              fontSize: '18px',
-              color: theme.primaryText,
-              fontWeight: '600',
-            }}
-          >
+        <div className="card border-weather">
+          <h3 className="metric-title text-primary">Current Weather</h3>
+          <div className="metric-primary text-primary">
             {city}: {weather.main.temp}°F
           </div>
-          <div
-            style={{
-              fontSize: '14px',
-              color: theme.secondaryText,
-              textTransform: 'capitalize',
-            }}
-          >
+          <div className="metric-secondary text-secondary">
             {weather.weather[0].description}
           </div>
         </div>
@@ -741,39 +626,16 @@ const SimpleWeatherApp: React.FC = () => {
   );
   // Weather Screen - Full weather functionality
   const renderWeatherScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-    >
-      <h1
-        style={{
-          color: theme.primaryText,
-          textAlign: 'center',
-          marginBottom: '30px',
-        }}
-      >
-        🌤️ Weather Details
-      </h1>
+    <div className="app-section">
+      <h1 className="app-title text-primary">🌤️ Weather Details</h1>
 
-      <div style={{ marginBottom: '20px', position: 'relative' }}>
+      <div className="search-wrapper">
         <input
           type="text"
           value={city}
           onChange={e => handleCitySearch(e.target.value)}
           placeholder="Enter city name..."
-          style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '8px',
-            border: `1px solid ${theme.secondaryText}`,
-            background: theme.cardBackground,
-            color: theme.primaryText,
-            fontSize: '16px',
-            marginBottom: '10px',
-          }}
+          className="search-input"
           onKeyDown={e => e.key === 'Enter' && getWeather()}
           onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -781,38 +643,11 @@ const SimpleWeatherApp: React.FC = () => {
 
         {/* Search Suggestions */}
         {showSuggestions && searchSuggestions.length > 0 && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              right: 0,
-              background: theme.cardBackground,
-              border: `1px solid ${theme.weatherCardBorder}`,
-              borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              zIndex: 1000,
-              maxHeight: '200px',
-              overflowY: 'auto',
-            }}
-          >
-            {searchSuggestions.map((suggestion, suggestionIndex) => (
+          <div className="suggestions">
+            {searchSuggestions.map(suggestion => (
               <button
                 key={`${suggestion.lat}-${suggestion.lon}`}
-                style={{
-                  padding: '12px',
-                  borderBottom:
-                    suggestionIndex < searchSuggestions.length - 1
-                      ? `1px solid ${theme.weatherCardBorder}`
-                      : 'none',
-                  cursor: 'pointer',
-                  color: theme.primaryText,
-                  fontSize: '14px',
-                  background: 'none',
-                  border: 'none',
-                  width: '100%',
-                  textAlign: 'left',
-                }}
+                className="suggestion-btn"
                 onClick={() => {
                   setCity(suggestion.name);
                   setShowSuggestions(false);
@@ -821,24 +656,9 @@ const SimpleWeatherApp: React.FC = () => {
                     fetchWeatherForLocation(suggestion.lat, suggestion.lon);
                   }, 100);
                 }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.backgroundColor =
-                    theme.weatherCardBackground;
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
               >
-                <div style={{ fontWeight: '500' }}>{suggestion.name}</div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: theme.secondaryText,
-                    marginTop: '2px',
-                  }}
-                >
-                  {suggestion.display_name}
-                </div>
+                <div className="suggestion-title">{suggestion.name}</div>
+                <div className="suggestion-sub">{suggestion.display_name}</div>
               </button>
             ))}
           </div>
@@ -847,17 +667,7 @@ const SimpleWeatherApp: React.FC = () => {
         <button
           onClick={getWeather}
           disabled={loading}
-          style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '8px',
-            border: 'none',
-            background: loading ? '#ccc' : '#4f46e5',
-            color: 'white',
-            fontSize: '16px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            marginBottom: '10px',
-          }}
+          className={`btn-action${loading ? ' is-disabled' : ''}`}
         >
           {loading ? 'Loading...' : 'Get Weather'}
         </button>
@@ -865,65 +675,28 @@ const SimpleWeatherApp: React.FC = () => {
         <button
           onClick={getCurrentLocation}
           disabled={locationLoading || loading}
-          style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '8px',
-            border: `1px solid ${theme.secondaryText}`,
-            background: locationLoading ? '#ccc' : theme.cardBackground,
-            color: locationLoading ? '#666' : theme.primaryText,
-            fontSize: '16px',
-            cursor: locationLoading || loading ? 'not-allowed' : 'pointer',
-          }}
+          className={`btn-ghost${locationLoading || loading ? ' is-disabled' : ''}`}
         >
           {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
         </button>
       </div>
 
-      {error && (
-        <div
-          style={{
-            background: '#fee2e2',
-            color: '#dc2626',
-            padding: '12px',
-            borderRadius: '8px',
-            marginBottom: '20px',
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className="alert alert-error">{error}</div>}
 
       {/* Weather Alerts */}
       {weatherAlerts.length > 0 && (
-        <div style={{ marginBottom: '20px' }}>
+        <div className="alerts">
           {weatherAlerts.map((alert, alertIndex) => (
             <div
               key={`${alert.type}-${alertIndex}`}
-              style={{
-                background: alert.severity === 'high' ? '#fef2f2' : '#fff7ed',
-                color: alert.severity === 'high' ? '#dc2626' : '#ea580c',
-                border: `1px solid ${
-                  alert.severity === 'high' ? '#fecaca' : '#fed7aa'
-                }`,
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
+              className={`alert-item ${alert.severity === 'high' ? 'alert-high' : 'alert-medium'}`}
             >
-              <span style={{ fontSize: '16px' }}>
+              <span className="alert-icon">
                 {alert.severity === 'high' ? '⚠️' : 'ℹ️'}
               </span>
               <div>
-                <div style={{ fontWeight: '600', fontSize: '14px' }}>
-                  {alert.type}
-                </div>
-                <div style={{ fontSize: '13px', marginTop: '2px' }}>
-                  {alert.message}
-                </div>
+                <div className="alert-title">{alert.type}</div>
+                <div className="alert-message">{alert.message}</div>
               </div>
             </div>
           ))}
@@ -931,25 +704,9 @@ const SimpleWeatherApp: React.FC = () => {
       )}
 
       {weather && (
-        <div
-          style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            textAlign: 'center',
-            marginBottom: '20px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '10px',
-            }}
-          >
-            <h2 style={{ color: theme.primaryText, margin: 0 }}>{city}</h2>
+        <div className="card border-weather mb-20">
+          <div className="header-row">
+            <h2 className="m-0 text-primary">{city}</h2>
             <button
               onClick={() => {
                 if (isFavorite(city)) {
@@ -959,20 +716,14 @@ const SimpleWeatherApp: React.FC = () => {
                   addToFavorites(city, 0, 0);
                 }
               }}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '20px',
-                cursor: 'pointer',
-                padding: '4px',
-              }}
+              className="icon-btn"
             >
               {isFavorite(city) ? '⭐' : '☆'}
             </button>
           </div>
 
           {/* Weather Icon */}
-          <div style={{ marginBottom: '15px' }}>
+          <div className="mb-15">
             <WeatherIcon
               code={weather.weatherCode}
               size={80}
@@ -981,202 +732,43 @@ const SimpleWeatherApp: React.FC = () => {
             />
           </div>
 
-          <div
-            style={{
-              fontSize: '48px',
-              fontWeight: 'bold',
-              color: theme.primaryText,
-              margin: '10px 0',
-            }}
-          >
+          <div className="temp-lg my-10 text-primary">
             {weather.main.temp}°F
           </div>
-          <div
-            style={{
-              color: theme.secondaryText,
-              fontSize: '18px',
-              marginBottom: '15px',
-              textTransform: 'capitalize',
-            }}
-          >
+          <div className="fs-18 mb-15 text-secondary capitalize">
             {weather.weather[0].description}
           </div>
 
           {/* Weather Metrics Grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '15px',
-              marginTop: '20px',
-            }}
-          >
-            <div
-              style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  marginBottom: '4px',
-                }}
-              >
-                FEELS LIKE
-              </div>
-              <div
-                style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: theme.primaryText,
-                }}
-              >
-                {weather.main.feels_like}°F
-              </div>
+          <div className="metrics-grid">
+            <div className="metric-card">
+              <div className="metric-label">FEELS LIKE</div>
+              <div className="metric-value">{weather.main.feels_like}°F</div>
             </div>
 
-            <div
-              style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  marginBottom: '4px',
-                }}
-              >
-                HUMIDITY
-              </div>
-              <div
-                style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: theme.primaryText,
-                }}
-              >
-                {weather.main.humidity}%
-              </div>
+            <div className="metric-card">
+              <div className="metric-label">HUMIDITY</div>
+              <div className="metric-value">{weather.main.humidity}%</div>
             </div>
 
-            <div
-              style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  marginBottom: '4px',
-                }}
-              >
-                WIND SPEED
-              </div>
-              <div
-                style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: theme.primaryText,
-                }}
-              >
-                {weather.wind.speed} mph
-              </div>
+            <div className="metric-card">
+              <div className="metric-label">WIND SPEED</div>
+              <div className="metric-value">{weather.wind.speed} mph</div>
             </div>
 
-            <div
-              style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  marginBottom: '4px',
-                }}
-              >
-                PRESSURE
-              </div>
-              <div
-                style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: theme.primaryText,
-                }}
-              >
-                {weather.main.pressure} hPa
-              </div>
+            <div className="metric-card">
+              <div className="metric-label">PRESSURE</div>
+              <div className="metric-value">{weather.main.pressure} hPa</div>
             </div>
 
-            <div
-              style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  marginBottom: '4px',
-                }}
-              >
-                UV INDEX
-              </div>
-              <div
-                style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: theme.primaryText,
-                }}
-              >
-                {weather.uv_index}
-              </div>
+            <div className="metric-card">
+              <div className="metric-label">UV INDEX</div>
+              <div className="metric-value">{weather.uv_index}</div>
             </div>
 
-            <div
-              style={{
-                background: theme.cardBackground,
-                padding: '12px',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: theme.secondaryText,
-                  marginBottom: '4px',
-                }}
-              >
-                VISIBILITY
-              </div>
-              <div
-                style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: theme.primaryText,
-                }}
-              >
-                {weather.visibility} mi
-              </div>
+            <div className="metric-card">
+              <div className="metric-label">VISIBILITY</div>
+              <div className="metric-value">{weather.visibility} mi</div>
             </div>
           </div>
         </div>
@@ -1184,56 +776,18 @@ const SimpleWeatherApp: React.FC = () => {
 
       {/* Hourly Forecast */}
       {hourlyForecast.length > 0 && (
-        <div
-          style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            marginBottom: '20px',
-          }}
-        >
-          <h3
-            style={{
-              color: theme.primaryText,
-              margin: '0 0 15px 0',
-              fontSize: '18px',
-              fontWeight: '600',
-            }}
-          >
-            24-Hour Forecast
-          </h3>
-          <div
-            style={{
-              display: 'flex',
-              overflowX: 'auto',
-              gap: '15px',
-              paddingBottom: '5px',
-            }}
-          >
+        <div className="card border-weather forecast-section">
+          <h3 className="section-title">24-Hour Forecast</h3>
+          <div className="hourly-list">
             {hourlyForecast.slice(0, 12).map((hour, hourIndex) => (
               <div
                 key={`${hour.time}-${hour.temperature}`}
-                style={{
-                  minWidth: '60px',
-                  textAlign: 'center',
-                  padding: '10px 5px',
-                  borderRadius: '8px',
-                  background:
-                    hourIndex === 0 ? theme.cardBackground : 'transparent',
-                }}
+                className={`hour-item${hourIndex === 0 ? ' is-now' : ''}`}
               >
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: theme.secondaryText,
-                    marginBottom: '8px',
-                    fontWeight: hourIndex === 0 ? '600' : '400',
-                  }}
-                >
+                <div className={`hour-time${hourIndex === 0 ? ' is-now' : ''}`}>
                   {hourIndex === 0 ? 'Now' : hour.time}
                 </div>
-                <div style={{ marginBottom: '8px' }}>
+                <div className="hour-icon">
                   <WeatherIcon
                     code={hour.weatherCode}
                     size={30}
@@ -1241,15 +795,7 @@ const SimpleWeatherApp: React.FC = () => {
                     isDay={true}
                   />
                 </div>
-                <div
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: theme.primaryText,
-                  }}
-                >
-                  {hour.temperature}°
-                </div>
+                <div className="hour-temp">{hour.temperature}°</div>
               </div>
             ))}
           </div>
@@ -1258,63 +804,20 @@ const SimpleWeatherApp: React.FC = () => {
 
       {/* Daily Forecast */}
       {dailyForecast.length > 0 && (
-        <div
-          style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            marginBottom: '20px',
-          }}
-        >
-          <h3
-            style={{
-              color: theme.primaryText,
-              margin: '0 0 15px 0',
-              fontSize: '18px',
-              fontWeight: '600',
-            }}
-          >
-            7-Day Forecast
-          </h3>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
-          >
+        <div className="card border-weather forecast-section">
+          <h3 className="section-title">7-Day Forecast</h3>
+          <div className="daily-list">
             {dailyForecast.map((day, dayIndex) => (
               <div
                 key={`${day.date}-${day.tempMax}-${day.tempMin}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 0',
-                  borderBottom:
-                    dayIndex < dailyForecast.length - 1
-                      ? `1px solid ${theme.weatherCardBorder}`
-                      : 'none',
-                }}
+                className="daily-item"
               >
                 <div
-                  style={{
-                    flex: '1',
-                    fontSize: '14px',
-                    fontWeight: dayIndex === 0 ? '600' : '400',
-                    color: theme.primaryText,
-                  }}
+                  className={`daily-date${dayIndex === 0 ? ' is-today' : ''}`}
                 >
                   {dayIndex === 0 ? 'Today' : day.date}
                 </div>
-                <div
-                  style={{
-                    flex: '0 0 40px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
+                <div className="daily-icon">
                   <WeatherIcon
                     code={day.weatherCode}
                     size={28}
@@ -1322,30 +825,12 @@ const SimpleWeatherApp: React.FC = () => {
                     isDay={true}
                   />
                 </div>
-                <div
-                  style={{
-                    flex: '0 0 80px',
-                    textAlign: 'right',
-                    fontSize: '14px',
-                    color: theme.primaryText,
-                  }}
-                >
-                  <span style={{ fontWeight: '600' }}>{day.tempMax}°</span>
-                  <span
-                    style={{ color: theme.secondaryText, marginLeft: '5px' }}
-                  >
-                    {day.tempMin}°
-                  </span>
+                <div className="daily-temps">
+                  <span className="t-max">{day.tempMax}°</span>
+                  <span className="t-min">{day.tempMin}°</span>
                 </div>
                 {day.precipitation > 0 && (
-                  <div
-                    style={{
-                      flex: '0 0 40px',
-                      textAlign: 'right',
-                      fontSize: '12px',
-                      color: theme.secondaryText,
-                    }}
-                  >
+                  <div className="daily-precip">
                     {day.precipitation.toFixed(1)}mm
                   </div>
                 )}
@@ -1375,89 +860,30 @@ const SimpleWeatherApp: React.FC = () => {
 
   // Favorites Screen - Show current favorites
   const renderFavoritesScreen = () => (
-    <div
-      style={{
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-    >
-      <h1
-        style={{
-          color: theme.primaryText,
-          textAlign: 'center',
-          marginBottom: '30px',
-        }}
-      >
-        ⭐ Favorites
-      </h1>
+    <div className="app-section">
+      <h1 className="app-title text-primary">⭐ Favorites</h1>
 
       {favorites.length > 0 ? (
-        <div
-          style={{
-            background: theme.weatherCardBackground,
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-            }}
-          >
+        <div className="card border-weather">
+          <div className="favorites-list">
             {favorites.map(favorite => (
               <button
                 key={`favorite-${favorite.name}`}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '15px',
-                  background: theme.cardBackground,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'background 0.2s',
-                  border: 'none',
-                  width: '100%',
-                  textAlign: 'left',
-                }}
+                className="favorite-item"
                 onClick={() => {
                   setCity(favorite.name);
                   handleNavigate('Weather');
                   setTimeout(() => getWeather(), 100);
                 }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = theme.appBackground;
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = theme.cardBackground;
-                }}
               >
-                <span
-                  style={{
-                    color: theme.primaryText,
-                    fontSize: '16px',
-                    fontWeight: '500',
-                  }}
-                >
-                  📍 {favorite.name}
-                </span>
+                <span className="favorite-name">📍 {favorite.name}</span>
                 <button
                   onClick={e => {
                     e.stopPropagation();
                     removeFromFavorites(favorite.name);
                   }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: theme.secondaryText,
-                    cursor: 'pointer',
-                    fontSize: '18px',
-                    padding: '4px',
-                  }}
+                  className="icon-btn"
+                  aria-label={`Remove ${favorite.name} from favorites`}
                 >
                   ✕
                 </button>
@@ -1466,39 +892,16 @@ const SimpleWeatherApp: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div
-          style={{
-            background: theme.weatherCardBackground,
-            padding: '40px 20px',
-            borderRadius: '16px',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            textAlign: 'center',
-          }}
-        >
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⭐</div>
-          <p
-            style={{
-              color: theme.secondaryText,
-              fontSize: '16px',
-              marginBottom: '20px',
-            }}
-          >
+        <div className="card border-weather empty-favorites">
+          <div className="emoji-xl mb-16">⭐</div>
+          <p className="paragraph text-secondary mb-20">
             No favorite cities yet.
             <br />
             Add some favorites from the Weather screen!
           </p>
           <button
             onClick={() => handleNavigate('Weather')}
-            style={{
-              padding: '12px 24px',
-              borderRadius: '8px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-            }}
+            className="btn-primary"
           >
             Find Weather
           </button>
@@ -1517,37 +920,10 @@ const SimpleWeatherApp: React.FC = () => {
   );
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: theme.appBackground,
-        paddingBottom: '80px', // Space for navigation
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        position: 'relative',
-      }}
-      onTouchStart={handleTouchStart}
-    >
+    <div className="app-root" onTouchStart={handleTouchStart}>
       {/* Dev-only debug banner to confirm render and layering */}
       {process.env.NODE_ENV !== 'production' && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 99999,
-            background: '#fffbeb',
-            color: '#92400e',
-            borderBottom: '1px solid #f59e0b',
-            fontSize: 12,
-            fontWeight: 600,
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            padding: '6px 10px',
-            textAlign: 'center',
-          }}
-        >
+        <div className="dev-debug-bar">
           UI Debug: App rendered. If you see only this bar, a full-screen
           overlay or opacity rule may be hiding content.
         </div>
@@ -1555,37 +931,13 @@ const SimpleWeatherApp: React.FC = () => {
       {/* Pull-to-Refresh Indicator */}
       {(pullDistance > 0 || refreshing) && (
         <div
-          style={{
-            position: 'fixed',
-            top: `${Math.max(10, pullDistance - 30)}px`,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            background: theme.cardBackground,
-            borderRadius: '20px',
-            padding: '8px 16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            border: `1px solid ${theme.weatherCardBorder}`,
-            color: theme.primaryText,
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            transition: refreshing ? 'none' : 'all 0.3s ease',
-          }}
+          className={`pull-refresh${refreshing ? ' is-refreshing' : ''}`}
+          data-top-offset={Math.max(10, pullDistance - 30)}
+          style={{ top: `${Math.max(10, pullDistance - 30)}px` }}
         >
           {refreshing ? (
             <>
-              <div
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  border: `2px solid ${theme.secondaryText}`,
-                  borderTop: `2px solid ${theme.primaryText}`,
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                }}
-              />
+              <div className="spinner" />
               Refreshing...
             </>
           ) : (
@@ -1619,18 +971,6 @@ const SimpleWeatherApp: React.FC = () => {
       <MobileNavigation
         currentScreen={currentScreen}
         onNavigate={handleNavigate}
-      />
-
-      {/* Add CSS for animations */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `,
-        }}
       />
     </div>
   );
