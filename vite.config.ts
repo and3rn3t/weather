@@ -15,59 +15,68 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks(id) {
           // React core - loaded once, heavily cached
-          'react-vendor': ['react', 'react-dom'],
+          if (
+            id.includes('node_modules/react') ||
+            id.includes('node_modules/react-dom')
+          ) {
+            return 'react-vendor';
+          }
 
           // Capacitor features - mobile-only conditional loading
-          'capacitor-vendor': [
-            '@capacitor/app',
-            '@capacitor/device',
-            '@capacitor/geolocation',
-            '@capacitor/haptics',
-            '@capacitor/network',
-            '@capacitor/status-bar',
-          ],
+          if (id.includes('node_modules/@capacitor/')) {
+            return 'capacitor-vendor';
+          }
 
           // UI utilities - shared across components
-          'ui-utils': [
-            './src/utils/themeConfig.ts',
-            './src/utils/themeContext.tsx',
-            './src/utils/ThemeToggle.tsx',
-            './src/utils/hapticContext.tsx',
-          ],
+          if (
+            id.includes('/src/utils/themeConfig') ||
+            id.includes('/src/utils/themeContext') ||
+            id.includes('/src/utils/ThemeToggle') ||
+            id.includes('/src/utils/hapticContext')
+          ) {
+            return 'ui-utils';
+          }
 
           // Weather functionality - core features
-          'weather-core': [
-            './src/utils/weatherIcons.tsx',
-            './src/utils/useEnhancedSearch.ts',
-            './src/utils/autocorrectEngine.ts',
-          ],
+          if (
+            id.includes('/src/utils/weatherIcons') ||
+            id.includes('/src/utils/useEnhancedSearch') ||
+            id.includes('/src/utils/autocorrectEngine')
+          ) {
+            return 'weather-core';
+          }
 
           // Mobile features - conditionally loaded
-          'haptic-features': [
-            './src/utils/hapticHooks.ts',
-            './src/utils/usePullToRefresh.ts',
-            './src/utils/mobileScreenOptimization.ts',
-            './src/components/MobileNavigation.tsx',
-          ],
+          if (
+            id.includes('/src/utils/hapticHooks') ||
+            id.includes('/src/utils/usePullToRefresh') ||
+            id.includes('/src/utils/mobileScreenOptimization') ||
+            id.includes('/src/components/MobileNavigation')
+          ) {
+            return 'haptic-features';
+          }
 
           // iOS26 suite - modern UI components grouped
-          'ios26-suite': [
-            './src/components/modernWeatherUI/iOS26Components.tsx',
-            './src/components/modernWeatherUI/iOSComponents.tsx',
-            './src/components/modernWeatherUI/NavigationBar.tsx',
-            './src/components/modernWeatherUI/iOS26WeatherDemo.tsx',
-            './src/components/modernWeatherUI/iOS26WeatherInterface.tsx',
-            './src/components/modernWeatherUI/IOSComponentShowcase.tsx',
-          ],
+          if (id.includes('/src/components/modernWeatherUI/')) {
+            return 'ios26-suite';
+          }
 
           // Optimized visualizations - charts and gauges
-          'visualizations-optimized': [
-            './src/components/optimized/EnhancedWeatherVisualization.tsx',
-            './src/components/optimized/OptimizedMobileWeatherDisplay.tsx',
-            './src/components/optimized/SmartWeatherSkeleton.tsx',
-          ],
+          if (
+            id.includes(
+              '/src/components/optimized/EnhancedWeatherVisualization'
+            ) ||
+            id.includes(
+              '/src/components/optimized/OptimizedMobileWeatherDisplay'
+            ) ||
+            id.includes('/src/components/optimized/SmartWeatherSkeleton')
+          ) {
+            return 'visualizations-optimized';
+          }
+
+          return undefined;
         },
 
         chunkFileNames: 'assets/[name]-[hash].js',
