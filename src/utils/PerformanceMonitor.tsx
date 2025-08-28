@@ -73,10 +73,9 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     if (!enabled) return;
 
     const updateMemoryUsage = () => {
-      // @ts-expect-error performance.memory is Chrome-specific API not in standard types
-      if (typeof performance !== 'undefined' && performance.memory) {
-        // @ts-expect-error performance.memory API typing not available
-        const memoryInfo = performance.memory;
+      // performance.memory is Chrome-specific API not in standard types
+      if (typeof performance !== 'undefined' && (performance as any).memory) {
+        const memoryInfo = (performance as any).memory;
         setMetrics(prev => ({
           ...prev,
           memoryUsage: Math.round(memoryInfo.usedJSHeapSize / 1024 / 1024), // MB
