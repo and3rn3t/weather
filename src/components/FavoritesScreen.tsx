@@ -9,7 +9,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
 import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
+import { useTheme } from '../utils/useTheme';
 import './FavoritesScreen.css';
+import { NavigationBar } from './modernWeatherUI/NavigationBar';
 
 interface FavoritesScreenProps {
   theme: ThemeColors;
@@ -83,7 +85,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
         onClick={handleCityClick}
         onKeyDown={handleKeyDown}
         aria-label={`Select ${city.displayName || city.name} weather`}
-        className={`city-card ${isCurrentCity ? 'is-current' : ''}`.trim()}
+        className={`city-card ios26-list-item ${isCurrentCity ? 'is-current' : ''}`.trim()}
       >
         {/* Current city indicator */}
         {isCurrentCity && <div className="city-card-current">CURRENT</div>}
@@ -139,6 +141,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   currentCity,
 }) => {
   const haptic = useHaptic();
+  const { themeName } = useTheme();
   const [selectedTab, setSelectedTab] = useState<'favorites' | 'recent'>(
     'favorites'
   );
@@ -310,23 +313,31 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   // Render favorites content
   const renderFavoritesContent = () => {
     if (favorites.length > 0) {
-      return favorites.map(city => (
-        <CityCard
-          key={city.id}
-          city={city}
-          theme={theme}
-          currentCity={currentCity}
-          weatherPreviews={weatherPreviews}
-          loadingPreviews={loadingPreviews}
-          onCitySelect={handleCitySelect}
-          onToggleFavorite={handleToggleFavorite}
-          renderWeatherPreview={renderWeatherPreview}
-        />
-      ));
+      return (
+        <ul
+          className="fav-list ios26-card ios26-liquid-glass"
+          aria-label="Favorite cities"
+        >
+          {favorites.map(city => (
+            <li key={city.id}>
+              <CityCard
+                city={city}
+                theme={theme}
+                currentCity={currentCity}
+                weatherPreviews={weatherPreviews}
+                loadingPreviews={loadingPreviews}
+                onCitySelect={handleCitySelect}
+                onToggleFavorite={handleToggleFavorite}
+                renderWeatherPreview={renderWeatherPreview}
+              />
+            </li>
+          ))}
+        </ul>
+      );
     }
 
     return (
-      <div className="fav-empty">
+      <div className="fav-empty ios26-card ios26-liquid-glass">
         <div className="fav-emoji-xl">🌟</div>
         <h3 className="fav-empty-title">No Favorites Yet</h3>
         <p className="fav-empty-desc">
@@ -337,46 +348,37 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   };
 
   return (
-    <div className="fav-root">
-      {/* Header */}
-      <div className="fav-header">
-        <div className="fav-header-row">
-          <button onClick={onBack} className="fav-back-btn">
-            ←
-          </button>
+    <div className="fav-root ios26-container">
+      <NavigationBar
+        title="My Cities"
+        theme={theme}
+        isDark={themeName === 'dark'}
+        leadingButton={{ icon: '←', title: 'Back', onPress: onBack }}
+        trailingButton={
+          onAddFavorite
+            ? { icon: '+', title: 'Add', onPress: onAddFavorite }
+            : undefined
+        }
+      />
 
-          <h1 className="fav-title">My Cities</h1>
-
-          {onAddFavorite && (
-            <button onClick={onAddFavorite} className="fav-add-btn">
-              +
-            </button>
-          )}
-        </div>
-
-        {/* Tab selector */}
-        <div className="fav-tabs">
-          <button
-            onClick={() => setSelectedTab('favorites')}
-            className={`fav-tab ${
-              selectedTab === 'favorites' ? 'is-active' : ''
-            }`.trim()}
-          >
-            Favorites ({favorites.length})
-          </button>
-          <button
-            onClick={() => setSelectedTab('recent')}
-            className={`fav-tab ${
-              selectedTab === 'recent' ? 'is-active' : ''
-            }`.trim()}
-          >
-            Recent ({recentCities.length})
-          </button>
-        </div>
+      {/* Tabs */}
+      <div className="fav-tabs">
+        <button
+          onClick={() => setSelectedTab('favorites')}
+          className={`fav-tab ${selectedTab === 'favorites' ? 'is-active' : ''}`.trim()}
+        >
+          Favorites ({favorites.length})
+        </button>
+        <button
+          onClick={() => setSelectedTab('recent')}
+          className={`fav-tab ${selectedTab === 'recent' ? 'is-active' : ''}`.trim()}
+        >
+          Recent ({recentCities.length})
+        </button>
       </div>
 
       {/* Content */}
-      <div className="fav-content">
+      <div className="fav-content ios26-container">
         {selectedTab === 'favorites' ? (
           renderFavoritesContent()
         ) : (
@@ -389,22 +391,28 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
                     Clear All
                   </button>
                 </div>
-                {recentCities.map(city => (
-                  <CityCard
-                    key={city.id}
-                    city={city}
-                    theme={theme}
-                    currentCity={currentCity}
-                    weatherPreviews={weatherPreviews}
-                    loadingPreviews={loadingPreviews}
-                    onCitySelect={handleCitySelect}
-                    onToggleFavorite={handleToggleFavorite}
-                    renderWeatherPreview={renderWeatherPreview}
-                  />
-                ))}
+                <ul
+                  className="fav-list ios26-card ios26-liquid-glass"
+                  aria-label="Recent cities"
+                >
+                  {recentCities.map(city => (
+                    <li key={city.id}>
+                      <CityCard
+                        city={city}
+                        theme={theme}
+                        currentCity={currentCity}
+                        weatherPreviews={weatherPreviews}
+                        loadingPreviews={loadingPreviews}
+                        onCitySelect={handleCitySelect}
+                        onToggleFavorite={handleToggleFavorite}
+                        renderWeatherPreview={renderWeatherPreview}
+                      />
+                    </li>
+                  ))}
+                </ul>
               </>
             ) : (
-              <div className="fav-empty">
+              <div className="fav-empty ios26-card ios26-liquid-glass">
                 <div className="fav-emoji-xl">🕒</div>
                 <h3 className="fav-empty-title">No Recent Cities</h3>
                 <p className="fav-empty-desc">

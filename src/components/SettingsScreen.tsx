@@ -11,6 +11,8 @@ import { logInfo, logWarn } from '../utils/logger';
 import type { ScreenInfo } from '../utils/mobileScreenOptimization';
 import type { ThemeColors } from '../utils/themeConfig';
 import { useTheme } from '../utils/useTheme';
+import './SettingsScreen.css';
+import { NavigationBar } from './modernWeatherUI/NavigationBar';
 
 interface SettingsScreenProps {
   theme: ThemeColors;
@@ -30,7 +32,7 @@ interface SettingsScreenProps {
  */
 const SettingsScreen: React.FC<SettingsScreenProps> = ({
   theme,
-  screenInfo,
+  screenInfo: _screenInfo,
   onBack,
 }) => {
   const { themeName, toggleTheme } = useTheme();
@@ -223,100 +225,102 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     }
   };
 
+  const gpsPermission = async () => {
+    try {
+      if ('permissions' in navigator) {
+        const permission = await navigator.permissions.query({
+          name: 'geolocation' as PermissionName,
+        });
+        if (permission.state === 'denied') {
+          alert(
+            'Location access is blocked. Please enable location permissions in your browser settings.'
+          );
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            () => alert('Location permission granted successfully!'),
+            () =>
+              alert(
+                'Failed to get location. Please check your browser settings.'
+              ),
+            { enableHighAccuracy: highAccuracyGPS, timeout: 8000 }
+          );
+        }
+      }
+    } catch (error) {
+      logWarn('GPS permission request failed:', error);
+      alert('Please enable location access in your browser settings.');
+    }
+  };
+
+  const manageFavorites = () => {
+    try {
+      const cities = favoriteCitiesManager.getFavoriteCities('frequent');
+      const cityNames = cities
+        .map((city: FavoriteCity) => `${city.name}, ${city.country}`)
+        .join('\n');
+      alert(
+        `Favorite Cities (${cities.length}):\n\n${
+          cityNames || 'No favorite cities saved yet.'
+        }`
+      );
+    } catch (error) {
+      logWarn('Failed to load favorite cities:', error);
+      alert('Failed to load favorite cities.');
+    }
+  };
+
+  const showWeatherAlerts = () => {
+    try {
+      const preferences = weatherAlertManager.getPreferences();
+      alert(
+        `Weather Alerts Status:\n\nPush Notifications: ${
+          preferences.enableNotifications ? 'Enabled' : 'Disabled'
+        }\nSound Alerts: ${
+          preferences.enableSounds ? 'Enabled' : 'Disabled'
+        }\nVibration: ${preferences.enableVibration ? 'Enabled' : 'Disabled'}`
+      );
+    } catch (error) {
+      logWarn('Failed to load alert preferences:', error);
+      alert('Failed to load weather alert settings.');
+    }
+  };
+
+  const clearCache = async () => {
+    try {
+      await advancedCachingManager.clear();
+      logInfo('Main cache cleared successfully');
+      await smartCacheManager.clear();
+      alert('All caches cleared successfully!');
+    } catch (error) {
+      logWarn('Failed to clear cache:', error);
+      alert('Failed to clear cache.');
+    }
+  };
+
+  const showVersion = () => {
+    alert(
+      'Weather App v1.0.0\n\nPhase 5C Complete:\n✅ Location Services\n✅ Offline Support\n✅ Weather Alerts\n✅ Enhanced Settings'
+    );
+  };
+
+  const showFeedback = () => {
+    alert(
+      'Feedback feature coming soon!\n\nFor now, please use GitHub issues or contact support.'
+    );
+  };
+
   const handleActionPress = async (id: string) => {
     haptic.buttonPress();
-
-    switch (id) {
-      case 'gps-permission':
-        // Request GPS permission
-        try {
-          if ('permissions' in navigator) {
-            const permission = await navigator.permissions.query({
-              name: 'geolocation' as PermissionName,
-            });
-            if (permission.state === 'denied') {
-              alert(
-                'Location access is blocked. Please enable location permissions in your browser settings.'
-              );
-            } else {
-              navigator.geolocation.getCurrentPosition(
-                () => alert('Location permission granted successfully!'),
-                () =>
-                  alert(
-                    'Failed to get location. Please check your browser settings.'
-                  ),
-                { enableHighAccuracy: highAccuracyGPS, timeout: 8000 }
-              );
-            }
-          }
-        } catch (error) {
-          logWarn('GPS permission request failed:', error);
-          alert('Please enable location access in your browser settings.');
-        }
-        break;
-      case 'manage-favorites':
-        // Show favorite cities management
-        try {
-          const cities = favoriteCitiesManager.getFavoriteCities('frequent');
-          const cityNames = cities
-            .map((city: FavoriteCity) => `${city.name}, ${city.country}`)
-            .join('\n');
-          alert(
-            `Favorite Cities (${cities.length}):\n\n${
-              cityNames || 'No favorite cities saved yet.'
-            }`
-          );
-        } catch (error) {
-          logWarn('Failed to load favorite cities:', error);
-          alert('Failed to load favorite cities.');
-        }
-        break;
-      case 'weather-alerts':
-        // This would typically navigate to WeatherAlertPanel, but for now show status
-        try {
-          const preferences = weatherAlertManager.getPreferences();
-          alert(
-            `Weather Alerts Status:\n\nPush Notifications: ${
-              preferences.enableNotifications ? 'Enabled' : 'Disabled'
-            }\nSound Alerts: ${
-              preferences.enableSounds ? 'Enabled' : 'Disabled'
-            }\nVibration: ${
-              preferences.enableVibration ? 'Enabled' : 'Disabled'
-            }`
-          );
-        } catch (error) {
-          logWarn('Failed to load alert preferences:', error);
-          alert('Failed to load weather alert settings.');
-        }
-        break;
-      case 'clear-cache':
-        // Clear all caches
-        try {
-          await advancedCachingManager.clear();
-          // Note: offlineStorage.clearData() and smartCacheManager.clearCache() methods need to be checked
-          logInfo('Main cache cleared successfully');
-          await smartCacheManager.clear();
-          alert('All caches cleared successfully!');
-        } catch (error) {
-          logWarn('Failed to clear cache:', error);
-          alert('Failed to clear cache.');
-        }
-        break;
-      case 'version':
-        haptic.buttonPress();
-        // Show version details
-        alert(
-          'Weather App v1.0.0\n\nPhase 5C Complete:\n✅ Location Services\n✅ Offline Support\n✅ Weather Alerts\n✅ Enhanced Settings'
-        );
-        break;
-      case 'feedback':
-        haptic.buttonPress();
-        // Open feedback form
-        alert(
-          'Feedback feature coming soon!\n\nFor now, please use GitHub issues or contact support.'
-        );
-        break;
-    }
+    const handlers: Record<string, () => void | Promise<void>> = {
+      'gps-permission': gpsPermission,
+      'manage-favorites': manageFavorites,
+      'weather-alerts': showWeatherAlerts,
+      'clear-cache': clearCache,
+      version: showVersion,
+      feedback: showFeedback,
+    };
+    const fn = handlers[id];
+    if (fn) await fn();
   };
 
   const settingsSections = [
@@ -523,135 +527,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     },
   ];
 
-  const containerStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    background: theme.appBackground,
-    overflow: 'auto',
-  };
-
-  const headerStyle: React.CSSProperties = {
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-    background: `linear-gradient(180deg, ${theme.appBackground}95, ${theme.appBackground}85)`,
-    backdropFilter: 'blur(20px)',
-    borderBottom: `1px solid ${theme.weatherCardBorder}30`,
-    padding: '12px 16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    minHeight: '60px',
-  };
-
-  const backButtonStyle: React.CSSProperties = {
-    background: 'none',
-    border: 'none',
-    fontSize: '24px',
-    cursor: 'pointer',
-    padding: '8px',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '44px',
-    minWidth: '44px',
-    color: theme.primaryText,
-    transition: 'all 0.2s ease',
-    WebkitTapHighlightColor: 'transparent',
-  };
-
-  const titleStyle: React.CSSProperties = {
-    fontSize: screenInfo.isVerySmallScreen ? '20px' : '24px',
-    fontWeight: '700',
-    color: theme.primaryText,
-    margin: 0,
-    letterSpacing: '-0.5px',
-  };
-
-  const contentStyle: React.CSSProperties = {
-    flex: 1,
-    padding: '0 16px 100px 16px', // Bottom padding for navigation
-    paddingTop: '8px',
-  };
-
-  const sectionStyle: React.CSSProperties = {
-    marginBottom: '32px',
-  };
-
-  const sectionTitleStyle: React.CSSProperties = {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: theme.secondaryText,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    marginBottom: '12px',
-    marginLeft: '4px',
-  };
-
-  const itemContainerStyle: React.CSSProperties = {
-    background: theme.cardBackground,
-    borderRadius: '16px',
-    border: `1px solid ${theme.weatherCardBorder}30`,
-    overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-  };
-
-  const itemStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px',
-    borderBottom: `1px solid ${theme.weatherCardBorder}20`,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    WebkitTapHighlightColor: 'transparent',
-    minHeight: '64px',
-  };
-
-  const toggleStyle: React.CSSProperties = {
-    position: 'relative',
-    width: '50px',
-    height: '30px',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-  };
-
-  const renderToggle = (isOn: boolean, onChange: (value: boolean) => void) => (
-    <button
-      style={{
-        ...toggleStyle,
-        background: isOn ? theme.primaryGradient : theme.toggleBackground,
-        border: `2px solid ${isOn ? 'transparent' : theme.toggleBorder}`,
-      }}
-      onClick={() => onChange(!isOn)}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onChange(!isOn);
-        }
-      }}
-      aria-checked={isOn}
-      role="switch"
-      aria-label={`Toggle ${isOn ? 'off' : 'on'}`}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: '2px',
-          left: isOn ? '22px' : '2px',
-          width: '22px',
-          height: '22px',
-          borderRadius: '50%',
-          background: 'white',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-          pointerEvents: 'none',
-        }}
-      />
-    </button>
-  );
+  // NavigationBar handles header visuals per HIG
 
   const formatOptionText = (option: string): string => {
     // Temperature units
@@ -687,19 +563,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     label: string = 'Selection'
   ) => (
     <select
+      className="settings-select"
       value={value}
       onChange={e => onChange(e.target.value)}
       aria-label={label}
-      style={{
-        background: theme.cardBackground,
-        border: `1px solid ${theme.weatherCardBorder}`,
-        borderRadius: '8px',
-        padding: '8px 12px',
-        color: theme.primaryText,
-        fontSize: '14px',
-        minWidth: '100px',
-        cursor: 'pointer',
-      }}
     >
       {options.map(option => (
         <option key={option} value={option}>
@@ -710,98 +577,79 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
   );
 
   return (
-    <div style={containerStyle}>
+    <div className="ios26-container settings-root">
       {/* Header */}
-      <header style={headerStyle}>
-        <button
-          style={backButtonStyle}
-          onClick={onBack}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = `${theme.primaryGradient}15`;
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'none';
-          }}
-          aria-label="Go back"
-        >
-          ←
-        </button>
-        <h1 style={titleStyle}>Settings</h1>
-      </header>
+      <NavigationBar
+        title="Settings"
+        theme={theme}
+        isDark={themeName === 'dark'}
+        leadingButton={{ icon: '←', title: 'Back', onPress: onBack }}
+      />
 
       {/* Content */}
-      <div style={contentStyle}>
+      <div className="ios26-container settings-content">
         {settingsSections.map(section => (
-          <div key={section.title} style={sectionStyle}>
-            <h2 style={sectionTitleStyle}>{section.title}</h2>
-            <div style={itemContainerStyle}>
+          <section
+            key={section.title}
+            className="ios26-section settings-section"
+            aria-labelledby={`section-${section.title}`}
+          >
+            <h2
+              id={`section-${section.title}`}
+              className="settings-section-title"
+            >
+              {section.title}
+            </h2>
+            <ul
+              className="ios26-card ios26-liquid-glass settings-list"
+              aria-label={section.title}
+            >
               {section.items.map((item, index) => (
-                <div
+                <li
                   key={item.id}
-                  style={{
-                    ...itemStyle,
-                    borderBottom:
-                      index === section.items.length - 1
-                        ? 'none'
-                        : itemStyle.borderBottom,
-                  }}
+                  className={`ios26-list-item settings-list-item${index === section.items.length - 1 ? ' is-last' : ''}`}
                 >
-                  <div style={{ fontSize: '24px', marginRight: '16px' }}>
-                    {item.icon}
-                  </div>
+                  <div className="settings-icon">{item.icon}</div>
 
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        fontSize: '16px',
-                        fontWeight: '500',
-                        color: theme.primaryText,
-                        marginBottom: '2px',
-                      }}
-                    >
-                      {item.title}
-                    </div>
+                  <div className="settings-item-main">
+                    <div className="settings-item-title">{item.title}</div>
                     {item.subtitle && (
-                      <div
-                        style={{
-                          fontSize: '14px',
-                          color: theme.secondaryText,
-                          lineHeight: '1.3',
-                        }}
-                      >
+                      <div className="settings-item-subtitle">
                         {item.subtitle}
                       </div>
                     )}
                   </div>
 
-                  <div style={{ marginLeft: '16px' }}>
-                    {item.type === 'toggle' &&
-                      renderToggle(item.value as boolean, value =>
-                        handleToggleChange(item.id, value)
-                      )}
+                  <div className="settings-item-trailing">
+                    {item.type === 'toggle' && (
+                      <div className="settings-switch">
+                        <input
+                          type="checkbox"
+                          aria-label={item.title}
+                          checked={item.value}
+                          onChange={e =>
+                            handleToggleChange(item.id, e.target.checked)
+                          }
+                        />
+                        <span>{item.value ? 'On' : 'Off'}</span>
+                      </div>
+                    )}
                     {item.type === 'selection' &&
                       item.options &&
                       renderSelection(
-                        item.value as string,
+                        item.value,
                         item.options,
                         value => handleSelectionChange(item.id, value),
                         item.title
                       )}
                     {item.type === 'action' && (
-                      <div
-                        style={{
-                          fontSize: '18px',
-                          color: theme.secondaryText,
-                        }}
-                      >
-                        →
-                      </div>
+                      <div className="settings-action-arrow">→</div>
                     )}
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
         ))}
       </div>
     </div>
