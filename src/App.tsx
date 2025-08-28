@@ -932,8 +932,11 @@ const SimpleWeatherApp: React.FC = () => {
       {(pullDistance > 0 || refreshing) && (
         <div
           className={`pull-refresh${refreshing ? ' is-refreshing' : ''}`}
-          data-top-offset={Math.max(10, pullDistance - 30)}
-          style={{ top: `${Math.max(10, pullDistance - 30)}px` }}
+          style={
+            {
+              ['--pull-top' as string]: `${Math.max(10, pullDistance - 30)}px`,
+            } as React.CSSProperties
+          }
         >
           {refreshing ? (
             <>

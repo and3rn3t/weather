@@ -16,8 +16,8 @@
 
   /* Default to light theme for first paint; ThemeProvider/boot script will adjust */
   color-scheme: light dark;
-  color: #213547;
-  background-color: #fff;
+  color: var(--ios26-text-primary, #213547);
+  background-color: var(--ios26-background-primary, #fff);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -33,6 +33,19 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   --safe-area-inset-left: env(safe-area-inset-left);
   --safe-area-inset-right: env(safe-area-inset-right);
+
+  /* iOS26 ↔ legacy variable bridge to keep glassmorphism consistent */
+  --primary-text: var(--ios26-text-primary, #111);
+  --secondary-text: var(--ios26-text-secondary, #6b7280);
+  --app-bg: var(--ios26-background-secondary, #f2f2f7);
+  --card-bg: var(--ios26-material-regular, rgba(255, 255, 255, 0.8));
+  --weather-card-border: var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+  --button-action-bg: var(--ios26-color-primary, #007aff);
+  --button-gradient: linear-gradient(
+    135deg,
+    var(--ios26-color-primary, #667eea) 0%,
+    var(--ios26-color-secondary, #764ba2) 100%
+  );
 }
 
 /* DEV-ONLY RESCUE OVERRIDES: ensure content is visible and not covered */
@@ -202,6 +215,8 @@ body {
   padding-bottom: var(--safe-area-inset-bottom, 0);
   padding-left: var(--safe-area-inset-left, 0);
   padding-right: var(--safe-area-inset-right, 0);
+  background: var(--ios26-background-primary, #fff);
+  color: var(--ios26-text-primary, #213547);
 }
 
 #root {
@@ -216,62 +231,35 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+/* Minimal, non-invasive base styles for unclassed buttons (defer to component classes) */
+button:not([class]) {
+  border-radius: var(--ios26-radius-md, 12px);
+  border: 1px solid var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+  padding: 0.6em 1em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--ios26-background-secondary, #f2f2f7);
+  color: var(--ios26-text-primary, #111);
   cursor: pointer;
-  transition: border-color 0.25s;
-
-  /* Enhanced mobile touch support */
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  min-height: 44px; /* WCAG compliant touch target */
+  min-height: 44px;
   min-width: 44px;
-  position: relative;
-  z-index: 1;
-
-  /* Ensure buttons are accessible */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  user-select: none;
-
-  /* Improve button appearance on mobile */
 }
-
-/* Mobile-specific button optimizations */
-@media (max-width: 768px) {
-  button {
-    min-height: 48px; /* Android touch target guideline */
-    padding: 12px 16px;
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
+button:not([class]):hover {
+  border-color: var(--ios26-border-secondary, rgba(60, 60, 67, 0.29));
+  background-color: color-mix(in srgb, var(--ios26-background-secondary, #f2f2f7) 85%, black);
 }
-
-/* Very small screen button optimizations */
-@media (max-width: 360px) {
-  button {
-    min-height: 44px;
-    padding: 10px 14px;
-    font-size: 15px;
-  }
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+button:not([class]):focus-visible {
+  outline: 3px auto color-mix(in srgb, var(--ios26-color-primary, #007aff) 60%, transparent);
+  outline-offset: 2px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -367,4 +355,254 @@ div:not(.mobile-navigation) *:active,
 }
 [data-env='dev'] .memory-stats-panel .warning {
   color: #ffcccb;
+}
+
+/* ============================================================================
+   iOS26 Compatibility Layer for Legacy Classes
+   Maps existing app button classes to iOS26 HIG styles
+   ============================================================================ */
+.btn-primary {
+  border: none;
+  border-radius: var(--ios26-radius-lg, 16px);
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: 12px 16px;
+  background: var(--ios26-color-primary, #007aff);
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+  transition:
+    transform var(--ios26-duration-fast, 0.15s) var(--ios26-ease-out, ease),
+    box-shadow var(--ios26-duration-fast, 0.15s) var(--ios26-ease-out, ease);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--ios26-color-primary, #007aff) 85%, black);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.btn-primary:disabled,
+.btn-primary.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  border-radius: var(--ios26-radius-lg, 16px);
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: 12px 16px;
+  background: var(--ios26-background-secondary, #f2f2f7);
+  color: var(--ios26-color-primary, #007aff);
+  border: 1px solid var(--ios26-border-secondary, rgba(60, 60, 67, 0.29));
+  font-weight: 600;
+  transition: background var(--ios26-duration-fast, 0.15s) var(--ios26-ease-out, ease);
+}
+.btn-secondary:hover {
+  background: var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+}
+
+.btn-text {
+  border-radius: var(--ios26-radius-md, 12px);
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--ios26-color-primary, #007aff);
+}
+.btn-text:hover {
+  background: var(--ios26-border-quaternary, rgba(60, 60, 67, 0.04));
+}
+
+/* Retry buttons and other utility actions */
+.retry-button {
+  border-radius: var(--ios26-radius-lg, 16px);
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: 10px 14px;
+  background: var(--ios26-background-secondary, #f2f2f7);
+  color: var(--ios26-text-primary, #111);
+  border: 1px solid var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+}
+.retry-button:hover {
+  background: var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+}
+
+/* ============================================================================
+   iOS26 Glassmorphic Mobile Navigation (single-source nav styling)
+   ============================================================================ */
+.mobile-navigation {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+  z-index: 1000;
+}
+
+[data-theme='dark'] .mobile-navigation {
+  background: var(--ios26-material-regular, rgba(28, 28, 30, 0.8));
+}
+
+.mobile-navigation .nav-tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--ios26-text-primary, #111);
+  border-radius: var(--ios26-radius-lg, 16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0%;
+  min-width: 0; /* allow equal distribution */
+  min-height: 44px; /* iOS minimum touch target */
+  padding: 8px 0; /* vertical comfort, full-width pill */
+  cursor: pointer;
+  transition:
+    transform var(--ios26-duration-fast, 0.15s) var(--ios26-ease-out, ease),
+    background var(--ios26-duration-fast, 0.15s) var(--ios26-ease-out, ease);
+}
+
+.mobile-navigation .nav-tab .nav-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+.mobile-navigation .nav-tab .nav-label {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ios26-text-secondary, rgba(60, 60, 67, 0.6));
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-navigation .nav-tab.active {
+  background: var(--ios26-background-secondary, #f2f2f7);
+}
+[data-theme='dark'] .mobile-navigation .nav-tab.active {
+  background: color-mix(in srgb, var(--ios26-background-tertiary, #2c2c2e) 70%, transparent);
+}
+.mobile-navigation .nav-tab.active .nav-icon {
+  transform: translateY(-2px);
+}
+.mobile-navigation .nav-tab:active {
+  transform: scale(0.98);
+  background: color-mix(in srgb, var(--ios26-background-secondary, #f2f2f7) 85%, transparent);
+}
+/* Dark theme press feedback */
+[data-theme='dark'] .mobile-navigation .nav-tab:active {
+  background: color-mix(in srgb, var(--ios26-background-tertiary, #2c2c2e) 80%, transparent);
+}
+
+/* Theme Toggle - floating glass button */
+.theme-toggle-btn {
+  position: fixed;
+  bottom: calc(64px + var(--safe-area-inset-bottom, 0) + 16px);
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+
+  /* Ultra-narrow screens: keep tabs readable and evenly spaced */
+  @media (max-width: 360px) {
+    .mobile-navigation {
+      gap: 6px;
+      padding: 8px 10px;
+    }
+    .mobile-navigation .nav-tab {
+      min-height: 40px;
+      padding: 6px 0;
+    }
+    .mobile-navigation .nav-tab .nav-label {
+      font-size: 11px;
+    }
+  }
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+[data-theme='dark'] .theme-toggle-btn {
+  background: var(--ios26-material-regular, rgba(28, 28, 30, 0.8));
+}
+.theme-toggle-dark {
+  color: var(--ios26-text-primary, #111);
+}
+.theme-toggle-light {
+  color: var(--ios26-text-primary, #111);
+}
+
+/* ==========================================================================
+   iOS HIG Interaction States: hover/active/focus-visible + reduced motion
+   ======================================================================= */
+/* Hover on pointer-accurate devices only */
+@media (hover: hover) and (pointer: fine) {
+  .mobile-navigation .nav-tab:hover {
+    background: color-mix(in srgb, var(--ios26-background-secondary, #f2f2f7) 80%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .theme-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  }
+}
+
+/* Active press feedback (tap/click) */
+.theme-toggle-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Accessible focus rings */
+.mobile-navigation .nav-tab:focus-visible,
+.theme-toggle-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--ios26-color-primary, #007aff) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* Reduced motion: minimize or disable transforms/transitions */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navigation .nav-tab,
+  .theme-toggle-btn {
+    transition: none !important;
+  }
+  .mobile-navigation .nav-tab:hover,
+  .mobile-navigation .nav-tab:active,
+  .mobile-navigation .nav-tab.active,
+  .theme-toggle-btn:hover,
+  .theme-toggle-btn:active {
+    transform: none !important;
+  }
+}
+
+/* Restore :active visuals inside nav and for the theme toggle (override global neutralization) */
+#root .mobile-navigation .nav-tab:active {
+  background: color-mix(in srgb, var(--ios26-background-secondary, #f2f2f7) 85%, transparent) !important;
+  transform: scale(0.98) !important;
+}
+#root [data-theme='dark'] .mobile-navigation .nav-tab:active {
+  background: color-mix(in srgb, var(--ios26-background-tertiary, #2c2c2e) 80%, transparent) !important;
+}
+#root .theme-toggle-btn:active {
+  transform: scale(0.96) !important;
 }

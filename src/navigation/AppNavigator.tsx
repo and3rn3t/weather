@@ -24,6 +24,17 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Time Utilities
 import { formatTimeForHourly } from '../utils/timeUtils';
+import {
+  calculateUVIndex,
+  formatDayInfo,
+  generatePrecipitationData,
+  mapOpenMeteoToWeatherData,
+  processDailyForecast,
+  processHourlyForecast,
+  transformHourlyDataForChart,
+  type RawDailyData,
+  type RawHourlyData,
+} from '../utils/weatherTransformers';
 
 // Lazy-loaded heavy components for performance optimization
 import {
@@ -50,10 +61,7 @@ import type {
   WeatherContext,
   WeatherData,
 } from '../types/weather';
-import {
-  getWeatherDescription,
-  getWeatherMainCategory,
-} from '../utils/weatherCodes';
+// Weather code helpers centralized inside mapOpenMeteoToWeatherData
 
 import FavoritesScreen from '../components/FavoritesScreen';
 import LocationManager from '../components/LocationManager';
@@ -158,27 +166,8 @@ import {
 } from '../utils/useMultiSensoryWeather';
 
 /**
- * OpenMeteo API response interfaces
+ * OpenMeteo API response interfaces are imported as RawHourlyData/RawDailyData
  */
-interface HourlyData {
-  time: string[];
-  temperature_2m: number[];
-  weathercode: number[];
-  relative_humidity_2m: number[];
-  apparent_temperature: number[];
-  surface_pressure: number[];
-  uv_index: number[];
-  visibility: number[];
-}
-
-interface DailyData {
-  time: string[];
-  weathercode: number[];
-  temperature_2m_max: number[];
-  temperature_2m_min: number[];
-  precipitation_sum: number[];
-  windspeed_10m_max: number[];
-}
 
 // Weather code helpers now centralized in utils/weatherCodes
 
@@ -236,100 +225,7 @@ const weatherDetailItems = [
   },
 ];
 
-/** Process hourly forecast data into structured format */
-const processHourlyForecast = (hourlyData: HourlyData): HourlyForecast[] => {
-  if (!hourlyData?.time || !hourlyData?.temperature_2m) {
-    logWarn('⚠️ No hourly data available for forecast');
-    return [];
-  }
-
-  const currentTime = new Date();
-  const next24Hours: HourlyForecast[] = [];
-
-  for (let i = 0; i < Math.min(24, hourlyData.time.length); i++) {
-    const forecastTime = new Date(hourlyData.time[i]);
-
-    if (forecastTime > currentTime) {
-      next24Hours.push({
-        time: hourlyData.time[i],
-        temperature: Math.round(hourlyData.temperature_2m[i] || 0),
-        weatherCode: hourlyData.weathercode?.[i] || 0,
-        humidity: Math.round(hourlyData.relative_humidity_2m?.[i] || 0),
-        feelsLike: Math.round(hourlyData.apparent_temperature?.[i] || 0),
-      });
-    }
-
-    if (next24Hours.length >= 24) break;
-  }
-
-  return next24Hours;
-};
-
-/** Format date for daily forecast display */
-const formatDayInfo = (dateString: string, index: number) => {
-  const dayDate = new Date(dateString);
-  const isToday = index === 0;
-  const dayName = isToday
-    ? 'Today'
-    : dayDate.toLocaleDateString([], { weekday: 'short' });
-  const dateStr = dayDate.toLocaleDateString([], {
-    month: 'short',
-    day: 'numeric',
-  });
-  return { dayName, dateStr, isToday };
-};
-
-/** Process daily forecast data into structured format */
-const processDailyForecast = (dailyData: DailyData): DailyForecast[] => {
-  if (!dailyData?.time || !dailyData?.temperature_2m_max) {
-    logWarn('⚠️ No daily data available for forecast');
-    return [];
-  }
-
-  const next7Days: DailyForecast[] = [];
-
-  for (let i = 0; i < Math.min(7, dailyData.time.length); i++) {
-    next7Days.push({
-      date: dailyData.time[i],
-      weatherCode: dailyData.weathercode?.[i] || 0,
-      tempMax: Math.round(dailyData.temperature_2m_max[i] || 0),
-      tempMin: Math.round(dailyData.temperature_2m_min[i] || 0),
-      precipitation:
-        Math.round((dailyData.precipitation_sum?.[i] || 0) * 10) / 10,
-      windSpeed: Math.round(dailyData.windspeed_10m_max?.[i] || 0),
-    });
-  }
-
-  return next7Days;
-};
-
-// Enhanced Visualization Data Transformers - Phase 2C
-/** Transform hourly forecast for TemperatureTrend visualization */
-const transformHourlyDataForChart = (hourlyForecast: HourlyForecast[]) => {
-  return hourlyForecast.slice(0, 12).map(hour => ({
-    time: formatTimeForHourly(hour.time),
-    temperature: hour.temperature,
-  }));
-};
-
-/** Generate precipitation data for PrecipitationChart */
-const generatePrecipitationData = (hourlyForecast: HourlyForecast[]) => {
-  return hourlyForecast.slice(0, 12).map(hour => ({
-    time: formatTimeForHourly(hour.time),
-    precipitation: Math.random() * 100, // Mock data - replace with real precipitation probability when available
-  }));
-};
-
-/** Calculate UV Index (mock data - replace with real when available) */
-const calculateUVIndex = (weather: WeatherData) => {
-  // Mock UV calculation based on temperature and time of day
-  const hour = new Date().getHours();
-  const baseUV =
-    hour >= 6 && hour <= 18
-      ? Math.min(10, Math.max(0, (weather.main.temp - 60) / 10))
-      : 0;
-  return Math.round(baseUV * 10) / 10;
-};
+// Enhanced Visualization Data Transformers moved to utils/weatherTransformers
 
 function HomeScreen({
   theme,
@@ -1798,35 +1694,9 @@ const AppNavigator = () => {
           const transformedData = optimizedTransform(
             weatherData,
             data => {
-              const currentWeatherCode = data.current_weather?.weathercode || 0;
-              setWeatherCode(currentWeatherCode);
-              const currentHour = new Date().getHours();
-              const hourlyData = data.hourly;
-
-              return {
-                main: {
-                  temp: data.current_weather?.temperature || 0,
-                  feels_like:
-                    hourlyData?.apparent_temperature?.[currentHour] ||
-                    data.current_weather?.temperature ||
-                    0,
-                  humidity:
-                    hourlyData?.relative_humidity_2m?.[currentHour] || 50,
-                  pressure: hourlyData?.surface_pressure?.[currentHour] || 1013,
-                },
-                weather: [
-                  {
-                    description: getWeatherDescription(currentWeatherCode),
-                    main: getWeatherMainCategory(currentWeatherCode),
-                  },
-                ],
-                wind: {
-                  speed: data.current_weather?.windspeed || 0,
-                  deg: data.current_weather?.winddirection || 0,
-                },
-                uv_index: hourlyData?.uv_index?.[currentHour] || 0,
-                visibility: hourlyData?.visibility?.[currentHour] || 0,
-              };
+              const mapped = mapOpenMeteoToWeatherData(data);
+              setWeatherCode(mapped.weatherCode);
+              return mapped.weatherData;
             },
             `transform-${lat}-${lon}-${Date.now()}`
           );
@@ -1841,10 +1711,10 @@ const AppNavigator = () => {
 
           setWeather(transformedData);
           setHourlyForecast(
-            processHourlyForecast(weatherData.hourly as HourlyData)
+            processHourlyForecast(weatherData.hourly as RawHourlyData)
           );
           setDailyForecast(
-            processDailyForecast(weatherData.daily as DailyData)
+            processDailyForecast(weatherData.daily as RawDailyData)
           );
 
           // Track successful weather data load
