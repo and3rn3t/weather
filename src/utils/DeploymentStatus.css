@@ -57,6 +57,15 @@
   font-size: 9px;
 }
 
+.deployment-status .copy-toast {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+  font-size: 9px;
+}
+
 @keyframes deployment-status-pulse {
   0%,
   100% {
@@ -65,4 +74,46 @@
   50% {
     opacity: 0.5;
   }
+}
+
+/* New version available prompt bar */
+.deploy-refresh-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 56px;
+  z-index: 110;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  font:
+    400 12px/1.2 -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+.deploy-refresh-bar.light {
+  background: rgba(255, 255, 255, 0.85);
+  color: #1f2937;
+}
+.deploy-refresh-bar.dark {
+  background: rgba(31, 31, 31, 0.85);
+  color: #e5e7eb;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.deploy-refresh-bar .deploy-refresh-button {
+  margin-left: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+.deploy-refresh-bar .deploy-refresh-button:hover {
+  filter: brightness(1.1);
 }
