@@ -43,25 +43,9 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   theme,
   isDark = false,
 }) => {
-  const getBackgroundColor = () => {
-    if (transparent) return 'transparent';
-    return isDark ? 'rgba(28, 28, 30, 0.95)' : 'rgba(248, 248, 248, 0.95)';
-  };
-
-  const getBorderColor = () => {
-    if (transparent) return 'none';
-    return `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`;
-  };
-
-  const containerStyle: React.CSSProperties = {
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-    backgroundColor: getBackgroundColor(),
-    backdropFilter: 'blur(20px)',
-    borderBottom: getBorderColor(),
-    transition: 'all 0.3s ease',
-  };
+  const containerStyle: React.CSSProperties = transparent
+    ? { backgroundColor: 'transparent' }
+    : {};
 
   const navBarStyle: React.CSSProperties = {
     display: 'flex',
@@ -96,22 +80,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     lineHeight: '20px',
   };
 
-  const buttonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    padding: '8px 12px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '17px',
-    fontWeight: '400',
-    color: '#007AFF',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    minWidth: '44px',
-    justifyContent: 'center',
-  };
+  const buttonClass = 'ios26-button-base ios26-button-plain';
 
   const searchContainerStyle: React.CSSProperties = {
     padding: '0 20px 16px',
@@ -119,7 +88,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   };
 
   return (
-    <div style={containerStyle} className="ios-navigation-bar">
+    <div
+      style={containerStyle}
+      className={`ios26-navigation-bar ios26-liquid-glass${transparent ? ' ios26-liquid-transparent' : ''}`}
+      role="navigation"
+      aria-label="Top navigation"
+      data-theme-mode={isDark ? 'dark' : 'light'}
+    >
       <div style={navBarStyle}>
         <div
           style={{
@@ -130,16 +105,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         >
           {leadingButton && (
             <button
-              style={buttonStyle}
+              className={buttonClass}
               onClick={leadingButton.onPress}
-              onMouseEnter={e => {
-                (e.target as HTMLElement).style.backgroundColor = isDark
-                  ? 'rgba(255, 255, 255, 0.1)'
-                  : 'rgba(0, 0, 0, 0.05)';
-              }}
-              onMouseLeave={e => {
-                (e.target as HTMLElement).style.backgroundColor = 'transparent';
-              }}
               aria-label={leadingButton.title || 'Navigation button'}
             >
               {leadingButton.icon}
@@ -162,16 +129,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         >
           {trailingButton && (
             <button
-              style={buttonStyle}
+              className={buttonClass}
               onClick={trailingButton.onPress}
-              onMouseEnter={e => {
-                (e.target as HTMLElement).style.backgroundColor = isDark
-                  ? 'rgba(255, 255, 255, 0.1)'
-                  : 'rgba(0, 0, 0, 0.05)';
-              }}
-              onMouseLeave={e => {
-                (e.target as HTMLElement).style.backgroundColor = 'transparent';
-              }}
               aria-label={trailingButton.title || 'Navigation button'}
             >
               {trailingButton.icon}

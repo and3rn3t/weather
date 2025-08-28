@@ -99,40 +99,49 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
     <nav
       className={`mobile-navigation ${className}`}
       aria-label="Main navigation"
+      data-ui="ios26-liquid-glass"
     >
-      {tabs.map(tab => {
-        const isActive = activeTab === tab.id;
-        const displayIcon =
-          isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
+      <div
+        role="tablist"
+        aria-label="Primary tabs"
+        className="mobile-navigation-safe-area"
+      >
+        {tabs.map(tab => {
+          const isActive = activeTab === tab.id;
+          const displayIcon =
+            isActive && tab.activeIcon ? tab.activeIcon : tab.icon;
 
-        return (
-          <button
-            key={tab.id}
-            className={`nav-tab ${isActive ? 'active' : ''}`}
-            type="button"
-            aria-label={`Navigate to ${tab.label}`}
-            aria-current={isActive ? 'page' : undefined}
-            onClick={e => handleTabPress(tab.id, e)}
-            onTouchStart={e => {
-              // Prevent touch highlighting
-              e.preventDefault();
-            }}
-            onMouseDown={e => {
-              // Prevent mouse down styling
-              e.preventDefault();
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
+          return (
+            <button
+              key={tab.id}
+              className={`nav-tab ${isActive ? 'active' : ''}`}
+              type="button"
+              aria-label={`Navigate to ${tab.label}`}
+              role="tab"
+              aria-selected={isActive ? 'true' : 'false'}
+              aria-current={isActive ? 'page' : undefined}
+              onClick={e => handleTabPress(tab.id, e)}
+              onTouchStart={e => {
+                // Prevent touch highlighting
                 e.preventDefault();
-                handleTabPress(tab.id);
-              }
-            }}
-          >
-            <div className="nav-icon">{displayIcon}</div>
-            <span className="nav-label">{tab.label}</span>
-          </button>
-        );
-      })}
+              }}
+              onMouseDown={e => {
+                // Prevent mouse down styling
+                e.preventDefault();
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleTabPress(tab.id);
+                }
+              }}
+            >
+              <div className="nav-icon">{displayIcon}</div>
+              <span className="nav-label">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 };
