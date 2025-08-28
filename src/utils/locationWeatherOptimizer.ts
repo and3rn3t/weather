@@ -6,6 +6,7 @@
  */
 
 import { logError, logInfo } from './logger';
+import { reverseGeocodeCached } from './reverseGeocodingCache';
 
 export interface LocationWeatherResult {
   city: string;
@@ -175,37 +176,10 @@ export class LocationWeatherOptimizer {
     lon: number
   ): Promise<{ city?: string }> {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 second timeout
-
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
-        {
-          headers: {
-            'User-Agent': 'WeatherApp/1.0 (optimized-location@weatherapp.com)',
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`Reverse geocoding failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const address = data?.address || {};
-
-      const city =
-        address.city ||
-        address.town ||
-        address.village ||
-        address.hamlet ||
-        address.municipality ||
-        'Unknown Location';
-
-      return { city };
+      const res = await reverseGeocodeCached(lat, lon, {
+        ttlMs: 6 * 60 * 60 * 1000,
+      });
+      return { city: res.city || 'Unknown Location' };
     } catch (error) {
       logError('Reverse geocoding failed (non-fatal):', error);
       return { city: 'Unknown Location' };

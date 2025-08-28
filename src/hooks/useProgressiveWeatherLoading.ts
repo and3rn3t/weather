@@ -1,11 +1,11 @@
 /**
  * Progressive Weather Data Loader
  *
- * Implements progressive loading strategy:
- * 1. Load current weather first (fastest)
- * 2. Load today's hourly forecast
- * 3. Load extended forecasts
- * 4. Load detailed metrics
+ * Progressive stages:
+ * 1) Current weather
+ * 2) Hourly (today)
+ * 3) Daily (7 days)
+ * 4) Metrics (UV, visibility, pressure, dew point)
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import type {
   HourlyForecast,
   WeatherData,
 } from '../types/weather';
+import { useWeatherAPIOptimization } from '../utils/useWeatherOptimization';
 
 interface ProgressiveWeatherData {
   current: WeatherData | null;
@@ -38,6 +39,7 @@ export const useProgressiveWeatherLoading = (
   latitude: number,
   longitude: number
 ) => {
+  const { optimizedFetch } = useWeatherAPIOptimization();
   const [weatherData, setWeatherData] = useState<ProgressiveWeatherData>({
     current: null,
     hourly: [],
@@ -54,31 +56,29 @@ export const useProgressiveWeatherLoading = (
 
   const [error, setError] = useState<string>('');
 
-  // Stage 1: Load current weather (highest priority)
   const loadCurrentWeather = useCallback(async () => {
     setWeatherData(prev => ({
       ...prev,
       loadingStages: { ...prev.loadingStages, current: true },
       progress: 10,
     }));
-
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`;
+      const res = await optimizedFetch(
+        url,
+        {},
+        `current:${latitude},${longitude}`
       );
-
-      if (!response.ok) throw new Error('Current weather fetch failed');
-
-      const data = await response.json();
-
+      if (!res.ok) throw new Error('Current weather fetch failed');
+      const data = await res.json();
       setWeatherData(prev => ({
         ...prev,
         current: {
           main: {
             temp: data.current_weather.temperature,
-            feels_like: data.current_weather.temperature, // Approximation
-            humidity: 50, // Will be updated in metrics stage
-            pressure: 1013, // Will be updated in metrics stage
+            feels_like: data.current_weather.temperature,
+            humidity: 50,
+            pressure: 1013,
           },
           weather: [
             {
@@ -92,92 +92,102 @@ export const useProgressiveWeatherLoading = (
             speed: data.current_weather.windspeed,
             deg: data.current_weather.winddirection,
           },
-          visibility: 10000, // Default, will be updated
-        } as WeatherData,
+          visibility: 10000,
+          uv_index: 0,
+        },
         loadingStages: { ...prev.loadingStages, current: false },
         progress: 25,
       }));
-    } catch (err) {
+    } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('Stage 1 error:', err);
+      console.error('Stage 1 error:', e);
       setError('Failed to load current weather');
       setWeatherData(prev => ({
         ...prev,
         loadingStages: { ...prev.loadingStages, current: false },
       }));
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, optimizedFetch]);
 
-  // Stage 2: Load hourly forecast (next 24 hours)
   const loadHourlyForecast = useCallback(async () => {
     setWeatherData(prev => ({
       ...prev,
       loadingStages: { ...prev.loadingStages, hourly: true },
       progress: 35,
     }));
-
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature&temperature_unit=fahrenheit&forecast_days=1`
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature&temperature_unit=fahrenheit&forecast_days=1`;
+      const res = await optimizedFetch(
+        url,
+        {},
+        `hourly:${latitude},${longitude}`
       );
-
-      if (!response.ok) throw new Error('Hourly forecast fetch failed');
-
-      const data = await response.json();
-      const hourlyData = data.hourly;
-
-      const next24Hours: HourlyForecast[] = [];
-      const currentHour = new Date().getHours();
-
-      for (let i = 0; i < Math.min(24, hourlyData.time.length); i++) {
-        if (i >= currentHour) {
-          next24Hours.push({
-            time: hourlyData.time[i],
-            temperature: Math.round(hourlyData.temperature_2m[i] || 0),
-            weatherCode: hourlyData.weathercode?.[i] || 0,
-            humidity: Math.round(hourlyData.relative_humidity_2m?.[i] || 0),
-            feelsLike: Math.round(hourlyData.apparent_temperature?.[i] || 0),
-          });
+      if (!res.ok) {
+        if (res.status === 429 && import.meta.env?.DEV) {
+          setWeatherData(prev => ({
+            ...prev,
+            loadingStages: { ...prev.loadingStages, hourly: false },
+          }));
+          return;
         }
+        throw new Error('Hourly forecast fetch failed');
       }
-
+      const data = await res.json();
+      const hourlyData = data.hourly;
+      const next24: HourlyForecast[] = [];
+      for (let i = 0; i < Math.min(24, hourlyData.time.length); i++) {
+        next24.push({
+          time: hourlyData.time[i],
+          temperature: Math.round(hourlyData.temperature_2m[i] || 0),
+          weatherCode: hourlyData.weathercode?.[i] || 0,
+          humidity: Math.round(hourlyData.relative_humidity_2m?.[i] || 0),
+          feelsLike: Math.round(hourlyData.apparent_temperature?.[i] || 0),
+        });
+      }
       setWeatherData(prev => ({
         ...prev,
-        hourly: next24Hours,
+        hourly: next24,
         loadingStages: { ...prev.loadingStages, hourly: false },
         progress: 60,
       }));
-    } catch (err) {
+    } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('Stage 2 error:', err);
+      console.error('Stage 2 error:', e);
       setWeatherData(prev => ({
         ...prev,
         loadingStages: { ...prev.loadingStages, hourly: false },
       }));
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, optimizedFetch]);
 
-  // Stage 3: Load daily forecast (7 days)
   const loadDailyForecast = useCallback(async () => {
     setWeatherData(prev => ({
       ...prev,
       loadingStages: { ...prev.loadingStages, daily: true },
       progress: 70,
     }));
-
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&forecast_days=7`
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&forecast_days=7`;
+      const res = await optimizedFetch(
+        url,
+        {},
+        `daily:${latitude},${longitude}`
       );
-
-      if (!response.ok) throw new Error('Daily forecast fetch failed');
-
-      const data = await response.json();
+      if (!res.ok) {
+        if (res.status === 429 && import.meta.env?.DEV) {
+          setWeatherData(prev => ({
+            ...prev,
+            loadingStages: { ...prev.loadingStages, daily: false },
+          }));
+          return;
+        }
+        throw new Error('Daily forecast fetch failed');
+      }
+      const data = await res.json();
       const dailyData = data.daily;
-
-      const next7Days: DailyForecast[] = [];
+      const next7: DailyForecast[] = [];
       for (let i = 0; i < Math.min(7, dailyData.time.length); i++) {
-        next7Days.push({
+        next7.push({
           date: dailyData.time[i],
           weatherCode: dailyData.weathercode?.[i] || 0,
           tempMax: Math.round(dailyData.temperature_2m_max[i] || 0),
@@ -187,48 +197,53 @@ export const useProgressiveWeatherLoading = (
           windSpeed: Math.round(dailyData.windspeed_10m_max?.[i] || 0),
         });
       }
-
       setWeatherData(prev => ({
         ...prev,
-        daily: next7Days,
+        daily: next7,
         loadingStages: { ...prev.loadingStages, daily: false },
         progress: 85,
       }));
-    } catch (err) {
+    } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('Stage 3 error:', err);
+      console.error('Stage 3 error:', e);
       setWeatherData(prev => ({
         ...prev,
         loadingStages: { ...prev.loadingStages, daily: false },
       }));
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, optimizedFetch]);
 
-  // Stage 4: Load detailed metrics (lowest priority)
   const loadDetailedMetrics = useCallback(async () => {
     setWeatherData(prev => ({
       ...prev,
       loadingStages: { ...prev.loadingStages, metrics: true },
       progress: 90,
     }));
-
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,surface_pressure,dew_point_2m&hourly=uv_index,visibility&temperature_unit=fahrenheit&forecast_days=1`
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,surface_pressure,dew_point_2m&hourly=uv_index,visibility&temperature_unit=fahrenheit&forecast_days=1`;
+      const res = await optimizedFetch(
+        url,
+        {},
+        `metrics:${latitude},${longitude}`
       );
-
-      if (!response.ok) throw new Error('Metrics fetch failed');
-
-      const data = await response.json();
-
+      if (!res.ok) {
+        if (res.status === 429 && import.meta.env?.DEV) {
+          setWeatherData(prev => ({
+            ...prev,
+            loadingStages: { ...prev.loadingStages, metrics: false },
+            progress: 100,
+          }));
+          return;
+        }
+        throw new Error('Metrics fetch failed');
+      }
+      const data = await res.json();
       const metrics = {
         uvIndex: data.hourly?.uv_index?.[0] || 0,
         visibility: data.hourly?.visibility?.[0] || 10000,
         dewPoint: data.current?.dew_point_2m || 0,
         pressure: data.current?.surface_pressure || 1013,
       };
-
-      // Update current weather with accurate data
       setWeatherData(prev => ({
         ...prev,
         current: prev.current
@@ -237,50 +252,39 @@ export const useProgressiveWeatherLoading = (
               main: {
                 ...prev.current.main,
                 humidity:
-                  data.current?.relative_humidity_2m ||
+                  data.current?.relative_humidity_2m ??
                   prev.current.main.humidity,
                 pressure: metrics.pressure,
               },
               visibility: metrics.visibility,
-              uv_index: metrics.uvIndex,
+              uv_index: metrics.uvIndex ?? prev.current.uv_index,
             }
           : null,
         metrics,
         loadingStages: { ...prev.loadingStages, metrics: false },
         progress: 100,
       }));
-    } catch (err) {
+    } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('Stage 4 error:', err);
+      console.error('Stage 4 error:', e);
       setWeatherData(prev => ({
         ...prev,
         loadingStages: { ...prev.loadingStages, metrics: false },
         progress: 100,
       }));
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, optimizedFetch]);
 
-  // Execute progressive loading
   useEffect(() => {
     if (!latitude || !longitude) return;
-
-    const loadWeatherData = async () => {
+    const run = async () => {
       setError('');
-
-      // Stage 1: Current weather (immediate display)
       await loadCurrentWeather();
-
-      // Stage 2: Today's forecast (quick follow-up)
       setTimeout(() => loadHourlyForecast(), 100);
-
-      // Stage 3: Extended forecast (can wait)
       setTimeout(() => loadDailyForecast(), 500);
-
-      // Stage 4: Detailed metrics (lowest priority)
       setTimeout(() => loadDetailedMetrics(), 1000);
     };
-
-    loadWeatherData();
+    run();
   }, [
     latitude,
     longitude,
@@ -304,8 +308,6 @@ export const useProgressiveWeatherLoading = (
       },
       progress: 0,
     });
-
-    // Reload all stages
     await loadCurrentWeather();
     setTimeout(() => loadHourlyForecast(), 100);
     setTimeout(() => loadDailyForecast(), 500);
@@ -325,7 +327,6 @@ export const useProgressiveWeatherLoading = (
   };
 };
 
-// Helper functions
 const getWeatherDescription = (code: number): string => {
   const descriptions: Record<number, string> = {
     0: 'Clear sky',

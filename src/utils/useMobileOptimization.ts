@@ -5,12 +5,13 @@
  * including breakpoint detection, touch support, and performance optimization.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { optimizedFetch as sharedOptimizedFetch } from './optimizedFetch';
 import {
-  getCurrentBreakpoint,
   createResizeHandler,
-  supportsHover,
+  getCurrentBreakpoint,
   prefersReducedMotion,
+  supportsHover,
 } from './responsiveUtils';
 
 // ============================================================================
@@ -322,34 +323,36 @@ export const useMobileOptimizedAPI = () => {
 
   const optimizedFetch = useCallback(
     async (url: string, options: RequestInit = {}) => {
-      // Add request optimizations for mobile
-      const optimizedOptions: RequestInit = {
-        ...options,
-        // Add timeout for slow connections
-        signal: AbortSignal.timeout(isSlowConnection ? 15000 : 8000),
-        headers: {
-          ...options.headers,
-          // Request compressed responses
-          'Accept-Encoding': 'gzip, deflate, br',
-          // Indicate mobile client
-          'User-Agent': 'WeatherApp/1.0 Mobile',
-          // Request lightweight responses when possible
-          ...(isSlowConnection && { 'X-Requested-With': 'mobile-optimized' }),
-        },
-      };
-
+      // Mobile-friendly hints without breaking shared policy
+      const controller = new AbortController();
+      const timeout = setTimeout(
+        () => controller.abort(),
+        isSlowConnection ? 15000 : 8000
+      );
       try {
-        const response = await fetch(url, optimizedOptions);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const headers = new Headers(options.headers as HeadersInit);
+        // Request compressed responses (harmless hint)
+        if (!headers.has('Accept-Encoding')) {
+          headers.set('Accept-Encoding', 'gzip, deflate, br');
+        }
+        // Avoid setting User-Agent here; shared layer manages Nominatim policy
+        // Optional hint for servers we control
+        if (isSlowConnection && !headers.has('X-Requested-With')) {
+          headers.set('X-Requested-With', 'mobile-optimized');
         }
 
-        return response;
+        const res = await sharedOptimizedFetch(
+          url,
+          { ...options, headers, signal: controller.signal },
+          undefined
+        );
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        return res;
       } catch (error) {
-        // Enhanced error handling for mobile scenarios
         if (error instanceof Error) {
-          if (error.name === 'TimeoutError') {
+          if (error.name === 'AbortError') {
             throw new Error('Request timeout - please check your connection');
           }
           if (error.name === 'TypeError' && error.message.includes('fetch')) {
@@ -359,6 +362,8 @@ export const useMobileOptimizedAPI = () => {
           }
         }
         throw error;
+      } finally {
+        clearTimeout(timeout);
       }
     },
     [isSlowConnection]

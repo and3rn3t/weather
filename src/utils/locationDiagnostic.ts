@@ -4,6 +4,7 @@
  */
 
 import { locationService } from './locationService';
+import { optimizedFetch } from './optimizedFetch';
 
 export class LocationDiagnostic {
   /**
@@ -110,7 +111,7 @@ export class LocationDiagnostic {
 
     // Check 4: Network connectivity (basic check)
     try {
-      await fetch('https://nominatim.openstreetmap.org/', {
+      await optimizedFetch('https://nominatim.openstreetmap.org/', {
         method: 'HEAD',
         mode: 'no-cors',
       });

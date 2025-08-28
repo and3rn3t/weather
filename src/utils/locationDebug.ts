@@ -4,8 +4,29 @@
  * Debug tool for testing geolocation and geocoding functionality
  */
 
-import { useLocationServices } from './useLocationServices';
 import { logError, logInfo } from './logger';
+import { optimizedFetchJson } from './optimizedFetch';
+import { useLocationServices } from './useLocationServices';
+
+interface NominatimReverseResponse {
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    hamlet?: string;
+    municipality?: string;
+    country?: string;
+  };
+}
+
+interface OpenMeteoDebugResponse {
+  current_weather?: {
+    temperature?: number;
+    windspeed?: number;
+    weathercode?: number;
+    time?: string;
+  };
+}
 
 /**
  * useLocationDebug - Custom React hook for locationDebug functionality
@@ -55,20 +76,11 @@ export const useLocationDebug = () => {
     logInfo(`🧪 Testing Reverse Geocoding for ${lat}, ${lon}`);
 
     try {
-      const response = await fetch(
+      const data = await optimizedFetchJson<NominatimReverseResponse>(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,
-        {
-          headers: {
-            'User-Agent': 'WeatherApp/1.0 (test@example.com)',
-          },
-        }
+        {},
+        `debug:reverse:${lat},${lon}`
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
       logInfo('✅ Reverse geocoding response:', data);
 
       const address = data.address || {};
@@ -93,17 +105,11 @@ export const useLocationDebug = () => {
     try {
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
 
-      const response = await fetch(weatherUrl, {
-        headers: {
-          'User-Agent': 'WeatherApp/1.0 (test@example.com)',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      const data = await optimizedFetchJson<OpenMeteoDebugResponse>(
+        weatherUrl,
+        {},
+        `debug:weather:${lat},${lon}`
+      );
       logInfo('✅ Weather API response:', data);
 
       if (data.current_weather) {
@@ -155,20 +161,21 @@ if (typeof window !== 'undefined') {
     window as unknown as { debugLocation: Record<string, unknown> }
   ).debugLocation = {
     testReverseGeocoding: async (lat: number, lon: number) => {
-      const response = await fetch(
+      const data = await optimizedFetchJson<NominatimReverseResponse>(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,
-        {
-          headers: { 'User-Agent': 'WeatherApp/1.0 (test@example.com)' },
-        }
+        {},
+        `debug:reverse:${lat},${lon}`
       );
-      const data = await response.json();
       logInfo('Reverse geocoding result:', data);
       return data;
     },
     testWeatherAPI: async (lat: number, lon: number) => {
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`;
-      const response = await fetch(weatherUrl);
-      const data = await response.json();
+      const data = await optimizedFetchJson<OpenMeteoDebugResponse>(
+        weatherUrl,
+        {},
+        `debug:weather:${lat},${lon}`
+      );
       logInfo('Weather API result:', data);
       return data;
     },

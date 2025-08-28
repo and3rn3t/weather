@@ -20,6 +20,7 @@ import React, {
 import '../styles/IOSSearchBar.css';
 import { useHaptic } from '../utils/hapticHooks';
 import { logError } from '../utils/logger';
+import { optimizedFetchJson } from '../utils/optimizedFetch';
 import { useTheme } from '../utils/useTheme';
 
 interface City {
@@ -326,8 +327,11 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
       try {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=auto`;
 
-        const response = await fetch(weatherUrl);
-        return await response.json();
+        return await optimizedFetchJson<WeatherData>(
+          weatherUrl,
+          {},
+          `iosbar:${city.place_id}`
+        );
       } catch (error) {
         logError('Weather fetch error:', error);
         return undefined;

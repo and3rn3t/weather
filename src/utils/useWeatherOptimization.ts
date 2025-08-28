@@ -5,7 +5,11 @@
  * including memoization, debouncing, and intelligent caching.
  */
 
-import { useMemo, useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
+import {
+  clearAPICache as clearSharedAPICache,
+  optimizedFetch as sharedOptimizedFetch,
+} from './optimizedFetch';
 
 interface WeatherOptimizationOptions {
   debounceMs?: number;
@@ -115,56 +119,21 @@ export const useWeatherOptimization = <T>(
  * useWeatherAPIOptimization - Custom React hook for useWeatherOptimization functionality
  */
 export const useWeatherAPIOptimization = () => {
-  const requestCache = useRef<Map<string, Promise<Response>>>(new Map());
-  const lastRequestTime = useRef<Map<string, number>>(new Map());
-
+  // Delegate to shared optimizedFetch; keep hook API stable
   const optimizedFetch = useCallback(
-    async (url: string, options: RequestInit = {}, cacheKey: string = url) => {
-      const now = Date.now();
-      const lastRequest = lastRequestTime.current.get(cacheKey);
-
-      // Prevent duplicate requests within 1 second
-      if (lastRequest && now - lastRequest < 1000) {
-        const existingRequest = requestCache.current.get(cacheKey);
-        if (existingRequest) {
-          return existingRequest;
-        }
-      }
-
-      // Create new request
-      const request = fetch(url, {
-        ...options,
-        headers: {
-          ...options.headers,
-          'Cache-Control': 'max-age=300', // 5 minutes browser cache
-        },
-      });
-
-      // Cache the request
-      requestCache.current.set(cacheKey, request);
-      lastRequestTime.current.set(cacheKey, now);
-
-      // Clean up cache after request completes
-      request.finally(() => {
-        setTimeout(() => {
-          requestCache.current.delete(cacheKey);
-        }, 5000); // Keep for 5 seconds to prevent rapid duplicate requests
-      });
-
-      return request;
-    },
+    (url: string, options: RequestInit = {}, cacheKey?: string) =>
+      sharedOptimizedFetch(url, options, cacheKey ?? url),
     []
   );
 
   const clearAPICache = useCallback(() => {
-    requestCache.current.clear();
-    lastRequestTime.current.clear();
+    clearSharedAPICache();
   }, []);
 
   return {
     optimizedFetch,
     clearAPICache,
-    getCacheSize: () => requestCache.current.size,
+    getCacheSize: () => 0,
   };
 };
 

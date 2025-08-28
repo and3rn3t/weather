@@ -11,6 +11,7 @@
 
 import { useHaptic } from './hapticHooks';
 import { logError, logInfo, logWarn } from './logger';
+import { reverseGeocodeCached } from './reverseGeocodingCache';
 
 export interface FastLocationResult {
   latitude: number;
@@ -31,7 +32,7 @@ export interface LocationCache {
 
 class FastLocationManager {
   private static instance: FastLocationManager;
-  private locationCache: Map<string, LocationCache> = new Map();
+  private readonly locationCache: Map<string, LocationCache> = new Map();
   private currentRequest: Promise<FastLocationResult | null> | null = null;
 
   // Optimized settings for speed vs accuracy balance
@@ -154,11 +155,17 @@ class FastLocationManager {
 
         // Parallel operation 1: Get city name if needed
         if (includeCityName) {
+          const isDev = import.meta.env?.DEV ?? false;
           operations.push(
-            this.getReverseGeocodingFast(
-              locationResult.latitude,
-              locationResult.longitude
-            )
+            (async () => {
+              if (isDev) {
+                return { city: 'Current Location', country: '' } as const;
+              }
+              return this.getReverseGeocodingFast(
+                locationResult.latitude,
+                locationResult.longitude
+              );
+            })()
               .then(cityData => {
                 locationResult.city = cityData.city;
                 locationResult.country = cityData.country;
@@ -220,10 +227,13 @@ class FastLocationManager {
         };
 
         if (includeCityName) {
-          const cityData = await this.getReverseGeocodingFast(
-            locationResult.latitude,
-            locationResult.longitude
-          );
+          const isDev = import.meta.env?.DEV ?? false;
+          const cityData = isDev
+            ? { city: 'Current Location', country: '' }
+            : await this.getReverseGeocodingFast(
+                locationResult.latitude,
+                locationResult.longitude
+              );
           locationResult.city = cityData.city;
           locationResult.country = cityData.country;
         }
@@ -266,7 +276,19 @@ class FastLocationManager {
         },
         error => {
           clearTimeout(timeoutId);
-          reject(error);
+          let msg: string;
+          if (error instanceof Error) {
+            msg = error.message;
+          } else if (typeof error === 'string') {
+            msg = error;
+          } else {
+            try {
+              msg = JSON.stringify(error);
+            } catch {
+              msg = 'Unknown error';
+            }
+          }
+          reject(error instanceof Error ? error : new Error(msg));
         },
         options
       );
@@ -281,46 +303,12 @@ class FastLocationManager {
     lon: number
   ): Promise<{ city?: string; country?: string }> {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
-        {
-          headers: {
-            'User-Agent': 'WeatherApp/1.0 (fast-location@weatherapp.com)',
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`Reverse geocoding failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const address = data?.address || {};
-
-      const city =
-        address.city ||
-        address.town ||
-        address.village ||
-        address.hamlet ||
-        address.municipality ||
-        'Unknown Location';
-
-      return {
-        city,
-        country: address.country || '',
-      };
+      // Use shared cached reverse geocoding with a short TTL for fast service
+      return await reverseGeocodeCached(lat, lon, {
+        ttlMs: 12 * 60 * 60 * 1000,
+      });
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        logWarn('FastLocationService: Reverse geocoding timed out');
-      } else {
-        logError('FastLocationService: Reverse geocoding error', error);
-      }
+      logError('FastLocationService: Reverse geocoding error', error);
       return { city: 'Unknown Location', country: '' };
     }
   }

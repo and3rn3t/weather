@@ -4,6 +4,7 @@
  */
 
 import { logInfo, logWarn } from './logger';
+import { optimizedFetchJson } from './optimizedFetch';
 import { popularCitiesCache } from './popularCitiesCache';
 import { searchCacheManager } from './searchCacheManager';
 
@@ -15,23 +16,7 @@ const PRESEED_CONFIG = {
   USER_AGENT: 'WeatherApp/1.0',
 } as const;
 
-/**
- * Fetch with timeout helper using AbortController
- */
-async function fetchWithTimeout(
-  input: RequestInfo | URL,
-  init: RequestInit,
-  timeoutMs: number
-) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const resp = await fetch(input, { ...init, signal: controller.signal });
-    return resp;
-  } finally {
-    clearTimeout(id);
-  }
-}
+// Central optimized fetch handles timeouts/retries; keep TIMEOUT_MS for documentation only
 
 /**
  * Run an array of async tasks with limited concurrency
@@ -112,19 +97,11 @@ export async function preseedSearchCache(queries?: string[]): Promise<void> {
       const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5`;
       const started = performance.now();
       try {
-        const resp = await fetchWithTimeout(
+        const data = await optimizedFetchJson<unknown[]>(
           url,
-          {
-            method: 'GET',
-            headers: {
-              'User-Agent': PRESEED_CONFIG.USER_AGENT,
-            },
-          },
-          PRESEED_CONFIG.TIMEOUT_MS
+          {},
+          `preseed:${q}`
         );
-
-        if (!resp.ok) return;
-        const data = await resp.json();
         const responseTime = performance.now() - started;
         // Store with 'prefetch' source to use its TTL
         await searchCacheManager.cacheSearchResults(q, data, 'prefetch', {
@@ -139,6 +116,6 @@ export async function preseedSearchCache(queries?: string[]): Promise<void> {
     await runWithConcurrency(PRESEED_CONFIG.CONCURRENCY, list, task);
     logInfo(`📦 IndexedDB pre-seed complete for ${list.length} queries`);
   } catch (e) {
-    logWarn('IndexedDB pre-seed skipped/failed:', e as unknown as Error);
+    logWarn('IndexedDB pre-seed skipped/failed:', e as Error);
   }
 }

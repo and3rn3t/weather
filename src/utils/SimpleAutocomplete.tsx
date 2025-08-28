@@ -5,6 +5,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { logError } from './logger';
+import { optimizedFetchJson } from './optimizedFetch';
 import './SimpleAutocomplete.css';
 
 interface SimpleAutocompleteProps {
@@ -53,20 +54,13 @@ export const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({
         addressdetails: '1',
       });
 
-      const response = await fetch(
+      const data = await optimizedFetchJson<CityResult[]>(
         `https://nominatim.openstreetmap.org/search?${params}`,
-        {
-          headers: {
-            'User-Agent': 'WeatherApp/1.0',
-          },
-        }
+        {},
+        `nominatim:simple:${searchTerm}`
       );
-
-      if (response.ok) {
-        const data: CityResult[] = await response.json();
-        setResults(data.slice(0, 5));
-        setIsOpen(data.length > 0);
-      }
+      setResults(data.slice(0, 5));
+      setIsOpen(data.length > 0);
     } catch (error) {
       logError('Search error:', error);
       setResults([]);

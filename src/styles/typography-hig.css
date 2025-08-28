@@ -1,0 +1,261 @@
+/* Global HIG Typography Mappings (low-specificity, additive)
+   Applies iOS26 text scale and weights to common text elements/classes
+   without requiring every component to add ios26 classes explicitly. */
+
+/* Semantic headings */
+.enhanced-search-screen h1,
+.app-container h1,
+main h1,
+section h1 {
+  font-size: var(--ios26-text-title3);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.app-container h2,
+main h2,
+section h2 {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.25;
+}
+
+.app-container h3,
+main h3,
+section h3 {
+  font-size: var(--ios26-text-body);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.3;
+}
+
+/* Paragraphs and small text */
+.app-container p,
+main p,
+section p,
+.card p {
+  font-size: var(--ios26-text-body);
+  line-height: 1.45;
+}
+
+small,
+.helper-text,
+.subtext,
+.caption {
+  font-size: var(--ios26-text-footnote);
+  line-height: 1.3;
+  color: var(--ios26-text-secondary);
+}
+
+/* Common app class mappings */
+.section-title,
+.card-title,
+.widget-title,
+.list-title {
+  font-size: var(--ios26-text-title3);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.25;
+}
+
+.section-subtitle,
+.card-subtitle,
+.widget-subtitle,
+.item-subtitle {
+  font-size: var(--ios26-text-subheadline);
+  color: var(--ios26-text-secondary);
+  line-height: 1.3;
+}
+
+.results-count,
+.meta,
+.badge-text {
+  font-size: var(--ios26-text-footnote);
+  color: var(--ios26-text-secondary);
+}
+
+/* Navigation labels */
+.nav-label {
+  font-size: var(--ios26-text-footnote);
+  font-weight: var(--ios26-weight-medium);
+}
+
+/* Metrics */
+.metric-label,
+.value-label {
+  font-size: var(--ios26-text-caption1);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ios26-text-secondary);
+}
+
+.metric-value,
+.value-strong {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+}
+
+/* Buttons (text-only areas inside buttons) */
+button .btn-label,
+button .label,
+button span {
+  font-size: max(var(--ios26-text-body), 17px);
+}
+
+/* Utilities */
+.hig-lineClamp-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hig-lineClamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Standard property for modern browsers */
+  line-clamp: 2;
+}
+
+/* =====================
+   Enhanced Search (iOS)
+   ===================== */
+.enhanced-search-title,
+.enhanced-search-section-title,
+.search-title {
+  font-size: var(--ios26-text-title3);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.25;
+}
+
+.enhanced-search-result-name,
+.result-name,
+.recent-name {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+  line-height: 1.3;
+}
+
+.enhanced-search-result-location,
+.result-location,
+.recent-location {
+  font-size: var(--ios26-text-subheadline);
+  color: var(--ios26-text-secondary);
+  line-height: 1.3;
+}
+
+.enhanced-current-location-title,
+.location-title {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+}
+
+.enhanced-current-location-subtitle,
+.location-subtitle {
+  font-size: var(--ios26-text-footnote);
+  color: var(--ios26-text-secondary);
+}
+
+.enhanced-location-tips-title {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+}
+.enhanced-tip {
+  font-size: var(--ios26-text-subheadline);
+  color: var(--ios26-text-secondary);
+}
+
+.enhanced-search-error,
+.search-error {
+  font-size: var(--ios26-text-footnote);
+}
+
+/* =====================
+   Forecast & Widgets
+   ===================== */
+.ios26-forecast-title {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+}
+.ios26-forecast-time {
+  font-size: var(--ios26-text-footnote);
+  color: var(--ios26-text-secondary);
+}
+.ios26-forecast-temperature,
+.ios26-forecast-temp-range {
+  font-size: var(--ios26-text-subheadline);
+  font-weight: var(--ios26-weight-semibold);
+}
+.ios26-forecast-precipitation {
+  font-size: var(--ios26-text-caption2);
+  color: var(--ios26-text-tertiary);
+}
+
+.ios26-widget-main-value {
+  font-size: var(--ios26-text-title2);
+  font-weight: var(--ios26-weight-semibold);
+}
+.ios26-widget-value {
+  font-size: var(--ios26-text-subheadline);
+  font-weight: var(--ios26-weight-medium);
+}
+
+/* =====================
+   Weather Metrics
+   ===================== */
+.ios26-weather-metric-value,
+.metric-value,
+.value-strong {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+}
+.ios26-weather-metric-label,
+.metric-label {
+  font-size: var(--ios26-text-caption1);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ios26-text-secondary);
+}
+.ios26-weather-metric-subtitle {
+  font-size: var(--ios26-text-caption2);
+  color: var(--ios26-text-tertiary);
+}
+
+/* =====================
+   Alerts, Settings, Misc
+   ===================== */
+.status-title,
+.rule-title {
+  font-size: var(--ios26-text-headline);
+  font-weight: var(--ios26-weight-semibold);
+}
+.offline-message,
+.rule-description,
+.alert-description {
+  font-size: var(--ios26-text-body);
+  line-height: 1.4;
+}
+.alert-location {
+  font-size: var(--ios26-text-footnote);
+  color: var(--ios26-text-secondary);
+}
+.setting-label {
+  font-size: var(--ios26-text-subheadline);
+  font-weight: var(--ios26-weight-medium);
+}
+.optimization-loading,
+.chart-loading {
+  font-size: var(--ios26-text-footnote);
+  color: var(--ios26-text-secondary);
+}
+
+/* Accessibility */
+@media (prefers-contrast: high) {
+  .section-subtitle,
+  .card-subtitle,
+  .widget-subtitle,
+  .item-subtitle,
+  .meta {
+    color: var(--ios26-text-primary);
+    opacity: 0.8;
+  }
+}

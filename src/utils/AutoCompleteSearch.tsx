@@ -5,15 +5,11 @@
  * Integrates with OpenStreetMap Nominatim for city lookups.
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import './AutoCompleteSearch.css';
 import { useHaptic } from './hapticHooks';
 import { logError } from './logger';
+import { optimizedFetchJson } from './optimizedFetch';
 import type { ThemeColors } from './themeConfig';
 
 interface CityResult {
@@ -117,24 +113,11 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
           namedetails: '0', // Disable name details for speed
         });
 
-        const response = await fetch(
+        const results = await optimizedFetchJson<CityResult[]>(
           `https://nominatim.openstreetmap.org/search?${searchParams}`,
-          {
-            headers: {
-              'User-Agent':
-                'Weather-App/1.0 (https://github.com/user/weather-app)',
-            },
-            signal: abortControllerRef.current.signal,
-            // Add timeout for faster failure
-            cache: 'default',
-          }
+          { signal: abortControllerRef.current.signal },
+          `nominatim:autoComplete:${searchQuery}`
         );
-
-        if (!response.ok) {
-          throw new Error(`Search failed: ${response.status}`);
-        }
-
-        const results: CityResult[] = await response.json();
 
         // Optimized filtering for better performance and relevance
         const filteredResults = results
@@ -363,56 +346,15 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
     }
   };
 
-  // Memoized styles for performance
-  const inputStyle: React.CSSProperties = useMemo(
-    () => ({
-      width: '100%',
-      padding: isMobile ? '14px 16px' : '16px 18px',
-      border: `2px solid ${theme.cardBorder}`,
-      borderRadius: '16px',
-      background: theme.cardBackground,
-      color: theme.primaryText,
-      fontSize: isMobile ? '16px' : '17px', // 16px prevents zoom on iOS
-      fontWeight: '500',
-      outline: 'none',
-      transition: 'all 0.3s ease',
-      backdropFilter: 'blur(10px)',
-      opacity: disabled ? 0.6 : 1,
-      cursor: disabled ? 'not-allowed' : 'text',
-      paddingRight: isLoading ? '50px' : '16px',
-    }),
-    [theme, isMobile, disabled, isLoading]
-  );
-
-  const dropdownStyle: React.CSSProperties = useMemo(
-    () => ({
-      position: 'absolute',
-      top: '100%',
-      left: 0,
-      right: 0,
-      marginTop: '8px',
-      background: theme.cardBackground,
-      border: `1px solid ${theme.cardBorder}`,
-      borderRadius: '16px',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-      backdropFilter: 'blur(20px)',
-      zIndex: 1000,
-      maxHeight: isMobile ? '60vh' : '300px',
-      overflow: 'hidden',
-      transform: isOpen
-        ? 'translateY(0) scale(1)'
-        : 'translateY(-10px) scale(0.95)',
-      opacity: isOpen ? 1 : 0,
-      visibility: isOpen ? 'visible' : 'hidden',
-      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-    }),
-    [theme, isMobile, isOpen]
-  );
+  // No inline CSS variables needed; ThemeProvider sets globals on :root
 
   return (
-    <div style={{ position: 'relative', width: '100%' }} className={className}>
+    <div
+      className={`ac-root ${className ?? ''}`.trim()}
+      data-mobile={isMobile ? '1' : '0'}
+    >
       {/* Search Input */}
-      <div style={{ position: 'relative' }}>
+      <div className="ac-input-wrap">
         <input
           ref={inputRef}
           type="text"
@@ -421,61 +363,23 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={placeholder}
-          style={inputStyle}
+          className={`ac-input ${isLoading ? 'has-spinner' : ''}`.trim()}
           autoComplete="off"
           spellCheck="false"
-          onMouseEnter={e => {
-            if (!disabled) {
-              const target = e.target as HTMLInputElement;
-              target.style.borderColor = theme.weatherCardBorder;
-              target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-            }
-          }}
-          onMouseLeave={e => {
-            if (!disabled && document.activeElement !== e.target) {
-              const target = e.target as HTMLInputElement;
-              target.style.borderColor = theme.cardBorder;
-              target.style.backgroundColor = theme.cardBackground;
-            }
-          }}
-          onFocus={e => {
-            handleFocus();
-            const target = e.target as HTMLInputElement;
-            target.style.borderColor = theme.weatherCardBorder;
-            target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-            target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
-          }}
-          onBlur={e => {
-            const target = e.target as HTMLInputElement;
-            target.style.borderColor = theme.cardBorder;
-            target.style.backgroundColor = theme.cardBackground;
-            target.style.boxShadow = 'none';
-          }}
+          onFocus={handleFocus}
         />
 
         {/* Loading Spinner */}
-        {isLoading && (
-          <div
-            style={{
-              position: 'absolute',
-              right: '16px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: '20px',
-              height: '20px',
-              border: '2px solid rgba(102, 126, 234, 0.3)',
-              borderTop: '2px solid #667eea',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-            }}
-          />
-        )}
+        {isLoading && <div className="ac-spinner" />}
       </div>
 
       {/* Suggestions Dropdown */}
-      <div ref={dropdownRef} style={dropdownStyle}>
-        {suggestions.length > 0 ? (
-          <div style={{ padding: '8px' }}>
+      <div
+        ref={dropdownRef}
+        className={`ac-dropdown ${isOpen ? 'is-open' : ''}`.trim()}
+      >
+        {suggestions.length > 0 && (
+          <div className="ac-suggestions">
             {suggestions.map((suggestion, index) => (
               <button
                 key={suggestion.place_id}
@@ -484,74 +388,32 @@ const AutoCompleteSearch: React.FC<AutoCompleteSearchProps> = ({
                   e.stopPropagation();
                   handleSuggestionSelect(suggestion);
                 }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: 'none',
-                  background:
-                    index === selectedIndex
-                      ? 'rgba(102, 126, 234, 0.1)'
-                      : 'transparent',
-                  color: theme.primaryText,
-                  fontSize: '14px',
-                  textAlign: 'left',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+                className={`ac-suggestion ${
+                  index === selectedIndex ? 'is-selected' : ''
+                }`.trim()}
                 onMouseEnter={() => setSelectedIndex(index)}
                 onMouseLeave={() => setSelectedIndex(-1)}
               >
                 <div>
-                  <div style={{ fontWeight: '500' }}>
+                  <div className="ac-suggestion-title">
                     {formatCityName(suggestion)}
                   </div>
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      color: theme.secondaryText,
-                      marginTop: '2px',
-                    }}
-                  >
+                  <div className="ac-suggestion-sub">
                     {suggestion.address.country}
                   </div>
                 </div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: theme.secondaryText,
-                    opacity: 0.7,
-                  }}
-                >
-                  📍
-                </div>
+                <div className="ac-suggestion-geo">📍</div>
               </button>
             ))}
           </div>
-        ) : hasSearched && !isLoading && query.length >= 2 ? (
-          <div
-            style={{
-              padding: '16px',
-              textAlign: 'center',
-              color: theme.secondaryText,
-              fontSize: '14px',
-            }}
-          >
-            No cities found for "{query}"
-          </div>
-        ) : null}
+        )}
+        {suggestions.length === 0 &&
+          hasSearched &&
+          !isLoading &&
+          query.length >= 2 && (
+            <div className="ac-empty">No cities found for "{query}"</div>
+          )}
       </div>
-
-      {/* CSS for spinner animation */}
-      <style>{`
-        @keyframes spin {
-          0% { transform: translateY(-50%) rotate(0deg); }
-          100% { transform: translateY(-50%) rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };

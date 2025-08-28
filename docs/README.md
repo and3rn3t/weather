@@ -41,6 +41,8 @@ npm run dev
 - **[Quick Start Guide](./QUICK_START.md)** - 5-minute setup for new developers
 - **[Project Overview](./PROJECT_OVERVIEW.md)** - Complete project summary and architecture
 - **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment to Cloudflare Pages
+- **[Networking Usage Guide](./guides/NETWORKING_README.md)** - How to use shared fetch utilities,
+  hooks, caching, and policy compliance
 
 ### **📖 Development Guides** (docs/guides/)
 

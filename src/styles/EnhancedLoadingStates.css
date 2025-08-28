@@ -198,7 +198,8 @@
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 1000;
+  z-index: 10; /* keep under nav and interactive UI */
+  pointer-events: none; /* do not intercept clicks */
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 122, 255, 0.2);
 }
@@ -292,6 +293,7 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   max-width: 280px;
   width: 90%;
+  pointer-events: auto; /* allow interactions inside overlay when needed */
 }
 
 .loading-overlay-title {

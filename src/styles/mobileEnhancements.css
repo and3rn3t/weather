@@ -1,9 +1,9 @@
 /**
  * Mobile Enhancements CSS - July 2025
- * 
+ *
  * Advanced mobile-first optimizations for better touch interaction,
  * responsive design, and modern mobile UX patterns.
- * 
+ *
  * Focuses on:
  * - Enhanced touch targets (minimum 44px)
  * - Better responsive typography
@@ -238,6 +238,15 @@
   margin-top: var(--mobile-spacing-md);
   padding-top: var(--mobile-spacing-md);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Pull-to-refresh indicator position via data attribute (no inline styles) */
+.pull-refresh {
+  position: sticky;
+  top: 10px;
+}
+.pull-refresh[data-pull-top] {
+  top: calc(attr(data-pull-top px));
 }
 
 /* ============================================================================

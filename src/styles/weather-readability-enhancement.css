@@ -359,3 +359,123 @@
 }
 
 /* Horror theme removed: selectors deleted (Aug 2025) */
+
+/* ==========================================================================
+   Legacy Forecast Enhancements (Hourly timeline + Daily range bars)
+   Applied globally for AppNavigator legacy sections
+   ==========================================================================
+*/
+
+/* Hourly timeline baseline */
+.ios26-forecast-scroll.ios26-timeline {
+  position: relative !important;
+}
+.ios26-forecast-scroll.ios26-timeline::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 52px !important; /* aligns under time/icon rows */
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Emphasize current hour */
+.ios26-forecast-item.now {
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.16)) !important;
+  border: 1px solid var(--ios26-border-tertiary, rgba(255, 255, 255, 0.25)) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Daily temperature range rail/fill with quantized classes */
+.ios26-daily-range {
+  position: relative !important;
+  flex: 1 1 auto !important;
+  height: 6px !important;
+  margin: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.ios26-range-rail {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+.ios26-range-fill {
+  position: absolute !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.85), rgba(16, 185, 129, 0.85)) !important;
+}
+/* Generate 11 x 11 classes: start-s0..s10 and width-w0..w10 */
+.ios26-range-fill.start-s0 {
+  left: 0% !important;
+}
+.ios26-range-fill.start-s1 {
+  left: 10% !important;
+}
+.ios26-range-fill.start-s2 {
+  left: 20% !important;
+}
+.ios26-range-fill.start-s3 {
+  left: 30% !important;
+}
+.ios26-range-fill.start-s4 {
+  left: 40% !important;
+}
+.ios26-range-fill.start-s5 {
+  left: 50% !important;
+}
+.ios26-range-fill.start-s6 {
+  left: 60% !important;
+}
+.ios26-range-fill.start-s7 {
+  left: 70% !important;
+}
+.ios26-range-fill.start-s8 {
+  left: 80% !important;
+}
+.ios26-range-fill.start-s9 {
+  left: 90% !important;
+}
+.ios26-range-fill.start-s10 {
+  left: 100% !important;
+}
+
+.ios26-range-fill.width-w0 {
+  width: 0% !important;
+}
+.ios26-range-fill.width-w1 {
+  width: 10% !important;
+}
+.ios26-range-fill.width-w2 {
+  width: 20% !important;
+}
+.ios26-range-fill.width-w3 {
+  width: 30% !important;
+}
+.ios26-range-fill.width-w4 {
+  width: 40% !important;
+}
+.ios26-range-fill.width-w5 {
+  width: 50% !important;
+}
+.ios26-range-fill.width-w6 {
+  width: 60% !important;
+}
+.ios26-range-fill.width-w7 {
+  width: 70% !important;
+}
+.ios26-range-fill.width-w8 {
+  width: 80% !important;
+}
+.ios26-range-fill.width-w9 {
+  width: 90% !important;
+}
+.ios26-range-fill.width-w10 {
+  width: 100% !important;
+}

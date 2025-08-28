@@ -8,6 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useHaptic } from './hapticHooks';
 import { logError, logInfo, logWarn } from './logger';
+import { reverseGeocodeCached } from './reverseGeocodingCache';
 
 // ============================================================================
 // LOCATION SERVICE TYPES
@@ -75,72 +76,7 @@ const getLocationError = (error: GeolocationPositionError): LocationError => {
   };
 };
 
-// ============================================================================
-// REVERSE GEOCODING SERVICE
-// ============================================================================
-
-const reverseGeocode = async (
-  latitude: number,
-  longitude: number
-): Promise<{ city?: string; country?: string }> => {
-  try {
-    logInfo(
-      `🔍 Starting reverse geocoding for coordinates: ${latitude}, ${longitude}`
-    );
-
-    const REVERSE_GEOCODING_URL = 'https://nominatim.openstreetmap.org/reverse';
-    const url = `${REVERSE_GEOCODING_URL}?lat=${latitude}&lon=${longitude}&format=json&zoom=10&addressdetails=1`;
-
-    logInfo(`📡 Making API request to: ${url}`);
-
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'WeatherApp/1.0 (location-services@weatherapp.com)',
-      },
-    });
-
-    logInfo(`📡 API Response - Status: ${response.status}, OK: ${response.ok}`);
-
-    if (!response.ok) {
-      logError(
-        '❌ Reverse geocoding failed:',
-        response.status,
-        response.statusText
-      );
-      return {};
-    }
-
-    const data = await response.json();
-    logInfo(
-      '🗺️ Reverse geocoding response data:',
-      JSON.stringify(data, null, 2)
-    );
-
-    const address = data?.address || {};
-    logInfo('🏠 Address object:', JSON.stringify(address, null, 2));
-
-    // Extract city name from various possible fields
-    const city =
-      address.city ||
-      address.town ||
-      address.village ||
-      address.hamlet ||
-      address.county ||
-      address.state ||
-      'Unknown Location';
-
-    const country = address.country || '';
-
-    logInfo(
-      `🏙️ Final extracted location: City="${city}", Country="${country}"`
-    );
-
-    return { city, country };
-  } catch (error) {
-    logError('❌ Reverse geocoding error:', error);
-    return {};
-  }
-};
+// Reverse geocoding is handled by reverseGeocodingCache.ts
 
 // ============================================================================
 // LOCATION SERVICES HOOK
@@ -269,17 +205,20 @@ export const useLocationServices = () => {
 
             // Optionally include reverse geocoded address
             if (options?.includeAddress !== false) {
-              logInfo('🔍 Starting reverse geocoding process...');
-              const addressInfo = await reverseGeocode(
-                position.coords.latitude,
-                position.coords.longitude
-              );
-              logInfo('🏙️ Reverse geocoding completed:', addressInfo);
+              const isDev = import.meta.env?.DEV ?? false;
+              if (!isDev) {
+                logInfo('🔍 Starting reverse geocoding process...');
+                const addressInfo = await reverseGeocodeCached(
+                  position.coords.latitude,
+                  position.coords.longitude
+                );
+                logInfo('🏙️ Reverse geocoding completed:', addressInfo);
 
-              locationData.city = addressInfo.city;
-              locationData.country = addressInfo.country;
+                locationData.city = addressInfo.city;
+                locationData.country = addressInfo.country;
 
-              logInfo('📍 Final location data with address:', locationData);
+                logInfo('📍 Final location data with address:', locationData);
+              }
             }
 
             setState(prev => ({
@@ -380,12 +319,15 @@ export const useLocationServices = () => {
         };
 
         if (options?.includeAddress !== false) {
-          const addressInfo = await reverseGeocode(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-          locationData.city = addressInfo.city;
-          locationData.country = addressInfo.country;
+          const isDev = import.meta.env?.DEV ?? false;
+          if (!isDev) {
+            const addressInfo = await reverseGeocodeCached(
+              position.coords.latitude,
+              position.coords.longitude
+            );
+            locationData.city = addressInfo.city;
+            locationData.country = addressInfo.country;
+          }
         }
 
         setState(prev => ({

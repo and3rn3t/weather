@@ -177,29 +177,9 @@ export class EnhancedLocationService {
     latitude: number,
     longitude: number
   ): Promise<string> {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-      {
-        headers: {
-          'User-Agent': 'PremiumWeatherApp/1.0 (weather.andernet.dev)',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Reverse geocoding failed: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return (
-      data.address?.city ||
-      data.address?.town ||
-      data.address?.village ||
-      data.address?.municipality ||
-      data.address?.county ||
-      'Current Location'
-    );
+    const { reverseGeocodeCached } = await import('./reverseGeocodingCache');
+    const data = await reverseGeocodeCached(latitude, longitude);
+    return data.city || 'Current Location';
   }
 
   /**

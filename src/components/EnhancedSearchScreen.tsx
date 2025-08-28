@@ -4,6 +4,7 @@ import '../utils/locationDiagnostic'; // Load diagnostic tools in development
 import { locationService } from '../utils/locationService';
 import { logError, logInfo } from '../utils/logger';
 import { offlineStorage } from '../utils/offlineWeatherStorage';
+import { optimizedFetchJson } from '../utils/optimizedFetch';
 import { searchPerformanceMonitor } from '../utils/searchPerformanceMonitor';
 import type { ThemeColors } from '../utils/themeConfig';
 import './EnhancedSearchScreen.css';
@@ -191,31 +192,15 @@ function EnhancedSearchScreen({
     }
 
     try {
-      // Primary API: OpenStreetMap Nominatim
+      // Primary API: OpenStreetMap Nominatim (through optimized fetch)
       const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
         query
-      )}&format=json&limit=25&addressdetails=1&extratags=1`;
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
-
-      const response = await fetch(nominatimUrl, {
-        headers: {
-          'User-Agent': 'PremiumWeatherApp/1.0 (weather.andernet.dev)',
-          Accept: 'application/json',
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(
-          `Search API returned ${response.status}: ${response.statusText}`
-        );
-      }
-
-      const data: NominatimResult[] = await response.json();
+      )}&format=json&limit=10&addressdetails=1`;
+      const data = await optimizedFetchJson<NominatimResult[]>(
+        nominatimUrl,
+        {},
+        `enhanced-search:${query}`
+      );
 
       // Filter and prioritize results with improved logic
       const filteredResults = data
@@ -244,7 +229,7 @@ function EnhancedSearchScreen({
 
           return isValidLocationType && isNotTooSpecific;
         })
-        .map(item => {
+        .map((item: NominatimResult) => {
           // Calculate relevance score for better sorting
           const queryLower = query.toLowerCase();
           const displayName = item.display_name.toLowerCase();
@@ -283,7 +268,10 @@ function EnhancedSearchScreen({
             cleanDisplayName: createCleanDisplayName(item),
           };
         })
-        .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance
+        .sort(
+          (a: NominatimResult, b: NominatimResult) =>
+            (b.relevanceScore || 0) - (a.relevanceScore || 0)
+        ) // Sort by relevance
         .slice(0, 10); // Limit to top 10 results
 
       setSearchResults(filteredResults);

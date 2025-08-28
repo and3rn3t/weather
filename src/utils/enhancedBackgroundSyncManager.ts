@@ -6,6 +6,7 @@
 import { SmartCacheManager } from '../services/mobile/SmartCacheManager';
 import { logger } from './logger';
 import { offlineStorage } from './offlineWeatherStorage';
+import { optimizedFetchJson } from './optimizedFetch';
 
 interface SyncTask {
   id: string;
@@ -185,15 +186,12 @@ export class EnhancedBackgroundSyncManager {
   private async processWeatherUpdate(data: WeatherUpdateData): Promise<void> {
     const { cityName, latitude, longitude } = data;
 
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`;
+    const weatherData = await optimizedFetchJson<Record<string, unknown>>(
+      weatherUrl,
+      {},
+      `weather:${cityName}:${latitude},${longitude}`
     );
-
-    if (!response.ok) {
-      throw new Error(`Weather API error: ${response.status}`);
-    }
-
-    const weatherData = await response.json();
 
     // Cache using both systems
     await Promise.all([
@@ -212,17 +210,14 @@ export class EnhancedBackgroundSyncManager {
   private async processCitySearch(data: CitySearchData): Promise<void> {
     const { query } = data;
 
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        query
-      )}&limit=10`
+    const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+      query
+    )}&limit=10`;
+    const results = await optimizedFetchJson<unknown[]>(
+      searchUrl,
+      {},
+      `search:${query}`
     );
-
-    if (!response.ok) {
-      throw new Error(`Geocoding API error: ${response.status}`);
-    }
-
-    const results = await response.json();
 
     await this.smartCacheManager.set(`search:${query}`, results, {
       priority: 'medium',
@@ -236,15 +231,11 @@ export class EnhancedBackgroundSyncManager {
   private async processLocationFetch(data: LocationFetchData): Promise<void> {
     const { latitude, longitude } = data;
 
-    const response = await fetch(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+    const locationData = await optimizedFetchJson<unknown>(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+      {},
+      `bigdatacloud:${latitude},${longitude}`
     );
-
-    if (!response.ok) {
-      throw new Error(`Reverse geocoding API error: ${response.status}`);
-    }
-
-    const locationData = await response.json();
 
     await this.smartCacheManager.set(
       `location:${latitude},${longitude}`,

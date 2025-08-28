@@ -318,8 +318,41 @@ export class NetworkResilienceManager {
     }, request.timeout);
 
     try {
+      // Minimal policy compliance for external APIs
+      let host = '';
+      try {
+        host = new URL(request.url).hostname;
+      } catch {
+        // ignore
+      }
+      const isNominatim = /nominatim\.openstreetmap\.org$/i.test(host);
+
+      // Sanitize headers and enforce UA for Nominatim
+      let finalHeaders: HeadersInit | undefined = request.options?.headers;
+      if (request.options?.headers) {
+        const h = new Headers(request.options.headers as HeadersInit);
+        // Remove headers that may cause preflight unless Nominatim requires UA
+        h.delete('Cache-Control');
+        h.delete('cache-control');
+        if (!isNominatim) {
+          h.delete('User-Agent');
+          h.delete('user-agent');
+        } else if (!h.has('User-Agent') && !h.has('user-agent')) {
+          h.set(
+            'User-Agent',
+            'PremiumWeatherApp/1.0 (optimized-fetch@weather)'
+          );
+        }
+        finalHeaders = h;
+      } else if (isNominatim) {
+        const h = new Headers();
+        h.set('User-Agent', 'PremiumWeatherApp/1.0 (optimized-fetch@weather)');
+        finalHeaders = h;
+      }
+
       const response = await fetch(request.url, {
         ...request.options,
+        headers: finalHeaders,
         signal: request.abortController.signal,
       });
 

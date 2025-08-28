@@ -146,7 +146,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
             position: 'absolute',
             top: '0',
             left: '50%',
-            zIndex: 1000,
+            zIndex: 5, // keep low so it doesn't hover above nav or buttons
             ...getPullIndicatorStyle({
               transform: 'translateX(-50%)',
             }),

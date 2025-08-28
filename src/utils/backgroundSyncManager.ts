@@ -21,6 +21,8 @@ interface SyncResult {
   failed: number;
   errors: string[];
 }
+import { optimizedFetchJson } from './optimizedFetch';
+import { reverseGeocodeCached } from './reverseGeocodingCache';
 
 class BackgroundSyncManager {
   private readonly STORAGE_KEY = 'weather-pending-sync';
@@ -169,15 +171,12 @@ class BackgroundSyncManager {
     const { cityName, latitude, longitude } = data;
 
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`;
+      const weatherData = await optimizedFetchJson<Record<string, unknown>>(
+        weatherUrl,
+        {},
+        `weather:${cityName}:${latitude},${longitude}`
       );
-
-      if (!response.ok) {
-        throw new Error(`Weather API error: ${response.status}`);
-      }
-
-      const weatherData = await response.json();
 
       // Cache the data using our offline storage
       const { offlineStorage } = await import('./offlineWeatherStorage');
@@ -198,31 +197,27 @@ class BackgroundSyncManager {
     const { query } = data;
 
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          query
-        )}&format=json&limit=5`,
-        {
-          headers: {
-            'User-Agent': 'Premium Weather App (https://weather.andernet.dev)',
-          },
-        }
+      const searchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        query
+      )}&format=json&limit=5`;
+      interface NominatimSearchResult {
+        lat: string;
+        lon: string;
+        display_name?: string;
+      }
+      const results = await optimizedFetchJson<NominatimSearchResult[]>(
+        searchUrl,
+        {},
+        `search:${query}`
       );
 
-      if (!response.ok) {
-        throw new Error(`Geocoding API error: ${response.status}`);
-      }
-
-      const results = await response.json();
-
       // Cache the search results
-      if (results.length > 0) {
+      if (Array.isArray(results) && results.length > 0) {
         const { offlineStorage } = await import('./offlineWeatherStorage');
-        await offlineStorage.cacheRecentCity(
-          query,
-          parseFloat(results[0].lat),
-          parseFloat(results[0].lon)
-        );
+        const first = results[0];
+        const lat = parseFloat(first.lat);
+        const lon = parseFloat(first.lon);
+        await offlineStorage.cacheRecentCity(query, lat, lon);
       }
 
       return true;
@@ -243,23 +238,9 @@ class BackgroundSyncManager {
     const { latitude, longitude } = data;
 
     try {
-      // Reverse geocoding to get city name
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-        {
-          headers: {
-            'User-Agent': 'Premium Weather App (https://weather.andernet.dev)',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Reverse geocoding error: ${response.status}`);
-      }
-
-      const location = await response.json();
-      const cityName =
-        location.display_name?.split(',')[0] || 'Current Location';
+      // Reverse geocoding to get city name (cached)
+      const location = await reverseGeocodeCached(latitude, longitude);
+      const cityName = location.city || 'Current Location';
 
       // Cache the location
       const { offlineStorage } = await import('./offlineWeatherStorage');

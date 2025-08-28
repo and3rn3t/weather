@@ -98,6 +98,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     backdropFilter: 'blur(10px)',
     zIndex: 9999,
+    pointerEvents: 'none', // don't block page interactions outside the sheet
     display: 'flex',
     alignItems: 'flex-end',
     justifyContent: 'center',
@@ -115,6 +116,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
     boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
     transform: 'translateY(0)',
     animation: 'iosModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    pointerEvents: 'auto', // re-enable interaction inside the sheet
   };
 
   const headerBorderColor = isDark

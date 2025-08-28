@@ -91,6 +91,42 @@
   text-align: center;
 }
 
+/* Hero layout enhancements */
+.hero-current {
+  text-align: left;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+.current-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Chips: quick-glance current conditions */
+.chip-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-sm);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 .location-header {
   margin-bottom: var(--spacing-lg);
 }
@@ -242,6 +278,18 @@
 }
 
 /* Hourly Forecast */
+.hourly-timeline {
+  position: relative;
+}
+.hourly-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 34px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
 .hourly-scroll-container {
   display: flex;
   gap: var(--spacing-sm);
@@ -279,6 +327,10 @@
   scroll-snap-align: start;
   transition: all 0.3s ease;
 }
+.hourly-item.now {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.35);
+}
 
 .hourly-item:hover {
   background: var(--bg-card-hover);
@@ -301,6 +353,10 @@
   font-weight: 700;
   color: var(--text-primary);
 }
+.hourly-sub {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
 
 /* Daily Forecast */
 .daily-forecast-list {
@@ -317,6 +373,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-md);
   transition: all 0.3s ease;
+}
+.daily-item.today {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
 }
 
 .daily-item:hover {
@@ -352,6 +412,104 @@
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-secondary);
+}
+
+/* Daily range bar with quantized classes to avoid inline styles */
+.daily-range {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  margin: 0 var(--spacing-md);
+  display: flex;
+  align-items: center;
+}
+.range-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.range-fill {
+  position: absolute;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.8), rgba(16, 185, 129, 0.8));
+}
+/* Generate 11 x 11 classes: start-s0..s10 and width-w0..w10 */
+.range-fill.start-s0 {
+  left: 0%;
+}
+.range-fill.start-s1 {
+  left: 10%;
+}
+.range-fill.start-s2 {
+  left: 20%;
+}
+.range-fill.start-s3 {
+  left: 30%;
+}
+.range-fill.start-s4 {
+  left: 40%;
+}
+.range-fill.start-s5 {
+  left: 50%;
+}
+.range-fill.start-s6 {
+  left: 60%;
+}
+.range-fill.start-s7 {
+  left: 70%;
+}
+.range-fill.start-s8 {
+  left: 80%;
+}
+.range-fill.start-s9 {
+  left: 90%;
+}
+.range-fill.start-s10 {
+  left: 100%;
+}
+
+.range-fill.width-w0 {
+  width: 0%;
+}
+.range-fill.width-w1 {
+  width: 10%;
+}
+.range-fill.width-w2 {
+  width: 20%;
+}
+.range-fill.width-w3 {
+  width: 30%;
+}
+.range-fill.width-w4 {
+  width: 40%;
+}
+.range-fill.width-w5 {
+  width: 50%;
+}
+.range-fill.width-w6 {
+  width: 60%;
+}
+.range-fill.width-w7 {
+  width: 70%;
+}
+.range-fill.width-w8 {
+  width: 80%;
+}
+.range-fill.width-w9 {
+  width: 90%;
+}
+.range-fill.width-w10 {
+  width: 100%;
+}
+
+.daily-precip {
+  margin-left: var(--spacing-md);
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
 }
 
 /* ============================================================================

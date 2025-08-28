@@ -122,6 +122,25 @@ export const usePWAInstall = (): PWAInstallPrompt => {
 export const useServiceWorker = (): ServiceWorkerStatus => {
   let registration: ServiceWorkerRegistration | null = null;
 
+  // Global kill switch to fully disable service worker in dev or when configured
+  const swDisabled = (): boolean => {
+    try {
+      // Disable by default in development
+      if (import.meta.env.DEV) return true;
+      // Env-based switch: VITE_DISABLE_SW='1'
+      const env = (import.meta as unknown as { env?: Record<string, string> })
+        .env;
+      if (env && env.VITE_DISABLE_SW === '1') return true;
+      // Local override: localStorage 'disableSW' = '1'
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem('disableSW') === '1';
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  };
+
   // Check if service workers are supported
   const isSupported = (): boolean => {
     return 'serviceWorker' in navigator;
@@ -146,6 +165,10 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
 
   // Register service worker
   const register = async (): Promise<void> => {
+    if (swDisabled()) {
+      logInfo('Service Worker: Disabled by configuration');
+      return;
+    }
     if (!isSupported()) {
       logInfo('Service Worker: Not supported');
       return;
@@ -245,17 +268,17 @@ export const useServiceWorker = (): ServiceWorkerStatus => {
   };
 
   // Initialize service worker
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && !swDisabled()) {
     register();
   }
 
   return {
-    isSupported: isSupported(),
-    isRegistered: !!registration,
-    isControlling: !!navigator.serviceWorker?.controller,
-    updateAvailable: false, // This would be updated via event listeners
-    checkForUpdates,
-    skipWaiting,
+    isSupported: swDisabled() ? false : isSupported(),
+    isRegistered: swDisabled() ? false : !!registration,
+    isControlling: swDisabled() ? false : !!navigator.serviceWorker?.controller,
+    updateAvailable: false, // updated via events when enabled
+    checkForUpdates: swDisabled() ? async () => {} : checkForUpdates,
+    skipWaiting: swDisabled() ? () => {} : skipWaiting,
   };
 };
 

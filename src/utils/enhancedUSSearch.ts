@@ -11,6 +11,7 @@
 
 import { useState } from 'react';
 import { logError, logInfo } from './logger';
+import { optimizedFetchJson } from './optimizedFetch';
 
 // Comprehensive US cities database with population data
 export const US_CITIES_DATABASE = [
@@ -516,20 +517,11 @@ async function searchNominatimEnhanced(
     }),
   });
 
-  const response = await fetch(
+  const data = await optimizedFetchJson<NominatimResult[]>(
     `https://nominatim.openstreetmap.org/search?${searchParams}`,
-    {
-      headers: {
-        'User-Agent': 'EnhancedWeatherApp/2.0 (US Location Search)',
-      },
-    }
+    {},
+    `nominatim:enhancedUS:${query}`
   );
-
-  if (!response.ok) {
-    throw new Error(`Nominatim search failed: ${response.status}`);
-  }
-
-  const data = await response.json();
 
   // Enhanced filtering for US locations
   const filtered = data.filter((item: NominatimResult) => {
@@ -555,13 +547,14 @@ async function searchNominatimEnhanced(
 
   return filtered.map((item: NominatimResult) => {
     const address = item.address || {};
-    const cityName =
-      address.city ||
-      address.town ||
-      address.village ||
-      address.hamlet ||
-      item.display_name?.split(',')[0] ||
-      item.name;
+    const cityName: string =
+      address.city ??
+      address.town ??
+      address.village ??
+      address.hamlet ??
+      item.display_name?.split(',')[0] ??
+      item.name ??
+      '';
 
     const state = address.state || '';
     const stateAbbr = getStateAbbreviation(state);

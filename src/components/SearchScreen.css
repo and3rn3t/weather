@@ -13,6 +13,11 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   overflow-x: hidden;
   padding-bottom: calc(80px + 16px); /* Account for navigation */
+  /* Theme variables for this screen */
+  --search-primary-color: var(--theme-primary, #007aff);
+  --search-background: var(--theme-background, #000);
+  --search-text: var(--theme-text, #fff);
+  --search-border: var(--theme-border, rgba(255, 255, 255, 0.1));
 }
 
 /* ============================================================================
@@ -58,8 +63,7 @@
 }
 
 .search-title {
-  font-size: 20px;
-  font-weight: 600;
+  /* Typography handled by ios26-text-* classes */
   margin: 0;
   flex: 1;
 }
@@ -225,6 +229,9 @@
   max-height: 400px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .results-header {
@@ -233,25 +240,24 @@
 }
 
 .results-count {
-  font-size: 14px;
+  /* Typography handled by ios26-text-* classes */
   opacity: 0.7;
-  font-weight: 500;
 }
 
 .search-result-item {
   width: 100%;
-  padding: 16px 20px;
+  padding: 18px 20px; /* Slightly increased for readability */
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px; /* More separation between icon and text */
   transition: all 0.2s ease;
   font-family: inherit;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   text-align: left;
-  min-height: 64px;
+  min-height: 68px;
 }
 
 .search-result-item:last-child {
@@ -279,16 +285,21 @@
 }
 
 .result-name {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 4px;
+  /* Typography handled by ios26-text-* classes */
+  margin-bottom: 6px;
   line-height: 1.3;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .result-location {
-  font-size: 14px;
+  /* Typography handled by ios26-text-* classes */
   opacity: 0.7;
   line-height: 1.2;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .result-state {
@@ -396,14 +407,13 @@
 }
 
 .location-title {
-  font-size: 16px;
-  font-weight: 600;
+  /* Typography handled by ios26-text-* classes */
   margin-bottom: 4px;
   line-height: 1.3;
 }
 
 .location-subtitle {
-  font-size: 14px;
+  /* Typography handled by ios26-text-* classes */
   opacity: 0.7;
   line-height: 1.2;
 }
@@ -436,8 +446,7 @@
 }
 
 .section-title {
-  font-size: 20px;
-  font-weight: 600;
+  /* Typography handled by ios26-text-* classes */
   margin: 0;
 }
 
@@ -453,6 +462,9 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .recent-item {
@@ -494,16 +506,21 @@
 }
 
 .recent-name {
-  font-size: 15px;
-  font-weight: 600;
+  /* Typography handled by ios26-text-* classes */
   margin-bottom: 2px;
   line-height: 1.3;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .recent-location {
-  font-size: 13px;
+  /* Typography handled by ios26-text-* classes */
   opacity: 0.6;
   line-height: 1.2;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* ============================================================================
@@ -665,16 +682,8 @@
 }
 
 /* ============================================================================
-   THEME INTEGRATION UTILITIES
-   ============================================================================ */
-
-.enhanced-search-screen {
-  /* CSS custom properties will be set by React based on theme */
-  --search-primary-color: var(--theme-primary, #007aff);
-  --search-background: var(--theme-background, #000);
-  --search-text: var(--theme-text, #fff);
-  --search-border: var(--theme-border, rgba(255, 255, 255, 0.1));
-}
+  THEME INTEGRATION UTILITIES
+  ============================================================================ */
 
 /* Dark mode specific adjustments */
 @media (prefers-color-scheme: dark) {

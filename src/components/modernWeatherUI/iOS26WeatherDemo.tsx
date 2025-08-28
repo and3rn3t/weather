@@ -14,7 +14,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import '../../styles/iOS26Components.css';
+// Styles consolidated via src/index.css (iosComponents.css + ios26-design-system-consolidated.css)
+// (No direct CSS import here to avoid duplicate nav/style overrides)
 import { logInfo } from '../../utils/logger';
 import type { ThemeColors } from '../../utils/themeConfig';
 import {

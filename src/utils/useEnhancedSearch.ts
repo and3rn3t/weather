@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { logError } from './logger';
+import { optimizedFetchJson } from './optimizedFetch';
 import { popularCitiesCache, type PopularCity } from './popularCitiesCache';
 
 interface EnhancedCityResult {
@@ -192,20 +193,11 @@ export function useEnhancedSearch(
         dedupe: '1',
       });
 
-      const globalResponse = await fetch(
+      const globalResults = await optimizedFetchJson<APIResult[]>(
         `https://nominatim.openstreetmap.org/search?${globalSearchParams}`,
-        {
-          headers: {
-            'User-Agent': 'PremiumWeatherApp/2.0 (Global Search)',
-          },
-          signal: abortControllerRef.current?.signal,
-          cache: 'default',
-        }
+        { signal: abortControllerRef.current?.signal },
+        `nominatim:global:${searchQuery}`
       );
-
-      if (!globalResponse.ok) return existingResults;
-
-      const globalResults = await globalResponse.json();
       const additionalResults = globalResults
         .filter(
           (result: { type: string; class: string; importance?: number }) => {
@@ -301,22 +293,11 @@ export function useEnhancedSearch(
           bounded: '1',
         });
 
-        const response = await fetch(
+        const apiResults = await optimizedFetchJson<APIResult[]>(
           `https://nominatim.openstreetmap.org/search?${searchParams}`,
-          {
-            headers: {
-              'User-Agent': 'PremiumWeatherApp/2.0 (Enhanced Search)',
-            },
-            signal: abortControllerRef.current.signal,
-            cache: 'default',
-          }
+          { signal: abortControllerRef.current.signal },
+          `nominatim:enhanced:${searchQuery}`
         );
-
-        if (!response.ok) {
-          throw new Error(`Search failed: ${response.status}`);
-        }
-
-        const apiResults = await response.json();
 
         // Transform API results to enhanced format with improved filtering
         const enhancedResults: EnhancedCityResult[] = apiResults

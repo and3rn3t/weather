@@ -16,7 +16,15 @@ mobile optimization, and production-ready deployment infrastructure.
 - **Production**: [weather.andernet.dev](https://weather.andernet.dev)
 - **Development**: [weather-dev.andernet.dev](https://weather-dev.andernet.dev)
 
-## 🚀 Quick Start
+## � Documentation quick links
+
+- [Networking Usage Guide](./docs/guides/NETWORKING_README.md) — shared fetch utilities, hooks,
+  caching, headers
+- [Production Networking Strategy](./docs/technical/PRODUCTION_NETWORKING_STRATEGY.md) — policies,
+  retries, compliance
+- [Documentation Hub](./docs/README.md) — all guides, reports, and technical docs
+
+## �🚀 Quick Start
 
 ```bash
 # Clone the repository
@@ -273,6 +281,8 @@ Production Build:
 3. **Documentation**: Update README and inline documentation
 4. **Accessibility**: Maintain WCAG 2.1 AA compliance
 5. **Performance**: Consider bundle size impact
+6. **Networking**: Route all external API calls through the shared utilities (`optimizedFetch` /
+   `optimizedFetchJson`) or the provided hooks; see `docs/guides/NETWORKING_README.md`.
 
 ### Pull Request Process
 

@@ -2,6 +2,8 @@
 @import './styles/mobile.css';
 @import './styles/iosComponents.css';
 @import './styles/ios26-design-system-consolidated.css';
+@import './styles/typography-hig.css';
+@import './styles/weather-readability-enhancement.css';
 
 /* TEMP: Heavy consolidated CSS imports removed while isolating overlay issue */
 
@@ -82,9 +84,7 @@
   pointer-events: inherit !important;
 }
 [data-env='dev'] body * {
-  /* allow normal interaction unless explicitly disabled and flatten z-index */
-  pointer-events: auto !important;
-  z-index: auto !important;
+  /* Avoid overriding component-defined interactivity; do not force pointer-events/z-index globally */
 }
 [data-env='dev'] .loading-overlay,
 [data-env='dev'] .film-grain-overlay,
@@ -125,6 +125,48 @@
     'Segoe UI',
     Roboto,
     sans-serif;
+}
+
+/* Dev rescue UI styles */
+[data-env='dev'] .dev-rescue-container {
+  padding: 16px;
+}
+[data-env='dev'] .dev-rescue-title {
+  margin-bottom: 8px;
+}
+[data-env='dev'] .dev-rescue-text {
+  margin-bottom: 12px;
+}
+[data-env='dev'] .dev-rescue-button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #eef2ff;
+  font-weight: 600;
+}
+
+/* Dev bootstrap panel */
+[data-env='dev'] .dev-boot-panel {
+  margin: 12px;
+  padding: 12px;
+  border: 1px solid #c7d2fe;
+  background: #eef2ff;
+  border-radius: 10px;
+}
+[data-env='dev'] .dev-boot-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+[data-env='dev'] .dev-boot-sub {
+  margin-bottom: 10px;
+  color: #334155;
+}
+[data-env='dev'] .dev-boot-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  font-weight: 600;
 }
 
 /* Ensure all interactive elements are touch-friendly */

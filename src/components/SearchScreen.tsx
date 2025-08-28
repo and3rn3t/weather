@@ -1,17 +1,13 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import { logError, logInfo } from '../utils/logger';
+import { optimizedFetchJson } from '../utils/optimizedFetch';
 import type { ThemeColors } from '../utils/themeConfig';
 import {
   useInteractionFeedback,
   useWeatherAnnouncements,
 } from '../utils/useMultiSensoryWeather';
+import './SearchScreen.css';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -64,7 +60,11 @@ interface NominatimResult {
  * - Improved accessibility
  * - Clean visual hierarchy
  */
-function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
+function SearchScreen({
+  theme: _theme,
+  onBack,
+  onLocationSelect,
+}: Readonly<SearchScreenProps>) {
   const haptic = useHaptic();
 
   // iOS26 Phase 3C: Multi-sensory search experience
@@ -145,20 +145,11 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
           bounded: '1',
         });
 
-        const response = await fetch(
+        const data = await optimizedFetchJson<NominatimResult[]>(
           `https://nominatim.openstreetmap.org/search?${searchParams}`,
-          {
-            headers: {
-              'User-Agent': 'EnhancedWeatherApp/2.0 (US Location Search)',
-            },
-          }
+          {},
+          `search:us:${searchQuery}`
         );
-
-        if (!response.ok) {
-          throw new Error(`Search failed: ${response.status}`);
-        }
-
-        const data: NominatimResult[] = await response.json();
 
         // Enhanced filtering with better US location support
         const cityResults = data
@@ -217,19 +208,14 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
 
         if (cityResults.length === 0) {
           // If no results with US focus, try global search
-          const globalResponse = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-              searchQuery
-            )}&format=json&limit=10&addressdetails=1`,
-            {
-              headers: {
-                'User-Agent': 'EnhancedWeatherApp/2.0 (Global Search)',
-              },
-            }
-          );
-
-          if (globalResponse.ok) {
-            const globalData: NominatimResult[] = await globalResponse.json();
+          try {
+            const globalData = await optimizedFetchJson<NominatimResult[]>(
+              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+                searchQuery
+              )}&format=json&limit=10&addressdetails=1`,
+              {},
+              `search:global:${searchQuery}`
+            );
             const globalResults = globalData
               .filter((item: NominatimResult) => {
                 const isCity =
@@ -253,6 +239,8 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
               .slice(0, 5);
 
             setResults(globalResults);
+          } catch {
+            // ignore global fallback errors
           }
 
           if (cityResults.length === 0) {
@@ -397,49 +385,28 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
     }
   }, []);
 
-  // Memoized styles for performance
-  const containerStyles = useMemo(
-    () => ({
-      minHeight: 'calc(100dvh - 80px)',
-      background: theme.appBackground,
-      color: theme.primaryText,
-    }),
-    [theme]
-  );
-
-  const searchContainerStyles = useMemo(
-    () => ({
-      background: `${theme.primaryGradient}10`,
-      borderColor: `${theme.primaryGradient}30`,
-    }),
-    [theme]
-  );
-
-  const resultItemStyles = useMemo(
-    () => ({
-      borderColor: `${theme.primaryGradient}20`,
-    }),
-    [theme]
-  );
+  // Derived UI fragments for clarity
+  const hasTypedQuery = query.length >= 2;
 
   return (
-    <div className="enhanced-search-screen" style={containerStyles}>
+    <div className="enhanced-search-screen">
       {/* Header */}
       <header className="search-header">
         <button
           className="search-back-button"
           onClick={onBack}
           aria-label="Go back"
-          style={{ color: theme.primaryText }}
         >
           ←
         </button>
-        <h1 className="search-title">Search Locations</h1>
+        <h1 className="search-title ios26-text-headline ios26-text-primary">
+          Search
+        </h1>
       </header>
 
       {/* Search Input */}
       <div className="search-input-section">
-        <div className="search-input-container" style={searchContainerStyles}>
+        <div className="search-input-container">
           <div className="search-icon">🔍</div>
           <input
             ref={searchInputRef}
@@ -448,14 +415,12 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
             placeholder="Search for cities, towns..."
             value={query}
             onChange={handleSearchInput}
-            style={{ color: theme.primaryText }}
           />
           {query && (
             <button
               className="clear-search-button"
               onClick={clearSearch}
               aria-label="Clear search"
-              style={{ color: theme.primaryText }}
             >
               ✕
             </button>
@@ -474,50 +439,61 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
       {/* Search Results */}
       {showResults && (
         <div className="search-results-section">
-          {isLoading ? (
+          {isLoading && (
             <div className="search-loading">
               <div className="loading-spinner"></div>
               <span>Searching...</span>
             </div>
-          ) : results.length > 0 ? (
-            <div className="search-results">
+          )}
+
+          {!isLoading && results.length > 0 && (
+            <>
               <div className="results-header">
-                <span className="results-count">
+                <span className="results-count ios26-text-footnote ios26-text-secondary">
                   {results.length} results found
                 </span>
               </div>
-              {results.map(result => (
-                <button
-                  key={result.id}
-                  className="search-result-item"
-                  onClick={() => handleCitySelection(result)}
-                  style={resultItemStyles}
-                >
-                  <div className="result-icon">🏙️</div>
-                  <div className="result-content">
-                    <div className="result-name">{result.name}</div>
-                    <div className="result-location">
-                      {result.state && result.state !== result.country && (
-                        <span className="result-state">{result.state}, </span>
-                      )}
-                      <span className="result-country">{result.country}</span>
-                    </div>
-                  </div>
-                  <div className="result-arrow">→</div>
-                </button>
-              ))}
-            </div>
-          ) : (
-            query.length >= 2 &&
-            !isLoading && (
-              <div className="search-empty">
-                <div className="empty-icon">🔍</div>
-                <div className="empty-message">No cities found</div>
-                <div className="empty-suggestion">
-                  Try a different search term
-                </div>
+              <ul className="search-results" aria-label="Search results">
+                {results.map(result => (
+                  <li key={result.id}>
+                    <button
+                      className="search-result-item ios26-list-item"
+                      onClick={() => handleCitySelection(result)}
+                    >
+                      <div className="result-icon">🏙️</div>
+                      <div className="result-content">
+                        <div className="result-name ios26-text-headline ios26-text-primary">
+                          {result.name}
+                        </div>
+                        <div className="result-location ios26-text-subheadline ios26-text-secondary">
+                          {result.state && result.state !== result.country && (
+                            <span className="result-state">
+                              {result.state},{' '}
+                            </span>
+                          )}
+                          <span className="result-country">
+                            {result.country}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="result-arrow">→</div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {!isLoading && hasTypedQuery && results.length === 0 && (
+            <div className="search-empty">
+              <div className="empty-icon">🔍</div>
+              <div className="empty-message ios26-text-body ios26-text-primary">
+                No cities found
               </div>
-            )
+              <div className="empty-suggestion ios26-text-footnote ios26-text-secondary">
+                Try a different search term
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -530,16 +506,13 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
             className="current-location-button"
             onClick={getCurrentLocation}
             disabled={isLoading}
-            style={{
-              background: `${theme.primaryGradient}10`,
-              borderColor: `${theme.primaryGradient}30`,
-              color: theme.primaryText,
-            }}
           >
             <div className="location-icon">📍</div>
             <div className="location-content">
-              <div className="location-title">Use Current Location</div>
-              <div className="location-subtitle">
+              <div className="location-title ios26-text-headline ios26-text-primary">
+                Use Current Location
+              </div>
+              <div className="location-subtitle ios26-text-footnote ios26-text-secondary">
                 Get weather for where you are
               </div>
             </div>
@@ -551,33 +524,34 @@ function SearchScreen({ theme, onBack, onLocationSelect }: SearchScreenProps) {
         {recentSearches.length > 0 && !showResults && (
           <div className="recent-searches">
             <div className="section-header">
-              <h2 className="section-title">Recent Searches</h2>
+              <h2 className="section-title ios26-text-title3 ios26-text-primary">
+                Recent Searches
+              </h2>
               <span className="section-count">{recentSearches.length}</span>
             </div>
-            <div className="recent-list">
+            <ul className="recent-list" aria-label="Recent searches">
               {recentSearches.map(result => (
-                <button
-                  key={result.id}
-                  className="recent-item"
-                  onClick={() => handleRecentSelect(result)}
-                  style={{
-                    borderColor: `${theme.primaryGradient}20`,
-                    color: theme.primaryText,
-                  }}
-                >
-                  <div className="recent-icon">🕒</div>
-                  <div className="recent-content">
-                    <div className="recent-name">{result.name}</div>
-                    <div className="recent-location">
-                      {result.state && result.state !== result.country && (
-                        <span>{result.state}, </span>
-                      )}
-                      {result.country}
+                <li key={result.id}>
+                  <button
+                    className="recent-item"
+                    onClick={() => handleRecentSelect(result)}
+                  >
+                    <div className="recent-icon">🕒</div>
+                    <div className="recent-content">
+                      <div className="recent-name ios26-text-body ios26-text-primary">
+                        {result.name}
+                      </div>
+                      <div className="recent-location ios26-text-footnote ios26-text-secondary">
+                        {result.state && result.state !== result.country && (
+                          <span>{result.state}, </span>
+                        )}
+                        {result.country}
+                      </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
       </div>

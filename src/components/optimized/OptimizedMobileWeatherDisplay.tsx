@@ -15,6 +15,7 @@ import type {
   HourlyForecast,
   WeatherData,
 } from '../../types/weather';
+import WeatherIcon from '../../utils/weatherIcons';
 import SmartContentWrapper from '../SmartContentWrapper';
 import {
   PrecipitationChart,
@@ -24,6 +25,15 @@ import {
 } from './EnhancedWeatherVisualization';
 import './OptimizedMobileWeatherDisplay.css';
 import SmartWeatherSkeleton from './SmartWeatherSkeleton';
+
+type ContentVariant =
+  | 'current'
+  | 'hourly'
+  | 'daily'
+  | 'metrics'
+  | 'visualizations'
+  | 'alerts';
+type SkeletonVariant = 'current' | 'hourly' | 'daily' | 'metrics';
 
 interface OptimizedMobileWeatherDisplayProps {
   weather: WeatherData | null;
@@ -49,14 +59,11 @@ const OptimizedMobileWeatherDisplay: React.FC<
   // Determine current context for smart prioritization
   const weatherContext = useMemo(() => {
     const currentHour = new Date().getHours();
-    const timeOfDay: 'night' | 'morning' | 'afternoon' | 'evening' =
-      currentHour < 6
-        ? 'night'
-        : currentHour < 12
-          ? 'morning'
-          : currentHour < 18
-            ? 'afternoon'
-            : 'evening';
+    let timeOfDay: 'night' | 'morning' | 'afternoon' | 'evening';
+    if (currentHour < 6) timeOfDay = 'night';
+    else if (currentHour < 12) timeOfDay = 'morning';
+    else if (currentHour < 18) timeOfDay = 'afternoon';
+    else timeOfDay = 'evening';
 
     return {
       temperature: weather?.main.temp,
@@ -130,11 +137,11 @@ const OptimizedMobileWeatherDisplay: React.FC<
             fallback={
               <SmartWeatherSkeleton
                 variant={
-                  priority.component as
-                    | 'current'
-                    | 'hourly'
-                    | 'daily'
-                    | 'metrics'
+                  ['current', 'hourly', 'daily', 'metrics'].includes(
+                    priority.component
+                  )
+                    ? (priority.component as SkeletonVariant)
+                    : 'metrics'
                 }
               />
             }
@@ -174,11 +181,11 @@ const OptimizedMobileWeatherDisplay: React.FC<
               fallback={
                 <SmartWeatherSkeleton
                   variant={
-                    priority.component as
-                      | 'current'
-                      | 'hourly'
-                      | 'daily'
-                      | 'metrics'
+                    ['current', 'hourly', 'daily', 'metrics'].includes(
+                      priority.component
+                    )
+                      ? (priority.component as SkeletonVariant)
+                      : 'metrics'
                   }
                 />
               }
@@ -198,22 +205,15 @@ const OptimizedMobileWeatherDisplay: React.FC<
       </div>
 
       {/* Pull-to-refresh indicator */}
-      <div
+      <button
+        type="button"
         className="refresh-indicator"
-        role="button"
-        tabIndex={0}
         onClick={onRefresh}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onRefresh();
-          }
-        }}
         aria-label="Refresh weather data"
       >
         <span className="refresh-icon">🔄</span>
         <span className="refresh-text">Pull to refresh</span>
-      </div>
+      </button>
     </div>
   );
 };
@@ -223,13 +223,7 @@ type TrendPoint = { time: string; temperature: number };
 type PrecipPoint = { time: string; precipitation: number };
 
 const renderContentByType = (
-  type:
-    | 'current'
-    | 'hourly'
-    | 'daily'
-    | 'metrics'
-    | 'visualizations'
-    | 'alerts',
+  type: ContentVariant,
   data: {
     weather: WeatherData;
     hourlyForecast: HourlyForecast[];
@@ -251,12 +245,13 @@ const renderContentByType = (
   } = data;
 
   switch (type) {
-    case 'current':
+    case 'current': {
+      const currentCode = hourlyForecast?.[0]?.weatherCode ?? 0;
       return (
-        <div className="current-weather-section">
+        <div className="current-weather-section hero-current">
           <div className="location-header">
             <h1 className="location-name">{locationName}</h1>
-            <span className="last-updated">
+            <span className="last-updated" aria-live="polite">
               Updated{' '}
               {new Date().toLocaleTimeString([], {
                 hour: '2-digit',
@@ -265,22 +260,51 @@ const renderContentByType = (
             </span>
           </div>
 
-          <div className="current-weather-main">
-            <div className="temperature-display">
-              <span className="temperature-value">
-                {Math.round(weather.main.temp)}°
-              </span>
-              <span className="temperature-unit">F</span>
+          <div className="hero-grid">
+            <div className="current-icon" aria-hidden="true">
+              <WeatherIcon code={currentCode} size={72} animated={true} />
             </div>
-            <div className="weather-description">
-              <p className="condition">{weather.weather[0].description}</p>
-              <p className="feels-like">
-                Feels like {Math.round(weather.main.feels_like)}°
-              </p>
+            <div className="current-weather-main">
+              <div className="temperature-display">
+                <span className="temperature-value">
+                  {Math.round(weather.main.temp)}°
+                </span>
+                <span className="temperature-unit">F</span>
+              </div>
+              <div className="weather-description">
+                <p className="condition">{weather.weather[0].description}</p>
+                <p className="feels-like">
+                  Feels like {Math.round(weather.main.feels_like)}°
+                </p>
+              </div>
             </div>
           </div>
+
+          <ul className="chip-row" aria-label="Current conditions summary">
+            <li
+              className="chip"
+              aria-label={`Humidity ${weather.main.humidity}%`}
+            >
+              💧 {weather.main.humidity}%
+            </li>
+            <li
+              className="chip"
+              aria-label={`Wind ${Math.round(weather.wind.speed)} miles per hour`}
+            >
+              💨 {Math.round(weather.wind.speed)} mph
+            </li>
+            {typeof weather.uv_index === 'number' && (
+              <li
+                className="chip"
+                aria-label={`UV Index ${Math.round(weather.uv_index)}`}
+              >
+                ☀️ UV {Math.round(weather.uv_index)}
+              </li>
+            )}
+          </ul>
         </div>
       );
+    }
 
     case 'metrics':
       return (
@@ -310,7 +334,7 @@ const renderContentByType = (
               <span className="metric-label">Pressure</span>
             </div>
 
-            {weather.visibility && (
+            {!!weather.visibility && (
               <div className="metric-card">
                 <span className="metric-icon">👁️</span>
                 <span className="metric-value">
@@ -327,46 +351,112 @@ const renderContentByType = (
       return (
         <div className="hourly-forecast-section">
           <h3 className="section-title">Today's Forecast</h3>
-          <div className="hourly-scroll-container">
-            {hourlyForecast.slice(0, 12).map((hour, index) => (
-              <div key={index} className="hourly-item">
-                <span className="hourly-time">
-                  {new Date(hour.time).toLocaleTimeString([], {
-                    hour: 'numeric',
-                  })}
-                </span>
-                <span className="hourly-icon">🌤️</span>
-                <span className="hourly-temp">{hour.temperature}°</span>
-              </div>
-            ))}
+          <div className="hourly-timeline">
+            <div className="hourly-scroll-container">
+              {hourlyForecast.slice(0, 12).map((hour, index) => (
+                <div
+                  key={`h-${hour.time}`}
+                  className={`hourly-item ${index === 0 ? 'now' : ''}`}
+                  aria-label={`At ${new Date(hour.time).toLocaleTimeString([], { hour: 'numeric' })}, ${hour.temperature} degrees`}
+                >
+                  <span className="hourly-time">
+                    {index === 0
+                      ? 'Now'
+                      : new Date(hour.time).toLocaleTimeString([], {
+                          hour: 'numeric',
+                        })}
+                  </span>
+                  <div className="hourly-icon" aria-hidden="true">
+                    <WeatherIcon
+                      code={hour.weatherCode}
+                      size={28}
+                      animated={true}
+                    />
+                  </div>
+                  <span className="hourly-temp">{hour.temperature}°</span>
+                  <span className="hourly-sub">Feels {hour.feelsLike}°</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       );
 
-    case 'daily':
+    case 'daily': {
+      const days = dailyForecast.slice(0, 7);
+      const globalMin = Math.min(...days.map(d => d.tempMin));
+      const globalMax = Math.max(...days.map(d => d.tempMax));
+
+      const toStep = (val: number) =>
+        Math.max(0, Math.min(10, Math.round(val * 10)));
+      const getRangeSteps = (min: number, max: number) => {
+        const total = Math.max(1, globalMax - globalMin);
+        const startPct = (min - globalMin) / total;
+        const widthPct = (max - min) / total;
+        return { startStep: toStep(startPct), widthStep: toStep(widthPct) };
+      };
+
       return (
         <div className="daily-forecast-section">
           <h3 className="section-title">7-Day Forecast</h3>
           <div className="daily-forecast-list">
-            {dailyForecast.slice(0, 7).map((day, index) => (
-              <div key={index} className="daily-item">
-                <span className="daily-day">
-                  {index === 0
-                    ? 'Today'
-                    : new Date(day.date).toLocaleDateString([], {
-                        weekday: 'short',
-                      })}
-                </span>
-                <span className="daily-icon">🌤️</span>
-                <span className="daily-temps">
-                  <span className="temp-high">{day.tempMax}°</span>
-                  <span className="temp-low">{day.tempMin}°</span>
-                </span>
-              </div>
-            ))}
+            {days.map((day, index) => {
+              const isToday = index === 0;
+              const { startStep, widthStep } = getRangeSteps(
+                day.tempMin,
+                day.tempMax
+              );
+              return (
+                <div
+                  key={`d-${day.date}`}
+                  className={`daily-item ${isToday ? 'today' : ''}`}
+                  aria-label={`${
+                    isToday
+                      ? 'Today'
+                      : new Date(day.date).toLocaleDateString([], {
+                          weekday: 'long',
+                        })
+                  }: high ${day.tempMax}°, low ${day.tempMin}°`}
+                >
+                  <span className="daily-day">
+                    {isToday
+                      ? 'Today'
+                      : new Date(day.date).toLocaleDateString([], {
+                          weekday: 'short',
+                        })}
+                  </span>
+                  <div className="daily-icon" aria-hidden="true">
+                    <WeatherIcon
+                      code={day.weatherCode}
+                      size={28}
+                      animated={true}
+                    />
+                  </div>
+                  <div className="daily-range">
+                    <div className="range-rail" />
+                    <div
+                      className={`range-fill start-s${startStep} width-w${widthStep}`}
+                    />
+                  </div>
+                  <span className="daily-temps">
+                    <span className="temp-high">{day.tempMax}°</span>
+                    <span className="temp-low">{day.tempMin}°</span>
+                  </span>
+                  {day.precipitation > 0 && (
+                    <span
+                      className="daily-precip"
+                      aria-label={`Precipitation ${day.precipitation} millimeters`}
+                    >
+                      🌧️ {day.precipitation}mm
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       );
+    }
 
     case 'visualizations':
       return (
@@ -377,7 +467,9 @@ const renderContentByType = (
               windSpeed={weather.wind.speed}
               windDirection={weather.wind.deg}
             />
-            {weather.uv_index && <UVIndexBar uvIndex={weather.uv_index} />}
+            {typeof weather.uv_index === 'number' && (
+              <UVIndexBar uvIndex={weather.uv_index} />
+            )}
           </div>
           <PrecipitationChart hourlyData={precipitationData} />
         </div>

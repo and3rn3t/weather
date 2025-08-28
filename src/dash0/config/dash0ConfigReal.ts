@@ -40,6 +40,27 @@ const DEFAULT_CONFIG: Dash0Config = {
 export const initializeDash0 = (config: Partial<Dash0Config> = {}) => {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
 
+  // Dev-time hard gate: only enable if explicitly opted-in
+  const explicitlyEnabled =
+    String(import.meta.env.VITE_DASH0_ENABLED || '').toLowerCase() === 'true';
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(window.location.hostname);
+  const isDevEnv =
+    (import.meta.env.DEV ?? false) ||
+    finalConfig.environment === 'development' ||
+    isLocalhost;
+  if (!explicitlyEnabled || isDevEnv) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '⚠️ Dash0 disabled (dev mode or not explicitly enabled). Set VITE_DASH0_ENABLED=true to activate.'
+    );
+    return {
+      enabled: false,
+      reason: 'Disabled in dev or not explicitly enabled',
+    };
+  }
+
   // Check if we have required configuration
   if (
     !finalConfig.authToken ||

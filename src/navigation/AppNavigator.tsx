@@ -20,7 +20,13 @@
  * production user interface with full accessibility compliance.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 // Time Utilities
 import { formatTimeForHourly } from '../utils/timeUtils';
@@ -385,37 +391,38 @@ function WeatherDetailsScreen({
       />
 
       {/* iOS26 Live Activity for Weather Updates */}
-      {(showLiveActivity || weatherAlert) && (
-        <LiveActivity
-          title={weatherAlert ? weatherAlert.title : 'Weather Updated'}
-          subtitle={
-            weatherAlert
-              ? weatherAlert.message
-              : `${
-                  weather
-                    ? `${Math.round(weather.main.temp)}°F - ${
-                        weather.weather[0].description
-                      }`
-                    : 'Loading...'
-                }`
-          }
-          icon={
-            <span className="ios26-widget-icon">
-              {weatherAlert?.severity === 'severe'
-                ? '⚠️'
-                : weatherAlert?.severity === 'warning'
-                  ? '🟡'
-                  : '🌤️'}
-            </span>
-          }
-          theme={theme}
-          isVisible={true}
-          onTap={() => {
-            haptic.buttonPress();
-            logInfo('Live Activity tapped');
-          }}
-        />
-      )}
+      {(() => {
+        const alertIcon = weatherAlert
+          ? weatherAlert.severity === 'severe'
+            ? '⚠️'
+            : weatherAlert.severity === 'warning'
+              ? '🟡'
+              : '🌤️'
+          : null;
+        return (
+          <LiveActivity
+            title={weatherAlert ? weatherAlert.title : 'Weather Updated'}
+            subtitle={
+              weatherAlert
+                ? weatherAlert.message
+                : `${
+                    weather
+                      ? `${Math.round(weather.main.temp)}°F - ${
+                          weather.weather[0].description
+                        }`
+                      : 'Loading...'
+                  }`
+            }
+            icon={<span className="ios26-widget-icon">{alertIcon}</span>}
+            theme={theme}
+            isVisible={showLiveActivity || !!weatherAlert}
+            onTap={() => {
+              haptic.buttonPress();
+              logInfo('Live Activity tapped');
+            }}
+          />
+        );
+      })()}
 
       <ThemeToggle />
       <PullToRefresh
@@ -789,9 +796,24 @@ function WeatherDetailsScreen({
               <div className="ios26-text-title ios26-text-primary">
                 Extended Forecast
               </div>
-              <div className="ios26-text-body ios26-text-secondary">
+              <div className="ios26-text-body ios26-text-secondary ios26-mb-2">
                 {selectedView === 1 ? 'Hourly' : 'Daily'} forecast for {city}
               </div>
+              {selectedView === 1 && (
+                <HourlyForecastSection
+                  loading={loading}
+                  hourlyForecast={hourlyForecast}
+                  theme={theme}
+                  isMobile={true}
+                />
+              )}
+              {selectedView === 2 && (
+                <DailyForecastSection
+                  loading={loading}
+                  dailyForecast={dailyForecast}
+                  theme={theme}
+                />
+              )}
             </div>
           ) : null}
         </div>
@@ -1121,7 +1143,6 @@ const WeatherMainCard = React.memo(
   }
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HourlyForecastSection = React.memo(
   ({
     loading,
@@ -1155,16 +1176,16 @@ const HourlyForecastSection = React.memo(
           <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title enhanced-readability">
             Hourly
           </div>
-          <div className="ios26-forecast-scroll enhanced-readability">
+          <div className="ios26-forecast-scroll enhanced-readability ios26-timeline">
             {hourlyForecast.slice(0, 24).map((hour, index) => {
               const timeStr = formatTimeForHourly(hour.time);
               return (
                 <div
-                  key={`hour-${hour.time}-${index}`}
-                  className="ios26-forecast-item enhanced-readability"
+                  key={`hour-${hour.time}`}
+                  className={`ios26-forecast-item enhanced-readability ${index === 0 ? 'now' : ''}`}
                 >
                   <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time enhanced-readability">
-                    {timeStr}
+                    {index === 0 ? 'Now' : timeStr}
                   </div>
                   <div className="ios26-forecast-icon">
                     <WeatherIcon
@@ -1178,10 +1199,10 @@ const HourlyForecastSection = React.memo(
                       {hour.temperature}°F
                     </div>
                   </div>
-                  <div className="ios26-text-caption2 ios26-text-tertiary">
+                  <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-sub">
                     💧 {hour.humidity}%
                   </div>
-                  <div className="ios26-text-caption2 ios26-text-tertiary">
+                  <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-sub">
                     Feels {hour.feelsLike}°
                   </div>
                 </div>
@@ -1195,7 +1216,6 @@ const HourlyForecastSection = React.memo(
   }
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DailyForecastSection = React.memo(
   ({
     loading,
@@ -1222,6 +1242,17 @@ const DailyForecastSection = React.memo(
       );
     }
     if (dailyForecast.length > 0) {
+      const days = dailyForecast;
+      const globalMin = Math.min(...days.map(d => d.tempMin));
+      const globalMax = Math.max(...days.map(d => d.tempMax));
+      const toStep = (val: number) =>
+        Math.max(0, Math.min(10, Math.round(val * 10)));
+      const getRangeSteps = (min: number, max: number) => {
+        const total = Math.max(1, globalMax - globalMin);
+        const startPct = (min - globalMin) / total;
+        const widthPct = (max - min) / total;
+        return { startStep: toStep(startPct), widthStep: toStep(widthPct) };
+      };
       return (
         <div className="ios26-forecast-section enhanced-readability">
           <div className="ios-headline ios26-text-primary ios26-text-semibold ios26-forecast-title enhanced-readability">
@@ -1233,10 +1264,14 @@ const DailyForecastSection = React.memo(
                 day.date,
                 index
               );
+              const { startStep, widthStep } = getRangeSteps(
+                day.tempMin,
+                day.tempMax
+              );
               return (
                 <div
-                  key={`day-${day.date}-${index}`}
-                  className="ios26-forecast-item enhanced-readability"
+                  key={`day-${day.date}`}
+                  className={`ios26-forecast-item enhanced-readability ${isToday ? 'today' : ''}`}
                 >
                   <div className="ios26-forecast-time enhanced-readability">
                     <div
@@ -1252,7 +1287,6 @@ const DailyForecastSection = React.memo(
                       {dateStr}
                     </div>
                   </div>
-
                   <div className="ios26-forecast-icon">
                     <WeatherIcon
                       code={day.weatherCode}
@@ -1260,7 +1294,12 @@ const DailyForecastSection = React.memo(
                       animated={true}
                     />
                   </div>
-
+                  <div className="ios26-daily-range">
+                    <div className="ios26-range-rail" />
+                    <div
+                      className={`ios26-range-fill start-s${startStep} width-w${widthStep}`}
+                    />
+                  </div>
                   <div className="ios26-forecast-temp-range">
                     <div className="ios-subheadline ios26-text-semibold ios26-text-primary ios26-forecast-temperature enhanced-readability">
                       {day.tempMax}°
@@ -1269,7 +1308,6 @@ const DailyForecastSection = React.memo(
                       {day.tempMin}°
                     </div>
                   </div>
-
                   {day.precipitation > 0 && (
                     <div className="ios-caption2 ios26-text-tertiary ios26-forecast-precipitation enhanced-readability">
                       🌧️ {day.precipitation}mm
@@ -1299,6 +1337,19 @@ const AppNavigator = () => {
     trackUnmount: true,
     trackInteractions: true,
   });
+
+  // Dev tools visibility gate: hidden by default, enable with ?devtools=1 or localStorage 'showDevTools'='1'
+  const showDevTools = useMemo(() => {
+    if (!import.meta.env.DEV) return false;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('devtools') === '1') return true;
+      if (localStorage.getItem('showDevTools') === '1') return true;
+    } catch {
+      // ignore
+    }
+    return false;
+  }, []);
 
   // Optimization Systems Integration - August 2025
   const memoryOptimization = useMemoryOptimization();
@@ -1380,7 +1431,8 @@ const AppNavigator = () => {
   const weatherAnnouncements = useWeatherAnnouncements();
   const { updateAvailable, applyUpdate } = usePWAUpdate();
 
-  const [currentScreen, setCurrentScreen] = useState<NavigationScreen>('Home');
+  const [currentScreen, setCurrentScreen] =
+    useState<NavigationScreen>('Weather');
   const [city, setCity] = useState('San Francisco, CA');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherCode, setWeatherCode] = useState(0);
@@ -1418,6 +1470,10 @@ const AppNavigator = () => {
   } | null>(null);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
+
+  // Development mode flag and single-fetch guard to prevent duplicate initial loads
+  const isDev = import.meta.env.DEV;
+  const hasFetchedOnceRef = useRef(false);
 
   // Phase 3: Progressive Loading Hook Integration
   const _progressiveWeatherData = useProgressiveWeatherLoading(
@@ -1519,35 +1575,38 @@ const AppNavigator = () => {
   );
 
   // Legacy navigation function for backward compatibility
-  const navigate = async (screenName: string) => {
-    // Map old screen names to new NavigationScreen types
-    const screenMap: Record<string, NavigationScreen> = {
-      Home: 'Home',
-      WeatherDetails: 'Weather',
-      Weather: 'Weather',
-      MobileTest: 'Settings', // Redirect mobile test to settings for now
-      Settings: 'Settings',
-      Search: 'Search',
-      IOSDemo: 'Settings', // Temporarily map to settings, we'll handle this specially
-    };
+  const navigate = useCallback(
+    async (screenName: string) => {
+      // Map old screen names to new NavigationScreen types
+      const screenMap: Record<string, NavigationScreen> = {
+        Home: 'Home',
+        WeatherDetails: 'Weather',
+        Weather: 'Weather',
+        MobileTest: 'Settings', // Redirect mobile test to settings for now
+        Settings: 'Settings',
+        Search: 'Search',
+        IOSDemo: 'Settings', // Temporarily map to settings, we'll handle this specially
+      };
 
-    const mappedScreen = screenMap[screenName] || 'Home';
+      const mappedScreen = screenMap[screenName] || 'Home';
 
-    // iOS26 Phase 3C: Enhanced navigation with multi-sensory feedback
-    await interactionFeedback.onButtonPress();
-    await weatherAnnouncements.announceStateChange(
-      `Navigating to ${mappedScreen.toLowerCase()}`,
-      'Navigation updated'
-    );
+      // iOS26 Phase 3C: Enhanced navigation with multi-sensory feedback
+      await interactionFeedback.onButtonPress();
+      await weatherAnnouncements.announceStateChange(
+        `Navigating to ${mappedScreen.toLowerCase()}`,
+        'Navigation updated'
+      );
 
-    // Special handling for iOS Demo
-    if (screenName === 'IOSDemo') {
-      setShowIOSDemo(true);
-      return;
-    }
+      // Special handling for iOS Demo
+      if (screenName === 'IOSDemo') {
+        setShowIOSDemo(true);
+        return;
+      }
 
-    setCurrentScreen(mappedScreen);
-  };
+      setCurrentScreen(mappedScreen);
+    },
+    [interactionFeedback, weatherAnnouncements]
+  );
 
   // Enhanced swipe navigation handlers with haptic feedback
   const handleSwipeLeft = () => {
@@ -1654,11 +1713,7 @@ const AppNavigator = () => {
 
           const weatherResponse = await optimizedFetch(
             weatherUrl,
-            {
-              headers: {
-                'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)',
-              },
-            },
+            {},
             cacheKey
           );
 
@@ -1863,6 +1918,7 @@ const AppNavigator = () => {
           await fetchWeatherData(defaultLat, defaultLon);
           setCity('San Francisco, CA');
           logInfo('Default city loaded');
+          navigate('Weather');
         } catch (error) {
           logWarn(
             'Failed to load default city data, user will need to search manually:',
@@ -1879,7 +1935,7 @@ const AppNavigator = () => {
     // Delay slightly to let other initialization complete
     const timer = setTimeout(loadDefaultCity, 1000);
     return () => clearTimeout(timer);
-  }, [city, fetchWeatherData]);
+  }, [city, fetchWeatherData, navigate]);
 
   const getWeather = useCallback(async () => {
     return telemetry.trackOperation('city_weather_search', async () => {
@@ -1912,9 +1968,7 @@ const AppNavigator = () => {
         const geocodingStartTime = performance.now();
         const geoResponse = await optimizedFetch(
           geoUrl,
-          {
-            headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
-          },
+          {},
           `geocoding-${city}`
         );
 
@@ -2012,23 +2066,31 @@ const AppNavigator = () => {
     // Only refresh if we have valid weather data to refresh
     if (weather && city.trim()) {
       try {
-        // Extract lat/lon from current weather data or use city search
+        // Prefer existing coordinates when available to avoid repeated geocoding
         const { lat, lon } = await (async () => {
-          // If we have weather data, we can try to get the location from recent cities
-          // For now, we'll use the city search approach
+          if (currentCoordinates) {
+            return {
+              lat: currentCoordinates.latitude,
+              lon: currentCoordinates.longitude,
+            };
+          }
           const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
           const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
             city
           )}&format=json&limit=1`;
-          const geoResponse = await fetch(geoUrl, {
-            headers: { 'User-Agent': 'WeatherApp/1.0 (and3rn3t@icloud.com)' },
-          });
-          if (!geoResponse.ok)
-            throw new Error(`Geocoding failed: ${geoResponse.status}`);
-          const geoData = await geoResponse.json();
+          const geoData = await (
+            await import('../utils/optimizedFetch')
+          ).optimizedFetchJson<{ lat: string; lon: string }[]>(
+            geoUrl,
+            {},
+            `nav:geo:${city}`
+          );
           if (!geoData || geoData.length === 0)
             throw new Error('Location not found for background refresh');
-          return { lat: geoData[0].lat, lon: geoData[0].lon };
+          return {
+            lat: parseFloat(geoData[0].lat),
+            lon: parseFloat(geoData[0].lon),
+          };
         })();
 
         // Fetch updated weather data
@@ -2039,7 +2101,7 @@ const AppNavigator = () => {
         // Don't set error state for background refreshes to avoid disrupting UI
       }
     }
-  }, [weather, city, fetchWeatherData]);
+  }, [weather, city, fetchWeatherData, currentCoordinates]);
 
   // Initialize background refresh with weather-optimized settings
   const backgroundRefreshConfig = useMemo(
@@ -2047,9 +2109,10 @@ const AppNavigator = () => {
       foregroundInterval: 5, // 5 minutes for active usage
       backgroundInterval: 15, // 15 minutes for background
       forceRefreshThreshold: 30, // 30 minutes for stale data
-      enabled: true,
+      // Disable background refresh in development to prevent flicker and API churn
+      enabled: !isDev,
     }),
-    []
+    [isDev]
   );
 
   const backgroundRefresh = useWeatherBackgroundRefresh(
@@ -2093,10 +2156,16 @@ const AppNavigator = () => {
       await interactionFeedback.onPullToRefresh();
       await weatherAnnouncements.announceRefresh();
 
-      // Use background refresh for manual refresh with enhanced capabilities
+      // Use background refresh for manual refresh with enhanced capabilities when available
       try {
-        await backgroundRefresh.manualRefresh();
-        logInfo('Manual refresh completed via background refresh service');
+        if (backgroundRefresh.isInitialized) {
+          await backgroundRefresh.manualRefresh();
+          logInfo('Manual refresh completed via background refresh service');
+        } else {
+          // In development or when disabled, fall back to direct weather fetch
+          await getWeather();
+          logInfo('Manual refresh completed via direct fetch');
+        }
 
         // Track successful refresh
         const refreshDuration = performance.now() - refreshStartTime;
@@ -2181,12 +2250,20 @@ const AppNavigator = () => {
           {/* Enhanced Auto Location Manager - Phase F-2 */}
           <LocationManager
             onLocationReceived={(detectedCity, lat, lon) => {
+              // Guard against duplicate initial triggers causing double fetches
+              if (hasFetchedOnceRef.current) {
+                logInfo('📍 Auto location ignored (already fetched once)');
+                return;
+              }
               logInfo(
                 `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
               );
               setCity(detectedCity);
-              getWeatherByLocation(detectedCity, lat, lon);
+              getWeatherByLocation(detectedCity, lat, lon).then(() => {
+                hasFetchedOnceRef.current = true;
+              });
               haptic.light();
+              navigate('Weather');
             }}
             onError={errorMessage => {
               logWarn('📍 Auto location failed:', errorMessage);
@@ -2196,11 +2273,11 @@ const AppNavigator = () => {
             enableBackgroundUpdates={false} // Disabled for battery optimization
           />
 
-          {/* DEBUG: Location Tester - Development only */}
-          {import.meta.env.DEV && <LocationTester />}
+          {/* DEBUG: Location Tester - Hidden by default; enable with ?devtools=1 */}
+          {showDevTools && <LocationTester />}
 
-          {/* Background Refresh Status - Development info */}
-          {backgroundRefresh.isInitialized && (
+          {/* Background Refresh Status - Hidden by default; enable with ?devtools=1 */}
+          {showDevTools && backgroundRefresh.isInitialized && (
             <div className="ios26-dev-status">
               🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} |
               📊 {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
@@ -2446,22 +2523,26 @@ const AppNavigator = () => {
             duration={weatherAlert ? 8000 : 4000}
           />
 
-          {/* PWA Status - Shows installation, updates, and offline capabilities */}
-          <React.Suspense
-            fallback={
-              <div className="optimization-loading">Loading PWA status...</div>
-            }
-          >
-            <LazyPWAStatus
-              pwaInstall={pwaInstall}
-              serviceWorker={serviceWorker}
-              isOnline={isOnline}
-              updateAvailable={updateAvailable}
-              applyUpdate={applyUpdate}
-              enabled={true}
-              position="top-right"
-            />
-          </React.Suspense>
+          {/* PWA Status - Hidden by default; enable with ?devtools=1 */}
+          {showDevTools && (
+            <React.Suspense
+              fallback={
+                <div className="optimization-loading">
+                  Loading PWA status...
+                </div>
+              }
+            >
+              <LazyPWAStatus
+                pwaInstall={pwaInstall}
+                serviceWorker={serviceWorker}
+                isOnline={isOnline}
+                updateAvailable={updateAvailable}
+                applyUpdate={applyUpdate}
+                enabled={true}
+                position="top-right"
+              />
+            </React.Suspense>
+          )}
 
           {/* iOS Component Showcase - Overlay */}
           {showIOSDemo && (
@@ -2498,50 +2579,48 @@ const AppNavigator = () => {
             🚨
           </button>
 
-          {/* Performance Dashboard - Development monitoring */}
-          <React.Suspense
-            fallback={
-              <div className="optimization-loading">
-                Loading performance dashboard...
-              </div>
-            }
-          >
-            <LazyPerformanceDashboard
-              enabled={process.env.NODE_ENV === 'development'}
-              position="bottom-left"
-            />
-          </React.Suspense>
+          {/* Performance Dashboard - Hidden by default; enable with ?devtools=1 */}
+          {showDevTools && (
+            <React.Suspense
+              fallback={
+                <div className="optimization-loading">
+                  Loading performance dashboard...
+                </div>
+              }
+            >
+              <LazyPerformanceDashboard enabled={true} position="bottom-left" />
+            </React.Suspense>
+          )}
 
-          {/* Memory Optimization Display - August 2025 */}
-          {process.env.NODE_ENV === 'development' &&
-            memoryOptimization.memoryInfo && (
-              <div className="memory-stats-panel">
-                <div>
-                  Memory: {memoryOptimization.memoryUsagePercent.toFixed(1)}%
-                </div>
-                <div>
-                  Used:{' '}
-                  {(
-                    memoryOptimization.memoryInfo.usedJSHeapSize /
-                    1024 /
-                    1024
-                  ).toFixed(1)}
-                  MB
-                </div>
-                <div>
-                  Total:{' '}
-                  {(
-                    memoryOptimization.memoryInfo.totalJSHeapSize /
-                    1024 /
-                    1024
-                  ).toFixed(1)}
-                  MB
-                </div>
-                {memoryOptimization.isMemoryPressure && (
-                  <div className="warning">⚠️ Memory Pressure</div>
-                )}
+          {/* Memory Optimization Display - Hidden by default; enable with ?devtools=1 */}
+          {showDevTools && memoryOptimization.memoryInfo && (
+            <div className="memory-stats-panel">
+              <div>
+                Memory: {memoryOptimization.memoryUsagePercent.toFixed(1)}%
               </div>
-            )}
+              <div>
+                Used:{' '}
+                {(
+                  memoryOptimization.memoryInfo.usedJSHeapSize /
+                  1024 /
+                  1024
+                ).toFixed(1)}
+                MB
+              </div>
+              <div>
+                Total:{' '}
+                {(
+                  memoryOptimization.memoryInfo.totalJSHeapSize /
+                  1024 /
+                  1024
+                ).toFixed(1)}
+                MB
+              </div>
+              {memoryOptimization.isMemoryPressure && (
+                <div className="warning">⚠️ Memory Pressure</div>
+              )}
+            </div>
+          )}
         </EnhancedMobileContainer>
 
         {/* Phase 5C: Weather Alerts Panel */}

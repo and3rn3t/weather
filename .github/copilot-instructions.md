@@ -2,7 +2,9 @@
 
 <!-- IMPORTANT: When giving commands, use PowerShell and Windows paths; avoid POSIX-only operators. Prefer PowerShell-compatible syntax (pwsh) and npm scripts or separate lines instead of shell chaining. -->
 
-> IMPORTANT: All shell commands provided for this project must be Windows/PowerShell compatible. Use Windows paths, avoid POSIX-only operators and bash-only syntax (e.g., `export`, `source`, `grep`, and `&&` in Windows PowerShell 5.1). Prefer npm scripts or newline-separated commands.
+> IMPORTANT: All shell commands provided for this project must be Windows/PowerShell compatible. Use
+> Windows paths, avoid POSIX-only operators and bash-only syntax (e.g., `export`, `source`, `grep`,
+> and `&&` in Windows PowerShell 5.1). Prefer npm scripts or newline-separated commands.
 
 This project is a premium weather app built using React + TypeScript + Vite with professional-grade
 features and animations.
@@ -120,6 +122,17 @@ features and animations.
   covering mobile features, components, and APIs
 
 ## Important Technical Notes ⚠️
+
+### Networking Best Practices (Contributor Note)
+
+- Use the centralized networking utilities for all external requests: `optimizedFetch` /
+  `optimizedFetchJson`.
+- Prefer the hooks only when React lifecycle coupling is required: `useWeatherAPIOptimization`,
+  `useMobileOptimizedAPI`.
+- Do not set `User-Agent` manually; the shared layer ensures Nominatim compliance and sanitizes
+  headers to avoid preflight.
+- Pass stable cache keys and AbortController signals for coalescing and cancellation.
+- Reference: docs/guides/NETWORKING_README.md and docs/technical/PRODUCTION_NETWORKING_STRATEGY.md
 
 ### Navigation Implementation
 

@@ -1,6 +1,8 @@
-import { StrictMode } from 'react';
+import React, { Component, StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import LoadingProvider from './utils/LoadingProvider';
+import { ThemeProvider } from './utils/themeContext';
 
 // Lightweight dev runtime logger overlay
 function ensureDevOverlay(): HTMLElement | null {
@@ -13,7 +15,7 @@ function ensureDevOverlay(): HTMLElement | null {
     const styles =
       'position:fixed;left:0;bottom:0;max-height:40vh;overflow:auto;z-index:2147483647;' +
       'background:rgba(17,17,17,0.9);color:#fff;font:12px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;' +
-      'padding:6px 8px;box-shadow:0 -2px 8px rgba(0,0,0,0.3);pointer-events:auto;width:100%';
+      'padding:6px 8px;box-shadow:0 -2px 8px rgba(0,0,0,0.3);pointer-events:none;width:100%';
     el.setAttribute('style', styles);
     document.body.appendChild(el);
   }
@@ -108,6 +110,47 @@ const log = (...args: unknown[]) => {
   }
 };
 
+// Dev-only error boundary (safe to define in all modes; renders children in production)
+type EBState = { hasError: boolean; message?: string; stack?: string };
+class DevErrorBoundary extends Component<{ children: ReactNode }, EBState> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(err: unknown): EBState {
+    return {
+      hasError: true,
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    };
+  }
+  componentDidCatch(error: unknown) {
+    if (import.meta.env.DEV) {
+      log('DevErrorBoundary:caught', String(error));
+    }
+  }
+  render() {
+    if (import.meta.env.DEV && this.state.hasError) {
+      return (
+        <div className="dev-error-block" data-allow-overlay="true">
+          <div className="dev-error-title">Render Error</div>
+          <div className="dev-error-msg">{this.state.message}</div>
+          {this.state.stack && (
+            <pre className="dev-error-stack">{this.state.stack}</pre>
+          )}
+          <button
+            className="dev-boot-btn"
+            onClick={() => this.setState({ hasError: false })}
+          >
+            Dismiss
+          </button>
+        </div>
+      );
+    }
+    return this.props.children as React.ReactElement;
+  }
+}
+
 // Declare a global marker to detect successful module execution
 declare global {
   interface Window {
@@ -131,15 +174,81 @@ if (typeof window !== 'undefined' && import.meta.env.MODE !== 'production') {
 
 log('boot:start');
 
-// Service worker safety: in development skip purge/reload; only purge in production (one-time per session)
+// Service worker safety
+// 1) DEV or explicit disable flag -> Unregister all SWs and clear caches now
+// 2) PROD -> One-time purge per session to avoid stale caches after deploy
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  const isDev = import.meta.env.MODE !== 'production';
+  const env = (import.meta as unknown as { env?: Record<string, string> }).env;
+  const disableFlag =
+    (env && env.VITE_DISABLE_SW === '1') ||
+    (() => {
+      try {
+        return localStorage.getItem('disableSW') === '1';
+      } catch {
+        return false;
+      }
+    })();
+
+  // DEV or explicit disable: unregister and clear caches immediately
+  if (isDev || disableFlag) {
+    (async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        if (regs.length > 0) {
+          await Promise.all(regs.map(r => r.unregister()));
+          log('sw:disable: unregistered all');
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          const deletable = keys.filter(
+            (k: string) =>
+              k.startsWith('weather-') ||
+              k.includes('vite') ||
+              k.includes('workbox') ||
+              k.includes('static')
+          );
+          if (deletable.length) {
+            await Promise.all(deletable.map((k: string) => caches.delete(k)));
+            log('sw:disable: caches cleared', deletable.length);
+          }
+        }
+        // Persist an explicit local disable so any PWA helpers also stay off
+        try {
+          localStorage.setItem('disableSW', '1');
+        } catch {
+          // ignore storage errors
+        }
+        // If this page is still controlled by a SW, force a one-time reload to detach
+        try {
+          const alreadyReloaded =
+            sessionStorage.getItem('sw:disabled:reloaded') === '1';
+          if (navigator.serviceWorker.controller && !alreadyReloaded) {
+            sessionStorage.setItem('sw:disabled:reloaded', '1');
+            log('sw:disable: reloading to detach controller');
+            window.location.reload();
+          } else if (!navigator.serviceWorker.controller && alreadyReloaded) {
+            // Clean up the marker once detached
+            sessionStorage.removeItem('sw:disabled:reloaded');
+          }
+        } catch {
+          // ignore
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('SW disable failed:', e);
+        log('sw:disable failed', String(e));
+      }
+    })();
+  }
+
   const isLocalhost =
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
     window.location.hostname === '::1';
 
   // Skip purge entirely on localhost to avoid dev reload delays
-  if (!isLocalhost) {
+  if (!isLocalhost && !isDev) {
     const shouldPurgeProd = !sessionStorage.getItem('sw:purged:prod');
     if (shouldPurgeProd) {
       (async () => {
@@ -220,103 +329,185 @@ onReady(() => {
   }
   log('root:found');
 
+  // Insert a sentinel so #root is never visually empty in DEV (removes :empty banner)
+  try {
+    if (
+      import.meta.env.MODE !== 'production' &&
+      !rootElement.firstElementChild
+    ) {
+      const sentinel = document.createElement('div');
+      sentinel.setAttribute('data-dev-sentinel', 'true');
+      sentinel.setAttribute(
+        'style',
+        'padding:8px;margin:8px;border:1px dashed #93c5fd;color:#1e3a8a;background:#eff6ff;font:600 12px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;'
+      );
+      sentinel.textContent = 'DEV: React mounting…';
+      rootElement.appendChild(sentinel);
+    }
+  } catch {
+    // ignore
+  }
+
   const root = createRoot(rootElement);
-  // Render a minimal dev shell first to prove React can render (development only)
-  if (import.meta.env.MODE !== 'production') {
-    const DevShell = () => (
-      <div className="dev-shell-strip" data-allow-overlay="true">
-        DEV SHELL: React root mounted. Loading App…
+  // Shared reference to the DEV mount function so later helpers can call it safely
+  let mountAppDevRef: (() => Promise<void>) | null = null;
+  // Track if the app has rendered yet (declared early so all paths can update it)
+  let appRendered = false;
+  // Render a visible dev bootstrap panel immediately so root is never empty
+  if (import.meta.env.DEV) {
+    const mountAppDev = async () => {
+      try {
+        const mod = await import('./navigation/AppNavigator');
+        const App = mod.default;
+        root.render(
+          <StrictMode>
+            <ThemeProvider>
+              <LoadingProvider>
+                <DevErrorBoundary>
+                  <App />
+                </DevErrorBoundary>
+              </LoadingProvider>
+            </ThemeProvider>
+          </StrictMode>
+        );
+        appRendered = true;
+        window.__APP_BOOTED = true;
+        log('dev-boot:app mounted');
+      } catch (err) {
+        log('dev-boot:load failed', String(err));
+      }
+    };
+    mountAppDevRef = mountAppDev;
+
+    const DevBootstrap = () => (
+      <div className="dev-boot-panel" data-allow-overlay="true">
+        <div className="dev-boot-title">Dev Bootstrap</div>
+        <div className="dev-boot-sub">Root mounted. Preparing app…</div>
+        <button className="dev-boot-btn" onClick={mountAppDev}>
+          Load App
+        </button>
       </div>
     );
     root.render(
       <StrictMode>
-        <DevShell />
+        <DevBootstrap />
       </StrictMode>
     );
-    log('shell:rendered');
+    // Auto-attempt to load after a brief delay
+    setTimeout(() => {
+      void mountAppDev();
+    }, 60);
+    log('dev-boot:panel rendered');
   }
 
-  let appRendered = false;
+  let diagTimerId: number | null = null;
   // Timed fallback: if App import is slow or fails silently, render a diagnostic shell
-  setTimeout(async () => {
-    if (!appRendered) {
-      log('fallback:diagnostic-render:start');
-      try {
-        const diag = await import('./App-diagnostic');
-        const DiagApp = diag.default as React.ComponentType;
-        root.render(
-          <StrictMode>
-            <DiagApp />
-          </StrictMode>
-        );
-        log('fallback:diagnostic-render:done');
-        // Keep the marker small and subtle once diagnostic is visible
-        if (prodMarker) prodMarker.style.opacity = '0.6';
-      } catch (e) {
-        log('fallback:diagnostic-render:error', String(e));
+  if (import.meta.env.PROD) {
+    diagTimerId = window.setTimeout(async () => {
+      if (!appRendered) {
+        log('fallback:diagnostic-render:start');
+        try {
+          const diag = await import('./App-diagnostic');
+          const DiagApp = diag.default as React.ComponentType;
+          root.render(
+            <StrictMode>
+              <DiagApp />
+            </StrictMode>
+          );
+          log('fallback:diagnostic-render:done');
+          // Keep the marker small and subtle once diagnostic is visible
+          if (prodMarker) prodMarker.style.opacity = '0.6';
+        } catch (e) {
+          log('fallback:diagnostic-render:error', String(e));
+        }
       }
-    }
-  }, 1800);
+    }, 1800);
+  }
 
   (async () => {
     try {
-      const mod = await import('./App');
+      // Dynamically import AppNavigator (safe in dev and prod)
+      const mod = await import('./navigation/AppNavigator');
       log('app:imported');
       const App = mod.default;
       root.render(
         <StrictMode>
-          <App />
+          <ThemeProvider>
+            <LoadingProvider>
+              {import.meta.env.DEV ? (
+                <DevErrorBoundary>
+                  <App />
+                </DevErrorBoundary>
+              ) : (
+                <App />
+              )}
+            </LoadingProvider>
+          </ThemeProvider>
         </StrictMode>
       );
       appRendered = true;
       window.__APP_BOOTED = true;
+      // Remove any HTML fallback node that might have been injected before React mounted
+      try {
+        const htmlFallback = document.getElementById('html-fallback');
+        if (htmlFallback) {
+          htmlFallback.parentElement?.removeChild(htmlFallback);
+        }
+      } catch (e) {
+        log('html-fallback:cleanup-failed', String(e));
+      }
       log('app:rendered');
 
-      // If the HTML fallback is still present shortly after rendering App, show diagnostic
-      setTimeout(async () => {
-        try {
-          const fallback = document.getElementById('html-fallback');
-          if (fallback?.isConnected) {
-            log('fallback:html-still-present -> rendering diagnostic app');
-            const diag = await import('./App-diagnostic');
-            const DiagApp = diag.default as React.ComponentType;
-            root.render(
-              <StrictMode>
-                <DiagApp />
-              </StrictMode>
-            );
+      // Cancel any pending diagnostic fallback once app has rendered
+      if (diagTimerId) {
+        clearTimeout(diagTimerId);
+        diagTimerId = null;
+      }
+      // Dev-only visibility watchdog: if content height is tiny, re-surface Dev Bootstrap
+      if (import.meta.env.DEV) {
+        setTimeout(() => {
+          try {
+            const rect = rootElement.getBoundingClientRect();
+            const hasChild = !!rootElement.firstElementChild;
+            if (
+              (!hasChild || rect.height < 40) &&
+              document.visibilityState === 'visible'
+            ) {
+              log('dev-watchdog:root-invisible -> showing bootstrap');
+              const DevBootstrap = () => (
+                <div className="dev-boot-panel" data-allow-overlay="true">
+                  <div className="dev-boot-title">Dev Bootstrap</div>
+                  <div className="dev-boot-sub">Retry loading app…</div>
+                  <button
+                    className="dev-boot-btn"
+                    onClick={async () => {
+                      if (mountAppDevRef) {
+                        await mountAppDevRef();
+                      }
+                    }}
+                  >
+                    Load App
+                  </button>
+                </div>
+              );
+              root.render(
+                <StrictMode>
+                  <DevBootstrap />
+                </StrictMode>
+              );
+            }
+          } catch (e) {
+            log('dev-watchdog:error', String(e));
           }
-        } catch (e) {
-          log('fallback:html-check-error', String(e));
-        }
-      }, 600);
-
-      // Post-render watchdog: if the app content remains invisible, apply a rescue stylesheet
-      setTimeout(async () => {
-        try {
-          const rootRect = rootElement.getBoundingClientRect();
-          const hasChild = !!rootElement.firstElementChild;
-          const computed = getComputedStyle(document.body);
-          const bodyBg = computed.backgroundColor || computed.backgroundImage;
-
-          // Check if there is content and if the root has a height
-          const invisible =
-            (!hasChild || rootRect.height < 40) &&
-            document.visibilityState === 'visible';
-
-          if (invisible) {
-            log('watchdog:invisible -> applying rescue css');
-            const style = document.createElement('style');
-            style.setAttribute('data-dev-hide', 'full-overlays');
-            style.textContent = `
-              html[data-env='dev'] body > *[style*="position:fixed"]:not([data-allow-overlay='true']){display:none!important;visibility:hidden!important;opacity:0!important}
-              html[data-env='dev'] .film-grain-overlay{display:none!important}
-              html[data-env='dev'] #root{min-height:60vh!important}
-            `;
-            document.head.appendChild(style);
-
-            // As an extra visibility guarantee, show the diagnostic app
-            try {
+        }, 800);
+      }
+      // In production, if HTML fallback is still present shortly after rendering App, show diagnostic only if app didn't render
+      if (import.meta.env.PROD) {
+        setTimeout(async () => {
+          try {
+            const fallback = document.getElementById('html-fallback');
+            if (!appRendered && fallback?.isConnected) {
+              log('fallback:html-still-present -> rendering diagnostic app');
               const diag = await import('./App-diagnostic');
               const DiagApp = diag.default as React.ComponentType;
               root.render(
@@ -324,17 +515,107 @@ onReady(() => {
                   <DiagApp />
                 </StrictMode>
               );
-              log('watchdog:diagnostic-rendered');
-            } catch (e) {
-              log('watchdog:diag-import-failed', String(e));
             }
-          } else {
-            log('watchdog:visible ok', `bodyBg=${String(bodyBg)}`);
+          } catch (e) {
+            log('fallback:html-check-error', String(e));
           }
-        } catch (e) {
-          log('watchdog:error', String(e));
-        }
-      }, 1200);
+        }, 600);
+      }
+
+      // Post-render watchdog (production-only): if the app content remains invisible, apply a rescue stylesheet
+      if (import.meta.env.PROD) {
+        setTimeout(async () => {
+          try {
+            const rootRect = rootElement.getBoundingClientRect();
+            const hasChild = !!rootElement.firstElementChild;
+            const computed = getComputedStyle(document.body);
+            const bodyBg = computed.backgroundColor || computed.backgroundImage;
+
+            // Check if there is content and if the root has a height
+            const invisible =
+              (!hasChild || rootRect.height < 40) &&
+              document.visibilityState === 'visible';
+
+            if (!appRendered && invisible) {
+              log('watchdog:invisible -> applying rescue css');
+              const style = document.createElement('style');
+              style.setAttribute('data-dev-hide', 'full-overlays');
+              style.textContent = `
+                html[data-env='dev'] body > *[style*="position:fixed"]:not([data-allow-overlay='true']){display:none!important;visibility:hidden!important;opacity:0!important}
+                html[data-env='dev'] .film-grain-overlay{display:none!important}
+                html[data-env='dev'] #root{min-height:60vh!important}
+              `;
+              document.head.appendChild(style);
+
+              // As an extra visibility guarantee, show the diagnostic app
+              try {
+                const diag = await import('./App-diagnostic');
+                const DiagApp = diag.default as React.ComponentType;
+                root.render(
+                  <StrictMode>
+                    <DiagApp />
+                  </StrictMode>
+                );
+                log('watchdog:diagnostic-rendered');
+              } catch (e) {
+                log('watchdog:diag-import-failed', String(e));
+              }
+            } else {
+              log('watchdog:visible ok', `bodyBg=${String(bodyBg)}`);
+            }
+          } catch (e) {
+            log('watchdog:error', String(e));
+          }
+        }, 1200);
+      }
+
+      // Dev-only rescue UI: if still not rendered after 1200ms, surface a local stub
+      if (import.meta.env.DEV) {
+        setTimeout(() => {
+          if (!appRendered) {
+            log('dev-rescue:render');
+            const Retry: React.FC = () => {
+              return (
+                <div className="dev-rescue-container">
+                  <h1 className="dev-rescue-title">Dev Rescue UI</h1>
+                  <p className="dev-rescue-text">
+                    App not ready yet. Click retry to load the navigator.
+                  </p>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const mod2 = await import('./navigation/AppNavigator');
+                        const App2 = mod2.default;
+                        root.render(
+                          <StrictMode>
+                            <ThemeProvider>
+                              <LoadingProvider>
+                                <App2 />
+                              </LoadingProvider>
+                            </ThemeProvider>
+                          </StrictMode>
+                        );
+                        appRendered = true;
+                        log('dev-rescue:success');
+                      } catch (err) {
+                        log('dev-rescue:retry-failed', String(err));
+                      }
+                    }}
+                    className="dev-rescue-button"
+                  >
+                    Retry
+                  </button>
+                </div>
+              );
+            };
+            root.render(
+              <StrictMode>
+                <Retry />
+              </StrictMode>
+            );
+          }
+        }, 1200);
+      }
 
       // Remove production marker shortly after successful render
       if (prodMarker) {
@@ -396,6 +677,7 @@ onReady(() => {
           'border-bottom:1px solid #fecaca;font:600 12px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;' +
           'padding:6px 10px;text-align:center'
       );
+      bar.setAttribute('data-allow-overlay', 'true');
       bar.textContent = `DEV ERROR: ${String(err)}`;
       document.body.appendChild(bar);
       // rethrow to propagate to console listeners

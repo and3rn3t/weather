@@ -18,6 +18,7 @@ import { HapticFeedbackProvider } from './utils/hapticContext';
 import { logError } from './utils/logger';
 import type { ScreenInfo } from './utils/mobileScreenOptimization';
 import { getScreenInfo } from './utils/mobileScreenOptimization';
+import { optimizedFetchJson } from './utils/optimizedFetch';
 import { ThemeProvider } from './utils/themeContext';
 import ThemeToggle from './utils/ThemeToggle';
 import { useTheme } from './utils/useTheme';
@@ -25,18 +26,7 @@ import { getWeatherDescription as describeWeather } from './utils/weatherCodes';
 import WeatherIcon from './utils/weatherIcons';
 
 // Interfaces for type safety
-interface NominatimResult {
-  name: string;
-  lat: string;
-  lon: string;
-  display_name: string;
-  class: string;
-  address?: {
-    city?: string;
-    town?: string;
-    village?: string;
-  };
-}
+// Nominatim result shapes are typed ad-hoc where needed in this file
 
 interface WeatherData {
   main: {
@@ -55,6 +45,34 @@ interface WeatherData {
   weatherCode: number;
   uv_index: number;
   visibility: number;
+}
+
+// Minimal Open-Meteo response shape used in this file
+interface OpenMeteoResponse {
+  current: {
+    temperature_2m: number;
+    apparent_temperature: number;
+    relative_humidity_2m: number;
+    surface_pressure: number;
+    weathercode: number;
+    windspeed_10m?: number;
+    winddirection_10m?: number;
+    uv_index?: number;
+    visibility?: number;
+  };
+  hourly: {
+    time: string[];
+    temperature_2m: number[];
+    weathercode: number[];
+    relative_humidity_2m: number[];
+  };
+  daily: {
+    time: string[];
+    weathercode: number[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    precipitation_sum: number[];
+  };
 }
 
 // Simple weather component for debugging
@@ -128,17 +146,15 @@ const SimpleWeatherApp: React.FC = () => {
 
     try {
       // Step 1: Get coordinates from city name
-      const geoResponse = await fetch(
+      const geoData = await optimizedFetchJson<
+        { lat: string; lon: string; display_name: string }[]
+      >(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           city
         )}&format=json&limit=1`,
-        {
-          headers: {
-            'User-Agent': 'WeatherApp/1.0 (https://weather-dev.andernet.dev)',
-          },
-        }
+        {},
+        `app:geo:${city}`
       );
-      const geoData = await geoResponse.json();
 
       if (!geoData || geoData.length === 0) {
         throw new Error('City not found');
@@ -147,11 +163,11 @@ const SimpleWeatherApp: React.FC = () => {
       const { lat, lon } = geoData[0];
 
       // Step 2: Get weather data with hourly and daily forecasts
-      const weatherResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
+      const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        {},
+        `app:weather:${lat},${lon}`
       );
-
-      const weatherData = await weatherResponse.json();
 
       // Transform current weather data
       const currentWeather = {
@@ -241,11 +257,13 @@ const SimpleWeatherApp: React.FC = () => {
       const { latitude, longitude } = position.coords;
 
       // Get city name from coordinates
-      const geoResponse = await fetch(
+      const geoData = await optimizedFetchJson<{
+        address?: { city?: string; town?: string; village?: string };
+      }>(
         `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
+        {},
+        `app:rev:${latitude},${longitude}`
       );
-      const geoData = await geoResponse.json();
 
       const cityName =
         geoData.address?.city ||
@@ -255,11 +273,11 @@ const SimpleWeatherApp: React.FC = () => {
       setCity(cityName);
 
       // Get weather data directly with forecasts
-      const weatherResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
+      const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        {},
+        `app:weather:${latitude},${longitude}`
       );
-
-      const weatherData = await weatherResponse.json();
 
       // Transform current weather data
       const currentWeather = {
@@ -422,18 +440,27 @@ const SimpleWeatherApp: React.FC = () => {
     }
 
     try {
-      const response = await fetch(
+      const data = await optimizedFetchJson<
+        {
+          name?: string;
+          lat: string;
+          lon: string;
+          display_name: string;
+          class?: string;
+        }[]
+      >(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           searchTerm
         )}&format=json&limit=5&addressdetails=1`,
-        { headers: { 'User-Agent': 'WeatherApp/1.0' } }
+        {},
+        `app:suggest:${searchTerm}`
       );
-      const data = await response.json();
 
       const suggestions = data
-        .filter((item: NominatimResult) => item.class === 'place')
-        .map((item: NominatimResult) => ({
-          name: item.name,
+        .filter(item => (item as { class?: string }).class === 'place')
+        .map(item => ({
+          name:
+            (item as { name?: string }).name || item.display_name.split(',')[0],
           lat: parseFloat(item.lat),
           lon: parseFloat(item.lon),
           display_name: item.display_name,
@@ -472,10 +499,11 @@ const SimpleWeatherApp: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`
+      const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        {},
+        `app:weather:${lat},${lon}`
       );
-      const weatherData = await response.json();
 
       const currentWeather: WeatherData = {
         main: {
@@ -932,11 +960,7 @@ const SimpleWeatherApp: React.FC = () => {
       {(pullDistance > 0 || refreshing) && (
         <div
           className={`pull-refresh${refreshing ? ' is-refreshing' : ''}`}
-          style={
-            {
-              ['--pull-top' as string]: `${Math.max(10, pullDistance - 30)}px`,
-            } as React.CSSProperties
-          }
+          data-pull-top={Math.max(10, pullDistance - 30)}
         >
           {refreshing ? (
             <>

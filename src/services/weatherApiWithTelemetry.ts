@@ -4,6 +4,8 @@
  */
 
 import { useWeatherTelemetry } from '../hooks/useDash0Telemetry';
+import { optimizedFetchJson } from '../utils/optimizedFetch';
+import { reverseGeocodeCached } from '../utils/reverseGeocodingCache';
 
 // TypeScript interfaces for API responses
 interface GeocodingResult {
@@ -58,24 +60,13 @@ export function useWeatherApiWithTelemetry() {
           'geocoding',
           city,
           async () => {
-            const response = await fetch(
+            return optimizedFetchJson<GeocodingResult[]>(
               `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
                 city
               )}&format=json&limit=1`,
-              {
-                headers: {
-                  'User-Agent': 'Premium Weather App 1.0.0 (dash0-enabled)',
-                },
-              }
+              {},
+              `telemetry:geocode:${city}`
             );
-
-            if (!response.ok) {
-              throw new Error(
-                `Geocoding failed: ${response.status} ${response.statusText}`
-              );
-            }
-
-            return response.json();
           }
         );
 
@@ -103,15 +94,11 @@ export function useWeatherApiWithTelemetry() {
           async () => {
             const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`;
 
-            const response = await fetch(weatherUrl);
-
-            if (!response.ok) {
-              throw new Error(
-                `Weather API failed: ${response.status} ${response.statusText}`
-              );
-            }
-
-            return response.json();
+            return optimizedFetchJson<WeatherResponse>(
+              weatherUrl,
+              {},
+              `telemetry:weather:${cityName}`
+            );
           }
         );
 
@@ -162,20 +149,18 @@ export function useWeatherApiWithTelemetry() {
           async () => {
             const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`;
 
-            const response = await fetch(weatherUrl);
-
-            if (!response.ok) {
-              throw new Error(
-                `Weather API failed: ${response.status} ${response.statusText}`
-              );
-            }
-
-            return response.json();
+            return optimizedFetchJson<WeatherResponse>(
+              weatherUrl,
+              {},
+              `telemetry:weather:${lat},${lon}`
+            );
           }
         );
 
-        // Get city name from coordinates
-        const cityName = await getReverseGeocodingWithTelemetry(lat, lon);
+        // Get city name from coordinates (skip in dev to reduce requests)
+        const cityName = import.meta.env?.DEV
+          ? 'Current Location'
+          : await getReverseGeocodingWithTelemetry(lat, lon);
 
         return transformWeatherData(weatherData, cityName, lat, lon);
       },
@@ -190,29 +175,8 @@ export function useWeatherApiWithTelemetry() {
     return telemetry.trackOperation(
       'reverse_geocoding',
       async () => {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
-          {
-            headers: {
-              'User-Agent': 'Premium Weather App 1.0.0 (dash0-enabled)',
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Reverse geocoding failed: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const address = data?.address || {};
-
-        return (
-          address.city ||
-          address.town ||
-          address.village ||
-          address.county ||
-          'Unknown Location'
-        );
+        const data = await reverseGeocodeCached(lat, lon);
+        return data.city || 'Unknown Location';
       },
       { latitude: lat, longitude: lon }
     );

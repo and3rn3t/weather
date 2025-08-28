@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
 import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
+import './FavoritesScreen.css';
 
 interface FavoritesScreenProps {
   theme: ThemeColors;
@@ -44,7 +45,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
   ({
     city,
     showWeather = true,
-    theme,
+    theme: _theme,
     currentCity,
     weatherPreviews,
     loadingPreviews,
@@ -82,70 +83,17 @@ const CityCard: React.FC<CityCardProps> = React.memo(
         onClick={handleCityClick}
         onKeyDown={handleKeyDown}
         aria-label={`Select ${city.displayName || city.name} weather`}
-        style={{
-          background: isCurrentCity
-            ? 'rgba(103, 126, 234, 0.2)' // Semi-transparent blue
-            : theme.cardBackground,
-          border: `1px solid ${isCurrentCity ? '#667eea' : theme.cardBorder}`,
-          borderRadius: '16px',
-          padding: '16px',
-          marginBottom: '12px',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          backdropFilter: 'blur(10px)',
-          position: 'relative',
-          overflow: 'hidden',
-          width: '100%',
-          textAlign: 'left',
-        }}
-        className="city-card"
+        className={`city-card ${isCurrentCity ? 'is-current' : ''}`.trim()}
       >
         {/* Current city indicator */}
-        {isCurrentCity && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              background: '#667eea',
-              color: 'white',
-              fontSize: '10px',
-              padding: '4px 8px',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-            }}
-          >
-            CURRENT
-          </div>
-        )}
+        {isCurrentCity && <div className="city-card-current">CURRENT</div>}
 
         {/* City info */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <h3
-              style={{
-                margin: '0 0 4px 0',
-                color: theme.primaryText,
-                fontSize: '18px',
-                fontWeight: 'bold',
-              }}
-            >
-              {city.displayName || city.name}
-            </h3>
+        <div className="city-row">
+          <div className="city-main">
+            <h3 className="city-name">{city.displayName || city.name}</h3>
 
-            <p
-              style={{
-                margin: '0 0 8px 0',
-                color: theme.secondaryText,
-                fontSize: '14px',
-              }}
-            >
+            <p className="city-meta">
               {city.country && city.state
                 ? `${city.state}, ${city.country}`
                 : city.country}
@@ -153,9 +101,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
 
             {/* Weather preview */}
             {showWeather && (
-              <div
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-              >
+              <div className="city-preview">
                 {renderWeatherPreview(preview, isLoading)}
               </div>
             )}
@@ -167,35 +113,14 @@ const CityCard: React.FC<CityCardProps> = React.memo(
             aria-label={
               city.isFavorite ? 'Remove from favorites' : 'Add to favorites'
             }
-            style={{
-              background: 'transparent',
-              border: 'none',
-              fontSize: '20px',
-              cursor: 'pointer',
-              padding: '8px',
-              borderRadius: '8px',
-              transition: 'background 0.2s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = theme.cardBorder;
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'transparent';
-            }}
+            className="fav-btn"
           >
             {city.isFavorite ? '❤️' : '🤍'}
           </button>
         </div>
 
         {/* Last accessed info */}
-        <div
-          style={{
-            marginTop: '8px',
-            fontSize: '12px',
-            color: theme.secondaryText,
-            opacity: 0.7,
-          }}
-        >
+        <div className="city-last">
           Last accessed: {new Date(city.lastAccessed).toLocaleDateString()}
         </div>
       </button>
@@ -204,6 +129,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
 );
 
 import logger from '../utils/logger';
+import { optimizedFetchJson } from '../utils/optimizedFetch';
 
 const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   theme,
@@ -244,16 +170,22 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
 
       try {
         // Simplified weather API call for preview
-        const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&timezone=auto`
+        const data = await optimizedFetchJson<{
+          current?: { temperature_2m?: number; weather_code?: number };
+        }>(
+          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&timezone=auto`,
+          {},
+          `preview:${city.id}`
         );
-
-        if (response.ok) {
-          const data = await response.json();
+        if (data?.current) {
+          const temp = Number.isFinite(data.current.temperature_2m as number)
+            ? Math.round((data.current.temperature_2m as number) ?? 0)
+            : 0;
+          const wcode = (data.current.weather_code as number) ?? 0;
           const preview: WeatherPreview = {
-            temperature: Math.round(data.current.temperature_2m),
-            condition: getWeatherCondition(data.current.weather_code),
-            icon: getWeatherIcon(data.current.weather_code),
+            temperature: temp,
+            condition: getWeatherCondition(wcode),
+            icon: getWeatherIcon(wcode),
           };
 
           setWeatherPreviews(prev => ({
@@ -359,41 +291,15 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
     isLoading: boolean
   ) => {
     if (isLoading) {
-      return (
-        <div
-          style={{
-            width: '16px',
-            height: '16px',
-            border: `2px solid ${theme.cardBorder}`,
-            borderTop: '2px solid #667eea',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-          }}
-        />
-      );
+      return <div className="wp-spinner" />;
     }
 
     if (preview) {
       return (
         <>
-          <span style={{ fontSize: '16px' }}>{preview.icon}</span>
-          <span
-            style={{
-              color: theme.primaryText,
-              fontSize: '16px',
-              fontWeight: 'bold',
-            }}
-          >
-            {preview.temperature}°C
-          </span>
-          <span
-            style={{
-              color: theme.secondaryText,
-              fontSize: '14px',
-            }}
-          >
-            {preview.condition}
-          </span>
+          <span className="wp-emoji-md">{preview.icon}</span>
+          <span className="wp-temp">{preview.temperature}°C</span>
+          <span className="wp-cond">{preview.condition}</span>
         </>
       );
     }
@@ -420,16 +326,10 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
     }
 
     return (
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '40px 20px',
-          color: theme.secondaryText,
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌟</div>
-        <h3 style={{ margin: '0 0 8px 0' }}>No Favorites Yet</h3>
-        <p style={{ margin: 0, lineHeight: 1.5 }}>
+      <div className="fav-empty">
+        <div className="fav-emoji-xl">🌟</div>
+        <h3 className="fav-empty-title">No Favorites Yet</h3>
+        <p className="fav-empty-desc">
           Add cities to your favorites for quick weather access
         </p>
       </div>
@@ -437,110 +337,38 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   };
 
   return (
-    <div
-      style={{
-        height: '100vh',
-        background: theme.appBackground,
-        color: theme.primaryText,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <div className="fav-root">
       {/* Header */}
-      <div
-        style={{
-          padding: '16px',
-          borderBottom: `1px solid ${theme.cardBorder}`,
-          background: theme.cardBackground,
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: theme.primaryText,
-              fontSize: '24px',
-              cursor: 'pointer',
-              padding: '8px',
-            }}
-          >
+      <div className="fav-header">
+        <div className="fav-header-row">
+          <button onClick={onBack} className="fav-back-btn">
             ←
           </button>
 
-          <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
-            My Cities
-          </h1>
+          <h1 className="fav-title">My Cities</h1>
 
           {onAddFavorite && (
-            <button
-              onClick={onAddFavorite}
-              style={{
-                background: '#667eea',
-                border: 'none',
-                color: 'white',
-                fontSize: '20px',
-                cursor: 'pointer',
-                padding: '8px 12px',
-                borderRadius: '8px',
-              }}
-            >
+            <button onClick={onAddFavorite} className="fav-add-btn">
               +
             </button>
           )}
         </div>
 
         {/* Tab selector */}
-        <div
-          style={{
-            display: 'flex',
-            marginTop: '16px',
-            background: theme.cardBorder,
-            borderRadius: '12px',
-            padding: '4px',
-          }}
-        >
+        <div className="fav-tabs">
           <button
             onClick={() => setSelectedTab('favorites')}
-            style={{
-              flex: 1,
-              background:
-                selectedTab === 'favorites' ? '#667eea' : 'transparent',
-              color: selectedTab === 'favorites' ? 'white' : theme.primaryText,
-              border: 'none',
-              padding: '12px',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-            }}
+            className={`fav-tab ${
+              selectedTab === 'favorites' ? 'is-active' : ''
+            }`.trim()}
           >
             Favorites ({favorites.length})
           </button>
           <button
             onClick={() => setSelectedTab('recent')}
-            style={{
-              flex: 1,
-              background: selectedTab === 'recent' ? '#667eea' : 'transparent',
-              color: selectedTab === 'recent' ? 'white' : theme.primaryText,
-              border: 'none',
-              padding: '12px',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-            }}
+            className={`fav-tab ${
+              selectedTab === 'recent' ? 'is-active' : ''
+            }`.trim()}
           >
             Recent ({recentCities.length})
           </button>
@@ -548,48 +376,16 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
       </div>
 
       {/* Content */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '16px',
-        }}
-      >
+      <div className="fav-content">
         {selectedTab === 'favorites' ? (
           renderFavoritesContent()
         ) : (
           <>
             {recentCities.length > 0 ? (
               <>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                  }}
-                >
-                  <h3
-                    style={{
-                      margin: 0,
-                      color: theme.primaryText,
-                      fontSize: '16px',
-                    }}
-                  >
-                    Recent Locations
-                  </h3>
-                  <button
-                    onClick={handleClearRecent}
-                    style={{
-                      background: 'transparent',
-                      border: `1px solid ${theme.cardBorder}`,
-                      color: theme.secondaryText,
-                      padding: '6px 12px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                    }}
-                  >
+                <div className="fav-section-head">
+                  <h3 className="fav-section-title">Recent Locations</h3>
+                  <button onClick={handleClearRecent} className="fav-clear-btn">
                     Clear All
                   </button>
                 </div>
@@ -608,16 +404,10 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
                 ))}
               </>
             ) : (
-              <div
-                style={{
-                  textAlign: 'center',
-                  padding: '40px 20px',
-                  color: theme.secondaryText,
-                }}
-              >
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🕒</div>
-                <h3 style={{ margin: '0 0 8px 0' }}>No Recent Cities</h3>
-                <p style={{ margin: 0, lineHeight: 1.5 }}>
+              <div className="fav-empty">
+                <div className="fav-emoji-xl">🕒</div>
+                <h3 className="fav-empty-title">No Recent Cities</h3>
+                <p className="fav-empty-desc">
                   Cities you search for will appear here
                 </p>
               </div>
@@ -628,38 +418,12 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
 
       {/* Quick access summary */}
       {quickAccessCities.length > 0 && (
-        <div
-          style={{
-            padding: '16px',
-            borderTop: `1px solid ${theme.cardBorder}`,
-            background: theme.cardBackground,
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '12px',
-              color: theme.secondaryText,
-              textAlign: 'center',
-            }}
-          >
+        <div className="fav-footer">
+          <div className="fav-footer-text">
             {quickAccessCities.length} cities available for quick access
           </div>
         </div>
       )}
-
-      {/* CSS animations */}
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .city-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-      `}</style>
     </div>
   );
 };
