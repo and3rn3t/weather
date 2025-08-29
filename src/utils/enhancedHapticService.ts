@@ -6,22 +6,36 @@
  */
 
 import { Capacitor } from '@capacitor/core';
-import { ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { logInfo, logWarn } from './logger';
 
 // Lazy holder for Haptics API to avoid TDZ/circular init issues in bundled chunks
+// Use string unions to avoid importing enum values at module eval time; resolve to plugin enums at runtime if available
+type ImpactStyleStr = 'Light' | 'Medium' | 'Heavy';
+type NotificationTypeStr = 'Success' | 'Warning' | 'Error';
+
 type HapticsLike = {
-  impact: (opts: { style: ImpactStyle }) => Promise<void>;
-  notification: (opts: { type: NotificationType }) => Promise<void>;
+  impact: (opts: { style: unknown }) => Promise<void>;
+  notification: (opts: { type: unknown }) => Promise<void>;
 } | null;
 let HapticsAPI: HapticsLike = null;
+let ImpactStyleEnum: Record<string, unknown> | null = null;
+let NotificationTypeEnum: Record<string, unknown> | null = null;
 // Schedule asynchronous dynamic import to avoid top-level evaluation in problematic environments
 void (async () => {
   try {
     const mod = await import('@capacitor/haptics');
-    HapticsAPI = (mod as unknown as { Haptics?: HapticsLike }).Haptics || null;
+    const anyMod = mod as unknown as {
+      Haptics?: HapticsLike;
+      ImpactStyle?: Record<string, unknown>;
+      NotificationType?: Record<string, unknown>;
+    };
+    HapticsAPI = anyMod.Haptics || null;
+    ImpactStyleEnum = anyMod.ImpactStyle || null;
+    NotificationTypeEnum = anyMod.NotificationType || null;
   } catch {
     HapticsAPI = null;
+    ImpactStyleEnum = null;
+    NotificationTypeEnum = null;
   }
 })();
 
@@ -109,33 +123,33 @@ const WEB_VIBRATION_PATTERNS: Record<HapticPatternType, number | number[]> = {
 // Capacitor native patterns
 const NATIVE_PATTERNS: Record<
   HapticPatternType,
-  { impact?: ImpactStyle; notification?: NotificationType }
+  { impact?: ImpactStyleStr; notification?: NotificationTypeStr }
 > = {
-  [HapticPattern.LIGHT]: { impact: ImpactStyle.Light },
-  [HapticPattern.MEDIUM]: { impact: ImpactStyle.Medium },
-  [HapticPattern.HEAVY]: { impact: ImpactStyle.Heavy },
-  [HapticPattern.SUCCESS]: { notification: NotificationType.Success },
-  [HapticPattern.ERROR]: { notification: NotificationType.Error },
-  [HapticPattern.WARNING]: { notification: NotificationType.Warning },
-  [HapticPattern.BUTTON_PRESS]: { impact: ImpactStyle.Light },
-  [HapticPattern.BUTTON_CONFIRM]: { impact: ImpactStyle.Medium },
-  [HapticPattern.SELECTION]: { impact: ImpactStyle.Light },
-  [HapticPattern.REFRESH]: { impact: ImpactStyle.Medium },
-  [HapticPattern.NAVIGATION]: { impact: ImpactStyle.Light },
-  [HapticPattern.LONG_PRESS]: { impact: ImpactStyle.Heavy },
-  [HapticPattern.WEATHER_LOAD]: { impact: ImpactStyle.Light },
-  [HapticPattern.WEATHER_REFRESH]: { impact: ImpactStyle.Medium },
-  [HapticPattern.SEARCH_SUCCESS]: { notification: NotificationType.Success },
-  [HapticPattern.SEARCH_ERROR]: { notification: NotificationType.Error },
-  [HapticPattern.LOCATION_FOUND]: { notification: NotificationType.Success },
-  [HapticPattern.LOCATION_ERROR]: { notification: NotificationType.Error },
-  [HapticPattern.SWIPE_START]: { impact: ImpactStyle.Light },
-  [HapticPattern.SWIPE_PROGRESS]: { impact: ImpactStyle.Light },
-  [HapticPattern.SWIPE_COMPLETE]: { impact: ImpactStyle.Medium },
-  [HapticPattern.PULL_TO_REFRESH]: { impact: ImpactStyle.Medium },
-  [HapticPattern.PROGRESSIVE_LIGHT]: { impact: ImpactStyle.Light },
-  [HapticPattern.PROGRESSIVE_MEDIUM]: { impact: ImpactStyle.Medium },
-  [HapticPattern.PROGRESSIVE_HEAVY]: { impact: ImpactStyle.Heavy },
+  [HapticPattern.LIGHT]: { impact: 'Light' },
+  [HapticPattern.MEDIUM]: { impact: 'Medium' },
+  [HapticPattern.HEAVY]: { impact: 'Heavy' },
+  [HapticPattern.SUCCESS]: { notification: 'Success' },
+  [HapticPattern.ERROR]: { notification: 'Error' },
+  [HapticPattern.WARNING]: { notification: 'Warning' },
+  [HapticPattern.BUTTON_PRESS]: { impact: 'Light' },
+  [HapticPattern.BUTTON_CONFIRM]: { impact: 'Medium' },
+  [HapticPattern.SELECTION]: { impact: 'Light' },
+  [HapticPattern.REFRESH]: { impact: 'Medium' },
+  [HapticPattern.NAVIGATION]: { impact: 'Light' },
+  [HapticPattern.LONG_PRESS]: { impact: 'Heavy' },
+  [HapticPattern.WEATHER_LOAD]: { impact: 'Light' },
+  [HapticPattern.WEATHER_REFRESH]: { impact: 'Medium' },
+  [HapticPattern.SEARCH_SUCCESS]: { notification: 'Success' },
+  [HapticPattern.SEARCH_ERROR]: { notification: 'Error' },
+  [HapticPattern.LOCATION_FOUND]: { notification: 'Success' },
+  [HapticPattern.LOCATION_ERROR]: { notification: 'Error' },
+  [HapticPattern.SWIPE_START]: { impact: 'Light' },
+  [HapticPattern.SWIPE_PROGRESS]: { impact: 'Light' },
+  [HapticPattern.SWIPE_COMPLETE]: { impact: 'Medium' },
+  [HapticPattern.PULL_TO_REFRESH]: { impact: 'Medium' },
+  [HapticPattern.PROGRESSIVE_LIGHT]: { impact: 'Light' },
+  [HapticPattern.PROGRESSIVE_MEDIUM]: { impact: 'Medium' },
+  [HapticPattern.PROGRESSIVE_HEAVY]: { impact: 'Heavy' },
 };
 
 // ============================================================================
@@ -239,10 +253,19 @@ export class EnhancedHapticService {
       const nativePattern = NATIVE_PATTERNS[pattern];
 
       if (!HapticsAPI) return false;
+
+      // Prefer enum values from plugin if available, else fall back to strings
+      const toImpact = (s: ImpactStyleStr): unknown =>
+        (ImpactStyleEnum?.[s as string] ?? s) as unknown;
+      const toNotification = (s: NotificationTypeStr): unknown =>
+        (NotificationTypeEnum?.[s as string] ?? s) as unknown;
+
       if (nativePattern.impact) {
-        await HapticsAPI.impact({ style: nativePattern.impact });
+        await HapticsAPI.impact({ style: toImpact(nativePattern.impact) });
       } else if (nativePattern.notification) {
-        await HapticsAPI.notification({ type: nativePattern.notification });
+        await HapticsAPI.notification({
+          type: toNotification(nativePattern.notification),
+        });
       }
 
       if (this.config.debugMode) {
