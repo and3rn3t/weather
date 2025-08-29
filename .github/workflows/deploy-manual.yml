@@ -82,11 +82,13 @@ jobs:
           echo "Dist file count: $(find dist -type f | wc -l)"
 
       - name: 🔧 Compute target branch
+        id: target
         run: |
           if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "BRANCH=main" >> $GITHUB_ENV
+            echo "branch=main" >> $GITHUB_OUTPUT
           else
-            echo "BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
+            # For preview environments, deploy the specified branch (must not be main)
+            echo "branch=${{ inputs.branch }}" >> $GITHUB_OUTPUT
           fi
 
       - name: 🚀 Deploy via Wrangler
@@ -97,7 +99,7 @@ jobs:
           command: >-
             pages deploy dist
             --project-name=weather
-            --branch=${{ env.BRANCH }}
+            --branch=${{ steps.target.outputs.branch }}
 
       - name: 🔎 Post-deploy hint
         run: |

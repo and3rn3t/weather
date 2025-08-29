@@ -15,10 +15,10 @@ const domains = {
     branch: 'main',
     environment: 'production',
   },
-  development: {
+  preview: {
     domain: 'weather-dev.andernet.dev',
-    branch: 'dev',
-    environment: 'development',
+    branch: '(any non-main branch)',
+    environment: 'preview',
   },
 };
 
@@ -27,7 +27,7 @@ console.log(
   `🚀 Production:  ${domains.production.domain} (${domains.production.branch} branch)`
 );
 console.log(
-  `🧪 Development: ${domains.development.domain} (${domains.development.branch} branch)`
+  `🧪 Preview:     ${domains.preview.domain} (${domains.preview.branch})`
 );
 console.log('');
 
@@ -72,10 +72,10 @@ console.log('   Navigate to: Custom domains tab');
 console.log('   ');
 console.log('   Add these custom domains:');
 console.log(
-  `   - ${domains.production.domain} → ${domains.production.branch} branch`
+  `   - ${domains.production.domain} → ${domains.production.branch} branch (Production)`
 );
 console.log(
-  `   - ${domains.development.domain} → ${domains.development.branch} branch`
+  `   - ${domains.preview.domain} → Preview deployments for any non-main branch`
 );
 
 console.log('\n3. 🌍 Environment Variables (in Cloudflare Pages):');
@@ -86,9 +86,9 @@ console.log('   ENVIRONMENT=production');
 console.log('   VITE_APP_ENV=production');
 console.log('   VITE_API_BASE_URL=https://weather.andernet.dev');
 console.log('   ');
-console.log('   Development environment (dev branch):');
-console.log('   ENVIRONMENT=development');
-console.log('   VITE_APP_ENV=development');
+console.log('   Preview environment (any non-main branch):');
+console.log('   ENVIRONMENT=preview');
+console.log('   VITE_APP_ENV=preview');
 console.log('   VITE_API_BASE_URL=https://weather-dev.andernet.dev');
 
 console.log('\n🧪 Testing Commands:');
@@ -96,13 +96,13 @@ console.log(
   '   npm run deploy:production  # Deploy to production (main branch)'
 );
 console.log(
-  '   npm run deploy:dev         # Deploy to development (dev branch)'
+  '   npm run deploy:preview     # Deploy a preview for current branch'
 );
 console.log('   npm run deploy:diagnostic  # Verify configuration');
 
 console.log('\n🔍 Verification URLs:');
 console.log(`   Production:  https://${domains.production.domain}`);
-console.log(`   Development: https://${domains.development.domain}`);
+console.log(`   Preview:     https://${domains.preview.domain}`);
 console.log('   Cloudflare:  https://weather.pages.dev');
 
 console.log('\n📚 Documentation:');

@@ -18,11 +18,11 @@ GitHub App is uninstalled/disabled to avoid duplicate builds.
   - Workflow: `.github/workflows/ci-cd.yml`
   - Deploy: Yes (wrangler)
 
-- Development/Staging
+- Preview (non-main branches)
   - Event: push
-  - Branch: dev, develop, staging
+  - Branch: any branch except main
   - Workflow: `.github/workflows/dev-deploy.yml`
-  - Deploy: Yes (wrangler)
+  - Deploy: Yes (wrangler) — to the single Cloudflare Pages project as a Preview
 
 - SonarCloud (infrequent)
   - Event: schedule (weekly, Sunday 03:00 UTC) and manual `workflow_dispatch`
@@ -38,7 +38,7 @@ GitHub App is uninstalled/disabled to avoid duplicate builds.
 
 - Requires: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (repo/org secrets)
 - Repo guard: Deploys only when `github.repository == and3rn3t/weather` (prevents fork deploys)
-- Branch guard: main (prod), dev/develop/staging (non-prod)
+- Branch guard: main (prod), any non-main branch (preview)
 - Concurrency: In-progress runs per branch are auto-cancelled
 - Path filters: docs and markdown changes are ignored
 
