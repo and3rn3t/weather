@@ -103,7 +103,11 @@ export const useLocationDebug = () => {
     logInfo(`🧪 Testing Weather API for ${lat}, ${lon}`);
 
     try {
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
+      const { getStoredUnits, getTemperatureUnitParam } = await import(
+        './units'
+      );
+      const unit = getTemperatureUnitParam(getStoredUnits());
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=${unit}&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
 
       const data = await optimizedFetchJson<OpenMeteoDebugResponse>(
         weatherUrl,
@@ -170,7 +174,12 @@ if (typeof window !== 'undefined') {
       return data;
     },
     testWeatherAPI: async (lat: number, lon: number) => {
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`;
+      const {
+        getStoredUnits: _getStoredUnits2,
+        getTemperatureUnitParam: _getTemperatureUnitParam2,
+      } = await import('./units');
+      const unit2 = _getTemperatureUnitParam2(_getStoredUnits2());
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=${unit2}`;
       const data = await optimizedFetchJson<OpenMeteoDebugResponse>(
         weatherUrl,
         {},

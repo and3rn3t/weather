@@ -9,17 +9,17 @@
  * - Network status monitoring
  */
 
+import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { Device, type DeviceInfo } from '@capacitor/device';
 import { Geolocation, type Position } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import {
   LocalNotifications,
   type LocalNotificationSchema,
 } from '@capacitor/local-notifications';
-import { Device, type DeviceInfo } from '@capacitor/device';
 import { Network, type ConnectionStatus } from '@capacitor/network';
-import { App } from '@capacitor/app';
-import { logError, logWarn, logInfo } from './logger';
+import { logError, logInfo, logWarn } from './logger';
 
 // Type definitions for native API responses
 export interface LocationResult {
@@ -383,10 +383,12 @@ export class WeatherNotificationService {
     condition: string,
     city: string
   ): Promise<void> {
+    const { getStoredUnits, getTemperatureSymbol } = await import('./units');
+    const symbol = getTemperatureSymbol(getStoredUnits());
     const alert: WeatherAlert = {
       id: `weather-update-${Date.now()}`,
       title: `${city} Weather Update`,
-      body: `${Math.round(temperature)}°F - ${condition}`,
+      body: `${Math.round(temperature)}${symbol} - ${condition}`,
       severity: 'info',
     };
 

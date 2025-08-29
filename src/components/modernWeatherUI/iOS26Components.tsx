@@ -36,7 +36,7 @@ import type { ThemeColors } from '../../utils/themeConfig';
 interface ContextMenuAction {
   id: string;
   title: string;
-  icon?: string;
+  icon?: React.ReactNode;
   destructive?: boolean;
   disabled?: boolean;
   onAction: () => void;
@@ -744,7 +744,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
 interface SwipeAction {
   id: string;
   title: string;
-  icon?: string;
+  icon?: React.ReactNode;
   color: string;
   onAction: () => void;
 }

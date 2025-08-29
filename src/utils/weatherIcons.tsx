@@ -12,8 +12,7 @@
  * - 📱 Responsive sizing
  */
 
-import React from 'react';
-import { memo } from 'react';
+import React, { memo } from 'react';
 
 // ============================================================================
 // WEATHER ICON COMPONENT TYPES
@@ -749,70 +748,82 @@ export const weatherIconStyles = `
   .weather-icon-animated {
     transition: transform 0.3s ease;
   }
-  
+
   .weather-icon-animated:hover {
     transform: scale(1.1);
   }
-  
+
   .sun-rays {
     animation: rotate 20s linear infinite;
     transform-origin: 50px 50px;
   }
-  
+
   .sun-body {
     animation: pulse 4s ease-in-out infinite;
   }
-  
+
   .moon-body {
     animation: float 6s ease-in-out infinite;
   }
-  
+
   .cloud-body {
     animation: float 8s ease-in-out infinite;
   }
-  
+
   .rain-cloud {
     animation: sway 3s ease-in-out infinite;
   }
-  
+
   .snow-cloud {
     animation: sway 4s ease-in-out infinite;
   }
-  
+
   .storm-cloud {
     animation: shake 0.8s ease-in-out infinite;
   }
-  
+
   .lightning {
     filter: drop-shadow(0 0 5px #fbbf24);
   }
-  
+
   @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-  
+
   @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
   }
-  
+
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
   }
-  
+
   @keyframes sway {
     0%, 100% { transform: translateX(0); }
     50% { transform: translateX(3px); }
   }
-  
+
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-2px); }
     75% { transform: translateX(2px); }
   }
 `;
+
+// Ensure styles are present in the document once (no-op on SSR)
+(() => {
+  if (typeof document === 'undefined') return;
+  const styleId = 'weather-icon-styles';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = weatherIconStyles;
+    document.head.appendChild(style);
+  }
+})();
 
 const WeatherIcon = memo(WeatherIconComponent);
 export default WeatherIcon;

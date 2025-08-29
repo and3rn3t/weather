@@ -92,7 +92,11 @@ export function useWeatherApiWithTelemetry() {
           'weather',
           cityName,
           async () => {
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`;
+            const { getStoredUnits, getTemperatureUnitParam } = await import(
+              '../utils/units'
+            );
+            const unit = getTemperatureUnitParam(getStoredUnits());
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=mph&forecast_days=7`;
 
             return optimizedFetchJson<WeatherResponse>(
               weatherUrl,
@@ -117,10 +121,13 @@ export function useWeatherApiWithTelemetry() {
         );
 
         // Track data transformation performance
+        const { getStoredUnits: _getStoredUnitsTelemetry } = await import(
+          '../utils/units'
+        );
         telemetry.trackPerformance({
           name: 'weather_data_transformation',
           value: transformedData.current?.temp || 0,
-          unit: 'fahrenheit',
+          unit: _getStoredUnitsTelemetry(),
         });
 
         return transformedData;
@@ -147,7 +154,12 @@ export function useWeatherApiWithTelemetry() {
           'weather',
           `${lat},${lon}`,
           async () => {
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`;
+            const {
+              getStoredUnits: _getStoredUnits3,
+              getTemperatureUnitParam: _getTemperatureUnitParam3,
+            } = await import('../utils/units');
+            const unit2 = _getTemperatureUnitParam3(_getStoredUnits3());
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit2}&wind_speed_unit=mph&forecast_days=7`;
 
             return optimizedFetchJson<WeatherResponse>(
               weatherUrl,

@@ -17,6 +17,7 @@ import {
 } from '../utils/enhancedUSSearch';
 import { logError, logInfo } from '../utils/logger';
 import './EnhancedSearchBar.css';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 interface EnhancedSearchBarProps {
   onLocationSelect: (name: string, lat: number, lon: number) => void;
   placeholder?: string;
@@ -245,7 +246,9 @@ export function EnhancedSearchBar({
           borderColor: `${theme?.primaryGradient || '#007AFF'}30`,
         }}
       >
-        <div className="enhanced-search-icon">🔍</div>
+        <div className="enhanced-search-icon">
+          <NavigationIcons.Search />
+        </div>
         <input
           ref={searchInputRef}
           type="text"
@@ -260,7 +263,7 @@ export function EnhancedSearchBar({
         />
         {state.isLoading && (
           <div className="enhanced-search-loading enhanced-search-loading-animation">
-            ⏳
+            <NavigationIcons.Refresh />
           </div>
         )}
         {state.query && !state.isLoading && (
@@ -272,14 +275,16 @@ export function EnhancedSearchBar({
             }}
             aria-label="Clear search"
           >
-            ✕
+            <NavigationIcons.Close />
           </button>
         )}
       </div>
 
       {/* Error Message */}
       {state.error && (
-        <div className="enhanced-search-error">⚠️ {state.error}</div>
+        <div className="enhanced-search-error">
+          <NavigationIcons.Warning /> {state.error}
+        </div>
       )}
 
       {/* Search Results */}
@@ -353,7 +358,7 @@ export function EnhancedSearchBar({
                   )}
                   {result.source === 'local_database' && (
                     <span className="enhanced-search-badge enhanced-search-badge-popular">
-                      ⭐
+                      <NavigationIcons.Favorites />
                     </span>
                   )}
                 </div>

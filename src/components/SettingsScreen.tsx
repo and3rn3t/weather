@@ -10,9 +10,15 @@ import { useHaptic } from '../utils/hapticHooks';
 import { logInfo, logWarn } from '../utils/logger';
 import type { ScreenInfo } from '../utils/mobileScreenOptimization';
 import type { ThemeColors } from '../utils/themeConfig';
+import {
+  getStoredUnits,
+  setStoredUnits,
+  type TemperatureUnits,
+} from '../utils/units';
 import { useTheme } from '../utils/useTheme';
 import './SettingsScreen.css';
 import { NavigationBar } from './modernWeatherUI/NavigationBar';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 
 interface SettingsScreenProps {
   theme: ThemeColors;
@@ -40,7 +46,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
   // Basic settings state
   const [notifications, setNotifications] = useState(true);
-  const [units, setUnits] = useState('imperial');
+  const [units, setUnits] = useState<TemperatureUnits>(getStoredUnits());
   const [refreshInterval, setRefreshInterval] = useState('5min');
 
   // Location & GPS settings state
@@ -100,6 +106,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           const parsed = JSON.parse(uiSettings);
           setReduceMotion(parsed.reduceMotion ?? false);
         }
+
+        // Temperature units persisted separately
+        setUnits(getStoredUnits());
       } catch (error) {
         logWarn('Failed to load settings from localStorage:', error);
       }
@@ -122,7 +131,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     haptic.buttonPress();
     switch (id) {
       case 'units':
-        setUnits(value);
+        setUnits((value as TemperatureUnits) || 'imperial');
+        setStoredUnits((value as TemperatureUnits) || 'imperial');
         break;
       case 'refresh':
         setRefreshInterval(value);
@@ -331,7 +341,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'theme',
           title: 'Dark Mode',
           subtitle: 'Toggle between light and dark themes',
-          icon: themeName === 'dark' ? '🌙' : '☀️',
+          icon: <NavigationIcons.Sun />,
           type: 'toggle' as const,
           value: themeName === 'dark',
         },
@@ -340,7 +350,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'reduce-motion',
           title: 'Reduce Motion',
           subtitle: 'Minimize animations for accessibility',
-          icon: '♿',
+          icon: <NavigationIcons.Warning />,
           type: 'toggle' as const,
           value: reduceMotion,
         },
@@ -353,7 +363,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'gps-permission',
           title: 'GPS Permission',
           subtitle: 'Manage location access for weather detection',
-          icon: '📍',
+          icon: <NavigationIcons.Location />,
           type: 'action' as const,
           action: () => handleActionPress('gps-permission'),
         },
@@ -361,7 +371,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'high-accuracy-gps',
           title: 'High Accuracy GPS',
           subtitle: 'More precise location at cost of battery',
-          icon: '🎯',
+          icon: <NavigationIcons.Location />,
           type: 'toggle' as const,
           value: highAccuracyGPS,
         },
@@ -369,7 +379,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'location-timeout',
           title: 'Location Timeout',
           subtitle: 'How long to wait for GPS fix',
-          icon: '⏱️',
+          icon: <NavigationIcons.Clock />,
           type: 'selection' as const,
           value: locationTimeout,
           options: ['3sec', '5sec', '8sec', '12sec', '15sec'],
@@ -378,7 +388,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'background-location',
           title: 'Background Location',
           subtitle: 'Update location when app is backgrounded',
-          icon: '🔄',
+          icon: <NavigationIcons.Refresh />,
           type: 'toggle' as const,
           value: backgroundLocation,
         },
@@ -386,7 +396,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'manage-favorites',
           title: 'Manage Favorite Cities',
           subtitle: 'View and organize saved locations',
-          icon: '⭐',
+          icon: <NavigationIcons.Favorites />,
           type: 'action' as const,
           action: () => handleActionPress('manage-favorites'),
         },
@@ -399,7 +409,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'offline-mode',
           title: 'Offline Mode',
           subtitle: 'Cache weather data for offline access',
-          icon: '📱',
+          icon: <NavigationIcons.Menu />,
           type: 'toggle' as const,
           value: offlineMode,
         },
@@ -407,7 +417,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'cache-duration',
           title: 'Cache Duration',
           subtitle: 'How long to store weather data',
-          icon: '💾',
+          icon: <NavigationIcons.Add />,
           type: 'selection' as const,
           value: cacheDuration,
           options: ['1day', '3days', '7days', '14days', '30days'],
@@ -416,7 +426,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'auto-sync',
           title: 'Auto-sync Frequency',
           subtitle: 'Background sync when connection restored',
-          icon: '🔄',
+          icon: <NavigationIcons.Refresh />,
           type: 'selection' as const,
           value: autoSync,
           options: ['15sec', '30sec', '1min', '5min', '15min'],
@@ -425,7 +435,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'clear-cache',
           title: 'Clear Cache',
           subtitle: 'Remove all stored offline data',
-          icon: '🗑️',
+          icon: <NavigationIcons.Trash />,
           type: 'action' as const,
           action: () => handleActionPress('clear-cache'),
         },
@@ -438,7 +448,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'units',
           title: 'Temperature Units',
           subtitle: 'Choose between Celsius and Fahrenheit',
-          icon: '🌡️',
+          icon: <NavigationIcons.Sun />,
           type: 'selection' as const,
           value: units,
           options: ['imperial', 'metric'],
@@ -447,7 +457,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'refresh',
           title: 'Auto Refresh',
           subtitle: 'How often to update weather data',
-          icon: '🔄',
+          icon: <NavigationIcons.Refresh />,
           type: 'selection' as const,
           value: refreshInterval,
           options: ['1min', '5min', '15min', '30min', 'manual'],
@@ -456,7 +466,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'weather-alerts',
           title: 'Weather Alerts',
           subtitle: 'Configure severe weather notifications',
-          icon: '🚨',
+          icon: <NavigationIcons.Warning />,
           type: 'action' as const,
           action: () => handleActionPress('weather-alerts'),
         },
@@ -469,7 +479,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'battery-optimization',
           title: 'Battery Optimization',
           subtitle: 'Reduce features to save battery life',
-          icon: '🔋',
+          icon: <NavigationIcons.HeartOutline />,
           type: 'toggle' as const,
           value: batteryOptimization,
         },
@@ -477,7 +487,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'background-refresh',
           title: 'Background Refresh',
           subtitle: 'Update weather data when app is hidden',
-          icon: '📱',
+          icon: <NavigationIcons.Menu />,
           type: 'toggle' as const,
           value: backgroundRefresh,
         },
@@ -485,7 +495,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'haptic-feedback',
           title: 'Haptic Feedback',
           subtitle: 'Vibration feedback for touch interactions',
-          icon: '📳',
+          icon: <NavigationIcons.Heart />,
           type: 'toggle' as const,
           value: hapticFeedback,
         },
@@ -498,7 +508,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'notifications',
           title: 'Weather Alerts',
           subtitle: 'Get notified about severe weather',
-          icon: '🔔',
+          icon: <NavigationIcons.Warning />,
           type: 'toggle' as const,
           value: notifications,
         },
@@ -511,7 +521,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'version',
           title: 'Version',
           subtitle: '1.0.0 - Phase 5C Enhanced',
-          icon: 'ℹ️',
+          icon: <NavigationIcons.Info />,
           type: 'action' as const,
           action: () => handleActionPress('version'),
         },
@@ -519,7 +529,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           id: 'feedback',
           title: 'Send Feedback',
           subtitle: 'Help us improve the app',
-          icon: '💬',
+          icon: <NavigationIcons.Share />,
           type: 'action' as const,
           action: () => handleActionPress('feedback'),
         },
@@ -583,7 +593,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         title="Settings"
         theme={theme}
         isDark={themeName === 'dark'}
-        leadingButton={{ icon: '←', title: 'Back', onPress: onBack }}
+        leadingButton={{
+          icon: <NavigationIcons.Back />,
+          title: 'Back',
+          onPress: onBack,
+        }}
       />
 
       {/* Content */}
@@ -643,7 +657,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         item.title
                       )}
                     {item.type === 'action' && (
-                      <div className="settings-action-arrow">→</div>
+                      <div className="settings-action-arrow" aria-hidden>
+                        <NavigationIcons.ChevronRight />
+                      </div>
                     )}
                   </div>
                 </li>

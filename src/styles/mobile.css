@@ -53,6 +53,88 @@ html {
 }
 
 /* ============================================================================
+   iOS26 Content Wrappers & Utilities
+   ============================================================================ */
+
+/* Zero top padding utility for containers when needed */
+.ios26-pt-0 {
+  padding-top: 0 !important;
+}
+
+/* Centered narrow content on tablet/desktop while keeping full width on phones */
+.ios26-content-narrow {
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (min-width: 768px) {
+  .ios26-content-narrow {
+    max-width: 720px;
+  }
+}
+
+/* Chip row: wraps, aligns, and keeps compact spacing */
+.ios26-chip-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 359px) {
+  .ios26-chip-row {
+    gap: 6px;
+  }
+}
+.ios26-chip-row--compact {
+  gap: 6px;
+}
+
+/* Section titles: consistent spacing matching iOS hierarchy */
+.ios26-section-title {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+/* Subtle divider between grouped content (context row vs sections) */
+.ios26-divider {
+  height: 1px;
+  width: 100%;
+  background: var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+  margin: 8px 0 12px 0;
+}
+
+/* Subtle motion utilities (respect reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes ios26-fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes ios26-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .ios26-fade-in-up {
+    animation: ios26-fade-in-up 240ms ease-out both;
+    will-change: opacity, transform;
+  }
+  .ios26-fade-in {
+    animation: ios26-fade-in 200ms ease-out both;
+    will-change: opacity;
+  }
+}
+
+/* ============================================================================
    MOBILE-OPTIMIZED COMPONENTS
    ============================================================================ */
 

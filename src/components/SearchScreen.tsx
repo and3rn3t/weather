@@ -7,8 +7,10 @@ import {
   useInteractionFeedback,
   useWeatherAnnouncements,
 } from '../utils/useMultiSensoryWeather';
-import './SearchScreen.css';
 import { NavigationBar } from './modernWeatherUI/NavigationBar';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
+import './SearchScreen.css';
+import VoiceSearchButton from './VoiceSearchButton';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -80,6 +82,11 @@ function SearchScreen({
   const [showResults, setShowResults] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const resultsRef = useRef<SearchResult[]>([]);
+
+  useEffect(() => {
+    resultsRef.current = results;
+  }, [results]);
 
   // Load recent searches on mount
   useEffect(() => {
@@ -261,6 +268,8 @@ function SearchScreen({
     [formatCityDisplay]
   );
 
+  // (moved below) handleVoiceRecognized
+
   // Debounced search
   const handleSearchInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -317,6 +326,23 @@ function SearchScreen({
       interactionFeedback,
       weatherAnnouncements,
     ]
+  );
+
+  // Voice search handler: set query, perform search, auto-pick best match
+  const handleVoiceRecognized = useCallback(
+    async (cityName: string) => {
+      setQuery(cityName);
+      setShowResults(true);
+      await performSearch(cityName);
+      // Give state a tick to update, then select the top result if available
+      setTimeout(() => {
+        const top = resultsRef.current[0];
+        if (top) {
+          void handleCitySelection(top);
+        }
+      }, 100);
+    },
+    [performSearch, handleCitySelection]
   );
 
   // Handle recent search selection
@@ -402,13 +428,19 @@ function SearchScreen({
           } as unknown as ThemeColors
         }
         isDark={false}
-        leadingButton={{ icon: '←', title: 'Back', onPress: onBack }}
+        leadingButton={{
+          icon: <NavigationIcons.Back />,
+          title: 'Back',
+          onPress: onBack,
+        }}
       />
 
       {/* Search Input */}
       <div className="search-input-section ios26-container">
         <div className="search-input-container">
-          <div className="search-icon">🔍</div>
+          <div className="search-icon">
+            <NavigationIcons.Search />
+          </div>
           <input
             ref={searchInputRef}
             type="text"
@@ -423,15 +455,24 @@ function SearchScreen({
               onClick={clearSearch}
               aria-label="Clear search"
             >
-              ✕
+              <NavigationIcons.Close />
             </button>
           )}
+          <div className="search-voice-btn">
+            <VoiceSearchButton
+              onCityRecognized={handleVoiceRecognized}
+              label="Speak"
+              size="small"
+            />
+          </div>
         </div>
 
         {/* Error Message */}
         {error && (
           <div className="search-error">
-            <span className="error-icon">⚠️</span>
+            <span className="error-icon">
+              <NavigationIcons.Warning />
+            </span>
             {error}
           </div>
         )}
@@ -461,7 +502,9 @@ function SearchScreen({
                       className="search-result-item ios26-list-item"
                       onClick={() => handleCitySelection(result)}
                     >
-                      <div className="result-icon">🏙️</div>
+                      <div className="result-icon">
+                        <NavigationIcons.Search />
+                      </div>
                       <div className="result-content">
                         <div className="result-name ios26-text-headline ios26-text-primary">
                           {result.name}
@@ -477,7 +520,9 @@ function SearchScreen({
                           </span>
                         </div>
                       </div>
-                      <div className="result-arrow">→</div>
+                      <div className="result-arrow">
+                        <NavigationIcons.ChevronRight />
+                      </div>
                     </button>
                   </li>
                 ))}
@@ -487,7 +532,9 @@ function SearchScreen({
 
           {!isLoading && hasTypedQuery && results.length === 0 && (
             <div className="search-empty">
-              <div className="empty-icon">🔍</div>
+              <div className="empty-icon">
+                <NavigationIcons.Search />
+              </div>
               <div className="empty-message ios26-text-body ios26-text-primary">
                 No cities found
               </div>
@@ -508,7 +555,9 @@ function SearchScreen({
             onClick={getCurrentLocation}
             disabled={isLoading}
           >
-            <div className="location-icon">📍</div>
+            <div className="location-icon">
+              <NavigationIcons.Location />
+            </div>
             <div className="location-content">
               <div className="location-title ios26-text-headline ios26-text-primary">
                 Use Current Location
@@ -517,7 +566,9 @@ function SearchScreen({
                 Get weather for where you are
               </div>
             </div>
-            <div className="location-arrow">→</div>
+            <div className="location-arrow">
+              <NavigationIcons.ChevronRight />
+            </div>
           </button>
         </div>
 
@@ -537,7 +588,9 @@ function SearchScreen({
                     className="recent-item ios26-list-item"
                     onClick={() => handleRecentSelect(result)}
                   >
-                    <div className="recent-icon">🕒</div>
+                    <div className="recent-icon">
+                      <NavigationIcons.Clock />
+                    </div>
                     <div className="recent-content">
                       <div className="recent-name ios26-text-body ios26-text-primary">
                         {result.name}

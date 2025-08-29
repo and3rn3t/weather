@@ -186,7 +186,9 @@ export class EnhancedBackgroundSyncManager {
   private async processWeatherUpdate(data: WeatherUpdateData): Promise<void> {
     const { cityName, latitude, longitude } = data;
 
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&timezone=auto`;
+    const { getStoredUnits, getTemperatureUnitParam } = await import('./units');
+    const unit = getTemperatureUnitParam(getStoredUnits());
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=${unit}&timezone=auto`;
     const weatherData = await optimizedFetchJson<Record<string, unknown>>(
       weatherUrl,
       {},

@@ -12,6 +12,7 @@
  */
 
 import { logger } from '../../utils/logger';
+import { getStoredUnits, getTemperatureSymbol } from '../../utils/units';
 
 // Minimal weather data shapes to avoid `any`
 interface CurrentWeatherLike {
@@ -407,10 +408,12 @@ export class WeatherAlertManager {
 
     // Replace placeholders with actual values
     description = description.replace('{location}', location);
-    description = description.replace(
-      '{temperature}',
-      `${weatherData.temperature || weatherData.temperature_2m || 'N/A'}°F`
-    );
+    {
+      const tempVal =
+        weatherData.temperature || weatherData.temperature_2m || 'N/A';
+      const symbol = getTemperatureSymbol(getStoredUnits());
+      description = description.replace('{temperature}', `${tempVal}${symbol}`);
+    }
     description = description.replace(
       '{windSpeed}',
       `${weatherData.windspeed || weatherData.wind_speed_10m || 'N/A'} mph`
@@ -660,17 +663,18 @@ export class WeatherAlertManager {
     const temp = weatherData.temperature || weatherData.temperature_2m || 'N/A';
     const wind = weatherData.windspeed || weatherData.wind_speed_10m || 'N/A';
 
+    const tempWithUnit = `${temp}${getTemperatureSymbol(getStoredUnits())}`;
     const descriptions: { [key: number]: string } = {
-      95: `Severe thunderstorms in your area. Temperature: ${temp}°F, Wind: ${wind} mph. Stay indoors and avoid travel.`,
-      96: `Thunderstorm with light hail reported. Temperature: ${temp}°F. Protect vehicles and stay inside.`,
-      97: `Dangerous thunderstorm with heavy hail. Temperature: ${temp}°F, Wind: ${wind} mph. Seek shelter immediately.`,
-      75: `Heavy snowfall warning in effect. Temperature: ${temp}°F. Avoid unnecessary travel.`,
-      82: `Heavy rain showers expected. Temperature: ${temp}°F. Watch for flooding and reduced visibility.`,
+      95: `Severe thunderstorms in your area. Temperature: ${tempWithUnit}, Wind: ${wind} mph. Stay indoors and avoid travel.`,
+      96: `Thunderstorm with light hail reported. Temperature: ${tempWithUnit}. Protect vehicles and stay inside.`,
+      97: `Dangerous thunderstorm with heavy hail. Temperature: ${tempWithUnit}, Wind: ${wind} mph. Seek shelter immediately.`,
+      75: `Heavy snowfall warning in effect. Temperature: ${tempWithUnit}. Avoid unnecessary travel.`,
+      82: `Heavy rain showers expected. Temperature: ${tempWithUnit}. Watch for flooding and reduced visibility.`,
     };
 
     return (
       descriptions[weatherCode] ||
-      `Severe weather conditions detected. Temperature: ${temp}°F, Wind: ${wind} mph.`
+      `Severe weather conditions detected. Temperature: ${tempWithUnit}, Wind: ${wind} mph.`
     );
   }
 

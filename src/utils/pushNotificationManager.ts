@@ -190,11 +190,15 @@ class PushNotificationManager {
     const weatherCode = tomorrow.weather_code[1];
 
     const condition = this.getWeatherCondition(weatherCode);
+    const { getStoredUnits, getTemperatureSymbol } = await import(
+      '../utils/units'
+    );
+    const symbol = getTemperatureSymbol(getStoredUnits());
 
     return await this.sendWeatherAlert({
       type: 'daily-forecast',
       title: `Tomorrow's Forecast - ${cityName}`,
-      message: `${condition}, High ${maxTemp}°F, Low ${minTemp}°F`,
+      message: `${condition}, High ${maxTemp}${symbol}, Low ${minTemp}${symbol}`,
       icon: '/icons/icon-192x192.png',
       priority: 'normal',
       weatherData,
@@ -219,12 +223,14 @@ class PushNotificationManager {
 
     // Temperature extremes
     if (temp >= 100) {
+      const { getStoredUnits, getTemperatureSymbol } = await import(
+        '../utils/units'
+      );
+      const symbol = getTemperatureSymbol(getStoredUnits());
       const alert = await this.sendWeatherAlert({
         type: 'temperature-extreme',
         title: '🌡️ Extreme Heat Warning',
-        message: `Dangerous heat in ${cityName}: ${Math.round(
-          temp
-        )}°F. Stay hydrated and seek shade.`,
+        message: `Dangerous heat in ${cityName}: ${Math.round(temp)}${symbol}. Stay hydrated and seek shade.`,
         icon: '/icons/icon-192x192.png',
         priority: 'high',
         weatherData,
@@ -236,19 +242,21 @@ class PushNotificationManager {
           timestamp: Date.now(),
           type: 'temperature-extreme',
           title: '🌡️ Extreme Heat Warning',
-          message: `Dangerous heat in ${cityName}: ${Math.round(temp)}°F`,
+          message: `Dangerous heat in ${cityName}: ${Math.round(temp)}${symbol}`,
           icon: '/icons/icon-192x192.png',
           priority: 'high',
         });
     }
 
     if (temp <= 10) {
+      const { getStoredUnits, getTemperatureSymbol } = await import(
+        '../utils/units'
+      );
+      const symbol = getTemperatureSymbol(getStoredUnits());
       const alert = await this.sendWeatherAlert({
         type: 'temperature-extreme',
         title: '🧊 Extreme Cold Warning',
-        message: `Dangerous cold in ${cityName}: ${Math.round(
-          temp
-        )}°F. Dress warmly and limit exposure.`,
+        message: `Dangerous cold in ${cityName}: ${Math.round(temp)}${symbol}. Dress warmly and limit exposure.`,
         icon: '/icons/icon-192x192.png',
         priority: 'high',
         weatherData,
@@ -260,7 +268,7 @@ class PushNotificationManager {
           timestamp: Date.now(),
           type: 'temperature-extreme',
           title: '🧊 Extreme Cold Warning',
-          message: `Dangerous cold in ${cityName}: ${Math.round(temp)}°F`,
+          message: `Dangerous cold in ${cityName}: ${Math.round(temp)}${symbol}`,
           icon: '/icons/icon-192x192.png',
           priority: 'high',
         });
@@ -482,7 +490,7 @@ class PushNotificationManager {
    * Generate unique alert ID
    */
   private generateAlertId(): string {
-    return `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `alert_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   /**

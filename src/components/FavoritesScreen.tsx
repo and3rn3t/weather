@@ -8,10 +8,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
+import {
+  getStoredUnits,
+  getTemperatureSymbol,
+  getTemperatureUnitParam,
+} from '../utils/units';
 import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
 import { useTheme } from '../utils/useTheme';
+import WeatherIcon from '../utils/weatherIcons';
 import './FavoritesScreen.css';
+import { SwipeActions } from './modernWeatherUI/iOS26Components';
 import { NavigationBar } from './modernWeatherUI/NavigationBar';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 
 interface FavoritesScreenProps {
   theme: ThemeColors;
@@ -24,7 +32,7 @@ interface FavoritesScreenProps {
 interface WeatherPreview {
   temperature: number;
   condition: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 interface CityCardProps {
@@ -109,14 +117,11 @@ const CityCard: React.FC<CityCardProps> = React.memo(
             )}
           </div>
 
-          {/* Favorite toggle (accessible control, not a nested button) */}
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={
-              handleFavoriteClick as unknown as React.MouseEventHandler<HTMLDivElement>
-            }
-            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          {/* Favorite toggle (accessible control) */}
+          <button
+            type="button"
+            onClick={handleFavoriteClick}
+            onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 handleFavoriteClick(e as unknown as React.MouseEvent);
@@ -127,8 +132,12 @@ const CityCard: React.FC<CityCardProps> = React.memo(
             }
             className="fav-btn"
           >
-            {city.isFavorite ? '❤️' : '🤍'}
-          </div>
+            {city.isFavorite ? (
+              <NavigationIcons.Heart />
+            ) : (
+              <NavigationIcons.HeartOutline />
+            )}
+          </button>
         </div>
 
         {/* Last accessed info */}
@@ -142,6 +151,7 @@ const CityCard: React.FC<CityCardProps> = React.memo(
 
 import logger from '../utils/logger';
 import { optimizedFetchJson } from '../utils/optimizedFetch';
+import { getWeatherDescription } from '../utils/weatherCodes';
 
 const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   theme,
@@ -186,7 +196,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
         const data = await optimizedFetchJson<{
           current?: { temperature_2m?: number; weather_code?: number };
         }>(
-          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&timezone=auto`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&temperature_unit=${getTemperatureUnitParam(getStoredUnits())}&timezone=auto`,
           {},
           `preview:${city.id}`
         );
@@ -197,7 +207,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
           const wcode = (data.current.weather_code as number) ?? 0;
           const preview: WeatherPreview = {
             temperature: temp,
-            condition: getWeatherCondition(wcode),
+            condition: getWeatherDescription(wcode),
             icon: getWeatherIcon(wcode),
           };
 
@@ -264,38 +274,10 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
     clearRecentCities();
   }, [haptic, clearRecentCities]);
 
-  // Weather condition helpers
-  const getWeatherCondition = (code: number): string => {
-    const conditions: Record<number, string> = {
-      0: 'Clear',
-      1: 'Mostly Clear',
-      2: 'Partly Cloudy',
-      3: 'Overcast',
-      45: 'Foggy',
-      48: 'Rime Fog',
-      51: 'Light Drizzle',
-      53: 'Moderate Drizzle',
-      55: 'Dense Drizzle',
-      61: 'Light Rain',
-      63: 'Moderate Rain',
-      65: 'Heavy Rain',
-      71: 'Light Snow',
-      73: 'Moderate Snow',
-      75: 'Heavy Snow',
-      95: 'Thunderstorm',
-    };
-    return conditions[code] || 'Unknown';
-  };
+  // Weather icon helper
 
-  const getWeatherIcon = (code: number): string => {
-    if (code === 0) return '☀️';
-    if (code <= 3) return '⛅';
-    if (code <= 48) return '🌫️';
-    if (code <= 55) return '🌦️';
-    if (code <= 65) return '🌧️';
-    if (code <= 75) return '❄️';
-    if (code === 95) return '⛈️';
-    return '🌤️';
+  const getWeatherIcon = (code: number): React.ReactNode => {
+    return <WeatherIcon code={code} size={20} animated={true} />;
   };
 
   // Render weather preview content
@@ -311,7 +293,10 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
       return (
         <>
           <span className="wp-emoji-md">{preview.icon}</span>
-          <span className="wp-temp">{preview.temperature}°C</span>
+          <span className="wp-temp">
+            {preview.temperature}
+            {getTemperatureSymbol(getStoredUnits())}
+          </span>
           <span className="wp-cond">{preview.condition}</span>
         </>
       );
@@ -330,16 +315,37 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
         >
           {favorites.map(city => (
             <li key={city.id}>
-              <CityCard
-                city={city}
-                theme={theme}
-                currentCity={currentCity}
-                weatherPreviews={weatherPreviews}
-                loadingPreviews={loadingPreviews}
-                onCitySelect={handleCitySelect}
-                onToggleFavorite={handleToggleFavorite}
-                renderWeatherPreview={renderWeatherPreview}
-              />
+              <SwipeActions
+                leftActions={[
+                  {
+                    id: 'open',
+                    title: 'Open',
+                    icon: <NavigationIcons.ChevronRight />,
+                    color: '#007AFF',
+                    onAction: () => handleCitySelect(city),
+                  },
+                ]}
+                rightActions={[
+                  {
+                    id: 'remove',
+                    title: 'Remove',
+                    icon: <NavigationIcons.Trash />,
+                    color: '#FF3B30',
+                    onAction: () => removeFromFavorites(city.id),
+                  },
+                ]}
+              >
+                <CityCard
+                  city={city}
+                  theme={theme}
+                  currentCity={currentCity}
+                  weatherPreviews={weatherPreviews}
+                  loadingPreviews={loadingPreviews}
+                  onCitySelect={handleCitySelect}
+                  onToggleFavorite={handleToggleFavorite}
+                  renderWeatherPreview={renderWeatherPreview}
+                />
+              </SwipeActions>
             </li>
           ))}
         </ul>
@@ -363,10 +369,18 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
         title="My Cities"
         theme={theme}
         isDark={themeName === 'dark'}
-        leadingButton={{ icon: '←', title: 'Back', onPress: onBack }}
+        leadingButton={{
+          icon: <NavigationIcons.Back />,
+          title: 'Back',
+          onPress: onBack,
+        }}
         trailingButton={
           onAddFavorite
-            ? { icon: '+', title: 'Add', onPress: onAddFavorite }
+            ? {
+                icon: <NavigationIcons.Add />,
+                title: 'Add',
+                onPress: onAddFavorite,
+              }
             : undefined
         }
       />
@@ -407,16 +421,51 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
                 >
                   {recentCities.map(city => (
                     <li key={city.id}>
-                      <CityCard
-                        city={city}
-                        theme={theme}
-                        currentCity={currentCity}
-                        weatherPreviews={weatherPreviews}
-                        loadingPreviews={loadingPreviews}
-                        onCitySelect={handleCitySelect}
-                        onToggleFavorite={handleToggleFavorite}
-                        renderWeatherPreview={renderWeatherPreview}
-                      />
+                      <SwipeActions
+                        leftActions={[
+                          {
+                            id: 'open',
+                            title: 'Open',
+                            icon: <NavigationIcons.ChevronRight />,
+                            color: '#007AFF',
+                            onAction: () => handleCitySelect(city),
+                          },
+                        ]}
+                        rightActions={[
+                          {
+                            id: city.isFavorite ? 'unfavorite' : 'favorite',
+                            title: city.isFavorite ? 'Unfavorite' : 'Favorite',
+                            icon: city.isFavorite ? (
+                              <NavigationIcons.Heart />
+                            ) : (
+                              <NavigationIcons.HeartOutline />
+                            ),
+                            color: '#FFCC00',
+                            onAction: () =>
+                              city.isFavorite
+                                ? removeFromFavorites(city.id)
+                                : addToFavorites(
+                                    city.name,
+                                    city.latitude,
+                                    city.longitude,
+                                    city.displayName,
+                                    city.country,
+                                    city.state
+                                  ),
+                          },
+                        ]}
+                      >
+                        <CityCard
+                          city={city}
+                          theme={theme}
+                          currentCity={currentCity}
+                          weatherPreviews={weatherPreviews}
+                          loadingPreviews={loadingPreviews}
+                          onCitySelect={handleCitySelect}
+                          onToggleFavorite={handleToggleFavorite}
+                          renderWeatherPreview={renderWeatherPreview}
+                        />
+                      </SwipeActions>
                     </li>
                   ))}
                 </ul>

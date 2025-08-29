@@ -325,7 +325,11 @@ const IOSSearchBar: React.FC<IOSSearchBarProps> = ({
   const fetchWeatherData = useCallback(
     async (city: City): Promise<WeatherData | undefined> => {
       try {
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=auto`;
+        const { getStoredUnits, getTemperatureUnitParam } = await import(
+          '../utils/units'
+        );
+        const unit = getTemperatureUnitParam(getStoredUnits());
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&temperature_unit=${unit}&windspeed_unit=mph&precipitation_unit=inch&timezone=auto`;
 
         return await optimizedFetchJson<WeatherData>(
           weatherUrl,

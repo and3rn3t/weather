@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
 import { useHaptic } from './hapticHooks';
 import type { ThemeColors } from './themeConfig';
 
@@ -30,7 +31,7 @@ interface GeolocationVerificationProps {
 }
 
 const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
-  theme,
+  theme: _theme,
   isMobile,
   isOpen,
   locationData,
@@ -40,39 +41,81 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const haptic = useHaptic();
+  const dialogRef = React.useRef<HTMLDialogElement | null>(null);
+  const previouslyFocusedRef = React.useRef<HTMLElement | null>(null);
 
-  // Trigger animation when opening
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
-      haptic.dataLoad(); // Use existing haptic for location detection
+      haptic.dataLoad();
     } else {
       setIsAnimating(false);
     }
   }, [isOpen, haptic]);
 
-  // Handle confirm action
+  // Focus management: trap focus inside dialog and restore on close
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!isOpen || !dialog) return;
+
+    previouslyFocusedRef.current =
+      (document.activeElement as HTMLElement) || null;
+    dialog.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const focusableSelectors = [
+        'button',
+        '[href]',
+        'input',
+        'select',
+        'textarea',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(',');
+      const nodes = Array.from(
+        dialog.querySelectorAll<HTMLElement>(focusableSelectors)
+      ).filter(el => !el.hasAttribute('disabled'));
+      if (nodes.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    dialog.addEventListener('keydown', handleKeyDown);
+    return () => {
+      dialog.removeEventListener('keydown', handleKeyDown);
+      previouslyFocusedRef.current?.focus();
+    };
+  }, [isOpen]);
+
   const handleConfirm = () => {
     if (!locationData) return;
-
     haptic.buttonConfirm();
     const cityName =
       locationData.address?.city ||
       locationData.address?.display ||
-      `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(
-        4
-      )}`;
-
+      `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}`;
     onConfirm(cityName, locationData.latitude, locationData.longitude);
   };
 
-  // Handle cancel action
   const handleCancel = useCallback(() => {
     haptic.buttonPress();
     onCancel();
   }, [haptic, onCancel]);
 
-  // Handle retry action
   const handleRetry = () => {
     if (onRetry) {
       haptic.buttonPress();
@@ -80,249 +123,136 @@ const GeolocationVerification: React.FC<GeolocationVerificationProps> = ({
     }
   };
 
-  // Handle escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isOpen && event.key === 'Escape') {
         handleCancel();
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleCancel]);
 
   if (!isOpen || !locationData) return null;
 
-  // Format accuracy for display
   const formatAccuracy = (accuracy: number): string => {
     if (accuracy < 100) return 'High accuracy';
     if (accuracy < 1000) return 'Medium accuracy';
     return 'Low accuracy';
   };
 
-  // Get accuracy color
-  const getAccuracyColor = (accuracy: number): string => {
-    if (accuracy < 100) return '#10b981'; // Green
-    if (accuracy < 1000) return '#f59e0b'; // Yellow
-    return '#ef4444'; // Red
-  };
+  // placeholder to satisfy diff context; moved to explicit if/else below
 
-  const overlayStyle: React.CSSProperties = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(0, 0, 0, 0.5)',
-    backdropFilter: 'blur(8px)',
-    zIndex: 10000,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: isMobile ? '20px' : '40px',
-    opacity: isAnimating ? 1 : 0,
-    transition: 'opacity 0.3s ease',
-  };
+  const overlayClass = `geo-verify-overlay ${isAnimating ? 'is-open' : ''} ${isMobile ? 'is-mobile' : ''}`;
+  const modalClass = `geo-verify-modal ${isAnimating ? 'is-open' : ''} ${isMobile ? 'is-mobile' : ''}`;
 
-  const modalStyle: React.CSSProperties = {
-    background: theme.cardBackground,
-    borderRadius: '20px',
-    padding: isMobile ? '24px' : '32px',
-    maxWidth: isMobile ? '100%' : '400px',
-    width: '100%',
-    border: `1px solid ${theme.cardBorder}`,
-    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-    backdropFilter: 'blur(20px)',
-    transform: isAnimating
-      ? 'scale(1) translateY(0)'
-      : 'scale(0.9) translateY(20px)',
-    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-    position: 'relative',
+  let accuracyClass: 'acc-high' | 'acc-medium' | 'acc-low';
+  if (locationData.accuracy < 100) accuracyClass = 'acc-high';
+  else if (locationData.accuracy < 1000) accuracyClass = 'acc-medium';
+  else accuracyClass = 'acc-low';
+
+  const onOverlayClick: React.MouseEventHandler<HTMLButtonElement> = e => {
+    if (e.target === e.currentTarget) handleCancel();
   };
 
   return (
-    <div style={overlayStyle} onClick={handleCancel} aria-hidden="true">
-      <div
-        style={modalStyle}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="location-dialog-title"
-      >
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div
-            style={{
-              fontSize: '48px',
-              marginBottom: '12px',
-              animation: 'pulse 2s infinite',
-            }}
-          >
-            📍
-          </div>
-          <h2
-            id="location-dialog-title"
-            style={{
-              color: theme.primaryText,
-              fontSize: isMobile ? '20px' : '24px',
-              fontWeight: '700',
-              margin: '0 0 8px 0',
-            }}
-          >
-            Location Detected
-          </h2>
-          <p
-            style={{
-              color: theme.secondaryText,
-              fontSize: '14px',
-              margin: 0,
-              lineHeight: '1.5',
-            }}
-          >
-            We found your location. Is this correct?
-          </p>
-        </div>
-
-        {/* Location Details */}
-        <div
-          style={{
-            background: theme.toggleBackground,
-            borderRadius: '12px',
-            padding: '16px',
-            marginBottom: '24px',
-            border: `1px solid ${theme.toggleBorder}`,
-          }}
+    <button
+      type="button"
+      className={overlayClass}
+      onClick={onOverlayClick}
+      onKeyDown={e => {
+        if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ')
+          handleCancel();
+      }}
+      aria-label="Close location verification"
+    >
+      <div className={overlayClass}>
+        <button
+          type="button"
+          className="geo-verify-overlay-bg"
+          onClick={handleCancel}
+          aria-label="Close location verification"
+        />
+        <dialog
+          ref={dialogRef}
+          className={modalClass}
+          aria-labelledby="location-dialog-title"
+          aria-modal="true"
+          role="dialog"
+          open
         >
-          <div
-            style={{
-              color: theme.primaryText,
-              fontSize: '16px',
-              fontWeight: '600',
-              marginBottom: '8px',
-              wordBreak: 'break-word',
-            }}
-          >
-            {locationData.address?.display ||
-              locationData.address?.city ||
-              'Your Current Location'}
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '8px',
-            }}
-          >
-            <div
-              style={{
-                color: theme.secondaryText,
-                fontSize: '12px',
-              }}
-            >
-              {locationData.latitude.toFixed(4)},{' '}
-              {locationData.longitude.toFixed(4)}
+          <div className="geo-verify-header">
+            <div className="geo-verify-icon" aria-hidden="true">
+              <NavigationIcons.Location />
             </div>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                color: getAccuracyColor(locationData.accuracy),
-                fontSize: '12px',
-                fontWeight: '500',
-              }}
-            >
-              <span style={{ fontSize: '10px' }}>●</span>
-              {formatAccuracy(locationData.accuracy)}
+            <h2 id="location-dialog-title" className="geo-verify-title">
+              Use this location?
+            </h2>
+            <div className="geo-verify-subtitle">
+              We detected your approximate position.
             </div>
           </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            justifyContent: 'space-between',
-            flexWrap: isMobile ? 'wrap' : 'nowrap',
-          }}
-        >
-          <button
-            className="mobile-button-glass"
-            onClick={handleCancel}
-            aria-label="Cancel"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+          <div className="geo-verify-details">
+            <div className="geo-verify-place">
+              {locationData.address?.display ||
+                locationData.address?.city ||
+                'Your Current Location'}
+            </div>
+
+            <div className="geo-verify-row">
+              <div className="geo-verify-coords">
+                {locationData.latitude.toFixed(4)},{' '}
+                {locationData.longitude.toFixed(4)}
+              </div>
+              <div className={`geo-verify-accuracy ${accuracyClass}`}>
+                <span className="geo-verify-dot">●</span>
+                {formatAccuracy(locationData.accuracy)}
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`geo-verify-actions ${isMobile ? 'is-mobile-wrap' : ''}`}
           >
-            <span
-              style={{
-                fontSize: 18,
-                display: 'inline-flex',
-                alignItems: 'center',
-              }}
-            >
-              ❌
-            </span>
-            Cancel
-          </button>
-
-          {onRetry && (
             <button
-              className="mobile-button mobile-button-small"
-              style={{
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                color: 'white',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
-              onClick={handleRetry}
-              aria-label="Retry"
+              className="mobile-button-glass btn-inline-icon"
+              onClick={handleCancel}
+              aria-label="Cancel"
             >
-              <span
-                style={{
-                  fontSize: 18,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                }}
-              >
-                🔄
+              <span className="icon-inline">
+                <NavigationIcons.Close />
               </span>
-              Retry
+              <span>Cancel</span>
             </button>
-          )}
 
-          <button
-            className="mobile-button"
-            onClick={handleConfirm}
-            aria-label="Use This Location"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
-          >
-            <span
-              style={{
-                fontSize: 18,
-                display: 'inline-flex',
-                alignItems: 'center',
-              }}
+            {onRetry && (
+              <button
+                className="mobile-button mobile-button-small btn-danger btn-inline-icon"
+                onClick={handleRetry}
+                aria-label="Retry"
+              >
+                <span className="icon-inline">
+                  <NavigationIcons.Refresh />
+                </span>
+                <span>Retry</span>
+              </button>
+            )}
+
+            <button
+              className="mobile-button btn-inline-icon"
+              onClick={handleConfirm}
+              aria-label="Use This Location"
             >
-              📍
-            </span>
-            Use This Location
-          </button>
-        </div>
-
-        {/* CSS for pulse animation */}
-        <style>{`
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
-        `}</style>
+              <span className="icon-inline">
+                <NavigationIcons.Location />
+              </span>
+              <span>Use This Location</span>
+            </button>
+          </div>
+        </dialog>
       </div>
-    </div>
+    </button>
   );
 };
 

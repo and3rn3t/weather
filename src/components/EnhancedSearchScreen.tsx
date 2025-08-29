@@ -8,6 +8,7 @@ import { optimizedFetchJson } from '../utils/optimizedFetch';
 import { searchPerformanceMonitor } from '../utils/searchPerformanceMonitor';
 import type { ThemeColors } from '../utils/themeConfig';
 import './EnhancedSearchScreen.css';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -525,7 +526,7 @@ function EnhancedSearchScreen({
           onClick={onBack}
           aria-label="Go back"
         >
-          ←
+          <NavigationIcons.Back />
         </button>
 
         <h1 className="enhanced-search-title">Search Location</h1>
@@ -534,7 +535,9 @@ function EnhancedSearchScreen({
       {/* Search Input */}
       <div className="enhanced-search-input-container">
         <div className="enhanced-search-input-wrapper">
-          <span className="enhanced-search-icon">🔍</span>
+          <span className="enhanced-search-icon" aria-hidden="true">
+            <NavigationIcons.Search />
+          </span>
           <input
             type="text"
             className="enhanced-search-input"
@@ -548,7 +551,11 @@ function EnhancedSearchScreen({
       </div>
 
       {/* Error Display */}
-      {error && <div className="enhanced-search-error">⚠️ {error}</div>}
+      {error && (
+        <div className="enhanced-search-error">
+          <NavigationIcons.Warning /> {error}
+        </div>
+      )}
 
       {/* Content */}
       <div className="enhanced-search-content">
@@ -558,11 +565,12 @@ function EnhancedSearchScreen({
           onClick={getCurrentLocation}
           disabled={isGettingLocation || locationPermission === 'denied'}
         >
-          <span className="enhanced-current-location-icon">
+          <span className="enhanced-current-location-icon" aria-hidden="true">
             {(() => {
-              if (isGettingLocation) return '⏳';
-              if (locationPermission === 'denied') return '🚫';
-              return '�';
+              if (isGettingLocation) return <NavigationIcons.Refresh />;
+              if (locationPermission === 'denied')
+                return <NavigationIcons.Warning />;
+              return <NavigationIcons.Location />;
             })()}
           </span>
           <div className="enhanced-current-location-text">
@@ -593,25 +601,30 @@ function EnhancedSearchScreen({
           error?.includes('permission')) && (
           <div className="enhanced-location-tips">
             <h4 className="enhanced-location-tips-title">
-              📍 Location Troubleshooting
+              <NavigationIcons.Location /> Location Troubleshooting
             </h4>
             <div className="enhanced-location-tips-content">
               {!locationService.isSecureContext() && (
                 <div className="enhanced-tip">
-                  🔒 Location requires a secure connection (HTTPS)
+                  <NavigationIcons.Info /> Location requires a secure connection
+                  (HTTPS)
                 </div>
               )}
               <div className="enhanced-tip">
-                🌐 Make sure location services are enabled in your browser
+                <NavigationIcons.Info /> Make sure location services are enabled
+                in your browser
               </div>
               <div className="enhanced-tip">
-                📱 Check that your device has location services turned on
+                <NavigationIcons.Info /> Check that your device has location
+                services turned on
               </div>
               <div className="enhanced-tip">
-                🔄 Try refreshing the page and allowing location access
+                <NavigationIcons.Refresh /> Try refreshing the page and allowing
+                location access
               </div>
               <div className="enhanced-tip">
-                🔍 You can also search for your city manually above
+                <NavigationIcons.Search /> You can also search for your city
+                manually above
               </div>
             </div>
           </div>
@@ -627,7 +640,12 @@ function EnhancedSearchScreen({
                 className="enhanced-search-result-item"
                 onClick={() => handleCitySelection(result)}
               >
-                <span className="enhanced-search-result-icon">🏙️</span>
+                <span
+                  className="enhanced-search-result-icon"
+                  aria-hidden="true"
+                >
+                  <NavigationIcons.Location />
+                </span>
                 <div className="enhanced-search-result-text">
                   <div className="enhanced-search-result-name">
                     {result.display_name.split(',')[0]}
@@ -651,7 +669,12 @@ function EnhancedSearchScreen({
                 className="enhanced-recent-search-item"
                 onClick={() => handleRecentSelect(result)}
               >
-                <span className="enhanced-recent-search-icon">🕒</span>
+                <span
+                  className="enhanced-recent-search-icon"
+                  aria-hidden="true"
+                >
+                  <NavigationIcons.Clock />
+                </span>
                 <div className="enhanced-recent-search-text">
                   <div className="enhanced-recent-search-name">
                     {result.name}

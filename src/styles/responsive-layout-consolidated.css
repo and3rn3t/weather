@@ -145,6 +145,11 @@ body {
 .ios26-p-4 {
   padding: 16px;
 }
+
+/* Zero top padding utility for context rows */
+.ios26-pt-0 {
+  padding-top: 0 !important;
+}
 .ios26-mb-4 {
   margin-bottom: 16px;
 }

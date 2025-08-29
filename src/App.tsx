@@ -11,6 +11,7 @@ import { OfflineStatusIndicator } from './components/mobile/OfflineStatusIndicat
 import MobileNavigation, {
   type NavigationScreen,
 } from './components/MobileNavigation';
+import { NavigationIcons } from './components/modernWeatherUI/NavigationIcons';
 import SettingsScreen from './components/SettingsScreen';
 import ErrorBoundary from './ErrorBoundary';
 import './styles/mobileEnhancements.css';
@@ -21,6 +22,7 @@ import { getScreenInfo } from './utils/mobileScreenOptimization';
 import { optimizedFetchJson } from './utils/optimizedFetch';
 import { ThemeProvider } from './utils/themeContext';
 import ThemeToggle from './utils/ThemeToggle';
+import { getStoredUnits, getTemperatureSymbol } from './utils/units';
 import { useTheme } from './utils/useTheme';
 import { getWeatherDescription as describeWeather } from './utils/weatherCodes';
 import WeatherIcon from './utils/weatherIcons';
@@ -163,8 +165,11 @@ const SimpleWeatherApp: React.FC = () => {
       const { lat, lon } = geoData[0];
 
       // Step 2: Get weather data with hourly and daily forecasts
+      const unit = (await import('./utils/units')).getTemperatureUnitParam(
+        (await import('./utils/units')).getStoredUnits()
+      );
       const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=mph&forecast_days=7`,
         {},
         `app:weather:${lat},${lon}`
       );
@@ -274,7 +279,7 @@ const SimpleWeatherApp: React.FC = () => {
 
       // Get weather data directly with forecasts
       const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${(await import('./utils/units')).getTemperatureUnitParam((await import('./utils/units')).getStoredUnits())}&wind_speed_unit=mph&forecast_days=7`,
         {},
         `app:weather:${latitude},${longitude}`
       );
@@ -500,7 +505,7 @@ const SimpleWeatherApp: React.FC = () => {
 
     try {
       const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${(await import('./utils/units')).getTemperatureUnitParam((await import('./utils/units')).getStoredUnits())}&wind_speed_unit=mph&forecast_days=7`,
         {},
         `app:weather:${lat},${lon}`
       );
@@ -542,9 +547,10 @@ const SimpleWeatherApp: React.FC = () => {
 
   // Generate weather alerts based on conditions
   const generateWeatherAlerts = (weatherData: WeatherData) => {
+    const unitSymbol = getTemperatureSymbol(getStoredUnits());
     const alerts = [];
 
-    if (weatherData.uv_index > 7) {
+    if (weatherData.main.temp > 95) {
       alerts.push({
         type: 'UV Warning',
         message: `High UV index (${weatherData.uv_index}). Use sun protection.`,
@@ -563,7 +569,7 @@ const SimpleWeatherApp: React.FC = () => {
     if (weatherData.main.temp > 95) {
       alerts.push({
         type: 'Heat Warning',
-        message: `Extreme heat at ${weatherData.main.temp}°F. Stay hydrated.`,
+        message: `Extreme heat at ${weatherData.main.temp}${unitSymbol}. Stay hydrated.`,
         severity: 'high' as const,
       });
     }
@@ -571,7 +577,7 @@ const SimpleWeatherApp: React.FC = () => {
     if (weatherData.main.temp < 32) {
       alerts.push({
         type: 'Freeze Warning',
-        message: `Below freezing at ${weatherData.main.temp}°F. Protect pipes.`,
+        message: `Below freezing at ${weatherData.main.temp}${unitSymbol}. Protect pipes.`,
         severity: 'medium' as const,
       });
     }
@@ -613,10 +619,14 @@ const SimpleWeatherApp: React.FC = () => {
   // Home Screen - Welcome/Overview
   const renderHomeScreen = () => (
     <div className="app-section">
-      <h1 className="app-title text-primary">🌤️ Weather App</h1>
+      <h1 className="app-title text-primary">
+        <NavigationIcons.Sun /> Weather App
+      </h1>
 
       <div className="card card-large border-weather">
-        <div className="emoji-xl">☀️</div>
+        <div className="emoji-xl">
+          <NavigationIcons.Sun />
+        </div>
         <h2 className="subtitle text-primary">Welcome to Weather</h2>
         <p className="paragraph text-secondary">
           Get real-time weather updates, forecasts, and alerts for any location
@@ -635,7 +645,13 @@ const SimpleWeatherApp: React.FC = () => {
           disabled={locationLoading}
           className="btn-outline text-primary"
         >
-          {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
+          {locationLoading ? (
+            'Getting Location...'
+          ) : (
+            <>
+              <NavigationIcons.Location /> Use Current Location
+            </>
+          )}
         </button>
       </div>
 
@@ -643,7 +659,8 @@ const SimpleWeatherApp: React.FC = () => {
         <div className="card border-weather">
           <h3 className="metric-title text-primary">Current Weather</h3>
           <div className="metric-primary text-primary">
-            {city}: {weather.main.temp}°F
+            {city}: {weather.main.temp}
+            {getTemperatureSymbol(getStoredUnits())}
           </div>
           <div className="metric-secondary text-secondary">
             {weather.weather[0].description}
@@ -655,7 +672,9 @@ const SimpleWeatherApp: React.FC = () => {
   // Weather Screen - Full weather functionality
   const renderWeatherScreen = () => (
     <div className="app-section">
-      <h1 className="app-title text-primary">🌤️ Weather Details</h1>
+      <h1 className="app-title text-primary">
+        <NavigationIcons.Sun /> Weather Details
+      </h1>
 
       <div className="search-wrapper">
         <input
@@ -705,7 +724,13 @@ const SimpleWeatherApp: React.FC = () => {
           disabled={locationLoading || loading}
           className={`btn-ghost${locationLoading || loading ? ' is-disabled' : ''}`}
         >
-          {locationLoading ? 'Getting Location...' : '📍 Use Current Location'}
+          {locationLoading ? (
+            'Getting Location...'
+          ) : (
+            <>
+              <NavigationIcons.Location /> Use Current Location
+            </>
+          )}
         </button>
       </div>
 
@@ -720,7 +745,11 @@ const SimpleWeatherApp: React.FC = () => {
               className={`alert-item ${alert.severity === 'high' ? 'alert-high' : 'alert-medium'}`}
             >
               <span className="alert-icon">
-                {alert.severity === 'high' ? '⚠️' : 'ℹ️'}
+                {alert.severity === 'high' ? (
+                  <NavigationIcons.Warning />
+                ) : (
+                  <NavigationIcons.Info />
+                )}
               </span>
               <div>
                 <div className="alert-title">{alert.type}</div>
@@ -761,7 +790,8 @@ const SimpleWeatherApp: React.FC = () => {
           </div>
 
           <div className="temp-lg my-10 text-primary">
-            {weather.main.temp}°F
+            {weather.main.temp}
+            {getTemperatureSymbol(getStoredUnits())}
           </div>
           <div className="fs-18 mb-15 text-secondary capitalize">
             {weather.weather[0].description}
@@ -771,7 +801,10 @@ const SimpleWeatherApp: React.FC = () => {
           <div className="metrics-grid">
             <div className="metric-card">
               <div className="metric-label">FEELS LIKE</div>
-              <div className="metric-value">{weather.main.feels_like}°F</div>
+              <div className="metric-value">
+                {weather.main.feels_like}
+                {getTemperatureSymbol(getStoredUnits())}
+              </div>
             </div>
 
             <div className="metric-card">

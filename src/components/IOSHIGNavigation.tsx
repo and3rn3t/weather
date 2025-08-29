@@ -16,6 +16,7 @@ import {
   useInteractionFeedback,
   useWeatherAnnouncements,
 } from '../utils/useMultiSensoryWeather';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 
 export type NavigationScreen =
   | 'Home'
@@ -32,9 +33,9 @@ interface IOSHIGNavigationProps {
 
 interface HIGTabConfig {
   id: NavigationScreen;
-  icon: string;
+  icon: React.ReactNode;
   label: string;
-  activeIcon?: string;
+  activeIcon?: React.ReactNode;
   sfSymbol?: string; // SF Symbol equivalent for future iOS app
 }
 
@@ -42,37 +43,37 @@ interface HIGTabConfig {
 const higTabs: HIGTabConfig[] = [
   {
     id: 'Home',
-    icon: '🏠',
+    icon: <NavigationIcons.Home />,
     label: 'Home',
-    activeIcon: '🏡',
+    activeIcon: <NavigationIcons.Home />,
     sfSymbol: 'house',
   },
   {
     id: 'Weather',
-    icon: '🌤️',
+    icon: <NavigationIcons.Sun />,
     label: 'Weather',
-    activeIcon: '☀️',
+    activeIcon: <NavigationIcons.Sun />,
     sfSymbol: 'sun.max',
   },
   {
     id: 'Search',
-    icon: '🔍',
+    icon: <NavigationIcons.Search />,
     label: 'Search',
-    activeIcon: '🔎',
+    activeIcon: <NavigationIcons.Search />,
     sfSymbol: 'magnifyingglass',
   },
   {
     id: 'Favorites',
-    icon: '⭐',
+    icon: <NavigationIcons.Favorites />,
     label: 'Cities',
-    activeIcon: '🌟',
+    activeIcon: <NavigationIcons.Favorites />,
     sfSymbol: 'star',
   },
   {
     id: 'Settings',
-    icon: '⚙️',
+    icon: <NavigationIcons.Settings />,
     label: 'Settings',
-    activeIcon: '🔧',
+    activeIcon: <NavigationIcons.Settings />,
     sfSymbol: 'gearshape',
   },
 ];
@@ -172,7 +173,8 @@ const IOSHIGNavigation: React.FC<IOSHIGNavigationProps> = ({
             <button
               key={tab.id}
               type="button"
-              aria-pressed={isActive ? 'true' : 'false'}
+              aria-current={isActive ? 'page' : undefined}
+              data-selected={isActive ? 'true' : 'false'}
               aria-label={`${tab.label} navigation button${
                 isActive ? ', currently selected' : ''
               }`}

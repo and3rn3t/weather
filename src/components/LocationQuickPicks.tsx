@@ -12,6 +12,7 @@ import {
   ModalSheet,
 } from './modernWeatherUI/iOS26Components';
 import { StatusBadge } from './modernWeatherUI/IOSComponents';
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 
 export interface LocationQuickPicksProps {
   theme: ThemeColors;
@@ -107,7 +108,7 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                   {
                     id: 'unfavorite',
                     title: 'Unpin Favorite',
-                    icon: '📌',
+                    icon: <NavigationIcons.Favorites />,
                     onAction: () =>
                       onAddFavorite?.(
                         favCity.name,
@@ -121,7 +122,7 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                   {
                     id: 'share',
                     title: 'Share',
-                    icon: '📤',
+                    icon: <NavigationIcons.Share />,
                     onAction: () => {
                       const text = `${favCity.displayName || favCity.name}`;
                       if (navigator.share) {
@@ -153,7 +154,9 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                   }
                 >
                   <div className="ios26-text-center">
-                    <div className="ios26-widget-icon">⭐</div>
+                    <div className="ios26-widget-icon" aria-hidden="true">
+                      <NavigationIcons.Heart />
+                    </div>
                     {favCity.country && (
                       <div className="ios26-widget-secondary-text">
                         {favCity.country}
@@ -204,7 +207,11 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                 {
                   id: 'favorite',
                   title: favActionTitle,
-                  icon: fav ? '📌' : '⭐',
+                  icon: fav ? (
+                    <NavigationIcons.Favorites />
+                  ) : (
+                    <NavigationIcons.HeartOutline />
+                  ),
                   onAction: () =>
                     onAddFavorite?.(
                       city.name,
@@ -218,7 +225,7 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                 {
                   id: 'share',
                   title: 'Share',
-                  icon: '📤',
+                  icon: <NavigationIcons.Share />,
                   onAction: () => {
                     const text = `${city.name}, ${city.country}`;
                     if (navigator.share) {
@@ -240,7 +247,13 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                 onTap={() => void pick(city)}
               >
                 <div className="ios26-text-center">
-                  <div className="ios26-widget-icon">{fav ? '⭐' : '📍'}</div>
+                  <div className="ios26-widget-icon" aria-hidden="true">
+                    {fav ? (
+                      <NavigationIcons.Heart />
+                    ) : (
+                      <NavigationIcons.Location />
+                    )}
+                  </div>
                   <div className="ios26-widget-secondary-text">
                     {city.country}
                   </div>
@@ -267,7 +280,9 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
           onTap={() => setShowSheet(true)}
         >
           <div className="ios26-text-center">
-            <div className="ios26-widget-icon">➕</div>
+            <div className="ios26-widget-icon" aria-hidden="true">
+              <NavigationIcons.Add />
+            </div>
             <div className="ios26-widget-secondary-text">Browse lists</div>
           </div>
         </InteractiveWidget>
@@ -291,7 +306,9 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                   className="ios26-list-item"
                   onClick={() => void pick(c)}
                 >
-                  <div>🏛️ {c.name}</div>
+                  <div>
+                    <NavigationIcons.Info /> {c.name}
+                  </div>
                   <div className="ios26-text-footnote ios26-text-secondary">
                     {c.country}
                   </div>
@@ -310,7 +327,9 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                   className="ios26-list-item"
                   onClick={() => void pick(c)}
                 >
-                  <div>🌎 {c.name}</div>
+                  <div>
+                    <NavigationIcons.Info /> {c.name}
+                  </div>
                   <div className="ios26-text-footnote ios26-text-secondary">
                     {c.country}
                   </div>
@@ -329,7 +348,9 @@ export const LocationQuickPicks: React.FC<LocationQuickPicksProps> = ({
                   className="ios26-list-item"
                   onClick={() => void pick(c)}
                 >
-                  <div>🇪🇺 {c.name}</div>
+                  <div>
+                    <NavigationIcons.Info /> {c.name}
+                  </div>
                   <div className="ios26-text-footnote ios26-text-secondary">
                     {c.country}
                   </div>

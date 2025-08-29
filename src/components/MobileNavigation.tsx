@@ -19,19 +19,46 @@ interface MobileNavigationProps {
   className?: string;
 }
 
+import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
+
 interface TabConfig {
   id: NavigationScreen;
-  icon: string;
+  icon: React.ReactNode;
   label: string;
-  activeIcon?: string;
+  activeIcon?: React.ReactNode;
 }
 
 const tabs: TabConfig[] = [
-  { id: 'Home', icon: '🏠', label: 'Home', activeIcon: '🏡' },
-  { id: 'Weather', icon: '🌤️', label: 'Weather', activeIcon: '☀️' },
-  { id: 'Search', icon: '🔍', label: 'Search', activeIcon: '🔎' },
-  { id: 'Favorites', icon: '⭐', label: 'Cities', activeIcon: '🌟' },
-  { id: 'Settings', icon: '⚙️', label: 'Settings', activeIcon: '🔧' },
+  {
+    id: 'Home',
+    icon: <NavigationIcons.Home />,
+    label: 'Home',
+    activeIcon: <NavigationIcons.Home />,
+  },
+  {
+    id: 'Weather',
+    icon: <NavigationIcons.Sun />,
+    label: 'Weather',
+    activeIcon: <NavigationIcons.Sun />,
+  },
+  {
+    id: 'Search',
+    icon: <NavigationIcons.Search />,
+    label: 'Search',
+    activeIcon: <NavigationIcons.Search />,
+  },
+  {
+    id: 'Favorites',
+    icon: <NavigationIcons.Favorites />,
+    label: 'Cities',
+    activeIcon: <NavigationIcons.Favorites />,
+  },
+  {
+    id: 'Settings',
+    icon: <NavigationIcons.Settings />,
+    label: 'Settings',
+    activeIcon: <NavigationIcons.Settings />,
+  },
 ];
 
 /**
@@ -102,8 +129,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       data-ui="ios26-liquid-glass"
     >
       <div
-        role="tablist"
-        aria-label="Primary tabs"
+        aria-label="Primary navigation"
         className="mobile-navigation-safe-area"
       >
         {tabs.map(tab => {
@@ -117,9 +143,8 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
               className={`nav-tab ${isActive ? 'active' : ''}`}
               type="button"
               aria-label={`Navigate to ${tab.label}`}
-              role="tab"
-              aria-selected={isActive ? 'true' : 'false'}
               aria-current={isActive ? 'page' : undefined}
+              data-selected={isActive ? 'true' : 'false'}
               onClick={e => handleTabPress(tab.id, e)}
               onTouchStart={e => {
                 // Prevent touch highlighting

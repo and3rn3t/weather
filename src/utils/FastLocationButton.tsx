@@ -7,6 +7,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
 import { useFastLocation } from './fastLocationService';
 import { logInfo } from './logger';
 import type { ThemeColors } from './themeConfig';
@@ -214,17 +215,17 @@ const FastLocationButton: React.FC<FastLocationButtonProps> = ({
 
   // Progressive icons based on loading state
   const getIcon = () => {
-    if (!isSupported) return '❌';
+    if (!isSupported) return <NavigationIcons.Warning />;
 
     switch (loadingState) {
       case 'getting-gps':
-        return '🎯'; // GPS acquisition
+        return <NavigationIcons.Location />; // GPS acquisition
       case 'getting-city':
-        return '🏙️'; // City lookup
+        return <NavigationIcons.Search />; // City lookup
       case 'completed':
-        return '✅'; // Success
+        return <NavigationIcons.Favorites />; // Success indicator
       default:
-        return '📍'; // Ready
+        return <NavigationIcons.Location />; // Ready
     }
   };
 
