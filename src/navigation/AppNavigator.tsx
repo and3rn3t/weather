@@ -51,7 +51,6 @@ import {
   OptimizedMobileWeatherDisplay as LazyOptimizedMobileWeatherDisplay,
   PerformanceDashboard as LazyPerformanceDashboard,
   PrecipitationChart as LazyPrecipitationChart,
-  PWAInstallPrompt as LazyPWAInstallPrompt,
   PWAStatus as LazyPWAStatus,
   TemperatureTrend as LazyTemperatureTrend,
   UVIndexBar as LazyUVIndexBar,
@@ -87,11 +86,12 @@ import SettingsScreen from '../components/SettingsScreen';
 import DeploymentStatus from '../utils/DeploymentStatus';
 import GeolocationVerification from '../utils/GeolocationVerification';
 import { useHaptic } from '../utils/hapticHooks';
-import LocationButton from '../utils/LocationButton';
 import { LocationTester } from '../utils/LocationTester';
-// import { PerformanceMonitor } from '../utils/performanceMonitor';
+
 import PullToRefresh from '../utils/PullToRefresh';
-import SimpleAutocomplete from '../utils/SimpleAutocomplete';
+// Autocomplete now lives inside LocationSearchPanel
+import LocationQuickPicks from '../components/LocationQuickPicks';
+import LocationSearchPanel from '../components/LocationSearchPanel';
 import SwipeNavigationContainer from '../utils/SwipeNavigationContainer';
 import type { ThemeColors } from '../utils/themeConfig';
 import ThemeToggle from '../utils/ThemeToggle';
@@ -106,7 +106,9 @@ import {
 import WeatherIcon from '../utils/weatherIcons';
 // Enhanced Mobile Components
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
+
 import WeatherAlertPanel from '../components/mobile/WeatherAlertPanel';
+import type { SavedCity } from '../utils/useCityManagement';
 // Phase 3A: Enhanced Loading States & Progress Indicators
 import {
   BackgroundUpdateIndicator,
@@ -140,10 +142,7 @@ import {
 // IOSComponentShowcase will be lazy-loaded via utils/lazyComponents
 import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
 import { NavigationIcons } from '../components/modernWeatherUI/NavigationIcons';
-import {
-  SimpleEnhancedButton,
-  SimpleStatusBadge,
-} from '../components/modernWeatherUI/SimpleIOSComponents';
+import { SimpleStatusBadge } from '../components/modernWeatherUI/SimpleIOSComponents';
 // OptimizedMobileWeatherDisplay will be lazy-loaded via utils/lazyComponents
 // Core styles now centralized via src/index.css to prevent overlap
 // Navigation & UI Fixes - August 21, 2025
@@ -250,7 +249,7 @@ function HomeScreen({
   haptic: ReturnType<typeof useHaptic>;
 }>) {
   return (
-    <div className="ios26-weather-details-container ios26-container ios26-p-0 main-content-area">
+    <div className="ios26-weather-details-container ios26-container ios26-p-0 main-content-area content-auto-wrap">
       {/* iOS 26 Navigation Bar */}
       <div className="ios26-navigation-bar">
         <h1 className="ios-title1 ios26-text-primary">Today's Weather</h1>
@@ -316,8 +315,11 @@ function WeatherDetailsScreen({
   showActionSheet,
   setShowActionSheet,
   themeName,
-  showLiveActivity,
-  weatherAlert,
+  setShowLiveActivity,
+  setWeatherAlert,
+  toggleFavorite,
+  isFavorite,
+  favorites,
   showWeatherSettingsModal,
   setShowWeatherSettingsModal,
 }: Readonly<{
@@ -363,11 +365,29 @@ function WeatherDetailsScreen({
     message: string;
     severity: 'info' | 'warning' | 'severe';
   } | null;
+  setShowLiveActivity: (show: boolean) => void;
+  setWeatherAlert: (
+    alert: {
+      title: string;
+      message: string;
+      severity: 'info' | 'warning' | 'severe';
+    } | null
+  ) => void;
+  toggleFavorite: (
+    name: string,
+    latitude: number,
+    longitude: number,
+    displayName?: string,
+    country?: string,
+    state?: string
+  ) => void;
+  isFavorite: (name: string, latitude: number, longitude: number) => boolean;
+  favorites: SavedCity[];
   showWeatherSettingsModal: boolean;
   setShowWeatherSettingsModal: (show: boolean) => void;
 }>) {
   return (
-    <div className="ios26-weather-details-container mobile-container main-content-area">
+    <div className="ios26-weather-details-container mobile-container main-content-area content-auto-wrap">
       {/* iOS-Style Navigation Bar */}
       <NavigationBar
         title="Weather"
@@ -391,43 +411,11 @@ function WeatherDetailsScreen({
       <ErrorRecoveryState
         operation="weatherData"
         onRetry={async () => {
-          await getWeather();
+          getWeather();
         }}
       />
 
-      {/* iOS26 Live Activity for Weather Updates */}
-      {(() => {
-        const alertIcon = weatherAlert
-          ? weatherAlert.severity === 'severe'
-            ? '⚠️'
-            : weatherAlert.severity === 'warning'
-              ? '🟡'
-              : '🌤️'
-          : null;
-        return (
-          <LiveActivity
-            title={weatherAlert ? weatherAlert.title : 'Weather Updated'}
-            subtitle={
-              weatherAlert
-                ? weatherAlert.message
-                : `${
-                    weather
-                      ? `${Math.round(weather.main.temp)}°F - ${
-                          weather.weather[0].description
-                        }`
-                      : 'Loading...'
-                  }`
-            }
-            icon={<span className="ios26-widget-icon">{alertIcon}</span>}
-            theme={theme}
-            isVisible={showLiveActivity || !!weatherAlert}
-            onTap={() => {
-              haptic.buttonPress();
-              logInfo('Live Activity tapped');
-            }}
-          />
-        );
-      })()}
+      {/* LiveActivity rendered once later; duplicate instance removed to prevent overlapping pills. */}
 
       <ThemeToggle />
       <PullToRefresh
@@ -447,39 +435,58 @@ function WeatherDetailsScreen({
             />
           </div>
 
-          {/* Search Section */}
-          <div className="ios26-forecast-section">
-            <SimpleAutocomplete
-              theme={theme}
-              onCitySelected={getWeatherByLocation}
-              disabled={loading}
-              placeholder="Search for a city..."
-            />
-            <div className="ios26-quick-actions">
-              <LocationButton
-                theme={theme}
-                isMobile={true}
-                onLocationReceived={handleLocationDetected}
-                onError={error => setError(error)}
-                disabled={loading}
-                variant="secondary"
-                size="medium"
-                showLabel={true}
-              />
+          {/* Search & Location Panel */}
+          <LocationSearchPanel
+            theme={theme}
+            loading={loading}
+            onCitySelected={getWeatherByLocation}
+            onSearch={() => {
+              haptic.buttonConfirm();
+              void getWeather();
+            }}
+            onLocationDetected={handleLocationDetected}
+            onError={msg => setError(msg)}
+          />
 
-              <SimpleEnhancedButton
-                title="Search Weather"
-                onPress={() => {
-                  haptic.buttonConfirm();
-                  getWeather();
-                }}
-                disabled={loading}
-                variant="primary"
-                theme={theme}
-                icon="🔍"
-              />
-            </div>
-          </div>
+          {/* Highlight iOS26 InteractiveWidget + ModalSheet via Quick Picks */}
+          <LocationQuickPicks
+            theme={theme}
+            onCitySelected={(name, lat, lon) => {
+              void getWeatherByLocation(name, lat, lon);
+            }}
+            favorites={favorites}
+            onManageFavorites={() => navigate('Favorites')}
+            onPreSelect={label => {
+              // Show LiveActivity as a pre-select hint “Fetching …”
+              setShowLiveActivity(true);
+              setWeatherAlert({
+                title: 'Fetching weather…',
+                message: label,
+                severity: 'info',
+              });
+            }}
+            onNotify={(title, message) => {
+              setShowLiveActivity(true);
+              setWeatherAlert({
+                title,
+                message: message ?? '',
+                severity: 'info',
+              });
+            }}
+            onAddFavorite={(
+              cityName,
+              lat,
+              lon,
+              displayName,
+              country,
+              state
+            ) => {
+              // Toggle favorite using centralized hook
+              toggleFavorite(cityName, lat, lon, displayName, country, state);
+              haptic.selection();
+            }}
+            isFavorite={(cityName, lat, lon) => isFavorite(cityName, lat, lon)}
+          />
 
           {/* Error Display */}
           {error && <SimpleStatusBadge text={error} variant="error" />}
@@ -556,38 +563,7 @@ function WeatherDetailsScreen({
                 className="ios26-mt-4"
               />
 
-              {/* Phase 3: Progressive Loading Indicators - TEMPORARILY DISABLED */}
-              {/* {useProgressiveMode && progressiveWeatherData && (
-                <div className="ios26-progressive-loading ios26-mt-4">
-                  <div className="ios26-text-caption ios26-text-secondary ios26-mb-2">
-                    Loading Weather Data...
-                  </div>
-                  <div className="ios26-mb-4">
-                    <ProgressIndicator
-                      progress={75}
-                      theme={theme}
-                      size="medium"
-                      showPercentage={true}
-                    />
-                  </div>
-
-                  Loading Stage Indicators
-                  <div className="ios26-loading-stages">
-                    <div className="ios26-stage ios26-stage-complete">
-                      ⛅ Current Weather
-                    </div>
-                    <div className="ios26-stage ios26-stage-complete">
-                      🕐 Hourly Forecast
-                    </div>
-                    <div className="ios26-stage ios26-stage-complete">
-                      📅 Daily Forecast
-                    </div>
-                    <div className="ios26-stage ios26-stage-pending">
-                      📊 Detailed Metrics
-                    </div>
-                  </div>
-                </div>
-              )} */}
+              {/* Progressive loading block intentionally removed for cleanliness */}
 
               {/* Legacy Loading Indicator */}
               <div className="ios26-mt-4">
@@ -608,9 +584,9 @@ function WeatherDetailsScreen({
                   id: 'refresh',
                   title: 'Refresh',
                   icon: '🔄',
-                  onAction: async () => {
+                  onAction: () => {
                     haptic.buttonPress();
-                    await onRefresh();
+                    void onRefresh();
                   },
                 },
                 {
@@ -646,9 +622,9 @@ function WeatherDetailsScreen({
                 </div>
                 <button
                   className="ios26-button ios26-button-primary"
-                  onClick={async () => {
+                  onClick={() => {
                     haptic.buttonPress();
-                    await onRefresh();
+                    void onRefresh();
                   }}
                 >
                   Refresh
@@ -791,21 +767,7 @@ function WeatherDetailsScreen({
             </div>
           )}
 
-          {/* Legacy iOS26 Enhanced: Interactive Weather Widgets - DISABLED */}
-          {/*
-          {false && weather && selectedView === 0 && (
-            <div className="ios26-forecast-section">
-              <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
-                Details
-              </h3>
-              <div className="ios26-widget-grid">
-                <InteractiveWidget title="Temperature" size="medium" theme={theme}>
-                  Legacy widget content...
-                </InteractiveWidget>
-              </div>
-            </div>
-          )}
-          */}
+          {/* Legacy interactive widgets block intentionally removed */}
 
           {/* iOS 26 Weather Interface - Enhanced Forecast */}
           {selectedView === 1 || selectedView === 2 ? (
@@ -944,6 +906,14 @@ function WeatherDetailsScreen({
         title="Options"
         message="Choose an action"
         actions={[
+          {
+            title: 'Manage Favorites',
+            icon: <NavigationIcons.Favorites />,
+            onPress: () => {
+              navigate('Favorites');
+              setShowActionSheet(false);
+            },
+          },
           {
             title: 'Components Demo',
             icon: <NavigationIcons.Settings />,
@@ -1425,7 +1395,8 @@ const AppNavigator = () => {
   );
 
   const haptic = useHaptic();
-  const { addToRecent, setCurrentCity } = useCityManagement();
+  const { addToRecent, setCurrentCity, toggleFavorite, isFavorite, favorites } =
+    useCityManagement();
   const { optimizedFetch } = useWeatherAPIOptimization();
   const { optimizedTransform } = useWeatherDataTransform();
 
@@ -1475,7 +1446,6 @@ const AppNavigator = () => {
     message: string;
     severity: 'info' | 'warning' | 'severe';
   } | null>(null);
-  const [dataUpdateProgress, _setDataUpdateProgress] = useState(0);
   const [showWeatherSettingsModal, setShowWeatherSettingsModal] =
     useState(false);
 
@@ -1827,7 +1797,6 @@ const AppNavigator = () => {
 
           // iOS26 Feature: Trigger Live Activity for weather updates
           setShowLiveActivity(true);
-          setTimeout(() => setShowLiveActivity(false), 4000);
 
           // iOS26 Feature: Check for weather alerts
           const currentTemp = transformedData.main.temp;
@@ -2361,6 +2330,11 @@ const AppNavigator = () => {
                     themeName={themeName}
                     showLiveActivity={showLiveActivity}
                     weatherAlert={weatherAlert}
+                    favorites={favorites}
+                    setShowLiveActivity={setShowLiveActivity}
+                    setWeatherAlert={setWeatherAlert}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
                     showWeatherSettingsModal={showWeatherSettingsModal}
                     setShowWeatherSettingsModal={setShowWeatherSettingsModal}
                   />
@@ -2463,6 +2437,11 @@ const AppNavigator = () => {
                   themeName={themeName}
                   showLiveActivity={showLiveActivity}
                   weatherAlert={weatherAlert}
+                  favorites={favorites}
+                  setShowLiveActivity={setShowLiveActivity}
+                  setWeatherAlert={setWeatherAlert}
+                  toggleFavorite={toggleFavorite}
+                  isFavorite={isFavorite}
                   showWeatherSettingsModal={showWeatherSettingsModal}
                   setShowWeatherSettingsModal={setShowWeatherSettingsModal}
                 />
@@ -2500,45 +2479,50 @@ const AppNavigator = () => {
           </React.Suspense>
 
           {/* iOS 26 Live Activity - Weather Alerts and Updates */}
-          <LiveActivity
-            isVisible={showLiveActivity || !!weatherAlert}
-            title={
-              weatherAlert?.title ||
-              (weather
-                ? `${Math.round(weather.main.temp)}°F in ${city}`
-                : 'Weather Update')
-            }
-            subtitle={
-              weatherAlert?.message ||
-              (weather
-                ? `${weather.weather[0].description} • Updated now`
-                : undefined)
-            }
-            icon={
-              weatherAlert ? (
-                <span className="ios-body">
-                  {weatherAlert.severity === 'severe'
-                    ? '⚠️'
-                    : weatherAlert.severity === 'warning'
-                      ? '🌩️'
-                      : 'ℹ️'}
-                </span>
-              ) : (
-                <WeatherIcon code={weatherCode} size={20} animated={true} />
-              )
-            }
-            progress={dataUpdateProgress > 0 ? dataUpdateProgress : undefined}
-            theme={theme}
-            onTap={() => {
-              haptic.buttonPress();
-              if (weatherAlert) {
-                setWeatherAlert(null);
+          {(() => {
+            let liveActivityIcon: React.ReactNode;
+            if (weatherAlert) {
+              let glyph = 'ℹ️';
+              if (weatherAlert.severity === 'severe') {
+                glyph = '⚠️';
+              } else if (weatherAlert.severity === 'warning') {
+                glyph = '🌩️';
               }
-              setShowLiveActivity(false);
-              navigate('Weather');
-            }}
-            duration={weatherAlert ? 8000 : 4000}
-          />
+              liveActivityIcon = <span className="ios-body">{glyph}</span>;
+            } else {
+              liveActivityIcon = (
+                <WeatherIcon code={weatherCode} size={20} animated={true} />
+              );
+            }
+            return (
+              <LiveActivity
+                isVisible={showLiveActivity || !!weatherAlert}
+                title={
+                  weatherAlert?.title ||
+                  (weather
+                    ? `${Math.round(weather.main.temp)}°F in ${city}`
+                    : 'Weather Update')
+                }
+                subtitle={
+                  weatherAlert?.message ||
+                  (weather
+                    ? `${weather.weather[0].description} • Updated now`
+                    : undefined)
+                }
+                icon={liveActivityIcon}
+                theme={theme}
+                onTap={() => {
+                  haptic.buttonPress();
+                  if (weatherAlert) {
+                    setWeatherAlert(null);
+                  }
+                  setShowLiveActivity(false);
+                  navigate('Weather');
+                }}
+                duration={0}
+              />
+            );
+          })()}
 
           {/* PWA Status - Hidden by default; enable with ?devtools=1 */}
           {showDevTools && (

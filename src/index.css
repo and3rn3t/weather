@@ -50,6 +50,8 @@
     var(--ios26-color-primary, #667eea) 0%,
     var(--ios26-color-secondary, #764ba2) 100%
   );
+  /* Standardized mobile nav height (can be tuned by design) */
+  --mobile-nav-height: 64px;
 }
 
 /* DEV-ONLY RESCUE OVERRIDES: ensure content is visible and not covered */
@@ -726,4 +728,77 @@ div:not(.mobile-navigation) *:active,
 }
 [data-theme='dark'] .ios26-navigation-bar {
   background: var(--ios26-material-thick, rgba(28, 28, 30, 0.9));
+}
+
+/* ==========================================================================
+  Responsive Layout Unification (Single Vertical Scroll)
+  - Make body the only vertical scroll container
+  - Prevent nested scrollbars in .main-content-area, .mobile-container, .ios26-weather-interface
+  - Ensure content isn't covered by sticky bottom navigation
+  ======================================================================= */
+
+html,
+body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* Remove container-level vertical scrolling to avoid double scrollbars */
+.main-content-area,
+.mobile-container,
+.ios26-weather-interface {
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  /* Keep content clear of sticky bottom nav */
+  padding-bottom: calc(var(--mobile-nav-height, 64px) + var(--safe-area-inset-bottom, 0) + 16px);
+}
+
+/* Some legacy styles force full-viewport heights; normalize them */
+.ios26-weather-interface {
+  min-height: unset !important;
+}
+
+/* Keep content clear of sticky bottom nav */
+/* (moved into unified container block above to avoid duplicate selectors) */
+
+/* ==========================================================================
+   Auto-wrap fallback styling for unthemed content
+   - Ensures any stray content inside main containers appears consistent
+   - Skips known, already-themed blocks
+   ======================================================================= */
+.content-auto-wrap > :where(*) {
+  /* Reset spacing to align neatly */
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.content-auto-wrap
+  > :where(
+    :not(.ios26-section):not(.ios26-card):not(.ios26-weather-card):not(.ios26-forecast-section):not(
+        .ios26-quick-actions
+      ):not(.mobile-card):not(.forecast-section):not(.ios26-navigation-bar):not(.ios26-weather-interface):not(
+        .no-auto-theme
+      )
+  ) {
+  background: var(--ios26-material-regular, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+  border-radius: var(--ios26-radius-lg, 16px);
+  padding: var(--ios26-spacing-4, 16px);
+  margin-bottom: var(--ios26-spacing-4, 16px);
+  color: var(--ios26-text-primary, #111);
+}
+
+[data-theme='dark']
+  .content-auto-wrap
+  > :where(
+    :not(.ios26-section):not(.ios26-card):not(.ios26-weather-card):not(.ios26-forecast-section):not(
+        .ios26-quick-actions
+      ):not(.mobile-card):not(.forecast-section):not(.ios26-navigation-bar):not(.ios26-weather-interface):not(
+        .no-auto-theme
+      )
+  ) {
+  background: var(--ios26-material-regular, rgba(28, 28, 30, 0.8));
 }

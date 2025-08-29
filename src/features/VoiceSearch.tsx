@@ -10,6 +10,7 @@ export interface VoiceSearchFeatureProps {
   onCitySelect: (city: string) => void;
   enabled?: boolean;
   className?: string;
+  resolving?: boolean; // optional external resolving state (e.g., geocoding)
 }
 
 /**
@@ -20,6 +21,7 @@ export const VoiceSearchFeature: React.FC<VoiceSearchFeatureProps> = ({
   onCitySelect,
   enabled = true,
   className = '',
+  resolving = false,
 }) => {
   const { isListening, isSupported, handleVoiceSearch } =
     useVoiceSearchButton(onCitySelect);
@@ -32,17 +34,28 @@ export const VoiceSearchFeature: React.FC<VoiceSearchFeatureProps> = ({
     <button
       className={`voice-search-button ${className}`}
       onClick={handleVoiceSearch}
-      disabled={isListening}
-      title={isListening ? 'Listening...' : 'Voice Search for City'}
+      disabled={isListening || resolving}
+      title={
+        isListening
+          ? 'Listening...'
+          : resolving
+            ? 'Resolving…'
+            : 'Voice Search for City'
+      }
       aria-label={
         isListening
           ? 'Voice search is listening'
-          : 'Start voice search for city'
+          : resolving
+            ? 'Resolving spoken city'
+            : 'Start voice search for city'
       }
     >
-      {isListening ? '🎤' : '🔍🎤'}
+      {isListening ? '🎤' : resolving ? '⏳' : '🔍🎤'}
       {isListening && (
         <span className="voice-search-indicator">Listening...</span>
+      )}
+      {!isListening && resolving && (
+        <span className="voice-search-indicator">Resolving…</span>
       )}
     </button>
   );

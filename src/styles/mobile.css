@@ -41,7 +41,9 @@ html {
 /* Larger mobile screens and tablets */
 @media (min-width: 768px) {
   .mobile-container {
-    max-width: 600px;
+    /* Use the full available width on tablet/desktop */
+    max-width: none;
+    width: 100%;
     padding: 24px;
   }
 
@@ -152,8 +154,9 @@ html {
 
 /* --- App screens (replaces inline styles in App.tsx) --- */
 .app-section {
-  max-width: 400px;
-  margin: 0 auto;
+  /* Expand to full width; spacing is controlled by inner padding and cards */
+  max-width: 100%;
+  margin: 0;
   padding: 20px;
 }
 .app-title {
