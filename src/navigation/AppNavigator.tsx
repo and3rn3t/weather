@@ -51,6 +51,7 @@ import {
   OptimizedMobileWeatherDisplay as LazyOptimizedMobileWeatherDisplay,
   PerformanceDashboard as LazyPerformanceDashboard,
   PrecipitationChart as LazyPrecipitationChart,
+  PWAInstallPrompt as LazyPWAInstallPrompt,
   PWAStatus as LazyPWAStatus,
   TemperatureTrend as LazyTemperatureTrend,
   UVIndexBar as LazyUVIndexBar,
