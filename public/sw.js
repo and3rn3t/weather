@@ -367,7 +367,11 @@ async function handleNavigationRequest(request) {
     throw new Error('Network response not ok');
   } catch (error) {
     // Log and fallback to cache
-    console.warn('Navigation request failed, attempting cache fallback:', request.url, error);
+    console.warn(
+      'Navigation request failed, attempting cache fallback:',
+      request.url,
+      error
+    );
     try {
       const cachedResponse =
         (await cache.match(cacheKey)) ||
@@ -538,7 +542,8 @@ function isStaticAsset(url) {
 function isJsonAsset(url) {
   return (
     url.origin === self.location.origin &&
-    (url.pathname.endsWith('/version.json') || url.pathname.endsWith('/manifest.json'))
+    (url.pathname.endsWith('/version.json') ||
+      url.pathname.endsWith('/manifest.json'))
   );
 }
 
@@ -552,7 +557,11 @@ async function handleJsonAsset(request) {
     return response;
   } catch (error) {
     // Provide a minimal JSON fallback rather than HTML; log for diagnostics
-    console.warn('JSON asset fetch failed, returning offline fallback:', request.url, error);
+    console.warn(
+      'JSON asset fetch failed, returning offline fallback:',
+      request.url,
+      error
+    );
     const isVersion = request.url.endsWith('/version.json');
     const fallback = isVersion
       ? { error: 'offline', resource: 'version.json' }
@@ -686,7 +695,11 @@ async function handlePreloadPopularCities(cities) {
       } catch (error) {
         // Swallow intermittent network/CORS errors silently but mark as handled
         if (typeof console !== 'undefined' && console.debug) {
-          console.debug('Preload skipped for city due to network/CORS issue:', city, error);
+          console.debug(
+            'Preload skipped for city due to network/CORS issue:',
+            city,
+            error
+          );
         }
       }
     });
