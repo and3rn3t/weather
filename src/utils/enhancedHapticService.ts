@@ -6,8 +6,24 @@
  */
 
 import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
-import { logWarn, logInfo } from './logger';
+import { ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { logInfo, logWarn } from './logger';
+
+// Lazy holder for Haptics API to avoid TDZ/circular init issues in bundled chunks
+type HapticsLike = {
+  impact: (opts: { style: ImpactStyle }) => Promise<void>;
+  notification: (opts: { type: NotificationType }) => Promise<void>;
+} | null;
+let HapticsAPI: HapticsLike = null;
+// Schedule asynchronous dynamic import to avoid top-level evaluation in problematic environments
+void (async () => {
+  try {
+    const mod = await import('@capacitor/haptics');
+    HapticsAPI = (mod as unknown as { Haptics?: HapticsLike }).Haptics || null;
+  } catch {
+    HapticsAPI = null;
+  }
+})();
 
 // ============================================================================
 // HAPTIC PATTERNS & CONFIGURATION
@@ -166,8 +182,9 @@ export class EnhancedHapticService {
       ...config,
     };
 
-    this.isNative = Capacitor.isNativePlatform();
-    this.isWeb = 'vibrate' in navigator;
+    // Guard browser-only globals
+    this.isNative = Boolean(Capacitor?.isNativePlatform?.());
+    this.isWeb = typeof navigator !== 'undefined' && 'vibrate' in navigator;
     this.canVibrate = this.isNative || this.isWeb;
 
     if (this.config.debugMode) {
@@ -221,10 +238,11 @@ export class EnhancedHapticService {
     try {
       const nativePattern = NATIVE_PATTERNS[pattern];
 
+      if (!HapticsAPI) return false;
       if (nativePattern.impact) {
-        await Haptics.impact({ style: nativePattern.impact });
+        await HapticsAPI.impact({ style: nativePattern.impact });
       } else if (nativePattern.notification) {
-        await Haptics.notification({ type: nativePattern.notification });
+        await HapticsAPI.notification({ type: nativePattern.notification });
       }
 
       if (this.config.debugMode) {

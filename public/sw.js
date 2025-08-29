@@ -93,6 +93,22 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   const request = event.request;
 
+  // Work around HEAD requests causing Cache.put errors in some browsers/CDNs
+  // Treat HEAD as a network-only probe without caching, and do not pass to handlers that write to Cache
+  if (request.method === 'HEAD') {
+    event.respondWith(
+      (async () => {
+        try {
+          return await fetch(request);
+        } catch (e) {
+          // Fallback empty 204 for probes
+          return new Response(null, { status: 204, statusText: 'No Content' });
+        }
+      })()
+    );
+    return;
+  }
+
   // Route requests to appropriate handlers
   if (isStaticAsset(url)) {
     event.respondWith(handleStaticAsset(request));
@@ -197,13 +213,15 @@ async function cleanupOldCaches() {
 async function handleStaticAsset(request) {
   const cache = await caches.open(CACHE_NAMES.STATIC);
 
-  // Try cache first, then network
+  // Try cache first, then network (only for safe methods)
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
     console.log(`📦 Serving from cache: ${request.url}`);
 
     // Update cache in background
-    fetchAndUpdateCache(request, cache);
+    if (request.method === 'GET') {
+      fetchAndUpdateCache(request, cache);
+    }
 
     return cachedResponse;
   }
@@ -211,10 +229,13 @@ async function handleStaticAsset(request) {
   // Fetch from network and cache
   try {
     const networkResponse = await fetchWithTimeout(request, NETWORK_TIMEOUT);
+    const ct = networkResponse.headers.get('content-type') || '';
 
     if (networkResponse.ok) {
-      await cache.put(request, networkResponse.clone());
-      console.log(`🌐 Fetched and cached: ${request.url}`);
+      if (request.method === 'GET' && ct.includes('javascript')) {
+        await cache.put(request, networkResponse.clone());
+        console.log(`🌐 Fetched and cached: ${request.url}`);
+      }
     }
 
     return networkResponse;
