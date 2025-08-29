@@ -33,9 +33,15 @@
       })();
     </script>
 
-    <!-- Ultra-early boot beacon: shows even if module fails to load -->
+    <!-- Ultra-early boot beacon: shows even if module fails to load (hidden on production) -->
     <script>
       (function () {
+        // Suppress the green debug indicator on production domain
+        try {
+          var host = (location && location.hostname) || '';
+          var isProdHost = host === 'weather.andernet.dev';
+          if (isProdHost) return; // do not render early-boot marker in production
+        } catch {}
         function addEarlyBootMarker(text) {
           try {
             var el = document.getElementById('early-boot-marker');
@@ -99,6 +105,10 @@
     <script>
       (function () {
         function setMarker(text) {
+          try {
+            var host = (location && location.hostname) || '';
+            if (host === 'weather.andernet.dev') return;
+          } catch {}
           var el = document.getElementById('early-boot-marker');
           if (el) el.textContent = text;
         }
@@ -106,16 +116,23 @@
         try {
           window.addEventListener('error', function (e) {
             try {
-              setMarker(
-                'HTML:error ' + (e && e.message ? e.message : 'unknown')
-              );
+              // Skip in production
+              var host = (location && location.hostname) || '';
+              if (host !== 'weather.andernet.dev') {
+                setMarker(
+                  'HTML:error ' + (e && e.message ? e.message : 'unknown')
+                );
+              }
               console.warn('[early] window error', e);
             } catch {}
           });
           window.addEventListener('unhandledrejection', function (e) {
             try {
               var reason = e && e.reason ? String(e.reason) : 'unknown';
-              setMarker('HTML:reject ' + reason);
+              var host2 = (location && location.hostname) || '';
+              if (host2 !== 'weather.andernet.dev') {
+                setMarker('HTML:reject ' + reason);
+              }
               console.warn('[early] unhandledrejection', e);
             } catch {}
           });
@@ -228,7 +245,10 @@
               }
               if (src) {
                 try {
-                  text('retry-module');
+                  try {
+                    var host = (location && location.hostname) || '';
+                    if (host !== 'weather.andernet.dev') text('retry-module');
+                  } catch {}
                   var s = document.createElement('script');
                   s.type = 'module';
                   s.setAttribute('data-allow-overlay', 'true');
