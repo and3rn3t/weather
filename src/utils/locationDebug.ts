@@ -103,11 +103,17 @@ export const useLocationDebug = () => {
     logInfo(`🧪 Testing Weather API for ${lat}, ${lon}`);
 
     try {
-      const { getStoredUnits, getTemperatureUnitParam } = await import(
-        './units'
-      );
-      const unit = getTemperatureUnitParam(getStoredUnits());
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=${unit}&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
+      const {
+        getStoredUnits,
+        getTemperatureUnitParam,
+        getWindSpeedUnitParam,
+        getPrecipitationUnitParam,
+      } = await import('./units');
+      const units = getStoredUnits();
+      const unit = getTemperatureUnitParam(units);
+      const wind = getWindSpeedUnitParam(units);
+      const precip = getPrecipitationUnitParam(units);
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&timezone=auto&forecast_days=7`;
 
       const data = await optimizedFetchJson<OpenMeteoDebugResponse>(
         weatherUrl,
@@ -177,9 +183,12 @@ if (typeof window !== 'undefined') {
       const {
         getStoredUnits: _getStoredUnits2,
         getTemperatureUnitParam: _getTemperatureUnitParam2,
+        getWindSpeedUnitParam: _getWindParam2,
       } = await import('./units');
-      const unit2 = _getTemperatureUnitParam2(_getStoredUnits2());
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=${unit2}`;
+      const _units2 = _getStoredUnits2();
+      const unit2 = _getTemperatureUnitParam2(_units2);
+      const wind2 = _getWindParam2(_units2);
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=${unit2}&wind_speed_unit=${wind2}`;
       const data = await optimizedFetchJson<OpenMeteoDebugResponse>(
         weatherUrl,
         {},

@@ -14,7 +14,12 @@ import type {
   HourlyForecast,
   WeatherData,
 } from '../types/weather';
-import { getStoredUnits, getTemperatureUnitParam } from '../utils/units';
+import {
+  getPrecipitationUnitParam,
+  getStoredUnits,
+  getTemperatureUnitParam,
+  getWindSpeedUnitParam,
+} from '../utils/units';
 import { useWeatherAPIOptimization } from '../utils/useWeatherOptimization';
 
 interface ProgressiveWeatherData {
@@ -64,8 +69,10 @@ export const useProgressiveWeatherLoading = (
       progress: 10,
     }));
     try {
-      const unit = getTemperatureUnitParam(getStoredUnits());
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=${unit}`;
+      const units = getStoredUnits();
+      const unit = getTemperatureUnitParam(units);
+      const wind = getWindSpeedUnitParam(units);
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=${unit}&wind_speed_unit=${wind}`;
       const res = await optimizedFetch(
         url,
         {},
@@ -118,8 +125,10 @@ export const useProgressiveWeatherLoading = (
       progress: 35,
     }));
     try {
-      const unit = getTemperatureUnitParam(getStoredUnits());
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature&temperature_unit=${unit}&forecast_days=1`;
+      const units = getStoredUnits();
+      const unit = getTemperatureUnitParam(units);
+      const wind = getWindSpeedUnitParam(units);
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature&temperature_unit=${unit}&wind_speed_unit=${wind}&forecast_days=1`;
       const res = await optimizedFetch(
         url,
         {},
@@ -170,8 +179,11 @@ export const useProgressiveWeatherLoading = (
       progress: 70,
     }));
     try {
-      const unit = getTemperatureUnitParam(getStoredUnits());
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max&temperature_unit=${unit}&forecast_days=7`;
+      const units = getStoredUnits();
+      const unit = getTemperatureUnitParam(units);
+      const wind = getWindSpeedUnitParam(units);
+      const precip = getPrecipitationUnitParam(units);
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`;
       const res = await optimizedFetch(
         url,
         {},
@@ -224,8 +236,10 @@ export const useProgressiveWeatherLoading = (
       progress: 90,
     }));
     try {
-      const unit = getTemperatureUnitParam(getStoredUnits());
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,surface_pressure,dew_point_2m&hourly=uv_index,visibility&temperature_unit=${unit}&forecast_days=1`;
+      const units = getStoredUnits();
+      const unit = getTemperatureUnitParam(units);
+      const wind = getWindSpeedUnitParam(units);
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,surface_pressure,dew_point_2m&hourly=uv_index,visibility&temperature_unit=${unit}&wind_speed_unit=${wind}&forecast_days=1`;
       const res = await optimizedFetch(
         url,
         {},

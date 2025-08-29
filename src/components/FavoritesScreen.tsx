@@ -9,9 +9,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
 import {
+  getPrecipitationUnitParam,
   getStoredUnits,
   getTemperatureSymbol,
   getTemperatureUnitParam,
+  getWindSpeedUnitParam,
 } from '../utils/units';
 import { useCityManagement, type SavedCity } from '../utils/useCityManagement';
 import { useTheme } from '../utils/useTheme';
@@ -193,10 +195,14 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
 
       try {
         // Simplified weather API call for preview
+        const units = getStoredUnits();
+        const tempUnit = getTemperatureUnitParam(units);
+        const windUnit = getWindSpeedUnitParam(units);
+        const precipUnit = getPrecipitationUnitParam(units);
         const data = await optimizedFetchJson<{
           current?: { temperature_2m?: number; weather_code?: number };
         }>(
-          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&temperature_unit=${getTemperatureUnitParam(getStoredUnits())}&timezone=auto`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&timezone=auto`,
           {},
           `preview:${city.id}`
         );

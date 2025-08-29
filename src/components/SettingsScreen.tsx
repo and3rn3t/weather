@@ -19,6 +19,7 @@ import { useTheme } from '../utils/useTheme';
 import './SettingsScreen.css';
 import { NavigationBar } from './modernWeatherUI/NavigationBar';
 import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
+import ToggleSwitch from './modernWeatherUI/ToggleSwitch';
 
 interface SettingsScreenProps {
   theme: ThemeColors;
@@ -166,8 +167,13 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
   const handleToggleChange = async (id: string, value: boolean) => {
     haptic.buttonPress();
-
     switch (id) {
+      case 'units': {
+        const nextUnits: TemperatureUnits = value ? 'metric' : 'imperial';
+        setUnits(nextUnits);
+        setStoredUnits(nextUnits);
+        break;
+      }
       case 'theme':
         toggleTheme();
         break;
@@ -446,12 +452,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
       items: [
         {
           id: 'units',
-          title: 'Temperature Units',
-          subtitle: 'Choose between Celsius and Fahrenheit',
+          title: 'Measurement System',
+          subtitle: 'Toggle Metric or Imperial for all measurements',
           icon: <NavigationIcons.Sun />,
-          type: 'selection' as const,
-          value: units,
-          options: ['imperial', 'metric'],
+          type: 'toggle' as const,
+          value: units === 'metric',
         },
         {
           id: 'refresh',
@@ -636,17 +641,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
                   <div className="settings-item-trailing">
                     {item.type === 'toggle' && (
-                      <div className="settings-switch">
-                        <input
-                          type="checkbox"
-                          aria-label={item.title}
-                          checked={item.value}
-                          onChange={e =>
-                            handleToggleChange(item.id, e.target.checked)
-                          }
-                        />
-                        <span>{item.value ? 'On' : 'Off'}</span>
-                      </div>
+                      <ToggleSwitch
+                        checked={Boolean(item.value)}
+                        ariaLabel={item.title}
+                        onChange={checked =>
+                          handleToggleChange(item.id, checked)
+                        }
+                        size="medium"
+                      />
                     )}
                     {item.type === 'selection' &&
                       item.options &&

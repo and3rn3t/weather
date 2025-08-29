@@ -31,13 +31,10 @@ import React, {
 // Time Utilities
 import { formatTimeForHourly } from '../utils/timeUtils';
 import {
-  calculateUVIndex,
   formatDayInfo,
-  generatePrecipitationData,
   mapOpenMeteoToWeatherData,
   processDailyForecast,
   processHourlyForecast,
-  transformHourlyDataForChart,
   type RawDailyData,
   type RawHourlyData,
 } from '../utils/weatherTransformers';
@@ -50,12 +47,8 @@ import {
   NativeStatusDisplay as LazyNativeStatusDisplay,
   OptimizedMobileWeatherDisplay as LazyOptimizedMobileWeatherDisplay,
   PerformanceDashboard as LazyPerformanceDashboard,
-  PrecipitationChart as LazyPrecipitationChart,
   PWAInstallPrompt as LazyPWAInstallPrompt,
   PWAStatus as LazyPWAStatus,
-  TemperatureTrend as LazyTemperatureTrend,
-  UVIndexBar as LazyUVIndexBar,
-  WindCompass as LazyWindCompass,
   trackLazyComponentLoad,
 } from '../utils/lazyComponents';
 import { useMemoryOptimization } from '../utils/memoryOptimization';
@@ -146,9 +139,18 @@ import {
 import { NavigationBar } from '../components/modernWeatherUI/NavigationBar';
 import { SimpleStatusBadge } from '../components/modernWeatherUI/SimpleIOSComponents';
 import {
+  formatPrecipitation,
+  formatPressure,
+  formatVisibility,
+  formatWindSpeed,
+  getPrecipitationUnitParam,
   getStoredUnits,
   getTemperatureSymbol,
   getTemperatureUnitParam,
+  getUnitSystemName,
+  getWindSpeedLabel,
+  getWindSpeedUnitParam,
+  setStoredUnits,
 } from '../utils/units';
 // OptimizedMobileWeatherDisplay will be lazy-loaded via utils/lazyComponents
 // Core styles now centralized via src/index.css to prevent overlap
@@ -228,7 +230,8 @@ const weatherDetailItems = [
     key: 'wind',
     icon: <NavigationIcons.Refresh />,
     label: 'Wind',
-    getValue: (weather: WeatherData) => `${Math.round(weather.wind.speed)} mph`,
+    getValue: (weather: WeatherData) =>
+      formatWindSpeed(weather.wind.speed, getStoredUnits()),
     subValue: (weather: WeatherData) => `${weather.wind.deg}°`,
   },
   {
@@ -236,7 +239,7 @@ const weatherDetailItems = [
     icon: <NavigationIcons.Sun />,
     label: 'Pressure',
     getValue: (weather: WeatherData) =>
-      `${Math.round(weather.main.pressure)} hPa`,
+      formatPressure(weather.main.pressure, getStoredUnits()),
   },
 ];
 
@@ -251,6 +254,17 @@ function HomeScreen({
   lastUpdated,
   onOpenAlerts,
   screenInfo,
+  // Newly added props required by the consolidated location section
+  loading,
+  getWeatherByLocation,
+  getWeather,
+  handleLocationDetected,
+  setError,
+  favorites,
+  toggleFavorite,
+  isFavorite,
+  setShowLiveActivity,
+  setWeatherAlert,
 }: Readonly<{
   theme: ThemeColors;
   screenInfo: ScreenInfo;
@@ -267,6 +281,34 @@ function HomeScreen({
   } | null;
   lastUpdated?: number;
   onOpenAlerts?: () => void;
+  // Added prop types
+  loading: boolean;
+  getWeatherByLocation: (
+    city: string,
+    lat: number,
+    lon: number
+  ) => Promise<void>;
+  getWeather: () => void;
+  handleLocationDetected: (
+    cityName: string,
+    latitude: number,
+    longitude: number
+  ) => void;
+  setError: (error: string) => void;
+  favorites: SavedCity[];
+  toggleFavorite: (
+    name: string,
+    latitude: number,
+    longitude: number,
+    displayName?: string,
+    country?: string,
+    state?: string
+  ) => void;
+  isFavorite: (name: string, latitude: number, longitude: number) => boolean;
+  setShowLiveActivity: (show: boolean) => void;
+  setWeatherAlert: (
+    alert: { title: string; message: string; severity: AlertSeverity } | null
+  ) => void;
 }>) {
   return (
     <div className="ios26-weather-details-container ios26-container ios26-p-0 main-content-area content-auto-wrap">
@@ -295,7 +337,8 @@ function HomeScreen({
       />
 
       <div className="ios26-content-narrow">
-        {/* Context row: location + last updated + alerts */}
+        {/* Context row: location + last updated + alerts */
+        /* Polished chip row under main header */}
         <div className="ios26-container ios26-p-4 ios26-pt-0">
           <div
             className={`ios26-chip-row ${screenInfo && screenInfo.width < 360 ? 'ios26-chip-row--compact' : ''}`}
@@ -353,7 +396,7 @@ function HomeScreen({
               ))}
           </div>
         </div>
-        <div className="ios26-divider" role="separator" aria-hidden="true" />
+        <hr className="ios26-divider" aria-hidden="true" />
 
         {/* Quick Actions */}
         <section
@@ -387,6 +430,72 @@ function HomeScreen({
           />
         </section>
 
+        {/* Location Section: Search + Quick Picks consolidated in one responsive section */}
+        <section
+          className="ios26-section ios26-mt-2"
+          aria-labelledby="home-location-h"
+        >
+          <h2 id="home-location-h" className="ios-title2 ios26-section-title">
+            Choose Location
+          </h2>
+          <div className="location-section-grid">
+            {/* Search & Location Panel */}
+            <LocationSearchPanel
+              theme={theme}
+              loading={loading}
+              onCitySelected={getWeatherByLocation}
+              onSearch={() => {
+                haptic.buttonConfirm();
+                getWeather();
+              }}
+              onLocationDetected={handleLocationDetected}
+              onError={msg => setError(msg)}
+              className="ios26-card ios26-liquid-glass"
+            />
+
+            {/* Quick Picks with interactive widgets */}
+            <LocationQuickPicks
+              theme={theme}
+              className="ios26-card ios26-liquid-glass"
+              onCitySelected={(name, lat, lon) => {
+                getWeatherByLocation(name, lat, lon);
+              }}
+              favorites={favorites}
+              onManageFavorites={() => navigate('Favorites')}
+              onPreSelect={label => {
+                setShowLiveActivity(true);
+                setWeatherAlert({
+                  title: 'Fetching weather…',
+                  message: label,
+                  severity: 'info',
+                });
+              }}
+              onNotify={(title, message) => {
+                setShowLiveActivity(true);
+                setWeatherAlert({
+                  title,
+                  message: message ?? '',
+                  severity: 'info',
+                });
+              }}
+              onAddFavorite={(
+                cityName,
+                lat,
+                lon,
+                displayName,
+                country,
+                state
+              ) => {
+                toggleFavorite(cityName, lat, lon, displayName, country, state);
+                haptic.selection();
+              }}
+              isFavorite={(cityName, lat, lon) =>
+                isFavorite(cityName, lat, lon)
+              }
+            />
+          </div>
+        </section>
+
         {/* At a Glance */}
         <section
           className="ios26-card ios26-mt-4"
@@ -410,29 +519,30 @@ function WeatherDetailsScreen({
   city,
   loading,
   error,
-  setError,
+  setError: _setError,
   weather,
   hourlyForecast,
   dailyForecast,
   weatherCode: _weatherCode,
   getWeather,
-  getWeatherByLocation,
+  getWeatherByLocation: _getWeatherByLocation,
   onRefresh,
   haptic,
-  handleLocationDetected,
+  handleLocationDetected: _handleLocationDetected,
   navigate,
   selectedView,
   setSelectedView,
   showActionSheet,
   setShowActionSheet,
   themeName,
-  setShowLiveActivity,
-  setWeatherAlert,
-  toggleFavorite,
-  isFavorite,
-  favorites,
+  setShowLiveActivity: _setShowLiveActivity,
+  setWeatherAlert: _setWeatherAlert,
+  toggleFavorite: _toggleFavorite,
+  isFavorite: _isFavorite,
+  favorites: _favorites,
   showWeatherSettingsModal,
   setShowWeatherSettingsModal,
+  lastUpdated,
 }: Readonly<{
   theme: ThemeColors;
   screenInfo: ScreenInfo;
@@ -492,7 +602,37 @@ function WeatherDetailsScreen({
   favorites: SavedCity[];
   showWeatherSettingsModal: boolean;
   setShowWeatherSettingsModal: (show: boolean) => void;
+  lastUpdated?: number;
 }>) {
+  // Inline location setup state with persistence and staleness auto-open
+  const storageKey = 'weather.inlineLocation.open';
+  const isStale = useMemo(() => {
+    if (!lastUpdated) return !weather;
+    return Date.now() - lastUpdated > 30 * 60 * 1000;
+  }, [lastUpdated, weather]);
+
+  const [showLocationSetup, setShowLocationSetup] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved === 'true') return true;
+      if (saved === 'false') return false;
+      return !weather || isStale;
+    } catch {
+      return !weather || isStale;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, showLocationSetup ? 'true' : 'false');
+    } catch {
+      // Ignore storage errors (private mode or quota)
+    }
+  }, [showLocationSetup]);
+
+  useEffect(() => {
+    if (isStale && !showLocationSetup) setShowLocationSetup(true);
+  }, [isStale, showLocationSetup]);
   return (
     <div className="ios26-weather-details-container mobile-container main-content-area content-auto-wrap">
       {/* iOS-Style Navigation Bar */}
@@ -500,17 +640,17 @@ function WeatherDetailsScreen({
         title="Weather"
         subtitle={city || 'Select Location'}
         leadingButton={{
-          icon: <NavigationIcons.Back />,
-          onPress: () => navigate('Home'),
+          icon: <NavigationIcons.Search />,
+          title: 'Location',
+          onPress: () => setShowLocationSetup(true),
         }}
         trailingButton={{
           icon: <NavigationIcons.Settings />,
-          onPress: () => setShowActionSheet(true),
+          onPress: () => navigate('Settings'),
         }}
         theme={theme}
         isDark={themeName === 'dark'}
       />
-
       {/* Phase 3A: Background Update Indicator */}
       <BackgroundUpdateIndicator operation="background-refresh" />
 
@@ -542,58 +682,110 @@ function WeatherDetailsScreen({
             />
           </div>
 
-          {/* Search & Location Panel */}
-          <LocationSearchPanel
-            theme={theme}
-            loading={loading}
-            onCitySelected={getWeatherByLocation}
-            onSearch={() => {
-              haptic.buttonConfirm();
-              getWeather();
-            }}
-            onLocationDetected={handleLocationDetected}
-            onError={msg => setError(msg)}
-          />
+          {/* Inline Location Setup (unified flow) */}
+          {showLocationSetup || !weather ? (
+            <section
+              className="ios26-section ios26-mt-1"
+              aria-labelledby="weather-location-inline-h"
+            >
+              <div className="ios26-flex ios26-items-center ios26-justify-between ios26-mb-2">
+                <h2
+                  id="weather-location-inline-h"
+                  className="ios-title2 ios26-section-title"
+                >
+                  {weather ? 'Change Location' : 'Choose Location'}
+                </h2>
+                {!!weather && (
+                  <button
+                    type="button"
+                    className="ios26-button ios26-button-tertiary ios26-button-small"
+                    onClick={() => setShowLocationSetup(false)}
+                    aria-label="Hide location setup"
+                    title="Hide"
+                  >
+                    Hide
+                  </button>
+                )}
+              </div>
 
-          {/* Highlight iOS26 InteractiveWidget + ModalSheet via Quick Picks */}
-          <LocationQuickPicks
-            theme={theme}
-            onCitySelected={(name, lat, lon) => {
-              getWeatherByLocation(name, lat, lon);
-            }}
-            favorites={favorites}
-            onManageFavorites={() => navigate('Favorites')}
-            onPreSelect={label => {
-              // Show LiveActivity as a pre-select hint “Fetching …”
-              setShowLiveActivity(true);
-              setWeatherAlert({
-                title: 'Fetching weather…',
-                message: label,
-                severity: 'info',
-              });
-            }}
-            onNotify={(title, message) => {
-              setShowLiveActivity(true);
-              setWeatherAlert({
-                title,
-                message: message ?? '',
-                severity: 'info',
-              });
-            }}
-            onAddFavorite={(
-              cityName,
-              lat,
-              lon,
-              displayName,
-              country,
-              state
-            ) => {
-              // Toggle favorite using centralized hook
-              toggleFavorite(cityName, lat, lon, displayName, country, state);
-              haptic.selection();
-            }}
-            isFavorite={(cityName, lat, lon) => isFavorite(cityName, lat, lon)}
-          />
+              <div className="location-section-grid">
+                <LocationSearchPanel
+                  theme={theme}
+                  loading={loading}
+                  onCitySelected={_getWeatherByLocation}
+                  onSearch={() => {
+                    haptic.buttonConfirm();
+                    getWeather();
+                  }}
+                  onLocationDetected={_handleLocationDetected}
+                  onError={msg => _setError(msg)}
+                  className="ios26-card ios26-liquid-glass ios26-compact"
+                />
+
+                <LocationQuickPicks
+                  theme={theme}
+                  className="ios26-card ios26-liquid-glass ios26-compact"
+                  onCitySelected={(name, lat, lon) =>
+                    _getWeatherByLocation(name, lat, lon)
+                  }
+                  favorites={_favorites}
+                  onManageFavorites={() => navigate('Favorites')}
+                  onPreSelect={label => {
+                    _setShowLiveActivity(true);
+                    _setWeatherAlert({
+                      title: 'Fetching weather…',
+                      message: label,
+                      severity: 'info',
+                    });
+                  }}
+                  onNotify={(title, message) => {
+                    _setShowLiveActivity(true);
+                    _setWeatherAlert({
+                      title,
+                      message: message ?? '',
+                      severity: 'info',
+                    });
+                  }}
+                  onAddFavorite={(
+                    cityName,
+                    lat,
+                    lon,
+                    displayName?,
+                    country?,
+                    state?
+                  ) => {
+                    _toggleFavorite(
+                      cityName,
+                      lat,
+                      lon,
+                      displayName,
+                      country,
+                      state
+                    );
+                    haptic.selection();
+                  }}
+                  isFavorite={(cityName, lat, lon) =>
+                    _isFavorite(cityName, lat, lon)
+                  }
+                />
+              </div>
+            </section>
+          ) : (
+            // Compact change-location affordance
+            <div className="ios26-flex ios26-justify-end ios26-mb-2">
+              <button
+                type="button"
+                className="ios26-button ios26-button-tertiary ios26-button-small"
+                onClick={() => setShowLocationSetup(true)}
+                aria-label="Change location"
+                title="Change location"
+              >
+                Change Location
+              </button>
+            </div>
+          )}
+
+          {/* Location selection moved to responsive grid above */}
 
           {/* Error Display */}
           {error && <SimpleStatusBadge text={error} variant="error" />}
@@ -779,9 +971,8 @@ function WeatherDetailsScreen({
                   </div>
                 </InteractiveWidget>
 
-                <div
+                <hr
                   className="ios26-divider ios26-fade-in"
-                  role="separator"
                   aria-hidden="true"
                 />
                 <InteractiveWidget
@@ -804,72 +995,7 @@ function WeatherDetailsScreen({
             </div>
           )}
 
-          {/* Phase 2C: Enhanced Weather Visualizations - ENABLED */}
-          {weather && hourlyForecast.length > 0 && (
-            <div className="ios26-visualization-section ios26-mb-6">
-              <h3 className="ios26-text-title ios26-text-primary ios26-mb-4">
-                Enhanced Weather Analytics
-              </h3>
-
-              {/* Temperature Trend Chart */}
-              <div className="ios26-mb-4">
-                <React.Suspense
-                  fallback={<SmartWeatherSkeleton variant="metrics" />}
-                >
-                  <LazyTemperatureTrend
-                    hourlyData={transformHourlyDataForChart(hourlyForecast)}
-                    className="ios26-temperature-trend"
-                  />
-                </React.Suspense>
-              </div>
-
-              {/* Wind Compass */}
-              <div className="ios26-mb-4">
-                <React.Suspense
-                  fallback={<SmartWeatherSkeleton variant="metrics" />}
-                >
-                  <LazyWindCompass
-                    windSpeed={weather.wind.speed}
-                    windDirection={weather.wind.deg}
-                    className="ios26-wind-compass"
-                  />
-                </React.Suspense>
-              </div>
-
-              {/* UV Index Bar */}
-              <div className="ios26-mb-4">
-                <React.Suspense
-                  fallback={<SmartWeatherSkeleton variant="metrics" />}
-                >
-                  <LazyUVIndexBar
-                    uvIndex={calculateUVIndex(weather)}
-                    className="ios26-uv-index"
-                  />
-                </React.Suspense>
-              </div>
-
-              {/* Precipitation Chart */}
-              <div className="ios26-mb-4">
-                <React.Suspense
-                  fallback={<SmartWeatherSkeleton variant="metrics" />}
-                >
-                  <LazyPrecipitationChart
-                    hourlyData={generatePrecipitationData(hourlyForecast)}
-                    className="ios26-precipitation-chart"
-                  />
-                </React.Suspense>
-              </div>
-
-              {/* Air Quality Index - TEMPORARILY DISABLED */}
-              {/* <div className="ios26-mb-4">
-                <AirQualityIndex
-                  aqi={Math.floor(Math.random() * 100) + 1}
-                  location={city}
-                  className="ios26-air-quality"
-                />
-              </div> */}
-            </div>
-          )}
+          {/* Phase 2C: Enhanced Weather Visualizations - removed here to avoid duplication with OptimizedMobileWeatherDisplay */}
 
           {/* Legacy interactive widgets block intentionally removed */}
 
@@ -917,12 +1043,16 @@ function WeatherDetailsScreen({
 
           <div className="ios26-widget-grid">
             <InteractiveWidget
-              title="Temperature Unit"
+              title="Measurement System"
               size="small"
               theme={theme}
               onTap={() => {
                 haptic.buttonPress();
-                logInfo('Temperature unit settings');
+                // Quick toggle for users tapping the widget
+                const next: 'imperial' | 'metric' =
+                  getStoredUnits() === 'metric' ? 'imperial' : 'metric';
+                setStoredUnits(next);
+                logInfo('Units toggled via Weather Settings widget to', next);
               }}
             >
               <div className="ios26-text-center">
@@ -930,11 +1060,9 @@ function WeatherDetailsScreen({
                   <NavigationIcons.Sun />
                 </div>
                 <div className="ios26-widget-value">
-                  {getTemperatureSymbol(getStoredUnits())}
+                  {getUnitSystemName(getStoredUnits())}
                 </div>
-                <div className="ios26-widget-secondary-text">
-                  {getStoredUnits() === 'metric' ? 'Celsius' : 'Fahrenheit'}
-                </div>
+                <div className="ios26-widget-secondary-text">Tap to toggle</div>
               </div>
             </InteractiveWidget>
 
@@ -1226,7 +1354,7 @@ const WeatherMainCard = React.memo(
                     </div>
                     <div className="ios26-weather-metric-text enhanced-readability">
                       <div className="ios-title2 ios26-text-primary ios26-weather-metric-value enhanced-readability">
-                        {Math.round(weather.visibility / 1000)} km
+                        {formatVisibility(weather.visibility, getStoredUnits())}
                       </div>
                       <div className="ios-footnote ios26-text-secondary ios26-weather-metric-label enhanced-readability">
                         VISIBILITY
@@ -1412,11 +1540,12 @@ const DailyForecastSection = React.memo(
                   </div>
                   {day.precipitation > 0 && (
                     <div className="ios-caption2 ios26-text-tertiary ios26-forecast-precipitation enhanced-readability">
-                      Precip {day.precipitation}mm
+                      Precip{' '}
+                      {formatPrecipitation(day.precipitation, getStoredUnits())}
                     </div>
                   )}
                   <div className="ios-caption2 ios26-text-tertiary">
-                    Wind {day.windSpeed}mph
+                    Wind {formatWindSpeed(day.windSpeed, getStoredUnits())}
                   </div>
                 </div>
               );
@@ -1805,8 +1934,11 @@ const AppNavigator = () => {
           });
 
           const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
-          const tempUnit = getTemperatureUnitParam(getStoredUnits());
-          const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=${tempUnit}&wind_speed_unit=mph&timezone=auto&forecast_days=7`;
+          const __units = getStoredUnits();
+          const tempUnit = getTemperatureUnitParam(__units);
+          const windUnit = getWindSpeedUnitParam(__units);
+          const precipUnit = getPrecipitationUnitParam(__units);
+          const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&timezone=auto&forecast_days=7`;
 
           // Update progress
           weatherLoading.setLoading(true, 25);
@@ -1947,9 +2079,7 @@ const AppNavigator = () => {
           } else if (windSpeed > 35) {
             const alertData = {
               title: 'High Wind Advisory',
-              message: `Wind speeds of ${Math.round(
-                windSpeed
-              )} mph. Secure loose objects and drive carefully.`,
+              message: `Wind speeds of ${Math.round(windSpeed)} ${getWindSpeedLabel(getStoredUnits())}. Secure loose objects and drive carefully.`,
               severity: 'warning' as const,
             };
             setWeatherAlert(alertData);
@@ -2006,6 +2136,26 @@ const AppNavigator = () => {
       weatherAnnouncements,
     ]
   );
+
+  // React to global units changes: refresh current weather to reflect new units
+  useEffect(() => {
+    const onUnitsChanged = () => {
+      if (currentCoordinates) {
+        fetchWeatherData(
+          currentCoordinates.latitude,
+          currentCoordinates.longitude
+        );
+      } else if (weather) {
+        setWeather({ ...weather });
+      }
+    };
+    window.addEventListener('units-changed', onUnitsChanged as EventListener);
+    return () =>
+      window.removeEventListener(
+        'units-changed',
+        onUnitsChanged as EventListener
+      );
+  }, [currentCoordinates, fetchWeatherData, weather]);
 
   // Load a neutral default location on first run (after dependencies declared)
   useEffect(() => {
@@ -2419,6 +2569,16 @@ const AppNavigator = () => {
                     weatherAlert={weatherAlert}
                     lastUpdated={backgroundRefresh?.stats?.lastRefreshTime}
                     onOpenAlerts={() => setShowWeatherAlertPanel(true)}
+                    loading={loading}
+                    getWeatherByLocation={getWeatherByLocation}
+                    getWeather={getWeather}
+                    handleLocationDetected={handleLocationDetected}
+                    setError={setError}
+                    favorites={favorites}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                    setShowLiveActivity={setShowLiveActivity}
+                    setWeatherAlert={setWeatherAlert}
                   />
                 ),
                 Weather: (
@@ -2529,6 +2689,16 @@ const AppNavigator = () => {
                   weatherAlert={weatherAlert}
                   lastUpdated={backgroundRefresh?.stats?.lastRefreshTime}
                   onOpenAlerts={() => setShowWeatherAlertPanel(true)}
+                  loading={loading}
+                  getWeatherByLocation={getWeatherByLocation}
+                  getWeather={getWeather}
+                  handleLocationDetected={handleLocationDetected}
+                  setError={setError}
+                  favorites={favorites}
+                  toggleFavorite={toggleFavorite}
+                  isFavorite={isFavorite}
+                  setShowLiveActivity={setShowLiveActivity}
+                  setWeatherAlert={setWeatherAlert}
                 />
               )}
 
@@ -2568,6 +2738,14 @@ const AppNavigator = () => {
                   isFavorite={isFavorite}
                   showWeatherSettingsModal={showWeatherSettingsModal}
                   setShowWeatherSettingsModal={setShowWeatherSettingsModal}
+                />
+              )}
+
+              {currentScreen === 'Settings' && (
+                <SettingsScreen
+                  theme={theme}
+                  screenInfo={screenInfo}
+                  onBack={() => navigate('Home')}
                 />
               )}
             </SwipeNavigationContainer>

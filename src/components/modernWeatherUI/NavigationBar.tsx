@@ -40,69 +40,20 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   leadingButton,
   trailingButton,
   searchBar,
-  theme,
+  theme: _theme,
   isDark = false,
 }) => {
-  const containerStyle: React.CSSProperties = transparent
-    ? { backgroundColor: 'transparent' }
-    : {};
-
-  const navBarStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: largeTitle ? '16px 20px 8px' : '16px 20px',
-    minHeight: '44px',
-  };
-
-  const titleContainerStyle: React.CSSProperties = {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-  };
-
-  const titleStyle: React.CSSProperties = {
-    fontSize: largeTitle ? '34px' : '17px',
-    fontWeight: largeTitle ? '700' : '600',
-    color: theme.primaryText,
-    margin: 0,
-    letterSpacing: largeTitle ? '-0.02em' : '0',
-    lineHeight: largeTitle ? '40px' : '22px',
-  };
-
-  const subtitleStyle: React.CSSProperties = {
-    fontSize: '15px',
-    fontWeight: '400',
-    color: theme.secondaryText,
-    margin: '4px 0 0 0',
-    lineHeight: '20px',
-  };
-
   const buttonClass = 'ios26-button-base ios26-button-plain';
 
-  const searchContainerStyle: React.CSSProperties = {
-    padding: '0 20px 16px',
-    display: searchBar ? 'block' : 'none',
-  };
-
   return (
-    <div
-      style={containerStyle}
-      className={`ios26-navigation-bar ios26-liquid-glass${transparent ? ' ios26-liquid-transparent' : ''}`}
-      role="navigation"
+    <nav
+      className={`ios26-navigation-bar ios26-liquid-glass ios26-navigation-bar--app${transparent ? ' ios26-liquid-transparent' : ''}`}
       aria-label="Top navigation"
       data-theme-mode={isDark ? 'dark' : 'light'}
+      data-large-title={largeTitle ? 'true' : 'false'}
     >
-      <div style={navBarStyle}>
-        <div
-          style={{
-            minWidth: '60px',
-            display: 'flex',
-            justifyContent: 'flex-start',
-          }}
-        >
+      <div className="ios26-navigation-inner">
+        <div className="ios26-navigation-side ios26-navigation-side--start">
           {leadingButton && (
             <button
               className={buttonClass}
@@ -115,18 +66,16 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           )}
         </div>
 
-        <div style={titleContainerStyle}>
-          <h1 style={titleStyle}>{title}</h1>
-          {subtitle && <p style={subtitleStyle}>{subtitle}</p>}
+        <div className="ios26-navigation-title-container">
+          <h1 className="ios26-navigation-title ios26-text-primary">{title}</h1>
+          {subtitle && (
+            <p className="ios26-navigation-subtitle ios26-text-secondary">
+              {subtitle}
+            </p>
+          )}
         </div>
 
-        <div
-          style={{
-            minWidth: '60px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
+        <div className="ios26-navigation-side ios26-navigation-side--end">
           {trailingButton && (
             <button
               className={buttonClass}
@@ -140,7 +89,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         </div>
       </div>
 
-      {searchBar && <div style={searchContainerStyle}>{searchBar}</div>}
-    </div>
+      {searchBar && <div className="ios26-navigation-search">{searchBar}</div>}
+    </nav>
   );
 };

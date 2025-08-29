@@ -1,3 +1,9 @@
+import {
+  formatPrecipitation,
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from '../../utils/units';
 /**
  * Modern Forecast Component - Phase C Completion (July 2025)
  *
@@ -17,8 +23,8 @@
  */
 
 import React from 'react';
-import WeatherIcon from '../../utils/weatherIcons';
 import type { ThemeColors } from '../../utils/themeConfig';
+import WeatherIcon from '../../utils/weatherIcons';
 
 interface HourlyForecastItem {
   time: string;
@@ -262,7 +268,7 @@ const ModernForecast: React.FC<ModernForecastProps> = ({
               <li
                 key={hour.time}
                 style={hourlyItemStyle}
-                aria-label={`Weather at ${formatTime(hour.time)}: ${hour.temperature}°F`}
+                aria-label={`Weather at ${formatTime(hour.time)}: ${hour.temperature}${getTemperatureSymbol(getStoredUnits())}`}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
                   e.currentTarget.style.boxShadow =
@@ -338,7 +344,7 @@ const ModernForecast: React.FC<ModernForecastProps> = ({
                       : `${theme.forecastCardBorder}50`,
                     borderWidth: isToday ? '2px' : '1px',
                   }}
-                  aria-label={`${isToday ? 'Today' : formatDate(day.date)}: High ${day.tempMax}°F, Low ${day.tempMin}°F`}
+                  aria-label={`${isToday ? 'Today' : formatDate(day.date)}: High ${day.tempMax}${getTemperatureSymbol(getStoredUnits())}, Low ${day.tempMin}${getTemperatureSymbol(getStoredUnits())}`}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'scale(1.02)';
                     e.currentTarget.style.boxShadow =
@@ -403,9 +409,17 @@ const ModernForecast: React.FC<ModernForecastProps> = ({
                       }}
                     >
                       {day.precipitation > 0 && (
-                        <span>🌧️ {day.precipitation}mm</span>
+                        <span>
+                          🌧️{' '}
+                          {formatPrecipitation(
+                            day.precipitation,
+                            getStoredUnits()
+                          )}
+                        </span>
                       )}
-                      <span>💨 {day.windSpeed}mph</span>
+                      <span>
+                        💨 {formatWindSpeed(day.windSpeed, getStoredUnits())}
+                      </span>
                     </div>
                   </div>
                 </li>

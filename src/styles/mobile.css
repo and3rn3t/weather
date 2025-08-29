@@ -104,6 +104,40 @@ html {
   margin: 8px 0 12px 0;
 }
 
+/* App Header polish */
+.ios26-navigation-bar--app {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid var(--ios26-border-tertiary);
+  background: var(--ios26-material-thick, rgba(255, 255, 255, 0.65));
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+}
+
+/* Location Section: responsive two-column grid */
+.location-section-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .location-section-grid {
+    grid-template-columns: 1.1fr 0.9fr; /* search panel a bit wider */
+    align-items: start;
+  }
+}
+
+/* Ensure cards stretch nicely inside grid */
+.location-section-grid .ios26-card {
+  height: 100%;
+}
+
+/* Header chip row spacing when used under the app header */
+.ios26-content-narrow > .ios26-container .ios26-chip-row {
+  margin-top: 4px;
+}
+
 /* Subtle motion utilities (respect reduced motion) */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes ios26-fade-in-up {

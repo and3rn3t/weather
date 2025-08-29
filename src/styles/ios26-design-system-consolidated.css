@@ -1158,6 +1158,65 @@
   margin-top: 4px;
 }
 
+/* ==========================================================================
+   SECTION: iOS26 Toggle Switch
+   ========================================================================= */
+.ios26-switch {
+  --switch-width: 52px;
+  --switch-height: 32px;
+  --thumb-size: 28px;
+  --switch-bg: var(--ios26-border-tertiary);
+  --switch-bg-checked: var(--ios26-color-primary, #0a84ff);
+  position: relative;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: 999px;
+  border: 1px solid var(--ios26-border-tertiary);
+  background: var(--switch-bg);
+  transition:
+    background 200ms ease,
+    border-color 200ms ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.ios26-switch--small {
+  --switch-width: 44px;
+  --switch-height: 26px;
+  --thumb-size: 22px;
+}
+.ios26-switch--large {
+  --switch-width: 64px;
+  --switch-height: 38px;
+  --thumb-size: 34px;
+}
+
+.ios26-switch__thumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transform: translateX(0);
+  transition: transform 200ms ease;
+}
+
+.ios26-switch--checked {
+  background: var(--switch-bg-checked);
+  border-color: transparent;
+}
+
+.ios26-switch--checked .ios26-switch__thumb {
+  transform: translateX(calc(var(--switch-width) - var(--thumb-size) - 6px));
+}
+
+.ios26-switch.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Text utility classes */
 .ios26-text-warning {
   color: #ff9500 !important;
