@@ -159,6 +159,12 @@ jobs:
           fi
 
           echo "Purging production cache for key files..."
+          echo "## 🔁 Production cache purge" >> $GITHUB_STEP_SUMMARY
+          echo "Purging URLs:" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/sw.js" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/manifest.json" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/version.json" >> $GITHUB_STEP_SUMMARY
           payload=$(cat << 'JSON'
           {"files":[
             "https://weather.andernet.dev/index.html",
