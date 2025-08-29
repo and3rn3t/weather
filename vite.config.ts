@@ -107,15 +107,7 @@ export default defineConfig(({ mode }) => {
               return 'weather-core';
             }
 
-            // Mobile features - conditionally loaded
-            if (
-              id.includes('/src/utils/hapticHooks') ||
-              id.includes('/src/utils/usePullToRefresh') ||
-              id.includes('/src/utils/mobileScreenOptimization') ||
-              id.includes('/src/components/MobileNavigation')
-            ) {
-              return 'haptic-features';
-            }
+            // Mobile features - let Rollup decide optimal chunking to avoid TDZ from forced grouping
 
             // iOS26 suite - modern UI components grouped
             if (id.includes('/src/components/modernWeatherUI/')) {

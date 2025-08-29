@@ -212,15 +212,20 @@ async function cleanupOldCaches() {
  */
 async function handleStaticAsset(request) {
   const cache = await caches.open(CACHE_NAMES.STATIC);
+  // Use a GET-based cache key to avoid issues caching HEAD requests
+  const cacheKey = new Request(request.url, {
+    method: 'GET',
+    headers: request.headers,
+  });
 
   // Try cache first, then network (only for safe methods)
-  const cachedResponse = await cache.match(request);
+  const cachedResponse = await cache.match(cacheKey);
   if (cachedResponse) {
     console.log(`📦 Serving from cache: ${request.url}`);
 
     // Update cache in background
     if (request.method === 'GET') {
-      fetchAndUpdateCache(request, cache);
+      fetchAndUpdateCache(cacheKey, cache);
     }
 
     return cachedResponse;
@@ -233,7 +238,7 @@ async function handleStaticAsset(request) {
 
     if (networkResponse.ok) {
       if (request.method === 'GET' && ct.includes('javascript')) {
-        await cache.put(request, networkResponse.clone());
+        await cache.put(cacheKey, networkResponse.clone());
         console.log(`🌐 Fetched and cached: ${request.url}`);
       }
     }
@@ -339,13 +344,17 @@ async function handleImageRequest(request) {
  */
 async function handleNavigationRequest(request) {
   const cache = await caches.open(CACHE_NAMES.STATIC);
+  const cacheKey = new Request(request.url, {
+    method: 'GET',
+    headers: request.headers,
+  });
 
   try {
     // Try network first
     const networkResponse = await fetchWithTimeout(request, NETWORK_TIMEOUT);
 
     if (networkResponse.ok) {
-      await cache.put(request, networkResponse.clone());
+      await cache.put(cacheKey, networkResponse.clone());
       return networkResponse;
     }
 
@@ -353,7 +362,7 @@ async function handleNavigationRequest(request) {
   } catch (error) {
     // Fallback to cache
     const cachedResponse =
-      (await cache.match(request)) ||
+      (await cache.match(cacheKey)) ||
       (await cache.match('/')) ||
       (await cache.match('/index.html'));
 
@@ -423,7 +432,11 @@ async function fetchAndUpdateCache(request, cache) {
   try {
     const response = await fetch(request);
     if (response.ok) {
-      await cache.put(request, response);
+      const cacheKey = new Request(request.url, {
+        method: 'GET',
+        headers: request.headers,
+      });
+      await cache.put(cacheKey, response);
     }
   } catch (error) {
     // Silently fail background updates
