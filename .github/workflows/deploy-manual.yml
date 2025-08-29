@@ -1,0 +1,94 @@
+name: 🚀 Deploy (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: production
+        type: choice
+        options:
+          - production
+          - development
+          - staging
+          - preview
+      branch:
+        description: Git branch to deploy from
+        required: true
+        default: main
+        type: string
+      skip_build:
+        description: Skip build step and deploy existing dist (advanced)
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: manual-deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22.12.0'
+  NPM_CONFIG_PREFER_OFFLINE: true
+  NPM_CONFIG_NO_AUDIT: true
+  NPM_CONFIG_NO_FUND: true
+  NPM_CONFIG_PROGRESS: false
+  NPM_CONFIG_LOGLEVEL: error
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Pages (manual)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 1
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: 📦 Install deps
+        if: ${{ inputs.skip_build == 'false' }}
+        run: npm ci --prefer-offline --no-audit --no-fund --silent
+
+      - name: 🏗️ Build
+        if: ${{ inputs.skip_build == 'false' }}
+        run: npm run build:ultra || npm run build:fallback
+
+      - name: 🧪 Dist check
+        run: |
+          if [ ! -d dist ]; then
+            echo "::error::dist folder is missing. Ensure build step ran or disable skip_build." && exit 1
+          fi
+          echo "Dist file count: $(find dist -type f | wc -l)"
+
+      - name: 🚀 Deploy via Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy dist
+            --project-name=weather
+            --branch=${{ inputs.environment == 'production' && 'main' || inputs.branch }}
+
+      - name: 🔎 Post-deploy hint
+        run: |
+          echo "Check version.json after a minute:" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "- Prod: https://weather.andernet.dev/version.json" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- Dev:  https://weather-dev.andernet.dev/version.json" >> $GITHUB_STEP_SUMMARY
+          fi
