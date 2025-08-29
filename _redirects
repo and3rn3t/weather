@@ -1,3 +1,15 @@
 # Cloudflare Pages Redirects
-# SPA routing support - redirect all routes to index.html
-/*    /index.html   200
+# SPA routing support - ensure static assets are not rewritten
+
+# Serve static assets directly
+/assets/*          /assets/:splat     200
+/styles/*          /styles/:splat     200
+/icons/*           /icons/:splat      200
+/sw.js             /sw.js             200
+/manifest.json     /manifest.json     200
+/version.json      /version.json      200
+/favicon.ico       /favicon.ico       200
+/vite.svg          /vite.svg          200
+
+# Fallback all other routes to index.html (SPA)
+/*                 /index.html        200
