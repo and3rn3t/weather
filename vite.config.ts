@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
     safeExec('git rev-parse --abbrev-ref HEAD') ||
     'unknown';
   const buildTime = new Date().toISOString();
+  const environmentLabel = branch === 'main' ? 'production' : 'preview';
 
   // Read package version safely
   let appVersion = '0.0.0';
@@ -52,7 +53,7 @@ export default defineConfig(({ mode }) => {
     generateBundle(this: PluginContext) {
       const payload = {
         version: appVersion,
-        environment: mode,
+        environment: environmentLabel,
         commit: fullCommit || shortCommit,
         shortCommit,
         branch,
