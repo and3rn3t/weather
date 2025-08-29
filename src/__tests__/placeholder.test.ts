@@ -7,3 +7,5 @@ describe('ci placeholder', () => {
     expect(true).toBe(true);
   });
 });
+
+// CI trigger: SW v1.3.4 JSON handling for version/manifest on preview

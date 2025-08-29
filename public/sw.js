@@ -6,7 +6,7 @@
  */
 
 // Service Worker Configuration
-const CACHE_VERSION = 'v1.3.3';
+const CACHE_VERSION = 'v1.3.4';
 const CACHE_NAMES = {
   STATIC: `weather-static-${CACHE_VERSION}`,
   API: `weather-api-${CACHE_VERSION}`,
@@ -100,11 +100,18 @@ self.addEventListener('fetch', event => {
         try {
           return await fetch(request);
         } catch (e) {
-          // Fallback empty 204 for probes
+          // Log and return empty 204 for probes
+          console.warn('HEAD request failed, returning 204:', request.url, e);
           return new Response(null, { status: 204, statusText: 'No Content' });
         }
       })()
     );
+    return;
+  }
+
+  // Treat first-party JSON endpoints (version.json, manifest.json) as JSON assets (network-first, no SW cache)
+  if (isJsonAsset(url)) {
+    event.respondWith(handleJsonAsset(request));
     return;
   }
 
@@ -359,7 +366,8 @@ async function handleNavigationRequest(request) {
 
     throw new Error('Network response not ok');
   } catch (error) {
-    // Fallback to cache
+    // Log and fallback to cache
+    console.warn('Navigation request failed, attempting cache fallback:', request.url, error);
     try {
       const cachedResponse =
         (await cache.match(cacheKey)) ||
@@ -524,6 +532,40 @@ function isStaticAsset(url) {
 }
 
 /**
+ * Check if request is for first-party JSON (e.g., /version.json, /manifest.json)
+ * These should bypass navigation handling and avoid SW caching.
+ */
+function isJsonAsset(url) {
+  return (
+    url.origin === self.location.origin &&
+    (url.pathname.endsWith('/version.json') || url.pathname.endsWith('/manifest.json'))
+  );
+}
+
+/**
+ * Handle JSON assets with network-first and no SW caching
+ */
+async function handleJsonAsset(request) {
+  try {
+    const response = await fetchWithTimeout(request, NETWORK_TIMEOUT);
+    // Return as-is; rely on server-side Cache-Control headers (no-cache).
+    return response;
+  } catch (error) {
+    // Provide a minimal JSON fallback rather than HTML; log for diagnostics
+    console.warn('JSON asset fetch failed, returning offline fallback:', request.url, error);
+    const isVersion = request.url.endsWith('/version.json');
+    const fallback = isVersion
+      ? { error: 'offline', resource: 'version.json' }
+      : { error: 'offline', resource: 'manifest.json' };
+    return new Response(JSON.stringify(fallback), {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+/**
  * Check if request is for API
  */
 function isApiRequest(url) {
@@ -640,19 +682,18 @@ async function handlePreloadPopularCities(cities) {
 
         if (response.ok) {
           await cache.put(`preload:${city}`, response);
-          // Keep logs minimal in production SW
-          // console.log(`📍 Preloaded city: ${city}`);
         }
       } catch (error) {
-        // Swallow intermittent network/CORS errors silently to avoid console noise
-        // console.debug(`Preload skipped for ${city}`);
+        // Swallow intermittent network/CORS errors silently but mark as handled
+        if (typeof console !== 'undefined' && console.debug) {
+          console.debug('Preload skipped for city due to network/CORS issue:', city, error);
+        }
       }
     });
 
     await Promise.allSettled(preloadPromises);
-    // console.log('✅ Popular cities preloading completed');
   } catch (error) {
-    // console.debug('Popular cities preload unavailable:', error);
+    console.warn('Popular cities preload unavailable:', error);
   }
 }
 
