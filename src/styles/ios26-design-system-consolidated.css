@@ -14,8 +14,7 @@
  * Estimated reduction: 15-25% through deduplication and optimization
  */
 
-/* ===========  transform: translateY(-4px);
-}
+/* ============ INTRO (trimmed) ============ */
 
 /* ============================================================================
    SECTION 3: iOS HIG COMPLIANT BUTTON SYSTEM
@@ -225,9 +224,9 @@
     line-height: 1.4;
   }
 }
-===============================================================
-   SECTION 1: iOS 26 CORE DESIGN TOKENS & VARIABLES
-   ============================================================================ */
+/* ============================================================================
+  SECTION 1: iOS 26 CORE DESIGN TOKENS & VARIABLES
+  ============================================================================ */
 
 :root {
   /* iOS 26 Typography - SF Pro Display/Text (HIG Compliant) */
@@ -933,35 +932,7 @@
   user-select: none;
 }
 
-.ios26-button-primary {
-  background: var(--ios26-color-primary);
-  color: white;
-}
-
-.ios26-button-primary:hover {
-  background: #0056cc;
-  transform: translateY(-1px);
-}
-
-.ios26-button-secondary {
-  background: var(--ios26-background-secondary);
-  color: var(--ios26-text-primary);
-  border: 1px solid var(--ios26-border-secondary);
-}
-
-.ios26-button-secondary:hover {
-  background: var(--ios26-background-tertiary);
-  transform: translateY(-1px);
-}
-
-.ios26-button-ghost {
-  background: transparent;
-  color: var(--ios26-color-primary);
-}
-
-.ios26-button-ghost:hover {
-  background: var(--ios26-background-secondary);
-}
+/* Duplicate button styles removed; primary definitions exist earlier in the file */
 
 /* Quick Actions */
 .ios26-quick-action {

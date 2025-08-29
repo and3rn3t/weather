@@ -182,40 +182,40 @@
   border-color: rgba(102, 126, 234, 0.5) !important;
 }
 
-/* Theme integration placeholders - will be replaced by dynamic styles */
-.enhanced-search-screen {
+/* Theme integration placeholders - scoped to theme root to avoid duplicate selectors */
+[data-theme] .enhanced-search-screen {
   background: var(--app-background);
   color: var(--primary-text);
 }
 
-.enhanced-search-header {
+[data-theme] .enhanced-search-header {
   border-bottom-color: rgba(102, 126, 234, 0.2);
 }
 
-.enhanced-search-back-button,
-.enhanced-search-title,
-.enhanced-search-input {
+[data-theme] .enhanced-search-back-button,
+[data-theme] .enhanced-search-title,
+[data-theme] .enhanced-search-input {
   color: var(--primary-text);
 }
 
-.enhanced-search-input-wrapper {
+[data-theme] .enhanced-search-input-wrapper {
   background: rgba(102, 126, 234, 0.1);
   border-color: rgba(102, 126, 234, 0.3);
 }
 
-.enhanced-current-location-button {
+[data-theme] .enhanced-current-location-button {
   background: rgba(102, 126, 234, 0.1);
   border-color: rgba(102, 126, 234, 0.2);
   color: var(--primary-text);
 }
 
-.enhanced-search-result-item,
-.enhanced-recent-search-item {
+[data-theme] .enhanced-search-result-item,
+[data-theme] .enhanced-recent-search-item {
   border-color: rgba(102, 126, 234, 0.2);
   color: var(--primary-text);
 }
 
-.enhanced-search-spinner {
+[data-theme] .enhanced-search-spinner {
   border: 2px solid rgba(102, 126, 234, 0.3);
   border-top: 2px solid rgba(102, 126, 234, 1);
 }

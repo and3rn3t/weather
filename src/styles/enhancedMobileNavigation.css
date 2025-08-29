@@ -1,6 +1,6 @@
 /**
  * Enhanced Mobile Navigation - August 2025
- * 
+ *
  * Improved mobile navigation with:
  * - Better readability and typography
  * - Enhanced touch targets and feedback
@@ -99,6 +99,7 @@
 }
 
 /* Active state */
+/* Active state (single definition to avoid duplicates) */
 .enhanced-nav-button.active {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.1));
   border-color: rgba(102, 126, 234, 0.3);
@@ -387,6 +388,4 @@
   transform: translateZ(0) scale(0.94);
 }
 
-.enhanced-nav-button.active {
-  transform: translateZ(0);
-}
+/* .enhanced-nav-button.active transform handled in the primary rule above to avoid duplicates */
