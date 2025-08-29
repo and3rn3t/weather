@@ -52,6 +52,13 @@ jobs:
           ref: ${{ inputs.branch }}
           fetch-depth: 1
 
+      - name: 📝 Inputs summary
+        run: |
+          echo "## Manual Deploy Inputs" >> $GITHUB_STEP_SUMMARY
+          echo "- environment: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- branch: ${{ inputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- skip_build: ${{ inputs.skip_build }}" >> $GITHUB_STEP_SUMMARY
+
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -60,11 +67,11 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: 📦 Install deps
-        if: ${{ inputs.skip_build == 'false' }}
+        if: ${{ !fromJSON(inputs.skip_build) }}
         run: npm ci --prefer-offline --no-audit --no-fund --silent
 
       - name: 🏗️ Build
-        if: ${{ inputs.skip_build == 'false' }}
+        if: ${{ !fromJSON(inputs.skip_build) }}
         run: npm run build:ultra || npm run build:fallback
 
       - name: 🧪 Dist check
@@ -74,6 +81,14 @@ jobs:
           fi
           echo "Dist file count: $(find dist -type f | wc -l)"
 
+      - name: 🔧 Compute target branch
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "BRANCH=main" >> $GITHUB_ENV
+          else
+            echo "BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
+          fi
+
       - name: 🚀 Deploy via Wrangler
         uses: cloudflare/wrangler-action@v3
         with:
@@ -82,7 +97,7 @@ jobs:
           command: >-
             pages deploy dist
             --project-name=weather
-            --branch=${{ inputs.environment == 'production' && 'main' || inputs.branch }}
+            --branch=${{ env.BRANCH }}
 
       - name: 🔎 Post-deploy hint
         run: |
