@@ -6,7 +6,7 @@
  */
 
 // Service Worker Configuration
-const CACHE_VERSION = 'v1.3.1';
+const CACHE_VERSION = 'v1.3.2';
 const CACHE_NAMES = {
   STATIC: `weather-static-${CACHE_VERSION}`,
   API: `weather-api-${CACHE_VERSION}`,
@@ -24,7 +24,6 @@ const STATIC_CACHE_URLS = [
   '/icons/icon-72x72.png',
   '/icons/icon-96x96.png',
   '/icons/icon-128x128.png',
-  '/icons/icon-144x144.png',
   '/icons/icon-152x152.png',
   '/icons/icon-192x192.png',
   '/icons/icon-256x256.png',
