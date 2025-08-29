@@ -6,7 +6,7 @@
  */
 
 // Service Worker Configuration
-const CACHE_VERSION = 'v1.3.2';
+const CACHE_VERSION = 'v1.3.3';
 const CACHE_NAMES = {
   STATIC: `weather-static-${CACHE_VERSION}`,
   API: `weather-api-${CACHE_VERSION}`,
@@ -360,17 +360,24 @@ async function handleNavigationRequest(request) {
     throw new Error('Network response not ok');
   } catch (error) {
     // Fallback to cache
-    const cachedResponse =
-      (await cache.match(cacheKey)) ||
-      (await cache.match('/')) ||
-      (await cache.match('/index.html'));
+    try {
+      const cachedResponse =
+        (await cache.match(cacheKey)) ||
+        (await cache.match('/')) ||
+        (await cache.match('/index.html'));
 
-    if (cachedResponse) {
-      return cachedResponse;
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // Ultimate fallback
+      return createOfflineResponse('Page unavailable offline');
+    } catch (cacheError) {
+      // If cache lookup also fails, return offline response with error details
+      return createOfflineResponse(
+        `Page unavailable offline. Error: ${cacheError.message || cacheError}`
+      );
     }
-
-    // Ultimate fallback
-    return createOfflineResponse('Page unavailable offline');
   }
 }
 
@@ -628,23 +635,24 @@ async function handlePreloadPopularCities(cities) {
       )}&format=json&limit=1`;
 
       try {
-        const response = await fetch(geocodingUrl, {
-          headers: { 'User-Agent': 'WeatherApp/1.0' },
-        });
+        // Do not set forbidden headers (e.g., User-Agent). Keep it simple to avoid CORS preflight.
+        const response = await fetch(geocodingUrl);
 
         if (response.ok) {
           await cache.put(`preload:${city}`, response);
-          console.log(`📍 Preloaded city: ${city}`);
+          // Keep logs minimal in production SW
+          // console.log(`📍 Preloaded city: ${city}`);
         }
       } catch (error) {
-        console.warn(`Failed to preload city ${city}:`, error);
+        // Swallow intermittent network/CORS errors silently to avoid console noise
+        // console.debug(`Preload skipped for ${city}`);
       }
     });
 
     await Promise.allSettled(preloadPromises);
-    console.log('✅ Popular cities preloading completed');
+    // console.log('✅ Popular cities preloading completed');
   } catch (error) {
-    console.error('Failed to preload popular cities:', error);
+    // console.debug('Popular cities preload unavailable:', error);
   }
 }
 
