@@ -85,7 +85,14 @@ interface OpenMeteoResponse {
 
 // Simple weather component for debugging
 const SimpleWeatherApp: React.FC = () => {
-  const { theme } = useTheme();
+  const {
+    theme,
+    tempColorProfile,
+    colorizeTemps,
+    setTempColorProfile,
+    tempThresholdsEnabled,
+    tempThresholds,
+  } = useTheme();
 
   // Create basic screen info for SettingsScreen
   const screenInfo: ScreenInfo = getScreenInfo();
@@ -817,10 +824,44 @@ const SimpleWeatherApp: React.FC = () => {
             />
           </div>
 
-          <div className="temp-lg my-10 text-primary">
-            {weather.main.temp}
-            {getTemperatureSymbol(getStoredUnits())}
-          </div>
+          {(() => {
+            const units = getStoredUnits();
+            const useF = units === 'imperial';
+            const thresholds = (profile: 'standard' | 'hot' | 'cold') => {
+              if (useF) {
+                return profile === 'hot'
+                  ? { warm: 85, cold: 45 }
+                  : profile === 'cold'
+                    ? { warm: 70, cold: 35 }
+                    : { warm: 75, cold: 40 };
+              }
+              // Celsius
+              return profile === 'hot'
+                ? { warm: 29, cold: 7 }
+                : profile === 'cold'
+                  ? { warm: 21, cold: 2 }
+                  : { warm: 24, cold: 5 };
+            };
+            const th = tempThresholdsEnabled
+              ? getStoredUnits() === 'imperial'
+                ? tempThresholds.imperial
+                : tempThresholds.metric
+              : thresholds(tempColorProfile);
+            const t = weather.main.temp;
+            const cls = colorizeTemps
+              ? t >= th.warm
+                ? 'is-warm'
+                : t <= th.cold
+                  ? 'is-cold'
+                  : ''
+              : '';
+            return (
+              <div className={`temp-lg my-10 text-primary ${cls}`}>
+                {t}
+                {getTemperatureSymbol(units)}
+              </div>
+            );
+          })()}
           <div className="fs-18 mb-15 text-secondary capitalize">
             {weather.weather[0].description}
           </div>
@@ -829,10 +870,43 @@ const SimpleWeatherApp: React.FC = () => {
           <div className="metrics-grid">
             <div className="metric-card">
               <div className="metric-label">FEELS LIKE</div>
-              <div className="metric-value">
-                {weather.main.feels_like}
-                {getTemperatureSymbol(getStoredUnits())}
-              </div>
+              {(() => {
+                const units = getStoredUnits();
+                const useF = units === 'imperial';
+                const thresholds = (profile: 'standard' | 'hot' | 'cold') => {
+                  if (useF) {
+                    return profile === 'hot'
+                      ? { warm: 85, cold: 45 }
+                      : profile === 'cold'
+                        ? { warm: 70, cold: 35 }
+                        : { warm: 75, cold: 40 };
+                  }
+                  return profile === 'hot'
+                    ? { warm: 29, cold: 7 }
+                    : profile === 'cold'
+                      ? { warm: 21, cold: 2 }
+                      : { warm: 24, cold: 5 };
+                };
+                const th = tempThresholdsEnabled
+                  ? getStoredUnits() === 'imperial'
+                    ? tempThresholds.imperial
+                    : tempThresholds.metric
+                  : thresholds(tempColorProfile);
+                const t = weather.main.feels_like;
+                const cls = colorizeTemps
+                  ? t >= th.warm
+                    ? 'is-warm'
+                    : t <= th.cold
+                      ? 'is-cold'
+                      : ''
+                  : '';
+                return (
+                  <div className={`metric-value ${cls}`}>
+                    {t}
+                    {getTemperatureSymbol(units)}
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="metric-card">
@@ -871,6 +945,53 @@ const SimpleWeatherApp: React.FC = () => {
       {hourlyForecast.length > 0 && (
         <div className="card border-weather forecast-section">
           <h3 className="section-title">24-Hour Forecast</h3>
+          {/* Color legend (conditional via CSS var attribute) */}
+          <div
+            className="wx-legend"
+            role="note"
+            aria-label="Color legend for temperatures and precipitation"
+          >
+            <span className="chip warm">
+              <span className="dot" /> Warm
+            </span>
+            <span className="chip cold">
+              <span className="dot" /> Cool
+            </span>
+            <span className="chip precip">
+              <span className="dot" /> Precip
+            </span>
+            <span className="legend-spacer" aria-hidden="true" />
+            <button
+              type="button"
+              className="info-btn"
+              aria-label="Open temperature color settings"
+              onClick={() => handleNavigate('Settings')}
+            >
+              <NavigationIcons.Info />
+            </button>
+            <div
+              className="legend-profiles"
+              role="radiogroup"
+              aria-label="Temperature color profile"
+            >
+              {(['standard', 'hot', 'cold'] as const).map(p => (
+                <label
+                  key={`profile-${p}-hourly`}
+                  className={`profile-chip${tempColorProfile === p ? ' is-selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="tempProfile-hourly"
+                    value={p}
+                    checked={tempColorProfile === p}
+                    onChange={() => setTempColorProfile(p)}
+                    aria-label={`Set temperature color profile to ${p}`}
+                  />
+                  {p === 'standard' ? 'Std' : p === 'hot' ? 'Hot' : 'Cold'}
+                </label>
+              ))}
+            </div>
+          </div>
           <div className="hourly-list">
             {hourlyForecast.slice(0, 12).map((hour, hourIndex) => (
               <div
@@ -888,7 +1009,38 @@ const SimpleWeatherApp: React.FC = () => {
                     isDay={true}
                   />
                 </div>
-                <div className="hour-temp">{hour.temperature}°</div>
+                {(() => {
+                  const units = getStoredUnits();
+                  const useF = units === 'imperial';
+                  const thresholds = (profile: 'standard' | 'hot' | 'cold') => {
+                    if (useF) {
+                      return profile === 'hot'
+                        ? { warm: 85, cold: 45 }
+                        : profile === 'cold'
+                          ? { warm: 70, cold: 35 }
+                          : { warm: 75, cold: 40 };
+                    }
+                    return profile === 'hot'
+                      ? { warm: 29, cold: 7 }
+                      : profile === 'cold'
+                        ? { warm: 21, cold: 2 }
+                        : { warm: 24, cold: 5 };
+                  };
+                  const th = tempThresholdsEnabled
+                    ? getStoredUnits() === 'imperial'
+                      ? tempThresholds.imperial
+                      : tempThresholds.metric
+                    : thresholds(tempColorProfile);
+                  const t = hour.temperature;
+                  const cls = colorizeTemps
+                    ? t >= th.warm
+                      ? 'is-warm'
+                      : t <= th.cold
+                        ? 'is-cold'
+                        : ''
+                    : '';
+                  return <div className={`hour-temp ${cls}`}>{t}°</div>;
+                })()}
               </div>
             ))}
           </div>
@@ -899,6 +1051,52 @@ const SimpleWeatherApp: React.FC = () => {
       {dailyForecast.length > 0 && (
         <div className="card border-weather forecast-section">
           <h3 className="section-title">7-Day Forecast</h3>
+          <div
+            className="wx-legend"
+            role="note"
+            aria-label="Color legend for temperatures and precipitation"
+          >
+            <span className="chip warm">
+              <span className="dot" /> High
+            </span>
+            <span className="chip cold">
+              <span className="dot" /> Low
+            </span>
+            <span className="chip precip">
+              <span className="dot" /> Precip
+            </span>
+            <span className="legend-spacer" aria-hidden="true" />
+            <button
+              type="button"
+              className="info-btn"
+              aria-label="Open temperature color settings"
+              onClick={() => handleNavigate('Settings')}
+            >
+              <NavigationIcons.Info />
+            </button>
+            <div
+              className="legend-profiles"
+              role="radiogroup"
+              aria-label="Temperature color profile"
+            >
+              {(['standard', 'hot', 'cold'] as const).map(p => (
+                <label
+                  key={`profile-${p}-daily`}
+                  className={`profile-chip${tempColorProfile === p ? ' is-selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="tempProfile-daily"
+                    value={p}
+                    checked={tempColorProfile === p}
+                    onChange={() => setTempColorProfile(p)}
+                    aria-label={`Set temperature color profile to ${p}`}
+                  />
+                  {p === 'standard' ? 'Std' : p === 'hot' ? 'Hot' : 'Cold'}
+                </label>
+              ))}
+            </div>
+          </div>
           <div className="daily-list">
             {dailyForecast.map((day, dayIndex) => (
               <div

@@ -27,6 +27,28 @@ interface SettingsScreenProps {
   onBack: () => void;
 }
 
+// Default temperature thresholds for each profile (both imperial and metric)
+// Mirrors the logic used in App.tsx so Settings can reset consistently.
+function getProfileDefaults(profile: 'standard' | 'hot' | 'cold') {
+  if (profile === 'hot') {
+    return {
+      imperial: { warm: 85, cold: 45 },
+      metric: { warm: 29, cold: 7 },
+    } as const;
+  }
+  if (profile === 'cold') {
+    return {
+      imperial: { warm: 70, cold: 35 },
+      metric: { warm: 21, cold: 2 },
+    } as const;
+  }
+  // standard
+  return {
+    imperial: { warm: 75, cold: 40 },
+    metric: { warm: 24, cold: 5 },
+  } as const;
+}
+
 /**
  * SettingsScreen - Modern settings interface for mobile devices
  *
@@ -42,33 +64,49 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
   screenInfo: _screenInfo,
   onBack,
 }) => {
-  const { themeName, toggleTheme } = useTheme();
+  const {
+    themeName,
+    toggleTheme,
+    accessibilityMode,
+    setAccessibilityMode,
+    compactMode,
+    setCompactMode,
+    compactDesktopOnly,
+    setCompactDesktopOnly,
+    colorizeTemps,
+    setColorizeTemps,
+    tempColorProfile,
+    setTempColorProfile,
+    tempThresholdsEnabled,
+    setTempThresholdsEnabled,
+    tempThresholds,
+    setTempThresholds,
+  } = useTheme();
   const haptic = useHaptic();
 
-  // Basic settings state
-  const [notifications, setNotifications] = useState(true);
-  const [units, setUnits] = useState<TemperatureUnits>(getStoredUnits());
-  const [refreshInterval, setRefreshInterval] = useState('5min');
+  // Local UI state
+  const [notifications, setNotifications] = useState<boolean>(false);
+  const [units, setUnits] = useState<TemperatureUnits>('imperial');
+  const [refreshInterval, setRefreshInterval] = useState<string>('15min');
 
-  // Location & GPS settings state
-  const [highAccuracyGPS, setHighAccuracyGPS] = useState(false);
-  const [locationTimeout, setLocationTimeout] = useState('8sec');
-  const [backgroundLocation, setBackgroundLocation] = useState(false);
+  // Location & GPS
+  const [highAccuracyGPS, setHighAccuracyGPS] = useState<boolean>(false);
+  const [locationTimeout, setLocationTimeout] = useState<string>('8sec');
+  const [backgroundLocation, setBackgroundLocation] = useState<boolean>(false);
 
-  // Offline & Storage settings state
-  const [offlineMode, setOfflineMode] = useState(true);
-  const [cacheDuration, setCacheDuration] = useState('7days');
-  const [autoSync, setAutoSync] = useState('30sec');
+  // Offline & Storage
+  const [offlineMode, setOfflineMode] = useState<boolean>(true);
+  const [cacheDuration, setCacheDuration] = useState<string>('7days');
+  const [autoSync, setAutoSync] = useState<string>('30sec');
 
-  // Performance settings state
-  const [batteryOptimization, setBatteryOptimization] = useState(true);
-  const [backgroundRefresh, setBackgroundRefresh] = useState(false);
-  const [hapticFeedback, setHapticFeedback] = useState(true);
+  // Performance
+  const [batteryOptimization, setBatteryOptimization] = useState<boolean>(true);
+  const [backgroundRefresh, setBackgroundRefresh] = useState<boolean>(false);
+  const [hapticFeedback, setHapticFeedback] = useState<boolean>(true);
 
-  // UI settings state
-  const [reduceMotion, setReduceMotion] = useState(false);
+  // UI / Accessibility
+  const [reduceMotion, setReduceMotion] = useState<boolean>(false);
 
-  // Load settings from localStorage on mount
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -108,13 +146,30 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           setReduceMotion(parsed.reduceMotion ?? false);
         }
 
+        // Load notification settings
+        const notificationSettings = localStorage.getItem(
+          'notification-settings'
+        );
+        if (notificationSettings) {
+          const parsed = JSON.parse(notificationSettings);
+          setNotifications(parsed.notifications ?? false);
+        }
+
+        // Load weather settings (refresh interval)
+        const weatherSettings = localStorage.getItem('weather-settings');
+        if (weatherSettings) {
+          const parsed = JSON.parse(weatherSettings);
+          if (typeof parsed.refreshInterval === 'string') {
+            setRefreshInterval(parsed.refreshInterval);
+          }
+        }
+
         // Temperature units persisted separately
         setUnits(getStoredUnits());
       } catch (error) {
         logWarn('Failed to load settings from localStorage:', error);
       }
     };
-
     loadSettings();
   }, []);
 
@@ -137,6 +192,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         break;
       case 'refresh':
         setRefreshInterval(value);
+        saveSettings('weather', { refreshInterval: value });
         break;
       case 'location-timeout':
         setLocationTimeout(value);
@@ -162,6 +218,17 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           autoSync: value,
         });
         break;
+      case 'accessibility-mode':
+        setAccessibilityMode(
+          (value as 'default' | 'high-contrast' | 'reduced-transparency') ||
+            'default'
+        );
+        break;
+      case 'temp-color-profile': {
+        const next = (value as 'standard' | 'hot' | 'cold') || 'standard';
+        setTempColorProfile(next);
+        break;
+      }
     }
   };
 
@@ -179,6 +246,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         break;
       case 'notifications':
         setNotifications(value);
+        saveSettings('notification', { notifications: value });
         break;
       case 'high-accuracy-gps':
         setHighAccuracyGPS(value);
@@ -237,6 +305,18 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
         saveSettings('ui', {
           reduceMotion: value,
         });
+        break;
+      case 'compact-mode':
+        setCompactMode(value);
+        break;
+      case 'compact-desktop-only':
+        setCompactDesktopOnly(value);
+        break;
+      case 'colorize-temps':
+        setColorizeTemps(value);
+        break;
+      case 'custom-thresholds':
+        setTempThresholdsEnabled(value);
         break;
     }
   };
@@ -359,6 +439,66 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           icon: <NavigationIcons.Warning />,
           type: 'toggle' as const,
           value: reduceMotion,
+        },
+        {
+          id: 'compact-mode',
+          title: 'Compact Mode',
+          subtitle: 'Denser spacing for information-dense layout',
+          icon: <NavigationIcons.Menu />,
+          type: 'toggle' as const,
+          value: compactMode,
+        },
+        {
+          id: 'colorize-temps',
+          title: 'Colorize Temperatures',
+          subtitle: 'Use warm/cool colors for temps and blue for precipitation',
+          icon: <NavigationIcons.Sun />,
+          type: 'toggle' as const,
+          value: colorizeTemps,
+        },
+        ...(colorizeTemps
+          ? [
+              {
+                id: 'temp-color-profile',
+                title: 'Temperature Color Profile',
+                subtitle: 'Tune thresholds for warm/cool ranges',
+                icon: <NavigationIcons.Info />,
+                type: 'selection' as const,
+                value: tempColorProfile,
+                options: ['standard', 'hot', 'cold'],
+              },
+              {
+                id: 'custom-thresholds',
+                title: 'Custom Temperature Thresholds',
+                subtitle: 'Override warm/cold thresholds for °F/°C',
+                icon: <NavigationIcons.Info />,
+                type: 'toggle' as const,
+                value: tempThresholdsEnabled,
+              },
+            ]
+          : []),
+        // Only meaningful when compact mode is on
+        ...(compactMode
+          ? [
+              {
+                id: 'compact-desktop-only',
+                title: 'Compact on Desktop Only',
+                subtitle: 'Keep comfortable spacing on phones/tablets',
+                icon: <NavigationIcons.Menu />,
+                type: 'toggle' as const,
+                value: compactDesktopOnly,
+              },
+            ]
+          : []),
+        {
+          id: 'accessibility-mode',
+          title: 'Accessibility Mode',
+          subtitle:
+            'Visual presets: default, high-contrast, reduced transparency',
+          icon: <NavigationIcons.Warning />,
+          type: 'selection' as const,
+          value: accessibilityMode,
+          options: ['default', 'high-contrast', 'reduced-transparency'],
         },
       ],
     },
@@ -667,6 +807,157 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 </li>
               ))}
             </ul>
+
+            {/* Advanced custom thresholds editor */}
+            {section.title === 'Appearance' &&
+              colorizeTemps &&
+              tempThresholdsEnabled && (
+                <div
+                  className="ios26-card ios26-liquid-glass settings-list"
+                  role="group"
+                  aria-label="Custom temperature thresholds"
+                >
+                  <div className="ios26-list-item settings-list-item">
+                    <div className="settings-item-main">
+                      <div className="settings-item-title">Imperial (°F)</div>
+                      <div className="settings-item-subtitle">
+                        Warm ≥ and Cool ≤ values
+                      </div>
+                    </div>
+                    <div className="settings-item-trailing settings-inline-group">
+                      <label aria-label="Warm threshold Fahrenheit">
+                        <input
+                          type="number"
+                          className="settings-select settings-number"
+                          value={tempThresholds.imperial.warm}
+                          onChange={e => {
+                            const v = Math.round(Number(e.target.value));
+                            const warm = Math.max(-100, Math.min(200, v));
+                            const cold = Math.min(
+                              tempThresholds.imperial.cold,
+                              warm
+                            );
+                            setTempThresholds({
+                              ...tempThresholds,
+                              imperial: { warm, cold },
+                            });
+                          }}
+                          min={-100}
+                          max={200}
+                          step={1}
+                        />
+                      </label>
+                      <label aria-label="Cold threshold Fahrenheit">
+                        <input
+                          type="number"
+                          className="settings-select settings-number"
+                          value={tempThresholds.imperial.cold}
+                          onChange={e => {
+                            const v = Math.round(Number(e.target.value));
+                            const cold = Math.max(-100, Math.min(200, v));
+                            const warm = Math.max(
+                              tempThresholds.imperial.warm,
+                              cold
+                            );
+                            setTempThresholds({
+                              ...tempThresholds,
+                              imperial: { warm, cold },
+                            });
+                          }}
+                          min={-100}
+                          max={200}
+                          step={1}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="ios26-list-item settings-list-item">
+                    <div className="settings-item-main">
+                      <div className="settings-item-title">Metric (°C)</div>
+                      <div className="settings-item-subtitle">
+                        Warm ≥ and Cool ≤ values
+                      </div>
+                    </div>
+                    <div className="settings-item-trailing settings-inline-group">
+                      <label aria-label="Warm threshold Celsius">
+                        <input
+                          type="number"
+                          className="settings-select settings-number"
+                          value={tempThresholds.metric.warm}
+                          onChange={e => {
+                            const v = Math.round(Number(e.target.value));
+                            const warm = Math.max(-50, Math.min(100, v));
+                            const cold = Math.min(
+                              tempThresholds.metric.cold,
+                              warm
+                            );
+                            setTempThresholds({
+                              ...tempThresholds,
+                              metric: { warm, cold },
+                            });
+                          }}
+                          min={-50}
+                          max={100}
+                          step={1}
+                        />
+                      </label>
+                      <label aria-label="Cold threshold Celsius">
+                        <input
+                          type="number"
+                          className="settings-select settings-number"
+                          value={tempThresholds.metric.cold}
+                          onChange={e => {
+                            const v = Math.round(Number(e.target.value));
+                            const cold = Math.max(-50, Math.min(100, v));
+                            const warm = Math.max(
+                              tempThresholds.metric.warm,
+                              cold
+                            );
+                            setTempThresholds({
+                              ...tempThresholds,
+                              metric: { warm, cold },
+                            });
+                          }}
+                          min={-50}
+                          max={100}
+                          step={1}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div
+                    className="ios26-list-item settings-list-item is-last"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      setTempThresholds(getProfileDefaults(tempColorProfile))
+                    }
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setTempThresholds(getProfileDefaults(tempColorProfile));
+                      }
+                    }}
+                    aria-label="Reset thresholds to profile defaults"
+                  >
+                    <div className="settings-item-main">
+                      <div className="settings-item-title">
+                        Reset to Profile Defaults
+                      </div>
+                      <div className="settings-item-subtitle">
+                        Restores warm/cool values for {tempColorProfile} profile
+                      </div>
+                    </div>
+                    <div className="settings-action-arrow" aria-hidden>
+                      <NavigationIcons.ChevronRight />
+                    </div>
+                  </div>
+                  <div className="settings-hint" aria-live="polite">
+                    These values control when temperatures are shown as warm (≥)
+                    or cool (≤). Overrides apply across the app when enabled.
+                  </div>
+                </div>
+              )}
           </section>
         ))}
       </div>

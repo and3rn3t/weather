@@ -52,5 +52,27 @@ export const useTheme = () => {
       tablet?: number;
       desktop?: number;
     }) => responsiveTheme.createGrid(columns),
+
+    // Accessibility controls
+    accessibilityMode: context.accessibilityMode,
+    setAccessibilityMode: context.setAccessibilityMode,
+
+    // Density controls
+    compactMode: context.compactMode,
+    setCompactMode: context.setCompactMode,
+    compactDesktopOnly: context.compactDesktopOnly,
+    setCompactDesktopOnly: context.setCompactDesktopOnly,
+
+    // Temperature colorization preference
+    colorizeTemps: context.colorizeTemps,
+    setColorizeTemps: context.setColorizeTemps,
+
+    // Temperature color profile
+    tempColorProfile: context.tempColorProfile,
+    setTempColorProfile: context.setTempColorProfile,
+    tempThresholdsEnabled: context.tempThresholdsEnabled,
+    tempThresholds: context.tempThresholds,
+    setTempThresholdsEnabled: context.setTempThresholdsEnabled,
+    setTempThresholds: context.setTempThresholds,
   };
 };

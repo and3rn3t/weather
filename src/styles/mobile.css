@@ -1,3 +1,45 @@
+.wx-legend .legend-spacer {
+  flex: 1 1 auto;
+}
+.wx-legend .info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: var(--card-bg);
+  color: var(--secondary-text);
+}
+.wx-legend .legend-profiles {
+  display: inline-flex;
+  gap: 6px;
+}
+.wx-legend .profile-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--secondary-text);
+  border: 1px solid var(--weather-card-border, rgba(0, 0, 0, 0.08));
+}
+.wx-legend .profile-chip input[type='radio'] {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  border: 1px solid currentColor;
+}
+.wx-legend .profile-chip.is-selected {
+  color: var(--primary-text);
+}
+.wx-legend .profile-chip.is-selected input[type='radio'] {
+  background: currentColor;
+}
 /* Restored clean baseline from backup; re-adding polished nav styles at bottom */
 /**
  * Mobile-First CSS Optimizations
@@ -14,6 +56,46 @@ html {
   -ms-text-size-adjust: 100%;
   -webkit-overflow-scrolling: touch;
   /* duplicate btn-ghost and alert styles removed */
+  /* Keep anchors/tabs from hiding under sticky header */
+  scroll-padding-top: var(--mobile-header-height, 56px);
+}
+
+/* Performance-friendly elevation tokens (depth without heavy paints) */
+:root {
+  --elevation-1-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --elevation-1-border: rgba(60, 60, 67, 0.12);
+  --elevation-2-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --elevation-2-border: rgba(60, 60, 67, 0.14);
+  --elevation-3-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+  --elevation-3-border: rgba(60, 60, 67, 0.16);
+  /* Motion tokens */
+  --motion-duration-fast: 160ms;
+  --motion-duration: 240ms;
+  --motion-duration-slow: 420ms;
+  --motion-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --motion-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  /* Weather semantic colors (readability-optimized) */
+  --wx-temp-warm: #f59e0b; /* amber-500 for highs */
+  --wx-temp-warm-strong: #d97706; /* amber-600 */
+  --wx-temp-cold: #3b82f6; /* blue-500 for lows */
+  --wx-temp-cold-strong: #2563eb; /* blue-600 */
+  --wx-precip: #0ea5e9; /* sky-500 */
+  --wx-precip-strong: #0284c7; /* sky-600 */
+}
+[data-theme='dark'] {
+  --elevation-1-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --elevation-1-border: rgba(255, 255, 255, 0.08);
+  --elevation-2-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  --elevation-2-border: rgba(255, 255, 255, 0.1);
+  --elevation-3-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --elevation-3-border: rgba(255, 255, 255, 0.12);
+  /* Slightly brighter for dark backgrounds */
+  --wx-temp-warm: #fbbf24; /* amber-400 */
+  --wx-temp-warm-strong: #f59e0b; /* amber-500 */
+  --wx-temp-cold: #60a5fa; /* blue-400 */
+  --wx-temp-cold-strong: #3b82f6; /* blue-500 */
+  --wx-precip: #38bdf8; /* sky-400 */
+  --wx-precip-strong: #0ea5e9; /* sky-500 */
 }
 
 /* Small screens (320px - 375px) */
@@ -90,10 +172,65 @@ html {
   gap: 6px;
 }
 
+/* Optional: horizontal scrollable chip row with snap and edge-fade */
+.ios26-chip-row--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding: 12px;
+  -webkit-overflow-scrolling: touch;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+}
+.ios26-chip-row--scroll > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
 /* Section titles: consistent spacing matching iOS hierarchy */
 .ios26-section-title {
   margin-top: 0;
   margin-bottom: 12px;
+  text-wrap: balance;
+  hyphens: auto;
+}
+
+/* Text utilities */
+.text-balance {
+  text-wrap: balance;
+}
+.text-gradient {
+  background: linear-gradient(135deg, var(--ios26-color-primary, #667eea), var(--ios26-color-secondary, #764ba2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-1 {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Themed accent color for native controls */
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'],
+progress {
+  accent-color: var(--ios26-color-primary, #667eea);
 }
 
 /* Subtle divider between grouped content (context row vs sections) */
@@ -104,15 +241,269 @@ html {
   margin: 8px 0 12px 0;
 }
 
+/* Overscroll containment to avoid rubber-band bleed in nested UIs */
+.main-content-area,
+.ios26-weather-interface,
+.mobile-container {
+  overscroll-behavior-y: contain;
+}
+
 /* App Header polish */
 .ios26-navigation-bar--app {
   position: sticky;
   top: 0;
   z-index: 30;
-  border-bottom: 1px solid var(--ios26-border-tertiary);
+  /* Tweakable glass variables */
+  --nav-blur: 20px;
+  --nav-sat: 120%;
+  --nav-border-color: var(--ios26-border-tertiary);
+  border-bottom: 1px solid var(--nav-border-color);
   background: var(--ios26-material-thick, rgba(255, 255, 255, 0.65));
-  backdrop-filter: blur(20px) saturate(120%);
-  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-sat));
+  -webkit-backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-sat));
+}
+
+/* Visible, theme-friendly focus rings for accessibility */
+.ios26-button-plain:focus-visible,
+.mobile-button:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--ios26-color-primary, #667eea);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+/* Compact, organized app header (fits better with content) */
+.ios26-navigation-bar.ios26-navigation-bar--app {
+  /* Slightly tighter than default while keeping touch targets accessible */
+  min-height: 52px; /* fallback for unknown states */
+  padding: 6px 12px; /* reduce vertical padding */
+}
+
+/* Attribute-driven sizing (from NavigationBar.tsx) */
+.ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='false'] {
+  min-height: 44px; /* iOS HIG minimum touch target */
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='true'] {
+  min-height: 52px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Inner layout and typography cleanup */
+.ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+/* Compact title/subtitle to better match content scale */
+.ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-title {
+  margin: 0;
+  font-size: var(--ios26-text-title2);
+}
+.ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='true'] .ios26-navigation-title {
+  font-size: var(--ios26-text-title1);
+}
+.ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-subtitle {
+  margin: 2px 0 0 0;
+  font-size: var(--ios26-text-caption1);
+  opacity: 0.85;
+}
+
+/* Button sizing: keep comfortable, avoid oversized paddings */
+.ios26-navigation-bar.ios26-navigation-bar--app .ios26-button-plain {
+  padding: 8px 10px;
+  min-height: 36px;
+  border-radius: 12px;
+}
+
+/* Very small screens: tighten spacing slightly */
+@media (max-width: 360px) {
+  .ios26-navigation-bar.ios26-navigation-bar--app {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-title {
+    font-size: var(--ios26-text-headline);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-badges {
+    margin-top: 4px;
+    gap: 4px;
+  }
+  .ios26-accessibility-badge {
+    height: 18px;
+    padding: 0 6px;
+    font-size: 11px;
+  }
+}
+
+/* Tablet: intermediate sizing and left-aligned title */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ios26-navigation-bar.ios26-navigation-bar--app {
+    min-height: 48px;
+    padding: 5px 14px;
+    /* Keep blur strong on tablet; soften border slightly */
+    --nav-blur: 20px;
+    --nav-sat: 120%;
+    --nav-border-color: rgba(60, 60, 67, 0.1);
+  }
+  /* Dark theme tablet border soften */
+  [data-theme='dark'] .ios26-navigation-bar.ios26-navigation-bar--app {
+    --nav-border-color: rgba(255, 255, 255, 0.08);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-inner {
+    gap: 10px;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-title-container {
+    align-items: flex-start;
+    text-align: left;
+    flex: 1 1 auto;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-side {
+    gap: 7px;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='true'] .ios26-navigation-title {
+    font-size: var(--ios26-text-title2);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='false'] .ios26-navigation-title {
+    font-size: var(--ios26-text-headline);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-subtitle {
+    font-size: var(--ios26-text-caption1);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-button-plain {
+    padding: 7px 9px;
+    min-height: 35px;
+  }
+}
+
+/* Desktop: left-align title, tighten scale, slightly crisper glass */
+@media (min-width: 1024px) {
+  .ios26-navigation-bar.ios26-navigation-bar--app {
+    min-height: 46px;
+    padding: 4px 16px;
+    --nav-blur: 16px;
+    --nav-sat: 110%;
+    /* Subtle gradient tint overlay for depth */
+    --nav-tint-gradient: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ios26-color-primary, #667eea) 12%, transparent),
+      color-mix(in srgb, var(--ios26-color-secondary, #764ba2) 12%, transparent)
+    );
+    background-image: var(
+      --nav-tint-gradient,
+      linear-gradient(90deg, rgba(102, 126, 234, 0.06), rgba(118, 75, 162, 0.06))
+    );
+    background-blend-mode: overlay;
+    /* Prepare for gentle motion */
+    background-size: 200% 100%;
+    /* Parallax position controlled via --nav-parallax-pos (0%..100%) */
+    background-position: var(--nav-parallax-pos, 0%) 0%;
+    transition:
+      background-position 600ms ease,
+      background-image 360ms ease;
+  }
+  /* Hover: gentle tint shift and slight saturation bump on pointer devices */
+  @media (hover: hover) and (pointer: fine) {
+    .ios26-navigation-bar.ios26-navigation-bar--app:hover {
+      background-position: 100% 0%;
+      --nav-sat: 116%;
+    }
+  }
+  /* Prepared scroll state (requires JS to set data-scrolled) */
+  .ios26-navigation-bar.ios26-navigation-bar--app[data-scrolled='true'] {
+    --nav-blur: 14px;
+    --nav-sat: 115%;
+    --nav-border-color: rgba(60, 60, 67, 0.16);
+    /* Subtle drop shadow when content scrolls under the bar */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  /* Dark theme: slightly stronger tint and soft-light blend for a premium feel */
+  [data-theme='dark'] .ios26-navigation-bar.ios26-navigation-bar--app {
+    --nav-tint-gradient: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ios26-color-primary, #667eea) 14%, transparent),
+      color-mix(in srgb, var(--ios26-color-secondary, #764ba2) 14%, transparent)
+    );
+    background-blend-mode: soft-light;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-inner {
+    gap: 12px;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-title-container {
+    align-items: flex-start;
+    text-align: left;
+    flex: 1 1 auto;
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-side {
+    gap: 8px;
+  }
+  /* Tone down the title sizes for desktop for a sleeker bar */
+  .ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='true'] .ios26-navigation-title {
+    font-size: var(--ios26-text-title3);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app[data-large-title='false'] .ios26-navigation-title {
+    font-size: var(--ios26-text-subheadline);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-subtitle {
+    font-size: var(--ios26-text-caption2);
+  }
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-button-plain {
+    padding: 6px 8px;
+    min-height: 34px;
+  }
+  [data-theme='dark'] .ios26-navigation-bar.ios26-navigation-bar--app[data-scrolled='true'] {
+    --nav-border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  /* Small status badges under the title */
+  .ios26-navigation-bar.ios26-navigation-bar--app .ios26-navigation-badges {
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+  }
+  .ios26-accessibility-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--inverse-text, #fff);
+    background: color-mix(in srgb, var(--ios26-color-primary, #667eea) 16%, #0000);
+    border: 1px solid color-mix(in srgb, var(--ios26-color-primary, #667eea) 40%, #0000);
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+  .ios26-accessibility-badge--high-contrast {
+    background: color-mix(in srgb, #ffd700 30%, #0000);
+    border-color: color-mix(in srgb, #ffd700 60%, #0000);
+    color: #1a1a1a;
+  }
+  .ios26-accessibility-badge--reduced-transparency {
+    background: color-mix(in srgb, #8ab4f8 24%, #0000);
+    border-color: color-mix(in srgb, #8ab4f8 50%, #0000);
+  }
+  .ios26-accessibility-badge--compact-desktop {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+  }
 }
 
 /* Location Section: responsive two-column grid */
@@ -120,11 +511,28 @@ html {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  /* Enable container queries and offscreen rendering optimizations */
+  container-type: inline-size;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 600px;
 }
 @media (min-width: 768px) {
   .location-section-grid {
     grid-template-columns: 1.1fr 0.9fr; /* search panel a bit wider */
     align-items: start;
+  }
+}
+
+/* Container-based inner refinements */
+@container (max-width: 520px) {
+  .location-section-grid > .ios26-card {
+    padding: calc(var(--ios26-spacing-5, 20px) - 4px);
+  }
+}
+@container (min-width: 920px) {
+  .location-section-grid > .ios26-card {
+    padding: calc(var(--ios26-spacing-5, 20px) + 2px);
   }
 }
 
@@ -166,6 +574,48 @@ html {
     animation: ios26-fade-in 200ms ease-out both;
     will-change: opacity;
   }
+}
+/* Respect reduced motion: disable gradient shift */
+@media (prefers-reduced-motion: reduce) {
+  .ios26-navigation-bar.ios26-navigation-bar--app {
+    transition: none;
+    background-position: 0% 0% !important;
+  }
+}
+
+/* Optional accessibility presets */
+/* Opt-in: set data-accessibility="reduced-transparency" on <html> or #root */
+[data-accessibility='reduced-transparency'] {
+  --ios26-material-thin: rgba(255, 255, 255, 0.9);
+  --ios26-material-regular: rgba(255, 255, 255, 0.95);
+  --ios26-material-thick: rgba(255, 255, 255, 0.98);
+}
+[data-theme='dark'][data-accessibility='reduced-transparency'] {
+  --ios26-material-thin: rgba(20, 20, 20, 0.9);
+  --ios26-material-regular: rgba(20, 20, 20, 0.94);
+  --ios26-material-thick: rgba(15, 15, 15, 0.96);
+}
+/* Opt-in: set data-accessibility="high-contrast" for stronger borders and shadows */
+[data-accessibility='high-contrast'] {
+  --elevation-1-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  --elevation-2-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  --elevation-3-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  --elevation-1-border: rgba(60, 60, 67, 0.2);
+  --elevation-2-border: rgba(60, 60, 67, 0.24);
+  --elevation-3-border: rgba(60, 60, 67, 0.28);
+  /* Boost text contrast a bit app-wide */
+  --primary-text: #16181d;
+  --secondary-text: #374151;
+}
+[data-theme='dark'][data-accessibility='high-contrast'] {
+  --elevation-1-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  --elevation-2-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  --elevation-3-shadow: 0 18px 56px rgba(0, 0, 0, 0.65);
+  --elevation-1-border: rgba(255, 255, 255, 0.14);
+  --elevation-2-border: rgba(255, 255, 255, 0.18);
+  --elevation-3-border: rgba(255, 255, 255, 0.22);
+  --primary-text: #e6e6e6;
+  --secondary-text: #cfd3d7;
 }
 
 /* ============================================================================
@@ -230,10 +680,10 @@ html {
   background: var(--card-background, var(--ios26-material-regular, rgba(255, 255, 255, 0.8)));
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid var(--card-border, var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12)));
+  border: 1px solid var(--card-border, var(--elevation-2-border));
   border-radius: var(--card-border-radius, var(--ios26-radius-xl, 20px));
   padding: var(--card-padding, var(--ios26-spacing-5, 20px));
-  box-shadow: var(--card-shadow, 0 8px 32px rgba(0, 0, 0, 0.08));
+  box-shadow: var(--card-shadow, var(--elevation-2-shadow));
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   animation: fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   transform-origin: center;
@@ -252,7 +702,7 @@ html {
 /* Forecast cards */
 .forecast-card {
   background: var(--forecast-card-background, var(--ios26-material-regular, rgba(255, 255, 255, 0.75)));
-  border: 1px solid var(--forecast-card-border, var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12)));
+  border: 1px solid var(--forecast-card-border, var(--elevation-1-border));
   border-radius: var(--ios26-radius-lg, 16px);
   padding: var(--ios26-spacing-4, 16px);
   transition:
@@ -265,7 +715,218 @@ html {
   margin-bottom: 0;
   min-height: 64px;
   gap: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--elevation-1-shadow);
+  line-height: 1.25;
+}
+
+/* Compact density mode: reduce paddings and gaps app-wide */
+[data-density='compact']:not([data-density-scope='desktop-only']) .mobile-card {
+  padding: calc(var(--ios26-spacing-5, 20px) - 4px);
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .forecast-card {
+  padding: calc(var(--ios26-spacing-4, 16px) - 2px);
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .ios26-chip-row {
+  gap: 6px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .ios26-chip-row--scroll {
+  gap: 8px;
+  scroll-padding: 10px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .ios26-navigation-bar.ios26-navigation-bar--app {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only'])
+  .ios26-navigation-bar.ios26-navigation-bar--app
+  .ios26-button-plain {
+  padding: 6px 8px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .hourly-list {
+  gap: 12px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .daily-list {
+  gap: 10px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .ios26-quick-actions {
+  gap: 10px;
+  scroll-padding: 10px;
+}
+
+/* Desktop-only compact scope: apply compact rules only at >=1024px when opted in */
+@media (min-width: 1024px) {
+  [data-density='compact'][data-density-scope='desktop-only'] .mobile-card {
+    padding: calc(var(--ios26-spacing-5, 20px) - 4px);
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .forecast-card {
+    padding: calc(var(--ios26-spacing-4, 16px) - 2px);
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .ios26-chip-row {
+    gap: 6px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .ios26-chip-row--scroll {
+    gap: 8px;
+    scroll-padding: 10px;
+  }
+  /* Metrics grid and quick actions tighten slightly on desktop-only compact */
+  [data-density='compact'][data-density-scope='desktop-only'] .weather-metrics-grid,
+  [data-density='compact'][data-density-scope='desktop-only'] .quick-actions-panel {
+    gap: 10px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .weather-metrics-grid .ios26-card,
+  [data-density='compact'][data-density-scope='desktop-only'] .quick-actions-panel .ios26-card {
+    padding: calc(var(--ios26-spacing-4, 16px) - 2px);
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .ios26-navigation-bar.ios26-navigation-bar--app {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only']
+    .ios26-navigation-bar.ios26-navigation-bar--app
+    .ios26-button-plain {
+    padding: 6px 8px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .hourly-list {
+    gap: 12px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .daily-list {
+    gap: 10px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .ios26-quick-actions {
+    gap: 10px;
+    scroll-padding: 10px;
+  }
+}
+
+/* Tactile pressed overlays for cards */
+.mobile-card,
+.forecast-card,
+.ios26-card {
+  position: relative;
+}
+.mobile-card::after,
+.forecast-card::after,
+.ios26-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-out);
+  pointer-events: none;
+}
+.mobile-card:active::after,
+.forecast-card:active::after,
+.ios26-card:active::after {
+  opacity: 1;
+}
+
+/* Sticky section headers for long lists */
+.forecast-section .section-title {
+  position: sticky;
+  top: calc(var(--mobile-header-height, 56px) + 4px);
+  z-index: 2;
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  background: color-mix(in srgb, var(--app-bg, #f2f2f7) 80%, #0000);
+  padding: 6px 0;
+}
+
+/* iOS26 card: align visuals with elevation tokens for consistency */
+.ios26-card {
+  border: 1px solid var(--ios26-card-border, var(--elevation-2-border));
+  box-shadow: var(--ios26-card-shadow, var(--elevation-2-shadow));
+  transition:
+    transform var(--motion-duration-fast) var(--motion-ease-out),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-out),
+    border-color var(--motion-duration-fast) var(--motion-ease-out);
+  will-change: transform, box-shadow;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ios26-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--elevation-3-shadow);
+  }
+  /* Desktop micro-tilt for premium feel */
+  .forecast-card:hover,
+  .ios26-card:hover {
+    transform: translateY(-2px) rotateX(0.6deg) rotateY(-0.6deg);
+    transform-style: preserve-3d;
+  }
+}
+.ios26-card:active {
+  transform: translateY(0);
+}
+.ios26-card:focus-within {
+  outline: 2px solid var(--ios26-color-primary, #667eea);
+  outline-offset: 2px;
+  border-radius: 14px; /* visually align with card radius */
+}
+
+/* Utility: keep inputs visible above virtual keyboard on mobile */
+.mobile-keyboard-safe {
+  padding-bottom: calc(env(keyboard-inset-height, 0) + 12px);
+}
+
+/* Unit badge utility for labeling metrics (optional markup) */
+.unit-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--ios26-color-primary, #667eea);
+  border: 1px solid color-mix(in srgb, var(--ios26-color-primary, #667eea) 50%, #0000);
+}
+[data-theme='dark'] .unit-badge {
+  color: #0b0b0b;
+  background: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+/* Elevation utility classes */
+.elevation-1 {
+  box-shadow: var(--elevation-1-shadow) !important;
+}
+.elevation-2 {
+  box-shadow: var(--elevation-2-shadow) !important;
+}
+.elevation-3 {
+  box-shadow: var(--elevation-3-shadow) !important;
+}
+
+/* Skeleton shimmer utility */
+@keyframes ios26-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--app-bg, #f2f2f7) 92%, #ffffff),
+    color-mix(in srgb, #ffffff 96%, #0000),
+    color-mix(in srgb, var(--app-bg, #f2f2f7) 92%, #ffffff)
+  );
+  background-size: 200% 100%;
+  animation: ios26-shimmer 1.4s linear infinite;
+  border-radius: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
 }
 
 /* --- App screens (replaces inline styles in App.tsx) --- */
@@ -508,21 +1169,37 @@ html {
   overflow-x: auto;
   gap: 15px;
   padding-bottom: 5px;
+  /* Smooth horizontal scroll and snap for better carousel UX */
+  scroll-snap-type: x mandatory;
+  scroll-padding: 10px;
+  -webkit-overflow-scrolling: touch;
+  /* Subtle edge fade using mask (where supported) */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  /* Virtualization hints for long lists */
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 140px;
+  touch-action: pan-y;
 }
 .hour-item {
   min-width: 60px;
   text-align: center;
   padding: 10px 5px;
   border-radius: 8px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
 }
 .hour-item.is-now {
   background: var(--card-bg);
 }
 .hour-time {
   font-size: 12px;
-  color: var(--secondary-text);
+  color: var(--primary-text);
   margin-bottom: 8px;
   font-weight: 400;
+  opacity: 0.8;
 }
 .hour-time.is-now {
   font-weight: 600;
@@ -534,14 +1211,77 @@ html {
 }
 .hour-temp {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--primary-text);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+[data-colorize-temps='true'] .hour-temp.is-warm {
+  color: var(--wx-temp-warm-strong);
+}
+[data-colorize-temps='true'] .hour-temp.is-cold {
+  color: var(--wx-temp-cold-strong);
+}
+
+/* Current temperature (large) and metric values colorization */
+[data-colorize-temps='true'] .temp-lg.is-warm {
+  color: var(--wx-temp-warm-strong);
+}
+[data-colorize-temps='true'] .temp-lg.is-cold {
+  color: var(--wx-temp-cold-strong);
+}
+[data-colorize-temps='true'] .metric-value.is-warm {
+  color: var(--wx-temp-warm-strong);
+}
+[data-colorize-temps='true'] .metric-value.is-cold {
+  color: var(--wx-temp-cold-strong);
+}
+
+/* Small legend for color semantics */
+.wx-legend {
+  display: none;
+  gap: 12px;
+  align-items: center;
+  margin: 6px 0 12px 0;
+  font-size: 12px;
+  color: var(--secondary-text);
+}
+[data-colorize-temps='true'] .wx-legend {
+  display: flex;
+}
+.wx-legend .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: var(--card-bg);
+}
+.wx-legend .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.wx-legend .warm {
+  color: var(--wx-temp-warm-strong);
+}
+.wx-legend .cold {
+  color: var(--wx-temp-cold-strong);
+}
+.wx-legend .precip {
+  color: var(--wx-precip-strong);
 }
 
 .daily-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Virtualization hints and scroll behavior */
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 400px;
+  touch-action: pan-y;
 }
 .daily-item {
   display: flex;
@@ -549,6 +1289,8 @@ html {
   justify-content: space-between;
   padding: 8px 0;
   border-bottom: 1px solid var(--weather-card-border);
+  min-height: 48px; /* ensure comfortable touch target */
+  position: relative;
 }
 .daily-item:last-child {
   border-bottom: none;
@@ -557,7 +1299,7 @@ html {
   flex: 1;
   font-size: 14px;
   color: var(--primary-text);
-  font-weight: 400;
+  font-weight: 500;
 }
 .daily-date.is-today {
   font-weight: 600;
@@ -567,24 +1309,123 @@ html {
   display: flex;
   justify-content: center;
 }
+
+/* Subtle custom scrollbar only for hourly list on desktop */
+@media (hover: hover) and (pointer: fine) {
+  .hourly-list::-webkit-scrollbar {
+    height: 8px;
+  }
+  .hourly-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .hourly-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+  }
+  [data-theme='dark'] .hourly-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  /* Subtle custom scrollbar for quick actions on desktop */
+  .ios26-quick-actions::-webkit-scrollbar {
+    height: 8px;
+  }
+  .ios26-quick-actions::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .ios26-quick-actions::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+  }
+  [data-theme='dark'] .ios26-quick-actions::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  .ios26-chip-row--scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  .ios26-chip-row--scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .ios26-chip-row--scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+  }
+  [data-theme='dark'] .ios26-chip-row--scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+  }
+}
 .daily-temps {
   flex: 0 0 80px;
   text-align: right;
   font-size: 14px;
   color: var(--primary-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 .daily-temps .t-max {
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 .daily-temps .t-min {
-  color: var(--secondary-text);
   margin-left: 5px;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+[data-colorize-temps='true'] .daily-temps .t-max {
+  color: var(--wx-temp-warm-strong);
+}
+[data-colorize-temps='true'] .daily-temps .t-min {
+  color: var(--wx-temp-cold-strong);
 }
 .daily-precip {
   flex: 0 0 40px;
   text-align: right;
   font-size: 12px;
-  color: var(--secondary-text);
+}
+[data-colorize-temps='true'] .daily-precip {
+  color: var(--wx-precip-strong);
+}
+
+/* Interactivity: pressed overlays and keyboard focus */
+.hour-item::after,
+.daily-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-out);
+  pointer-events: none;
+}
+.hour-item:active::after,
+.daily-item:active::after {
+  opacity: 1;
+}
+.hour-item:focus-visible,
+.daily-item:focus-visible {
+  outline: 2px solid var(--ios26-color-primary, #667eea);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* Quick Actions: horizontal scroll with snap and edge fade */
+.ios26-quick-actions {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x proximity; /* gentler than mandatory for mixed input */
+  scroll-padding: 12px;
+  -webkit-overflow-scrolling: touch;
+  /* Subtle edge fade using mask (where supported) */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+}
+.ios26-quick-actions > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
 
 /* Favorites */
@@ -592,6 +1433,9 @@ html {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 300px;
 }
 .favorite-item {
   display: flex;
@@ -605,6 +1449,58 @@ html {
   width: 100%;
   text-align: left;
   transition: background 0.2s ease;
+}
+/* Settings list item focus/pressed improvements */
+.settings-content .settings-list .settings-list-item {
+  position: relative;
+}
+.settings-content .settings-list .settings-list-item:focus-within {
+  outline: 2px solid var(--ios26-color-primary, #667eea);
+  outline-offset: 2px;
+  border-radius: 14px;
+}
+.settings-content .settings-list .settings-list-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-out);
+  pointer-events: none;
+}
+.settings-content .settings-list .settings-list-item:active::after {
+  opacity: 1;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .settings-content .settings-list {
+  gap: 6px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .settings-content .settings-list .settings-list-item {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+@media (min-width: 1024px) {
+  [data-density='compact'][data-density-scope='desktop-only'] .settings-content .settings-list {
+    gap: 6px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .settings-content .settings-list .settings-list-item {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .favorites-list {
+  gap: 6px;
+}
+[data-density='compact']:not([data-density-scope='desktop-only']) .favorite-item {
+  padding: 12px;
+}
+@media (min-width: 1024px) {
+  [data-density='compact'][data-density-scope='desktop-only'] .favorites-list {
+    gap: 6px;
+  }
+  [data-density='compact'][data-density-scope='desktop-only'] .favorite-item {
+    padding: 12px;
+  }
 }
 .favorite-item:hover {
   background: var(--app-bg-hover, rgba(0, 0, 0, 0.03));
@@ -620,12 +1516,82 @@ html {
   border-radius: 16px;
 }
 
-/* App root container */
+/* Settings select styling for consistency */
+.settings-select {
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--ios26-border-tertiary, rgba(0, 0, 0, 0.1));
+  background: var(--ios26-material-thin, rgba(255, 255, 255, 0.7));
+  color: var(--primary-text, #1f2937);
+  padding: 0 10px;
+  box-shadow: var(--elevation-1-shadow, 0 4px 16px rgba(0, 0, 0, 0.06));
+  outline: none;
+}
+.settings-select:focus-visible {
+  outline: 2px solid var(--ios26-color-primary, #667eea);
+  outline-offset: 2px;
+}
+.settings-select:hover {
+  background: color-mix(in srgb, var(--ios26-material-thin, rgba(255, 255, 255, 0.7)) 92%, #fff);
+}
+
+/* Mobile-only tactile pressed scale for tappables */
+@media (hover: none) and (pointer: coarse) {
+  .settings-content .settings-list .settings-list-item:active,
+  .favorite-item:active,
+  .forecast-card:active,
+  .ios26-card:active,
+  .mobile-button:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Compact-only icon size harmonization */
+[data-density='compact']:not([data-density-scope='desktop-only']) .hour-icon svg,
+[data-density='compact']:not([data-density-scope='desktop-only']) .daily-icon svg {
+  width: 20px;
+  height: 20px;
+}
+@media (min-width: 1024px) {
+  [data-density='compact'][data-density-scope='desktop-only'] .hour-icon svg,
+  [data-density='compact'][data-density-scope='desktop-only'] .daily-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Quick actions shimmer on hover/focus (desktop only; respects motion) */
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) and (pointer: fine) {
+    .quick-actions-panel .ios26-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .quick-actions-panel .ios26-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+    .quick-actions-panel .ios26-card:hover::before,
+    .quick-actions-panel .ios26-card:focus-within::before {
+      left: 100%;
+    }
+  }
+}
+
+/* Safe-area polish and app root container */
 .app-root {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--app-bg, var(--ios26-background-secondary, #f2f2f7));
-  padding-bottom: 80px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   position: relative;
 }
@@ -713,11 +1679,136 @@ html {
   left: 100%;
 }
 
-/* Forecast card base styles are defined once earlier; duplicate block removed */
+/* =============================================================
+   Cohesive visual polish overrides (Aug 2025)
+   - Responsive content width for main sections
+   - Refined card surfaces (glass + subtle gradient + shadow)
+   - Unified focus/active states for buttons/inputs
+   - Improved input borders and focus styles
+   - Subtle typography tweaks and lighter separators
+   These are appended to leverage CSS cascade without risky refactors.
+   ============================================================= */
 
-/* --- App screens (replaces inline styles in App.tsx) --- */
-/* duplicate app-screen and metric styles removed */
+/* Section width + spacing */
+.app-section .card:not(:last-child) {
+  margin-bottom: 16px;
+}
+@media (min-width: 820px) {
+  .app-section {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+}
 
-/* duplicate weather screen control styles removed */
+/* Card surface refinement */
+.card {
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #fff 4%, transparent) 0%, transparent 100%),
+    var(--weather-card-bg, transparent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .card {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, #fff 6%, transparent) 0%, transparent 100%),
+      var(--weather-card-bg, transparent);
+    -webkit-backdrop-filter: saturate(1.2) blur(12px);
+    backdrop-filter: saturate(1.2) blur(12px);
+  }
+}
 
-/* duplicate theme text utilities and button styles removed */
+/* Buttons and inputs: focus/active consistency */
+.btn-primary:active,
+.btn-outline:active,
+.btn-action:active,
+.btn-ghost:active {
+  transform: translateY(1px);
+}
+.btn-primary:focus-visible,
+.btn-outline:focus-visible,
+.btn-action:focus-visible,
+.btn-ghost:focus-visible,
+.search-input:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--weather-card-border, #764ba233) 50%, transparent);
+}
+
+/* Input borders and focus */
+.search-input {
+  border: 1px solid color-mix(in oklab, var(--secondary-text) 60%, transparent);
+}
+.search-input:focus {
+  border-color: color-mix(in oklab, var(--primary-text) 60%, transparent);
+}
+
+/* Subtle typography tweak */
+.section-title {
+  letter-spacing: 0.2px;
+}
+
+/* Highlight for current hour */
+.hour-item.is-now {
+  background: color-mix(in oklab, var(--card-bg) 92%, transparent);
+}
+
+/* Lighter list separators */
+.daily-item {
+  border-bottom: 1px solid color-mix(in oklab, var(--weather-card-border) 85%, transparent);
+}
+
+/* Hover treatments */
+.btn-outline:hover,
+.btn-ghost:hover {
+  background: color-mix(in oklab, var(--card-bg) 94%, transparent);
+}
+
+/* =============================================================
+   Tunable variables for cohesive visuals (Aug 2025)
+   Adjust these to tweak content width, card glass/shadow, and hover strength
+   ============================================================= */
+:root {
+  --app-content-max-width: 760px;
+  --app-section-h-padding: 24px;
+  --card-radius-override: 14px;
+  --card-shadow-override: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --card-shadow-dark-override: 0 10px 26px rgba(0, 0, 0, 0.35);
+  --card-blur-override: 12px;
+  --hover-surface-mix: 94%;
+  --separator-mix: 85%;
+  --current-hour-mix: 92%;
+}
+
+/* Apply variables to the cohesive overrides (last-wins cascade) */
+@media (min-width: 820px) {
+  .app-section {
+    max-width: var(--app-content-max-width, 760px);
+    margin: 0 auto;
+    padding: 28px var(--app-section-h-padding, 24px);
+  }
+}
+
+.card {
+  border-radius: var(--card-radius-override, 14px);
+  box-shadow: var(--card-shadow-override, 0 6px 18px rgba(0, 0, 0, 0.06));
+}
+[data-theme='dark'] .card {
+  box-shadow: var(--card-shadow-dark-override, 0 10px 26px rgba(0, 0, 0, 0.35));
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .card {
+    -webkit-backdrop-filter: saturate(1.2) blur(var(--card-blur-override, 12px));
+    backdrop-filter: saturate(1.2) blur(var(--card-blur-override, 12px));
+  }
+}
+
+.hour-item.is-now {
+  background: color-mix(in oklab, var(--card-bg) var(--current-hour-mix, 92%), transparent);
+}
+.daily-item {
+  border-bottom: 1px solid color-mix(in oklab, var(--weather-card-border) var(--separator-mix, 85%), transparent);
+}
+.btn-outline:hover,
+.btn-ghost:hover {
+  background: color-mix(in oklab, var(--card-bg) var(--hover-surface-mix, 94%), transparent);
+}
