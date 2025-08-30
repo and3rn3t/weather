@@ -38,6 +38,7 @@
     "type-check": "npx tsc --noEmit",
     "health": "npm run lint && npm run stylelint && npm run type-check && npm run test:fast",
     "check:headers": "node -e \"console.log('See docs/HEADERS_CONFIGURATION.md for header checks')\"",
+    "check:version": "node scripts/check-version.mjs",
     "check": "npm run lint && npx tsc --noEmit",
     "precommit": "npm run check",
     "clean": "rm -rf dist coverage .vite node_modules/.cache",
