@@ -169,6 +169,31 @@
   animation: spin 1s linear infinite;
 }
 
+.loading-spinner--small {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.inline-note {
+  margin: 8px 2px 12px;
+}
+
+.inline-action {
+  background: transparent;
+  border: none;
+  color: #007aff;
+  padding-left: 6px;
+  cursor: pointer;
+}
+
+.nearby-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 10px;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -316,6 +341,71 @@
   padding: 20px;
 }
 
+/* Suggestions (Quick Picks) */
+.suggestions-section {
+  margin-bottom: 24px;
+}
+
+.chips-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--ios26-separator);
+  background: var(--ios26-chip-bg, rgba(255, 255, 255, 0.06));
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  text-align: left;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.chip:active {
+  transform: translateY(0);
+}
+
+.chip-icon {
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+.chip-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chip-country {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+.chip-trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.chip-distance {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
 /* Quick Actions */
 .quick-actions {
   margin-bottom: 32px;
@@ -412,6 +502,41 @@
   background: rgba(255, 255, 255, 0.1);
   padding: 4px 8px;
   border-radius: 8px;
+}
+
+/* Segmented control */
+.segmented {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--ios26-separator);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.segmented-option {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--ios26-text-secondary);
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 13px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.segmented-option.active {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--ios26-text-primary);
+}
+
+.seg-count {
+  margin-left: 8px;
+  font-size: 11px;
+  opacity: 0.8;
 }
 
 .recent-list {
@@ -528,6 +653,11 @@
     padding: 16px;
   }
 
+  .chips-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
   .section-title {
     font-size: 18px;
   }
@@ -558,6 +688,10 @@
   .search-results-section {
     margin: 0 12px;
   }
+
+  .chips-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Landscape optimization */
@@ -585,6 +719,11 @@
 
   .recent-item {
     padding: 10px 12px;
+  }
+
+  .chips-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 }
 

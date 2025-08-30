@@ -133,14 +133,14 @@ Create a weather application that demonstrates:
 
 ### **Production Environment**
 
-- **Platform**: Cloudflare Pages
+- **Platform**: Cloudflare Pages (single project: weather)
 - **Domain**: [weather.andernet.dev](https://weather.andernet.dev)
 - **CI/CD**: Automated GitHub Actions pipeline
 - **Performance**: Global CDN with edge optimization
 
 ### **Development Environment**
 
-- **Domain**: [weather-dev.andernet.dev](https://weather-dev.andernet.dev)
+- **Preview Domain**: [weather-dev.andernet.dev](https://weather-dev.andernet.dev)
 - **Features**: Development builds with debugging tools
 - **Updates**: Automatic deployment from development branch
 
@@ -244,7 +244,7 @@ Create a weather application that demonstrates:
 - **Best Practices**: Modern React and TypeScript development
 - **Performance Optimization**: Hardware-accelerated web animations
 
-### **User Experience**
+### **User Experience (UX)**
 
 - **Premium Interface**: App Store quality weather application
 - **Accessibility**: Inclusive design for all users

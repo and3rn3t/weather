@@ -6,7 +6,7 @@ Complete guide for deploying the iOS26 Weather App to production environments wi
 custom domains, and CI/CD automation.
 
 **Current Status**: ✅ **Production Ready** **Live Demo**:
-[weather.andernet.dev](https://weather.andernet.dev) **Last Updated**: August 21, 2025
+[weather.andernet.dev](https://weather.andernet.dev) **Last Updated**: August 29, 2025
 
 ---
 
@@ -18,14 +18,14 @@ custom domains, and CI/CD automation.
 - **Domain**: [weather.andernet.dev](https://weather.andernet.dev)
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
-- **Node Version**: 18.x
+- **Node Version**: 22.12.0
 
-### **Development Environment**
+### **Preview Environment (Single Pages project)**
 
-- **Platform**: Cloudflare Pages (Preview)
-- **Domain**: [weather-dev.andernet.dev](https://weather-dev.andernet.dev)
-- **Branch**: Development branches
-- **Auto-deploy**: Enabled for all branches
+- **Platform**: Cloudflare Pages (Preview on same project)
+- **Custom Domain**: [weather-dev.andernet.dev](https://weather-dev.andernet.dev)
+- **Branches**: Any non-main branch
+- **Auto-deploy**: Enabled for all non-main branches
 
 ---
 
@@ -48,10 +48,11 @@ cd weather
 2. **Connect** your GitHub account
 3. **Select** your forked weather repository
 4. **Configure** build settings:
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
-   - **Root directory**: `/` (default)
-   - **Node.js version**: 18.x
+
+- **Build command**: `npm run build`
+- **Build output directory**: `dist`
+- **Root directory**: `/` (default)
+- **Node.js version**: 22.12.0
 
 #### **3. Deploy**
 
@@ -231,7 +232,7 @@ jobs:
 
 ## 📊 **Performance Optimization**
 
-### **Build Optimization**
+### **Build & Analysis**
 
 ```bash
 # Bundle analysis

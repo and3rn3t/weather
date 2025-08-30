@@ -33,6 +33,45 @@
       })();
     </script>
 
+    <!-- Dev-only: ensure no stale Service Worker/caches on the weather-dev domain -->
+    <script>
+      (function () {
+        try {
+          var host = (location && location.hostname) || '';
+          if (host === 'weather-dev.andernet.dev') {
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker
+                .getRegistrations()
+                .then(function (regs) {
+                  regs.forEach(function (r) {
+                    try {
+                      r.unregister();
+                    } catch {}
+                  });
+                })
+                .catch(function () {});
+            }
+            if (window.caches && caches.keys) {
+              caches
+                .keys()
+                .then(function (keys) {
+                  return Promise.all(
+                    keys.map(function (k) {
+                      try {
+                        return caches.delete(k);
+                      } catch {
+                        return false;
+                      }
+                    })
+                  );
+                })
+                .catch(function () {});
+            }
+          }
+        } catch {}
+      })();
+    </script>
+
     <!-- Ultra-early boot beacon: shows even if module fails to load (hidden on production) -->
     <script>
       (function () {

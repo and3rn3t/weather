@@ -12,7 +12,11 @@
  */
 
 import { logger } from '../../utils/logger';
-import { getStoredUnits, getTemperatureSymbol } from '../../utils/units';
+import {
+  getStoredUnits,
+  getTemperatureSymbol,
+  getWindSpeedLabel,
+} from '../../utils/units';
 
 // Minimal weather data shapes to avoid `any`
 interface CurrentWeatherLike {
@@ -416,7 +420,7 @@ export class WeatherAlertManager {
     }
     description = description.replace(
       '{windSpeed}',
-      `${weatherData.windspeed || weatherData.wind_speed_10m || 'N/A'} mph`
+      `${weatherData.windspeed || weatherData.wind_speed_10m || 'N/A'} ${getWindSpeedLabel(getStoredUnits())}`
     );
     description = description.replace(
       '{time}',
@@ -665,16 +669,16 @@ export class WeatherAlertManager {
 
     const tempWithUnit = `${temp}${getTemperatureSymbol(getStoredUnits())}`;
     const descriptions: { [key: number]: string } = {
-      95: `Severe thunderstorms in your area. Temperature: ${tempWithUnit}, Wind: ${wind} mph. Stay indoors and avoid travel.`,
+      95: `Severe thunderstorms in your area. Temperature: ${tempWithUnit}, Wind: ${wind} ${getWindSpeedLabel(getStoredUnits())}. Stay indoors and avoid travel.`,
       96: `Thunderstorm with light hail reported. Temperature: ${tempWithUnit}. Protect vehicles and stay inside.`,
-      97: `Dangerous thunderstorm with heavy hail. Temperature: ${tempWithUnit}, Wind: ${wind} mph. Seek shelter immediately.`,
+      97: `Dangerous thunderstorm with heavy hail. Temperature: ${tempWithUnit}, Wind: ${wind} ${getWindSpeedLabel(getStoredUnits())}. Seek shelter immediately.`,
       75: `Heavy snowfall warning in effect. Temperature: ${tempWithUnit}. Avoid unnecessary travel.`,
       82: `Heavy rain showers expected. Temperature: ${tempWithUnit}. Watch for flooding and reduced visibility.`,
     };
 
     return (
       descriptions[weatherCode] ||
-      `Severe weather conditions detected. Temperature: ${tempWithUnit}, Wind: ${wind} mph.`
+      `Severe weather conditions detected. Temperature: ${tempWithUnit}, Wind: ${wind} ${getWindSpeedLabel(getStoredUnits())}.`
     );
   }
 

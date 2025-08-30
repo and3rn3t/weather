@@ -12,11 +12,7 @@ import {
   type HapticPatternType,
 } from './useHapticFeedback';
 
-// Dev instrumentation to verify React imports at runtime
-if (import.meta?.env?.DEV) {
-  // eslint-disable-next-line no-console
-  console.log('[hapticContext] typeof createContext =', typeof createContext);
-}
+// (dev instrumentation removed)
 
 // ============================================================================
 // HAPTIC FEEDBACK CONTEXT
@@ -29,6 +25,7 @@ interface HapticFeedbackContextType {
   isEnabled: boolean;
 }
 
+// In rare cases (broken chunk on dev CDN), React might not resolve. Provide a safe fallback.
 const HapticFeedbackContext = createContext<
   HapticFeedbackContextType | undefined
 >(undefined);

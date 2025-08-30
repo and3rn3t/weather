@@ -1,3 +1,4 @@
+import { formatWindSpeed, getStoredUnits } from '../../utils/units';
 /**
  * Interactive Weather Widget - iOS 18+ Style
  *
@@ -345,7 +346,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
         <div style={detailStyles.item}>
           <div style={detailLabelStyle}>Wind</div>
           <div style={detailValueStyle}>
-            {Math.round(weatherData.windSpeed)} mph
+            {formatWindSpeed(weatherData.windSpeed, getStoredUnits())}
           </div>
         </div>
       </div>

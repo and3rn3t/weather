@@ -22,7 +22,13 @@ import { getScreenInfo } from './utils/mobileScreenOptimization';
 import { optimizedFetchJson } from './utils/optimizedFetch';
 import { ThemeProvider } from './utils/themeContext';
 import ThemeToggle from './utils/ThemeToggle';
-import { getStoredUnits, getTemperatureSymbol } from './utils/units';
+import {
+  formatPrecipitation,
+  formatVisibility,
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from './utils/units';
 import { useTheme } from './utils/useTheme';
 import { getWeatherDescription as describeWeather } from './utils/weatherCodes';
 import WeatherIcon from './utils/weatherIcons';
@@ -165,11 +171,18 @@ const SimpleWeatherApp: React.FC = () => {
       const { lat, lon } = geoData[0];
 
       // Step 2: Get weather data with hourly and daily forecasts
-      const unit = (await import('./utils/units')).getTemperatureUnitParam(
-        (await import('./utils/units')).getStoredUnits()
-      );
+      const {
+        getTemperatureUnitParam,
+        getStoredUnits,
+        getWindSpeedUnitParam,
+        getPrecipitationUnitParam,
+      } = await import('./utils/units');
+      const units = getStoredUnits();
+      const unit = getTemperatureUnitParam(units);
+      const wind = getWindSpeedUnitParam(units);
+      const precip = getPrecipitationUnitParam(units);
       const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`,
         {},
         `app:weather:${lat},${lon}`
       );
@@ -193,9 +206,8 @@ const SimpleWeatherApp: React.FC = () => {
         },
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
-        visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34
-        ), // Convert meters to miles
+        // Keep visibility in meters; we'll format at render time
+        visibility: Math.round(weatherData.current.visibility || 10000),
       };
 
       // Transform hourly forecast data (next 24 hours)
@@ -278,8 +290,14 @@ const SimpleWeatherApp: React.FC = () => {
       setCity(cityName);
 
       // Get weather data directly with forecasts
+      const {
+        getTemperatureUnitParam: getTempParam2,
+        getStoredUnits: getUnits2,
+        getWindSpeedUnitParam: getWindParam2,
+        getPrecipitationUnitParam: getPrecipParam2,
+      } = await import('./utils/units');
       const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${(await import('./utils/units')).getTemperatureUnitParam((await import('./utils/units')).getStoredUnits())}&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${getTempParam2(getUnits2())}&wind_speed_unit=${getWindParam2(getUnits2())}&precipitation_unit=${getPrecipParam2(getUnits2())}&forecast_days=7`,
         {},
         `app:weather:${latitude},${longitude}`
       );
@@ -303,9 +321,8 @@ const SimpleWeatherApp: React.FC = () => {
         },
         weatherCode: weatherData.current.weathercode,
         uv_index: weatherData.current.uv_index || 0,
-        visibility: Math.round(
-          (weatherData.current.visibility || 10000) / 1609.34
-        ), // Convert meters to miles
+        // Keep visibility in meters; we'll format at render time
+        visibility: Math.round(weatherData.current.visibility || 10000),
       };
 
       // Transform hourly forecast data (next 24 hours)
@@ -504,8 +521,14 @@ const SimpleWeatherApp: React.FC = () => {
     setError('');
 
     try {
+      const {
+        getTemperatureUnitParam: getTempParam3,
+        getStoredUnits: getUnits3,
+        getWindSpeedUnitParam: getWindParam3,
+        getPrecipitationUnitParam: getPrecipParam3,
+      } = await import('./utils/units');
       const weatherData = await optimizedFetchJson<OpenMeteoResponse>(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${(await import('./utils/units')).getTemperatureUnitParam((await import('./utils/units')).getStoredUnits())}&wind_speed_unit=mph&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${getTempParam3(getUnits3())}&wind_speed_unit=${getWindParam3(getUnits3())}&precipitation_unit=${getPrecipParam3(getUnits3())}&forecast_days=7`,
         {},
         `app:weather:${lat},${lon}`
       );
@@ -548,7 +571,11 @@ const SimpleWeatherApp: React.FC = () => {
   // Generate weather alerts based on conditions
   const generateWeatherAlerts = (weatherData: WeatherData) => {
     const unitSymbol = getTemperatureSymbol(getStoredUnits());
-    const alerts = [];
+    const alerts = [] as Array<{
+      type: string;
+      message: string;
+      severity: 'low' | 'medium' | 'high';
+    }>;
 
     if (weatherData.main.temp > 95) {
       alerts.push({
@@ -561,7 +588,7 @@ const SimpleWeatherApp: React.FC = () => {
     if (weatherData.wind.speed > 25) {
       alerts.push({
         type: 'Wind Advisory',
-        message: `Strong winds at ${weatherData.wind.speed} mph.`,
+        message: `Strong winds at ${formatWindSpeed(weatherData.wind.speed, getStoredUnits())}.`,
         severity: 'medium' as const,
       });
     }
@@ -582,10 +609,11 @@ const SimpleWeatherApp: React.FC = () => {
       });
     }
 
-    if (weatherData.visibility < 3) {
+    // visibility is in meters; warn if below ~5 km (~3.1 miles)
+    if (weatherData.visibility < 5000) {
       alerts.push({
         type: 'Visibility Warning',
-        message: `Low visibility (${weatherData.visibility} miles). Drive carefully.`,
+        message: `Low visibility (${formatVisibility(weatherData.visibility, getStoredUnits())}). Drive carefully.`,
         severity: 'medium' as const,
       });
     }
@@ -814,7 +842,9 @@ const SimpleWeatherApp: React.FC = () => {
 
             <div className="metric-card">
               <div className="metric-label">WIND SPEED</div>
-              <div className="metric-value">{weather.wind.speed} mph</div>
+              <div className="metric-value">
+                {formatWindSpeed(weather.wind.speed, getStoredUnits())}
+              </div>
             </div>
 
             <div className="metric-card">
@@ -829,7 +859,9 @@ const SimpleWeatherApp: React.FC = () => {
 
             <div className="metric-card">
               <div className="metric-label">VISIBILITY</div>
-              <div className="metric-value">{weather.visibility} mi</div>
+              <div className="metric-value">
+                {formatVisibility(weather.visibility, getStoredUnits())}
+              </div>
             </div>
           </div>
         </div>
@@ -892,7 +924,7 @@ const SimpleWeatherApp: React.FC = () => {
                 </div>
                 {day.precipitation > 0 && (
                   <div className="daily-precip">
-                    {day.precipitation.toFixed(1)}mm
+                    {formatPrecipitation(day.precipitation, getStoredUnits())}
                   </div>
                 )}
               </div>

@@ -11,6 +11,13 @@
 
 import React from 'react';
 import type { ThemeColors } from '../../utils/themeConfig';
+import {
+  formatPressure,
+  formatVisibility,
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from '../../utils/units';
 import WeatherIcon from '../../utils/weatherIcons';
 
 interface EnhancedWeatherDisplayProps {
@@ -35,18 +42,7 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
   theme: _theme,
   className = '',
 }) => {
-  const formatWindSpeed = (speed: number): string => {
-    return `${Math.round(speed)} mph`;
-  };
-
-  const formatPressure = (pressure: number): string => {
-    return `${Math.round(pressure)} hPa`;
-  };
-
-  const formatVisibility = (visibility: number | undefined): string => {
-    if (!visibility) return 'N/A';
-    return `${Math.round(visibility)} mi`;
-  };
+  const units = getStoredUnits();
 
   const formatUVIndex = (uvIndex: number | undefined): string => {
     if (!uvIndex) return 'N/A';
@@ -78,11 +74,13 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
 
         <div className="enhanced-weather-temp-section">
           <h1 className="enhanced-weather-temperature">
-            {Math.round(weatherData.temperature)}°F
+            {Math.round(weatherData.temperature)}
+            {getTemperatureSymbol(units)}
           </h1>
           <p className="enhanced-weather-condition">{weatherData.condition}</p>
           <p className="enhanced-weather-feels-like">
-            Feels like {Math.round(weatherData.feelsLike)}°F
+            Feels like {Math.round(weatherData.feelsLike)}
+            {getTemperatureSymbol(units)}
           </p>
         </div>
       </div>
@@ -98,14 +96,14 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
 
         <div className="enhanced-weather-metric">
           <div className="enhanced-weather-metric-value">
-            {formatWindSpeed(weatherData.windSpeed)}
+            {formatWindSpeed(weatherData.windSpeed, units)}
           </div>
           <div className="enhanced-weather-metric-label">Wind Speed</div>
         </div>
 
         <div className="enhanced-weather-metric">
           <div className="enhanced-weather-metric-value">
-            {formatPressure(weatherData.pressure)}
+            {formatPressure(weatherData.pressure, units)}
           </div>
           <div className="enhanced-weather-metric-label">Pressure</div>
         </div>
@@ -113,7 +111,7 @@ const EnhancedWeatherDisplay: React.FC<EnhancedWeatherDisplayProps> = ({
         {weatherData.visibility !== undefined && (
           <div className="enhanced-weather-metric">
             <div className="enhanced-weather-metric-value">
-              {formatVisibility(weatherData.visibility)}
+              {formatVisibility(weatherData.visibility || 0, units)}
             </div>
             <div className="enhanced-weather-metric-label">Visibility</div>
           </div>

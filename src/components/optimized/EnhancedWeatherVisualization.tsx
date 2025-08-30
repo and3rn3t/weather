@@ -10,6 +10,11 @@
  */
 
 import React from 'react';
+import {
+  formatPrecipitation,
+  formatWindSpeed,
+  getStoredUnits,
+} from '../../utils/units';
 import './EnhancedWeatherVisualization.css';
 
 interface TemperatureTrendProps {
@@ -182,10 +187,11 @@ export const WindCompass: React.FC<WindCompassProps> = ({
       <div className="wind-compass-header">
         <h4>Wind</h4>
         <div className="wind-speed">
-          {Math.round(windSpeed)} mph {getDirectionName(windDirection)}
+          {formatWindSpeed(windSpeed, getStoredUnits())}{' '}
+          {getDirectionName(windDirection)}
           {windGust && windGust > windSpeed && (
             <span className="wind-gust">
-              gusts to {Math.round(windGust)} mph
+              gusts to {formatWindSpeed(windGust, getStoredUnits())}
             </span>
           )}
         </div>
@@ -368,11 +374,15 @@ export const PrecipitationChart: React.FC<PrecipitationChartProps> = ({
         <h4>Precipitation Forecast</h4>
         <span className="precipitation-total">
           Next 12 hours:{' '}
-          {hourlyData
-            .slice(0, 12)
-            .reduce((sum, h) => sum + h.precipitation, 0)
-            .toFixed(1)}
-          mm
+          {formatPrecipitation(
+            Number(
+              hourlyData
+                .slice(0, 12)
+                .reduce((sum, h) => sum + h.precipitation, 0)
+                .toFixed(1)
+            ),
+            getStoredUnits()
+          )}
         </span>
       </div>
 
@@ -387,7 +397,7 @@ export const PrecipitationChart: React.FC<PrecipitationChartProps> = ({
                 <div
                   className={`precipitation-bar ${hasRain ? 'has-rain' : ''}`}
                   style={{ height: `${Math.max(height, 2)}%` }}
-                  title={`${hour.precipitation}mm at ${new Date(
+                  title={`${formatPrecipitation(hour.precipitation, getStoredUnits())} at ${new Date(
                     hour.time
                   ).toLocaleTimeString([], { hour: 'numeric' })}`}
                 />

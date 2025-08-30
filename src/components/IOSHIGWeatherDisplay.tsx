@@ -1,3 +1,8 @@
+import {
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from '../utils/units';
 /**
  * iOS HIG Enhanced Weather Display Component
  *
@@ -12,7 +17,6 @@
 
 import React from 'react';
 import '../styles/ios-hig-enhancements.css';
-import { getStoredUnits, getTemperatureSymbol } from '../utils/units';
 import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 
 interface WeatherData {
@@ -141,11 +145,9 @@ const IOSHIGWeatherDisplay: React.FC<IOSHIGWeatherDisplayProps> = ({
         <div className="ios-hig-weather-detail-item">
           <div
             className="ios-hig-weather-detail-value"
-            aria-label={`Wind speed ${Math.round(
-              weather.wind.speed
-            )} miles per hour`}
+            aria-label={`Wind speed ${formatWindSpeed(weather.wind.speed, getStoredUnits())}`}
           >
-            {Math.round(weather.wind.speed)} mph
+            {formatWindSpeed(weather.wind.speed, getStoredUnits())}
           </div>
           <div className="ios-hig-weather-detail-label">
             <NavigationIcons.Refresh /> Wind

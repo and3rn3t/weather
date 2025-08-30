@@ -6,26 +6,6 @@
  * Features:
  * - Fluid Island-style weather cards
  * - Advanced glassmorphism with depth layers
- * - Smart adaptive lay            {hourlyForecast.map((hour, index) => (
-              <div key={index} className="ios26-forecast-item">
-                <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time">
-                  {hour.time}
-                </div>
-                <div className="ios26-forecast-icon">
-                  <WeatherIcon code={hour.weatherCode} size={28} animated={true} />
-                </div>
-                {hour.precipitation !== undefined && hour.precipitation > 0 && (
-                  <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-precipitation">
-                    {Math.round(hour.precipitation)}%
-                  </div>
-                )}
-                <div className="ios26-forecast-temperature">
-                  <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
-                    {Math.round(hour.temperature)}°
-                  </div>
-                </div>
-              </div>
-            ))}Dynamic Type
  * - Contextual controls and haptic feedback integration
  * - Live Activities-inspired design
  * - Spatial UI elements with proper depth hierarchy
@@ -33,15 +13,22 @@
  * - Modern iOS spacing and typography
  */
 
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import type { ThemeColors } from '../../utils/themeConfig';
+import {
+  formatPressure,
+  formatVisibility,
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from '../../utils/units';
 import WeatherIcon from '../../utils/weatherIcons';
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
 
-interface iOS26WeatherInterfaceProps {
+interface IOS26WeatherInterfaceProps {
   weatherData: {
     temperature: number;
     condition: string;
@@ -79,7 +66,7 @@ interface iOS26WeatherInterfaceProps {
 // MAIN iOS 26 WEATHER INTERFACE COMPONENT
 // ============================================================================
 
-const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
+const IOS26WeatherInterface: React.FC<IOS26WeatherInterfaceProps> = ({
   weatherData,
   theme: _theme,
   className = '',
@@ -88,31 +75,16 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   isLoading = false,
   lastUpdated,
 }) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isPressed, setIsPressed] = useState(false);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // Use unit helpers imported above for wind, pressure, visibility
   const handleTouchStart = useCallback(() => {
     setIsPressed(true);
   }, []);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const handleTouchEnd = useCallback(() => {
     setIsPressed(false);
   }, []);
-
-  const formatWindSpeed = (speed: number): string => {
-    return `${Math.round(speed)} mph`;
-  };
-
-  const formatPressure = (pressure: number): string => {
-    return `${Math.round(pressure)} hPa`;
-  };
-
-  const formatVisibility = (visibility: number | undefined): string => {
-    if (!visibility) return 'N/A';
-    return `${Math.round(visibility)} mi`;
-  };
 
   const getUVIndexLevel = (uvIndex: number | undefined): string => {
     if (!uvIndex) return 'N/A';
@@ -186,9 +158,11 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
 
           <div className="ios26-temperature-display">
             <span className="ios26-temperature-value">
-              {Math.round(weatherData.temperature)}°
+              {Math.round(weatherData.temperature)}
             </span>
-            <span className="ios26-temperature-unit">F</span>
+            <span className="ios26-temperature-unit">
+              {getTemperatureSymbol(getStoredUnits())}
+            </span>
           </div>
 
           <div className="ios26-text-title3 ios26-text-primary ios26-text-medium ios26-weather-condition">
@@ -196,7 +170,8 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
           </div>
 
           <div className="ios26-text-subheadline ios26-text-secondary ios26-feels-like">
-            Feels like {Math.round(weatherData.feelsLike)}°F
+            Feels like {Math.round(weatherData.feelsLike)}
+            {getTemperatureSymbol(getStoredUnits())}
           </div>
         </div>
 
@@ -246,9 +221,7 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
               <div className="ios26-text-footnote ios26-text-secondary ios26-weather-metric-label">
                 Pressure
               </div>
-              <div className="ios26-text-caption2 ios26-text-tertiary ios26-weather-metric-subtitle">
-                hPa
-              </div>
+              {/* Unit included in value via formatter */}
             </div>
           </div>
         </div>{' '}
@@ -398,4 +371,4 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   );
 };
 
-export default iOS26WeatherInterface;
+export default IOS26WeatherInterface;

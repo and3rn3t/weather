@@ -15,6 +15,13 @@ import type {
   HourlyForecast,
   WeatherData,
 } from '../../types/weather';
+import {
+  formatPrecipitation,
+  formatVisibility,
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from '../../utils/units';
 import WeatherIcon from '../../utils/weatherIcons';
 import SmartContentWrapper from '../SmartContentWrapper';
 import {
@@ -269,7 +276,9 @@ const renderContentByType = (
                 <span className="temperature-value">
                   {Math.round(weather.main.temp)}°
                 </span>
-                <span className="temperature-unit">F</span>
+                <span className="temperature-unit">
+                  {getTemperatureSymbol(getStoredUnits())}
+                </span>
               </div>
               <div className="weather-description">
                 <p className="condition">{weather.weather[0].description}</p>
@@ -289,9 +298,9 @@ const renderContentByType = (
             </li>
             <li
               className="chip"
-              aria-label={`Wind ${Math.round(weather.wind.speed)} miles per hour`}
+              aria-label={`Wind ${formatWindSpeed(weather.wind.speed, getStoredUnits())}`}
             >
-              💨 {Math.round(weather.wind.speed)} mph
+              💨 {formatWindSpeed(weather.wind.speed, getStoredUnits())}
             </li>
             {typeof weather.uv_index === 'number' && (
               <li
@@ -323,7 +332,7 @@ const renderContentByType = (
             <div className="metric-card">
               <span className="metric-icon">💨</span>
               <span className="metric-value">
-                {Math.round(weather.wind.speed)} mph
+                {formatWindSpeed(weather.wind.speed, getStoredUnits())}
               </span>
               <span className="metric-label">Wind</span>
             </div>
@@ -338,7 +347,7 @@ const renderContentByType = (
               <div className="metric-card">
                 <span className="metric-icon">👁️</span>
                 <span className="metric-value">
-                  {Math.round(weather.visibility / 1000)} km
+                  {formatVisibility(weather.visibility, getStoredUnits())}
                 </span>
                 <span className="metric-label">Visibility</span>
               </div>
@@ -443,11 +452,9 @@ const renderContentByType = (
                     <span className="temp-low">{day.tempMin}°</span>
                   </span>
                   {day.precipitation > 0 && (
-                    <span
-                      className="daily-precip"
-                      aria-label={`Precipitation ${day.precipitation} millimeters`}
-                    >
-                      🌧️ {day.precipitation}mm
+                    <span className="daily-precip">
+                      🌧️{' '}
+                      {formatPrecipitation(day.precipitation, getStoredUnits())}
                     </span>
                   )}
                 </div>

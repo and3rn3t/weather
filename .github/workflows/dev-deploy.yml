@@ -2,7 +2,8 @@ name: 🧪 Development Deploy
 
 on:
   push:
-    branches: [dev, develop, staging]
+    # Deploy preview for ANY non-main branch (single Pages project)
+    branches-ignore: [main]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
@@ -101,7 +102,7 @@ jobs:
           VITE_ENVIRONMENT: ${{ inputs.environment || 'development' }}
 
       - name: Deploy preflight (secrets present)
-        if: ${{ github.event_name == 'push' && (github.ref_name == 'dev' || github.ref_name == 'develop' || github.ref_name == 'staging') && github.repository == 'and3rn3t/weather' }}
+        if: "${{ github.event_name == 'push' && github.ref_name != 'main' && github.repository == 'and3rn3t/weather' }}"
         run: |
           missing=0
           [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && echo "❌ Missing secret: CLOUDFLARE_API_TOKEN" && missing=1 || echo "✅ CLOUDFLARE_API_TOKEN present"
@@ -111,13 +112,59 @@ jobs:
           fi
 
       - name: 🚀 Deploy to Cloudflare Pages (pipeline only)
-        if: ${{ github.event_name == 'push' && (github.ref_name == 'dev' || github.ref_name == 'develop' || github.ref_name == 'staging') && github.repository == 'and3rn3t/weather' }}
+        if: "${{ github.event_name == 'push' && github.ref_name != 'main' && github.repository == 'and3rn3t/weather' }}"
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=weather --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }}
+
+      - name: 🔁 Purge preview cache (key files)
+        if: "${{ github.event_name == 'push' && github.ref_name != 'main' && github.repository == 'and3rn3t/weather' }}"
+        continue-on-error: true
+        env:
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -e
+          echo "## 🔁 Preview cache purge" >> $GITHUB_STEP_SUMMARY
+          echo "Purging URLs:" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather-dev.andernet.dev/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather-dev.andernet.dev/sw.js" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather-dev.andernet.dev/manifest.json" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather-dev.andernet.dev/version.json" >> $GITHUB_STEP_SUMMARY
+          echo "Purging cache for preview domain key files..."
+          # Purge specific URLs to avoid nuking the entire cache
+          payload=$(cat << 'JSON'
+          {"files":[
+            "https://weather-dev.andernet.dev/index.html",
+            "https://weather-dev.andernet.dev/sw.js",
+            "https://weather-dev.andernet.dev/manifest.json",
+            "https://weather-dev.andernet.dev/version.json"
+          ]}
+          JSON
+          )
+
+          # If secrets are missing, skip gracefully
+          if [ -z "${CF_ZONE_ID}" ] || [ -z "${CF_API_TOKEN}" ]; then
+            echo "⚠️ Missing Cloudflare secrets; skipping purge" | tee -a $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          resp=$(curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "$payload" || echo '{}')
+
+          ok=$(echo "$resp" | grep -o '"success":true' || true)
+          if [ -n "$ok" ]; then
+            echo "✅ Cache purge succeeded" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Cache purge response:" | tee -a $GITHUB_STEP_SUMMARY
+            echo "$resp" | tee -a $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Dry-run preflight (manual dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -144,7 +191,5 @@ jobs:
           echo "**Environment**: ${{ inputs.environment || 'Development' }}" >> $GITHUB_STEP_SUMMARY
           echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ github.ref_name }}" = "dev" ] || [ "${{ github.ref_name }}" = "develop" ]; then
-            echo "🧪 **Development**: https://weather-dev.andernet.dev" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "🧪 **Preview (custom domain)**: https://weather-dev.andernet.dev" >> $GITHUB_STEP_SUMMARY
           echo "🔗 **Cloudflare**: https://${{ github.ref_name }}.weather.pages.dev" >> $GITHUB_STEP_SUMMARY

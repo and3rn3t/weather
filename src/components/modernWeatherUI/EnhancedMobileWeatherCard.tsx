@@ -10,6 +10,13 @@
  */
 
 import React from 'react';
+import {
+  formatPressure,
+  formatVisibility,
+  formatWindSpeed,
+  getStoredUnits,
+  getTemperatureSymbol,
+} from '../../utils/units';
 import { useTheme } from '../../utils/useTheme';
 import WeatherIcon from '../../utils/weatherIcons';
 
@@ -138,10 +145,7 @@ const EnhancedMobileWeatherCard: React.FC<EnhancedMobileWeatherCardProps> = ({
     return directions[index];
   };
 
-  const formatVisibility = (visibility: number): string => {
-    const miles = Math.round(visibility * 0.000621371 * 10) / 10;
-    return `${miles} mi`;
-  };
+  // visibility formatting handled via units utils
 
   const getUVIndexLabel = (uvIndex: number): string => {
     if (uvIndex <= 2) return 'Low';
@@ -151,10 +155,11 @@ const EnhancedMobileWeatherCard: React.FC<EnhancedMobileWeatherCardProps> = ({
     return 'Extreme';
   };
 
+  const units = getStoredUnits();
   const metrics = [
     {
       label: 'Feels Like',
-      value: `${Math.round(weatherData.main.feels_like)}°F`,
+      value: `${Math.round(weatherData.main.feels_like)}${getTemperatureSymbol(units)}`,
       icon: '🌡️',
     },
     {
@@ -164,12 +169,12 @@ const EnhancedMobileWeatherCard: React.FC<EnhancedMobileWeatherCardProps> = ({
     },
     {
       label: 'Wind',
-      value: `${Math.round(weatherData.wind.speed)} mph ${getWindDirection(weatherData.wind.deg)}`,
+      value: `${formatWindSpeed(weatherData.wind.speed, units)} ${getWindDirection(weatherData.wind.deg)}`,
       icon: '💨',
     },
     {
       label: 'Pressure',
-      value: `${Math.round(weatherData.main.pressure)} hPa`,
+      value: formatPressure(weatherData.main.pressure, units),
       icon: '🌪️',
     },
   ];
@@ -187,7 +192,7 @@ const EnhancedMobileWeatherCard: React.FC<EnhancedMobileWeatherCardProps> = ({
   if (weatherData.visibility !== undefined) {
     metrics.push({
       label: 'Visibility',
-      value: formatVisibility(weatherData.visibility),
+      value: formatVisibility(weatherData.visibility, units),
       icon: '👁️',
     });
   }
@@ -227,13 +232,9 @@ const EnhancedMobileWeatherCard: React.FC<EnhancedMobileWeatherCardProps> = ({
 
         {/* Main temperature display */}
         <div style={temperatureStyle}>
-          {Math.round(weatherData.main.temp)}°F
+          {Math.round(weatherData.main.temp)}
+          {getTemperatureSymbol(units)}
         </div>
-
-        {/* Weather description */}
-        <p style={descriptionStyle}>{weatherData.weather[0].description}</p>
-
-        {/* Weather metrics grid */}
         <section style={metricsGridStyle} aria-label="Weather details">
           {metrics.map((metric, index) => (
             <div key={index} style={metricItemStyle}>

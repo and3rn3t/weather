@@ -144,6 +144,51 @@ jobs:
             echo "::error::Cloudflare Pages deploy failed after 3 attempts." && exit 1
           fi
 
+      - name: 🔁 Purge production cache (key files)
+        if: ${{ steps.meta.outputs.should_deploy == 'true' }}
+        continue-on-error: true
+        env:
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -e
+          # Skip gracefully if zone/token are not present
+          if [ -z "${CF_ZONE_ID}" ] || [ -z "${CF_API_TOKEN}" ]; then
+            echo "⚠️ Missing Cloudflare secrets; skipping production cache purge" | tee -a $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          echo "Purging production cache for key files..."
+          echo "## 🔁 Production cache purge" >> $GITHUB_STEP_SUMMARY
+          echo "Purging URLs:" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/sw.js" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/manifest.json" >> $GITHUB_STEP_SUMMARY
+          echo "- https://weather.andernet.dev/version.json" >> $GITHUB_STEP_SUMMARY
+          payload=$(cat << 'JSON'
+          {"files":[
+            "https://weather.andernet.dev/index.html",
+            "https://weather.andernet.dev/sw.js",
+            "https://weather.andernet.dev/manifest.json",
+            "https://weather.andernet.dev/version.json"
+          ]}
+          JSON
+          )
+
+          resp=$(curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "$payload" || echo '{}')
+
+          ok=$(echo "$resp" | grep -o '"success":true' || true)
+          if [ -n "$ok" ]; then
+            echo "✅ Production cache purge succeeded" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Production cache purge response:" | tee -a $GITHUB_STEP_SUMMARY
+            echo "$resp" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
       - name: Dist manifest (main)
         if: ${{ steps.meta.outputs.should_deploy == 'true' }}
         run: |

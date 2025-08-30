@@ -279,9 +279,11 @@ class PushNotificationManager {
       const alert = await this.sendWeatherAlert({
         type: 'severe-weather',
         title: '💨 High Wind Warning',
-        message: `Strong winds in ${cityName}: ${Math.round(
-          windSpeed
-        )} mph. Avoid outdoor activities.`,
+        message: `Strong winds in ${cityName}: ${Math.round(windSpeed)} ${(
+          await import('../utils/units')
+        ).getWindSpeedLabel(
+          (await import('../utils/units')).getStoredUnits()
+        )}. Avoid outdoor activities.`,
         icon: '/icons/icon-192x192.png',
         priority: 'high',
         weatherData,
@@ -293,7 +295,11 @@ class PushNotificationManager {
           timestamp: Date.now(),
           type: 'severe-weather',
           title: '💨 High Wind Warning',
-          message: `Strong winds in ${cityName}: ${Math.round(windSpeed)} mph`,
+          message: `Strong winds in ${cityName}: ${Math.round(windSpeed)} ${(
+            await import('../utils/units')
+          ).getWindSpeedLabel(
+            (await import('../utils/units')).getStoredUnits()
+          )}`,
           icon: '/icons/icon-192x192.png',
           priority: 'high',
         });
