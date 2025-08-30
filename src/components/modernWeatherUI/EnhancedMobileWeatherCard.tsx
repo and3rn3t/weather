@@ -97,7 +97,7 @@ const EnhancedMobileWeatherCard: React.FC<EnhancedMobileWeatherCardProps> = ({
     textAlign: 'center',
   };
 
-  const descriptionStyle: React.CSSProperties = {
+  const _descriptionStyle: React.CSSProperties = {
     fontSize: 'clamp(1rem, 4vw, 1.25rem)',
     color: theme.secondaryText,
     textAlign: 'center',
