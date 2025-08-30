@@ -110,3 +110,18 @@ export function getUnitSystemName(
 ): 'Imperial' | 'Metric' {
   return units === 'metric' ? 'Metric' : 'Imperial';
 }
+
+// Distance (input in kilometers)
+export function formatDistance(
+  km: number,
+  units: TemperatureUnits = getStoredUnits()
+): string {
+  if (!Number.isFinite(km) || km <= 0) return '—';
+  if (units === 'metric') {
+    const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
+    return `${rounded}${rounded < 10 && km < 10 && !Number.isInteger(rounded) ? '' : ''} km`;
+  }
+  const mi = km * 0.621371;
+  const rounded = mi < 10 ? Math.round(mi * 10) / 10 : Math.round(mi);
+  return `${rounded} mi`;
+}

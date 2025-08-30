@@ -28,7 +28,7 @@ import WeatherIcon from '../../utils/weatherIcons';
 // TYPE DEFINITIONS
 // ============================================================================
 
-interface iOS26WeatherInterfaceProps {
+interface IOS26WeatherInterfaceProps {
   weatherData: {
     temperature: number;
     condition: string;
@@ -66,7 +66,7 @@ interface iOS26WeatherInterfaceProps {
 // MAIN iOS 26 WEATHER INTERFACE COMPONENT
 // ============================================================================
 
-const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
+const IOS26WeatherInterface: React.FC<IOS26WeatherInterfaceProps> = ({
   weatherData,
   theme: _theme,
   className = '',
@@ -75,7 +75,6 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   isLoading = false,
   lastUpdated,
 }) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isPressed, setIsPressed] = useState(false);
 
   // Use unit helpers imported above for wind, pressure, visibility
@@ -83,7 +82,6 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
     setIsPressed(true);
   }, []);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const handleTouchEnd = useCallback(() => {
     setIsPressed(false);
   }, []);
@@ -373,4 +371,4 @@ const iOS26WeatherInterface: React.FC<iOS26WeatherInterfaceProps> = ({
   );
 };
 
-export default iOS26WeatherInterface;
+export default IOS26WeatherInterface;

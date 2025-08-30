@@ -2,7 +2,16 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import { logError, logInfo } from '../utils/logger';
 import { optimizedFetchJson } from '../utils/optimizedFetch';
+import {
+  popularCitiesCache,
+  type PopularCity,
+} from '../utils/popularCitiesCache';
 import type { ThemeColors } from '../utils/themeConfig';
+import {
+  formatDistance as formatDistanceByUnits,
+  getStoredUnits,
+  type TemperatureUnits,
+} from '../utils/units';
 import {
   useInteractionFeedback,
   useWeatherAnnouncements,
@@ -80,9 +89,52 @@ function SearchScreen({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [popularSuggestions, setPopularSuggestions] = useState<PopularCity[]>(
+    []
+  );
+  const [selectedTab, setSelectedTab] = useState<
+    'popular' | 'nearby' | 'recent'
+  >('popular');
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
+  const [nearbySuggestions, setNearbySuggestions] = useState<PopularCity[]>([]);
+  const [loadingNearby, setLoadingNearby] = useState(false);
+  const [units, setUnits] = useState<TemperatureUnits>(getStoredUnits());
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const resultsRef = useRef<SearchResult[]>([]);
+
+  // Distance helpers
+  const toRad = (v: number) => (v * Math.PI) / 180;
+  const distanceKm = useCallback(
+    (a: { lat: number; lon: number }, b: { lat: number; lon: number }) => {
+      const R = 6371; // km
+      const dLat = toRad(b.lat - a.lat);
+      const dLon = toRad(b.lon - a.lon);
+      const lat1 = toRad(a.lat);
+      const lat2 = toRad(b.lat);
+      const sinDLat = Math.sin(dLat / 2);
+      const sinDLon = Math.sin(dLon / 2);
+      const h =
+        sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+      const c = 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+      return R * c;
+    },
+    []
+  );
+  const formatDistance = useCallback(
+    (km: number) => formatDistanceByUnits(km, units),
+    [units]
+  );
+
+  // React to global units changes from Settings
+  useEffect(() => {
+    const onUnitsChanged = () => setUnits(getStoredUnits());
+    window.addEventListener('units-changed', onUnitsChanged);
+    return () => window.removeEventListener('units-changed', onUnitsChanged);
+  }, []);
 
   useEffect(() => {
     resultsRef.current = results;
@@ -100,6 +152,59 @@ function SearchScreen({
       logError('Error loading recent searches:', error);
     }
   }, []);
+
+  // Load popular suggestions on mount for instant quick picks
+  useEffect(() => {
+    try {
+      popularCitiesCache.preloadToStorage();
+      const initial = popularCitiesCache.getInstantSuggestions(8);
+      setPopularSuggestions(initial);
+    } catch (error) {
+      // Non-critical; continue without suggestions
+      logInfo('Popular suggestions unavailable:', error);
+    }
+  }, []);
+
+  // Build nearby suggestions when we have userLocation
+  useEffect(() => {
+    if (userLocation) {
+      const near = popularCitiesCache
+        .getPopularCities('', userLocation)
+        .slice(0, 8);
+      setNearbySuggestions(near);
+    }
+  }, [userLocation]);
+
+  // Request nearby location helper
+  const requestNearby = useCallback(async () => {
+    if (!navigator.geolocation) return;
+    if (loadingNearby) return;
+    try {
+      setLoadingNearby(true);
+      await new Promise<void>(resolve => {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            setUserLocation({
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+            });
+            resolve();
+          },
+          () => resolve(),
+          { timeout: 5000, maximumAge: 300000 }
+        );
+      });
+    } finally {
+      setLoadingNearby(false);
+    }
+  }, [loadingNearby]);
+
+  // When switching to Nearby tab, attempt to fetch a lightweight location (without triggering selection)
+  useEffect(() => {
+    if (selectedTab !== 'nearby') return;
+    if (userLocation || loadingNearby) return;
+    void requestNearby();
+  }, [selectedTab, userLocation, loadingNearby, requestNearby]);
 
   // Focus search input on mount
   useEffect(() => {
@@ -364,6 +469,55 @@ function SearchScreen({
     [haptic, onLocationSelect, interactionFeedback, weatherAnnouncements]
   );
 
+  // Handle quick-pick selection from Popular Cities
+  const handleQuickPick = useCallback(
+    async (city: PopularCity) => {
+      haptic.selection();
+
+      await interactionFeedback.onSuccess();
+      await weatherAnnouncements.announceStateChange(
+        'location-changed',
+        `Selected location: ${city.name}`
+      );
+
+      const selected: SearchResult = {
+        id: `popular-${city.name}-${city.country}`,
+        name: city.name,
+        display_name: `${city.name}, ${city.country}`,
+        lat: String(city.lat),
+        lon: String(city.lon),
+        country: city.country,
+        state: undefined,
+        type: 'popular',
+        importance: city.searchPriority,
+      };
+
+      // Save to recent
+      const newRecent = [
+        selected,
+        ...recentSearches.filter(r => r.name !== selected.name),
+      ].slice(0, 6);
+      setRecentSearches(newRecent);
+      try {
+        localStorage.setItem(
+          'weather-recent-searches',
+          JSON.stringify(newRecent)
+        );
+      } catch {
+        // ignore storage errors
+      }
+
+      onLocationSelect(city.name, city.lat, city.lon);
+    },
+    [
+      haptic,
+      onLocationSelect,
+      recentSearches,
+      interactionFeedback,
+      weatherAnnouncements,
+    ]
+  );
+
   // Get current location
   const getCurrentLocation = useCallback(() => {
     haptic.buttonPress();
@@ -548,6 +702,205 @@ function SearchScreen({
 
       {/* Content */}
       <div className="search-content ios26-container">
+        {/* Quick Picks with Segmented Control */}
+        {!showResults && (
+          <div className="suggestions-section">
+            <div className="section-header">
+              <h2 className="section-title ios26-text-title3 ios26-text-primary">
+                Quick picks
+              </h2>
+              <div
+                className="segmented"
+                role="tablist"
+                aria-label="Suggestions filter"
+              >
+                {selectedTab === 'popular' ? (
+                  <button
+                    role="tab"
+                    aria-selected="true"
+                    className="segmented-option active"
+                    onClick={() => setSelectedTab('popular')}
+                  >
+                    Popular{' '}
+                    <span className="seg-count">
+                      {popularSuggestions.length}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    role="tab"
+                    aria-selected="false"
+                    className={'segmented-option'}
+                    onClick={() => setSelectedTab('popular')}
+                  >
+                    Popular{' '}
+                    <span className="seg-count">
+                      {popularSuggestions.length}
+                    </span>
+                  </button>
+                )}
+                {selectedTab === 'nearby' ? (
+                  <button
+                    role="tab"
+                    aria-selected="true"
+                    className="segmented-option active"
+                    onClick={() => setSelectedTab('nearby')}
+                  >
+                    Nearby{' '}
+                    <span className="seg-count">
+                      {userLocation ? nearbySuggestions.length : 0}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    role="tab"
+                    aria-selected="false"
+                    className={'segmented-option'}
+                    onClick={() => setSelectedTab('nearby')}
+                  >
+                    Nearby{' '}
+                    <span className="seg-count">
+                      {userLocation ? nearbySuggestions.length : 0}
+                    </span>
+                  </button>
+                )}
+                {selectedTab === 'recent' ? (
+                  <button
+                    role="tab"
+                    aria-selected="true"
+                    className="segmented-option active"
+                    onClick={() => setSelectedTab('recent')}
+                  >
+                    Recent{' '}
+                    <span className="seg-count">{recentSearches.length}</span>
+                  </button>
+                ) : (
+                  <button
+                    role="tab"
+                    aria-selected="false"
+                    className={'segmented-option'}
+                    onClick={() => setSelectedTab('recent')}
+                  >
+                    Recent{' '}
+                    <span className="seg-count">{recentSearches.length}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Popular chips */}
+            {selectedTab === 'popular' && (
+              <ul className="chips-grid" aria-label="Popular cities">
+                {popularSuggestions.map(city => (
+                  <li key={`${city.name}-${city.country}`}>
+                    <button
+                      className="chip ios26-material-thin"
+                      onClick={() => handleQuickPick(city)}
+                      aria-label={`${city.name}, ${city.country}`}
+                    >
+                      <span className="chip-icon" aria-hidden="true">
+                        🏙️
+                      </span>
+                      <span className="chip-text">{city.name}</span>
+                      <span className="chip-country">{city.countryCode}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Nearby chips */}
+            {selectedTab === 'nearby' && (
+              <>
+                {!userLocation && (
+                  <div className="inline-note ios26-text-footnote ios26-text-secondary">
+                    Enable location to see nearby cities.{' '}
+                    <button
+                      className="inline-action"
+                      onClick={() => void requestNearby()}
+                      aria-label="Enable location for nearby suggestions"
+                    >
+                      Use my location
+                    </button>
+                  </div>
+                )}
+                {loadingNearby && (
+                  <div className="nearby-loading">
+                    <div className="loading-spinner loading-spinner--small"></div>
+                    <span className="ios26-text-footnote">
+                      Getting location…
+                    </span>
+                  </div>
+                )}
+                {userLocation && (
+                  <ul className="chips-grid" aria-label="Nearby cities">
+                    {nearbySuggestions.map(city => {
+                      const dist = userLocation
+                        ? formatDistance(
+                            distanceKm(userLocation, {
+                              lat: city.lat,
+                              lon: city.lon,
+                            })
+                          )
+                        : null;
+                      return (
+                        <li key={`near-${city.name}-${city.country}`}>
+                          <button
+                            className="chip ios26-material-thin"
+                            onClick={() => handleQuickPick(city)}
+                            aria-label={`${city.name}, ${city.country}`}
+                          >
+                            <span className="chip-icon" aria-hidden="true">
+                              📍
+                            </span>
+                            <span className="chip-text">{city.name}</span>
+                            <span className="chip-trailing">
+                              <span className="chip-country">
+                                {city.countryCode}
+                              </span>
+                              {dist && (
+                                <span className="chip-distance">{dist}</span>
+                              )}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </>
+            )}
+
+            {/* Recent chips */}
+            {selectedTab === 'recent' && (
+              <ul className="chips-grid" aria-label="Recent searches">
+                {recentSearches.length === 0 && (
+                  <li>
+                    <div className="inline-note ios26-text-footnote ios26-text-secondary">
+                      No recent searches yet.
+                    </div>
+                  </li>
+                )}
+                {recentSearches.map(r => (
+                  <li key={`recent-${r.id}`}>
+                    <button
+                      className="chip ios26-material-thin"
+                      onClick={() => handleRecentSelect(r)}
+                      aria-label={`${r.name}, ${r.country}`}
+                    >
+                      <span className="chip-icon" aria-hidden="true">
+                        🕒
+                      </span>
+                      <span className="chip-text">{r.name}</span>
+                      <span className="chip-country">{r.country}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {/* Current Location Button */}
         <div className="quick-actions">
           <button
