@@ -96,11 +96,21 @@ export const useDash0Telemetry = (): Dash0TelemetryHook => {
 
     trackError: (error: Error, context: TelemetryError) => {
       if (isEnabled) {
-        // Use Dash0's built-in error reporting
+        // Use Dash0's built-in error reporting with supported options
         reportError(error, {
-          'error.context': context.context,
-          ...context.metadata,
+          componentStack: context.context || null,
         });
+        
+        // Track additional context as a separate event if metadata exists
+        if (context.metadata && Object.keys(context.metadata).length > 0) {
+          sendEvent('error.context', {
+            title: 'Error Context Information',
+            attributes: {
+              error_context: context.context,
+              ...context.metadata,
+            },
+          });
+        }
       } else {
         // eslint-disable-next-line no-console
         console.debug('Error (fallback):', error.message, context);

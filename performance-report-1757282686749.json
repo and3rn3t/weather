@@ -1,0 +1,118 @@
+{
+  "timestamp": "2025-09-07T22:04:46.749Z",
+  "thresholds": {
+    "bundleSize": 500,
+    "chunkSize": 200,
+    "dependencies": 50,
+    "buildTime": 60,
+    "lighthouse": {
+      "performance": 90,
+      "accessibility": 95,
+      "bestPractices": 90,
+      "seo": 90
+    }
+  },
+  "metrics": {
+    "build": {
+      "buildTime": 10.597,
+      "timestamp": "2025-09-07T22:04:33.752Z",
+      "success": true
+    },
+    "bundle": {
+      "totalSize": 939468,
+      "jsSize": 737110,
+      "cssSize": 166379,
+      "assetsSize": 23956,
+      "fileCount": 53,
+      "jsFiles": 21,
+      "cssFiles": 4,
+      "assetFiles": 27,
+      "largestFiles": [
+        {
+          "file": "assets/AppNavigator-D5h6R4tA.js",
+          "sizeKB": "217.0"
+        },
+        {
+          "file": "assets/react-vendor-CD6g9iPJ.js",
+          "sizeKB": "182.6"
+        },
+        {
+          "file": "assets/ios26-suite-B6UjynpF.js",
+          "sizeKB": "117.8"
+        },
+        {
+          "file": "styles/index-7Zde7mSm.css",
+          "sizeKB": "94.4"
+        },
+        {
+          "file": "assets/ui-utils-tpR176iR.js",
+          "sizeKB": "52.1"
+        }
+      ]
+    },
+    "dependencies": {
+      "totalDependencies": 34,
+      "dependencies": 10,
+      "devDependencies": 24,
+      "outdatedCount": 0,
+      "unusedCount": 0,
+      "heaviestDeps": [
+        {
+          "name": "react-dom",
+          "sizeMB": "6.25"
+        },
+        {
+          "name": "@dash0/sdk-web",
+          "sizeMB": "0.98"
+        },
+        {
+          "name": "@capacitor/local-notifications",
+          "sizeMB": "0.38"
+        },
+        {
+          "name": "react",
+          "sizeMB": "0.16"
+        },
+        {
+          "name": "@capacitor/device",
+          "sizeMB": "0.10"
+        }
+      ]
+    },
+    "lighthouse": {},
+    "runtime": {
+      "checkedFiles": 207,
+      "performanceIssues": [
+        "App-diagnostic.tsx: Console.log statements in production code",
+        "App.tsx: State updates in map operations",
+        "components/EnhancedSearchBar.tsx: State updates in map operations",
+        "components/EnhancedSearchScreen.tsx: State updates in map operations",
+        "components/FavoritesScreen.tsx: State updates in map operations",
+        "components/IOSHIGNavigation.tsx: State updates in map operations",
+        "components/IOSSearchBar.tsx: State updates in map operations"
+      ],
+      "issueCount": 8
+    }
+  },
+  "summary": {
+    "overallScore": 50,
+    "issues": 2,
+    "successes": 2,
+    "issueDetails": [
+      "Bundle size: 0.90MB",
+      "Lighthouse average: 0%"
+    ],
+    "successDetails": [
+      "Build time: 10.6s",
+      "Dependencies: 34"
+    ]
+  },
+  "recommendations": [
+    "Consider code splitting and lazy loading for large bundles",
+    "Review and remove unused dependencies",
+    "Optimize images and assets",
+    "Review React hooks dependencies",
+    "Remove console.log statements from production code",
+    "Optimize state management patterns"
+  ]
+}
