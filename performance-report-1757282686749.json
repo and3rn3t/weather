@@ -85,7 +85,6 @@
       "performanceIssues": [
         "App-diagnostic.tsx: Console.log statements in production code",
         "App.tsx: State updates in map operations",
-        "components/AnimatedWeatherCard.tsx: Multiple useEffect hooks (4)",
         "components/EnhancedSearchBar.tsx: State updates in map operations",
         "components/EnhancedSearchScreen.tsx: State updates in map operations",
         "components/FavoritesScreen.tsx: State updates in map operations",
