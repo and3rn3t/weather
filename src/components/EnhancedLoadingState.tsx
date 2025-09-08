@@ -219,7 +219,11 @@ const shimmerStyle = `
 
 // Inject shimmer styles
 if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = shimmerStyle;
-  document.head.appendChild(styleSheet);
+  const styleId = 'enhanced-loading-shimmer-style';
+  if (!document.getElementById(styleId)) {
+    const styleSheet = document.createElement('style');
+    styleSheet.id = styleId;
+    styleSheet.textContent = shimmerStyle;
+    document.head.appendChild(styleSheet);
+  }
 }
