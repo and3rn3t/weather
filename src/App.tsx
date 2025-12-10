@@ -292,17 +292,10 @@ const WeatherApp: React.FC = () => {
       setSearchLoading(true);
       setSearchError('');
 
-      if (import.meta.env.DEV) {
-        console.log('🔍 Searching for:', query);
-      }
-
       try {
         let data: Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>;
         try {
           const searchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
-          if (import.meta.env.DEV) {
-            console.log('🌐 Fetching from:', searchUrl);
-          }
 
           data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>>(
             searchUrl,
@@ -314,16 +307,9 @@ const WeatherApp: React.FC = () => {
             },
             `search:${query}`
           );
-
-          if (import.meta.env.DEV) {
-            console.log('✅ Search results:', data?.length || 0, 'items');
-          }
         } catch (err) {
           // Handle search errors - show user-friendly message
           const errorMsg = err instanceof Error ? err.message : 'Search failed';
-          if (import.meta.env.DEV) {
-            console.error('❌ Search API error:', err);
-          }
 
           // Show error message if it's a timeout or connection error
           if (errorMsg.includes('timeout') || errorMsg.includes('connection') || errorMsg.includes('Network')) {
@@ -356,26 +342,16 @@ const WeatherApp: React.FC = () => {
         setSearchSuggestions(suggestions);
         setSearchLoading(false);
         if (suggestions.length > 0) {
-          if (import.meta.env.DEV) {
-            console.log('📋 Showing', suggestions.length, 'suggestions');
-          }
           setShowSuggestions(true);
         } else {
-          if (import.meta.env.DEV) {
-            console.log('⚠️ No suggestions found');
-          }
           setShowSuggestions(false);
-          if (!searchError) {
-            setSearchError('No cities found. Try a different search term.');
-          }
+          setSearchError('No cities found. Try a different search term.');
         }
-      } catch (err) {
+      } catch {
         setSearchLoading(false);
         setSearchSuggestions([]);
         setShowSuggestions(false);
-        if (!searchError) {
-          setSearchError('Search failed. Please try again.');
-        }
+        setSearchError('Search failed. Please try again.');
       }
       searchTimeoutRef.current = null;
     }, 500);
@@ -458,9 +434,6 @@ const WeatherApp: React.FC = () => {
             value={searchQuery}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value;
-              if (import.meta.env.DEV) {
-                console.log('⌨️ Input changed:', value);
-              }
               handleSearch(value);
             }}
             onFocus={() => {
@@ -534,9 +507,6 @@ const WeatherApp: React.FC = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (import.meta.env.DEV) {
-                      console.log('📍 Selected:', suggestion.name);
-                    }
                     setSearchQuery(suggestion.name);
                     setShowSuggestions(false);
                     fetchWeather(suggestion.lat, suggestion.lon, suggestion.name);

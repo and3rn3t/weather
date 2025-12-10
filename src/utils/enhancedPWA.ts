@@ -47,11 +47,7 @@ class EnhancedPWAManager {
 
   // Check if service workers are supported
   private checkServiceWorkerSupport(): boolean {
-    if (!('serviceWorker' in navigator)) {
-      console.warn('Service Workers not supported');
-      return false;
-    }
-    return true;
+    return 'serviceWorker' in navigator;
   }
 
   // Register service worker with enhanced error handling
@@ -81,7 +77,6 @@ class EnhancedPWAManager {
 
       return true;
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
       safeTelemetry.trackEvent('pwa-sw-error', { 
         error: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -116,7 +111,6 @@ class EnhancedPWAManager {
         return true;
       }
     } catch (error) {
-      console.error('Failed to apply service worker update:', error);
       safeTelemetry.trackEvent('pwa-update-error', { 
         error: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -131,8 +125,8 @@ class EnhancedPWAManager {
       try {
         await this.state.registration.update();
         this.updateState({ lastUpdate: new Date() });
-      } catch (error) {
-        console.error('Update check failed:', error);
+      } catch {
+        // Silently handle update check failures
       }
     }
   }
@@ -156,8 +150,7 @@ class EnhancedPWAManager {
       }
 
       return { size: totalSize, entries: totalEntries };
-    } catch (error) {
-      console.error('Failed to get cache stats:', error);
+    } catch {
       return null;
     }
   }
@@ -172,8 +165,7 @@ class EnhancedPWAManager {
       
       safeTelemetry.trackEvent('pwa-cache-cleared');
       return true;
-    } catch (error) {
-      console.error('Failed to clear caches:', error);
+    } catch {
       return false;
     }
   }

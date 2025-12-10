@@ -8,7 +8,7 @@ import { lazy, ComponentType } from 'react';
 import { safeTelemetry } from './buildOptimizations';
 
 // Enhanced lazy loading with performance tracking
-const createLazyComponent = <T extends ComponentType<any>>(
+const createLazyComponent = <T extends ComponentType<unknown>>(
   importFn: () => Promise<{ default: T }>,
   componentName: string
 ) => {
@@ -17,20 +17,13 @@ const createLazyComponent = <T extends ComponentType<any>>(
     try {
       const module = await importFn();
       const loadTime = performance.now() - startTime;
-      
+
       safeTelemetry.trackTiming(`lazy-load-${componentName}`, loadTime);
-      
-      // Log slow loads for optimization
-      if (loadTime > 200) {
-        console.warn(`⚡ Slow lazy load: ${componentName} took ${loadTime.toFixed(2)}ms`);
-      } else {
-        console.log(`🚀 Lazy loaded ${componentName} in ${loadTime.toFixed(2)}ms`);
-      }
-      
+
       return module;
     } catch (error) {
-      safeTelemetry.trackEvent('lazy-load-error', { 
-        component: componentName, 
+      safeTelemetry.trackEvent('lazy-load-error', {
+        component: componentName,
         error: error instanceof Error ? error.message : 'Unknown error'
       });
       throw error;
