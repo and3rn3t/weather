@@ -24,7 +24,7 @@ const createLazyComponent = <T extends ComponentType<unknown>>(
     } catch (error) {
       safeTelemetry.trackEvent('lazy-load-error', {
         component: componentName,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }
@@ -82,38 +82,42 @@ export const AdvancedChartsFeature = createLazyComponent(
 
 // Chart and Visualization Components - Heavy calculation components
 export const PrecipitationChart = createLazyComponent(
-  () => import('../components/optimized/EnhancedWeatherVisualization').then(
-    module => ({
-      default: module.PrecipitationChart,
-    })
-  ),
+  () =>
+    import('../components/optimized/EnhancedWeatherVisualization').then(
+      module => ({
+        default: module.PrecipitationChart,
+      })
+    ),
   'PrecipitationChart'
 );
 
 export const TemperatureTrend = createLazyComponent(
-  () => import('../components/optimized/EnhancedWeatherVisualization').then(
-    module => ({
-      default: module.TemperatureTrend,
-    })
-  ),
+  () =>
+    import('../components/optimized/EnhancedWeatherVisualization').then(
+      module => ({
+        default: module.TemperatureTrend,
+      })
+    ),
   'TemperatureTrend'
 );
 
 export const UVIndexBar = createLazyComponent(
-  () => import('../components/optimized/EnhancedWeatherVisualization').then(
-    module => ({
-      default: module.UVIndexBar,
-    })
-  ),
+  () =>
+    import('../components/optimized/EnhancedWeatherVisualization').then(
+      module => ({
+        default: module.UVIndexBar,
+      })
+    ),
   'UVIndexBar'
 );
 
 export const WindCompass = createLazyComponent(
-  () => import('../components/optimized/EnhancedWeatherVisualization').then(
-    module => ({
-      default: module.WindCompass,
-    })
-  ),
+  () =>
+    import('../components/optimized/EnhancedWeatherVisualization').then(
+      module => ({
+        default: module.WindCompass,
+      })
+    ),
   'WindCompass'
 );
 

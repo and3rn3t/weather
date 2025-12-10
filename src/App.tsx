@@ -12,7 +12,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ThemeProvider } from './utils/themeContext';
 import { useTheme } from './utils/useTheme';
 import { optimizedFetchJson } from './utils/optimizedFetch';
-import { getStoredUnits, getTemperatureSymbol, formatWindSpeed, formatVisibility, formatPrecipitation } from './utils/units';
+import {
+  getStoredUnits,
+  getTemperatureSymbol,
+  formatWindSpeed,
+  formatVisibility,
+  formatPrecipitation,
+} from './utils/units';
 import { getWeatherDescription } from './utils/weatherCodes';
 import WeatherIcon from './utils/weatherIcons';
 import ErrorBoundary from './ErrorBoundary';
@@ -81,109 +87,127 @@ const WeatherApp: React.FC = () => {
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [searchSuggestions, setSearchSuggestions] = useState<Array<{name: string; lat: number; lon: number; display_name: string}>>([]);
+  const [searchSuggestions, setSearchSuggestions] = useState<
+    Array<{ name: string; lat: number; lon: number; display_name: string }>
+  >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch weather data
-  const fetchWeather = useCallback(async (lat: number, lon: number, cityName?: string) => {
-    setLoading(true);
-    setError('');
+  const fetchWeather = useCallback(
+    async (lat: number, lon: number, cityName?: string) => {
+      setLoading(true);
+      setError('');
 
-    try {
-      const units = getStoredUnits();
-      const tempUnit = units === 'imperial' ? 'fahrenheit' : 'celsius';
-      const windUnit = units === 'imperial' ? 'mph' : 'kmh';
-      const precipUnit = units === 'imperial' ? 'inch' : 'mm';
+      try {
+        const units = getStoredUnits();
+        const tempUnit = units === 'imperial' ? 'fahrenheit' : 'celsius';
+        const windUnit = units === 'imperial' ? 'mph' : 'kmh';
+        const precipUnit = units === 'imperial' ? 'inch' : 'mm';
 
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,surface_pressure,weathercode,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum&timezone=auto&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&forecast_days=7`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,surface_pressure,weathercode,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum&timezone=auto&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&forecast_days=7`;
 
-      const data = await optimizedFetchJson<OpenMeteoResponse>(
-        url,
-        {
-          headers: {
-            'Accept': 'application/json',
+        const data = await optimizedFetchJson<OpenMeteoResponse>(
+          url,
+          {
+            headers: {
+              Accept: 'application/json',
+            },
           },
-        },
-        `weather:${lat},${lon}`
-      );
+          `weather:${lat},${lon}`
+        );
 
-      if (!data?.current) {
-        throw new Error('Invalid weather data received');
-      }
-
-      const current = data.current;
-      const weatherData: WeatherData = {
-        temp: Math.round(current.temperature_2m),
-        feelsLike: Math.round(current.apparent_temperature),
-        humidity: current.relative_humidity_2m,
-        pressure: Math.round(current.surface_pressure),
-        windSpeed: current.windspeed_10m || 0,
-        windDirection: current.winddirection_10m || 0,
-        uvIndex: current.uv_index || 0,
-        visibility: current.visibility || 10000,
-        weatherCode: current.weathercode,
-        description: getWeatherDescription(current.weathercode),
-      };
-
-      // Process hourly forecast (next 24 hours)
-      const hourly: HourlyForecast[] = [];
-      const now = new Date();
-      const nowTime = now.getTime();
-
-      // Get next 24 hours of forecast data
-      for (let i = 0; i < data.hourly.time.length; i++) {
-        const forecastTime = new Date(data.hourly.time[i]);
-        const forecastTimeMs = forecastTime.getTime();
-        const hoursFromNow = (forecastTimeMs - nowTime) / (1000 * 60 * 60);
-
-        // Include current hour and next 23 hours (24 total)
-        if (hoursFromNow >= 0 && hoursFromNow < 24 && hourly.length < 24) {
-          hourly.push({
-            time: forecastTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
-            temp: Math.round(data.hourly.temperature_2m[i]),
-            weatherCode: data.hourly.weathercode[i],
-          });
+        if (!data?.current) {
+          throw new Error('Invalid weather data received');
         }
-      }
 
-      // Process daily forecast
-      const daily: DailyForecast[] = data.daily.time.map((date, i) => ({
-        date: new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-        tempMax: Math.round(data.daily.temperature_2m_max[i]),
-        tempMin: Math.round(data.daily.temperature_2m_min[i]),
-        weatherCode: data.daily.weathercode[i],
-        precipitation: data.daily.precipitation_sum?.[i] || 0,
-      }));
+        const current = data.current;
+        const weatherData: WeatherData = {
+          temp: Math.round(current.temperature_2m),
+          feelsLike: Math.round(current.apparent_temperature),
+          humidity: current.relative_humidity_2m,
+          pressure: Math.round(current.surface_pressure),
+          windSpeed: current.windspeed_10m || 0,
+          windDirection: current.winddirection_10m || 0,
+          uvIndex: current.uv_index || 0,
+          visibility: current.visibility || 10000,
+          weatherCode: current.weathercode,
+          description: getWeatherDescription(current.weathercode),
+        };
 
-      setWeather(weatherData);
-      setHourlyForecast(hourly);
-      setDailyForecast(daily);
-      if (cityName) setCity(cityName);
-    } catch (err) {
-      let errorMessage = 'Failed to fetch weather data. Please check your internet connection and try again.';
+        // Process hourly forecast (next 24 hours)
+        const hourly: HourlyForecast[] = [];
+        const now = new Date();
+        const nowTime = now.getTime();
 
-      if (err instanceof Error) {
-        // Handle specific error types
-        if (err.name === 'AbortError' || err.message.includes('timeout')) {
-          errorMessage = 'Request timed out. Please check your connection and try again.';
-        } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-          errorMessage = 'Network error. Please check your internet connection.';
-        } else {
-          errorMessage = err.message || errorMessage;
+        // Get next 24 hours of forecast data
+        for (let i = 0; i < data.hourly.time.length; i++) {
+          const forecastTime = new Date(data.hourly.time[i]);
+          const forecastTimeMs = forecastTime.getTime();
+          const hoursFromNow = (forecastTimeMs - nowTime) / (1000 * 60 * 60);
+
+          // Include current hour and next 23 hours (24 total)
+          if (hoursFromNow >= 0 && hoursFromNow < 24 && hourly.length < 24) {
+            hourly.push({
+              time: forecastTime.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                hour12: true,
+              }),
+              temp: Math.round(data.hourly.temperature_2m[i]),
+              weatherCode: data.hourly.weathercode[i],
+            });
+          }
         }
-      }
 
-      setError(errorMessage);
-      setWeather(null);
-      setHourlyForecast([]);
-      setDailyForecast([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        // Process daily forecast
+        const daily: DailyForecast[] = data.daily.time.map((date, i) => ({
+          date: new Date(date).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }),
+          tempMax: Math.round(data.daily.temperature_2m_max[i]),
+          tempMin: Math.round(data.daily.temperature_2m_min[i]),
+          weatherCode: data.daily.weathercode[i],
+          precipitation: data.daily.precipitation_sum?.[i] || 0,
+        }));
+
+        setWeather(weatherData);
+        setHourlyForecast(hourly);
+        setDailyForecast(daily);
+        if (cityName) setCity(cityName);
+      } catch (err) {
+        let errorMessage =
+          'Failed to fetch weather data. Please check your internet connection and try again.';
+
+        if (err instanceof Error) {
+          // Handle specific error types
+          if (err.name === 'AbortError' || err.message.includes('timeout')) {
+            errorMessage =
+              'Request timed out. Please check your connection and try again.';
+          } else if (
+            err.message.includes('Failed to fetch') ||
+            err.message.includes('NetworkError')
+          ) {
+            errorMessage =
+              'Network error. Please check your internet connection.';
+          } else {
+            errorMessage = err.message || errorMessage;
+          }
+        }
+
+        setError(errorMessage);
+        setWeather(null);
+        setHourlyForecast([]);
+        setDailyForecast([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   // Get current location
   const getCurrentLocation = useCallback(async () => {
@@ -196,29 +220,43 @@ const WeatherApp: React.FC = () => {
     setError('');
 
     try {
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          {
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
             enableHighAccuracy: false, // Changed to false for faster response
             timeout: 15000, // Increased timeout to 15 seconds
             maximumAge: 300000, // Accept cached location up to 5 minutes old
-          }
-        );
-      });
+          });
+        }
+      );
 
       const { latitude, longitude } = position.coords;
 
       // Get city name from reverse geocoding
-      let geoData: {address?: {city?: string; town?: string; village?: string; municipality?: string; state?: string}};
+      let geoData: {
+        address?: {
+          city?: string;
+          town?: string;
+          village?: string;
+          municipality?: string;
+          state?: string;
+        };
+      };
       try {
-        geoData = await optimizedFetchJson<{address?: {city?: string; town?: string; village?: string; municipality?: string; state?: string}}>(
+        geoData = await optimizedFetchJson<{
+          address?: {
+            city?: string;
+            town?: string;
+            village?: string;
+            municipality?: string;
+            state?: string;
+          };
+        }>(
           `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
           {
             headers: {
               'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
-              'Accept': 'application/json',
+              Accept: 'application/json',
             },
           },
           `reverse:${latitude},${longitude}`
@@ -238,11 +276,14 @@ const WeatherApp: React.FC = () => {
       await fetchWeather(latitude, longitude, cityName);
 
       // Save location to localStorage
-      localStorage.setItem('lastCity', JSON.stringify({
-        name: cityName,
-        lat: latitude,
-        lon: longitude,
-      }));
+      localStorage.setItem(
+        'lastCity',
+        JSON.stringify({
+          name: cityName,
+          lat: latitude,
+          lon: longitude,
+        })
+      );
     } catch (err) {
       if (err instanceof GeolocationPositionError) {
         switch (err.code) {
@@ -293,16 +334,33 @@ const WeatherApp: React.FC = () => {
       setSearchError('');
 
       try {
-        let data: Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>;
+        let data: Array<{
+          name?: string;
+          lat: string;
+          lon: string;
+          display_name: string;
+          class?: string;
+          type?: string;
+        }>;
         try {
           const searchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
 
-          data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>>(
+          data = await optimizedFetchJson<
+            Array<{
+              name?: string;
+              lat: string;
+              lon: string;
+              display_name: string;
+              class?: string;
+              type?: string;
+            }>
+          >(
             searchUrl,
             {
               headers: {
-                'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
-                'Accept': 'application/json',
+                'User-Agent':
+                  'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
+                Accept: 'application/json',
               },
             },
             `search:${query}`
@@ -312,8 +370,14 @@ const WeatherApp: React.FC = () => {
           const errorMsg = err instanceof Error ? err.message : 'Search failed';
 
           // Show error message if it's a timeout or connection error
-          if (errorMsg.includes('timeout') || errorMsg.includes('connection') || errorMsg.includes('Network')) {
-            setSearchError('Search service is slow or unavailable. Please try again in a moment.');
+          if (
+            errorMsg.includes('timeout') ||
+            errorMsg.includes('connection') ||
+            errorMsg.includes('Network')
+          ) {
+            setSearchError(
+              'Search service is slow or unavailable. Please try again in a moment.'
+            );
           }
 
           data = [];
@@ -328,8 +392,17 @@ const WeatherApp: React.FC = () => {
         const suggestions = data
           .filter(item => {
             // Accept place, city, town, village, municipality
-            const acceptableTypes = new Set(['place', 'city', 'town', 'village', 'municipality']);
-            return acceptableTypes.has(item.class || '') || acceptableTypes.has(item.type || '');
+            const acceptableTypes = new Set([
+              'place',
+              'city',
+              'town',
+              'village',
+              'municipality',
+            ]);
+            return (
+              acceptableTypes.has(item.class || '') ||
+              acceptableTypes.has(item.type || '')
+            );
           })
           .map(item => ({
             name: item.name || item.display_name.split(',')[0],
@@ -454,11 +527,14 @@ const WeatherApp: React.FC = () => {
                   setSearchQuery(first.name);
                   setShowSuggestions(false);
                   fetchWeather(first.lat, first.lon, first.name);
-                  localStorage.setItem('lastCity', JSON.stringify({
-                    name: first.name,
-                    lat: first.lat,
-                    lon: first.lon,
-                  }));
+                  localStorage.setItem(
+                    'lastCity',
+                    JSON.stringify({
+                      name: first.name,
+                      lat: first.lat,
+                      lon: first.lon,
+                    })
+                  );
                 }
               }
             }}
@@ -477,50 +553,63 @@ const WeatherApp: React.FC = () => {
             aria-label="Search for a city"
             role="searchbox"
           />
-          {searchLoading && (
-            <div className="search-loading">
-              Searching...
-            </div>
-          )}
+          {searchLoading && <div className="search-loading">Searching...</div>}
           {searchError && !searchLoading && (
-            <div className="search-error">
-              {searchError}
-            </div>
+            <div className="search-error">{searchError}</div>
           )}
           {showSuggestions && searchSuggestions.length > 0 && (
             <div
               className="suggestions-dropdown"
-              onMouseDown={(e) => {
+              onMouseDown={e => {
                 // Prevent input blur when clicking on suggestions
                 e.preventDefault();
               }}
             >
-              {searchSuggestions.map((suggestion: {name: string; lat: number; lon: number; display_name: string}, idx: number) => (
-                <button
-                  key={`${suggestion.lat}-${suggestion.lon}-${idx}`}
-                  className="suggestion-item"
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSearchQuery(suggestion.name);
-                    setShowSuggestions(false);
-                    fetchWeather(suggestion.lat, suggestion.lon, suggestion.name);
-                    localStorage.setItem('lastCity', JSON.stringify({
-                      name: suggestion.name,
-                      lat: suggestion.lat,
-                      lon: suggestion.lon,
-                    }));
-                  }}
-                >
-                  <span className="suggestion-name">{suggestion.name}</span>
-                  <span className="suggestion-details">{suggestion.display_name}</span>
-                </button>
-              ))}
+              {searchSuggestions.map(
+                (
+                  suggestion: {
+                    name: string;
+                    lat: number;
+                    lon: number;
+                    display_name: string;
+                  },
+                  idx: number
+                ) => (
+                  <button
+                    key={`${suggestion.lat}-${suggestion.lon}-${idx}`}
+                    className="suggestion-item"
+                    type="button"
+                    onMouseDown={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onClick={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSearchQuery(suggestion.name);
+                      setShowSuggestions(false);
+                      fetchWeather(
+                        suggestion.lat,
+                        suggestion.lon,
+                        suggestion.name
+                      );
+                      localStorage.setItem(
+                        'lastCity',
+                        JSON.stringify({
+                          name: suggestion.name,
+                          lat: suggestion.lat,
+                          lon: suggestion.lon,
+                        })
+                      );
+                    }}
+                  >
+                    <span className="suggestion-name">{suggestion.name}</span>
+                    <span className="suggestion-details">
+                      {suggestion.display_name}
+                    </span>
+                  </button>
+                )
+              )}
             </div>
           )}
         </div>
@@ -545,17 +634,26 @@ const WeatherApp: React.FC = () => {
           <>
             {/* Current Weather Card */}
             <div className="weather-card main-card">
-              <div className="weather-location">{city || 'Current Location'}</div>
+              <div className="weather-location">
+                {city || 'Current Location'}
+              </div>
               <div className="weather-main">
                 <div className="weather-icon-large">
-                  <WeatherIcon code={weather.weatherCode} size={120} animated={true} isDay={true} />
+                  <WeatherIcon
+                    code={weather.weatherCode}
+                    size={120}
+                    animated={true}
+                    isDay={true}
+                  />
                 </div>
                 <div className="weather-temp">
-                  {weather.temp}{tempSymbol}
+                  {weather.temp}
+                  {tempSymbol}
                 </div>
                 <div className="weather-description">{weather.description}</div>
                 <div className="weather-feels-like">
-                  Feels like {weather.feelsLike}{tempSymbol}
+                  Feels like {weather.feelsLike}
+                  {tempSymbol}
                 </div>
               </div>
 
@@ -567,7 +665,9 @@ const WeatherApp: React.FC = () => {
                 </div>
                 <div className="metric">
                   <div className="metric-label">Wind</div>
-                  <div className="metric-value">{formatWindSpeed(weather.windSpeed, units)}</div>
+                  <div className="metric-value">
+                    {formatWindSpeed(weather.windSpeed, units)}
+                  </div>
                 </div>
                 <div className="metric">
                   <div className="metric-label">Pressure</div>
@@ -579,7 +679,9 @@ const WeatherApp: React.FC = () => {
                 </div>
                 <div className="metric">
                   <div className="metric-label">Visibility</div>
-                  <div className="metric-value">{formatVisibility(weather.visibility, units)}</div>
+                  <div className="metric-value">
+                    {formatVisibility(weather.visibility, units)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -589,15 +691,27 @@ const WeatherApp: React.FC = () => {
               <div className="weather-card">
                 <h2 className="forecast-title">24-Hour Forecast</h2>
                 <div className="hourly-forecast">
-                  {hourlyForecast.slice(0, 12).map((hour: HourlyForecast, idx: number) => (
-                    <div key={`${hour.time}-${idx}`} className="hourly-item">
-                      <div className="hourly-time">{idx === 0 ? 'Now' : hour.time}</div>
-                      <div className="hourly-icon">
-                        <WeatherIcon code={hour.weatherCode} size={32} animated={false} isDay={true} />
+                  {hourlyForecast
+                    .slice(0, 12)
+                    .map((hour: HourlyForecast, idx: number) => (
+                      <div key={`${hour.time}-${idx}`} className="hourly-item">
+                        <div className="hourly-time">
+                          {idx === 0 ? 'Now' : hour.time}
+                        </div>
+                        <div className="hourly-icon">
+                          <WeatherIcon
+                            code={hour.weatherCode}
+                            size={32}
+                            animated={false}
+                            isDay={true}
+                          />
+                        </div>
+                        <div className="hourly-temp">
+                          {hour.temp}
+                          {tempSymbol}
+                        </div>
                       </div>
-                      <div className="hourly-temp">{hour.temp}{tempSymbol}</div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
@@ -609,13 +723,26 @@ const WeatherApp: React.FC = () => {
                 <div className="daily-forecast">
                   {dailyForecast.map((day: DailyForecast, idx: number) => (
                     <div key={`${day.date}-${idx}`} className="daily-item">
-                      <div className="daily-date">{idx === 0 ? 'Today' : day.date}</div>
+                      <div className="daily-date">
+                        {idx === 0 ? 'Today' : day.date}
+                      </div>
                       <div className="daily-icon">
-                        <WeatherIcon code={day.weatherCode} size={40} animated={false} isDay={true} />
+                        <WeatherIcon
+                          code={day.weatherCode}
+                          size={40}
+                          animated={false}
+                          isDay={true}
+                        />
                       </div>
                       <div className="daily-temps">
-                        <span className="daily-temp-max">{day.tempMax}{tempSymbol}</span>
-                        <span className="daily-temp-min">{day.tempMin}{tempSymbol}</span>
+                        <span className="daily-temp-max">
+                          {day.tempMax}
+                          {tempSymbol}
+                        </span>
+                        <span className="daily-temp-min">
+                          {day.tempMin}
+                          {tempSymbol}
+                        </span>
                       </div>
                       {day.precipitation > 0 && (
                         <div className="daily-precip">
@@ -635,7 +762,9 @@ const WeatherApp: React.FC = () => {
           <div className="empty-state">
             <div className="empty-icon">🌤️</div>
             <h2>Welcome to Weather</h2>
-            <p>Search for a city or use your current location to get started.</p>
+            <p>
+              Search for a city or use your current location to get started.
+            </p>
             <button className="btn-primary" onClick={getCurrentLocation}>
               Use Current Location
             </button>

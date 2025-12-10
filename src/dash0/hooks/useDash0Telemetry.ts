@@ -100,7 +100,7 @@ export const useDash0Telemetry = (): Dash0TelemetryHook => {
         reportError(error, {
           componentStack: context.context || null,
         });
-        
+
         // Track additional context as a separate event if metadata exists
         if (context.metadata && Object.keys(context.metadata).length > 0) {
           sendEvent('error.context', {

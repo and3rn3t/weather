@@ -67,7 +67,9 @@
   min-height: 100dvh;
   background: var(--bg-primary, #f5f7fa);
   color: var(--text-primary, #1a1a1a);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* ============================================================================
@@ -281,7 +283,9 @@
 .search-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: var(--shadow-md), 0 0 0 3px rgba(0, 122, 255, 0.15); /* iOS 26 focus ring */
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px rgba(0, 122, 255, 0.15); /* iOS 26 focus ring */
   transition: all var(--duration-fast) var(--ease-out);
 }
 
@@ -405,7 +409,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-state p {

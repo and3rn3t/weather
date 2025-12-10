@@ -1,6 +1,6 @@
 /**
  * Enhanced PWA Service Worker Manager
- * 
+ *
  * Provides intelligent service worker management with update notifications,
  * cache optimization, and offline status monitoring for better PWA experience.
  */
@@ -56,11 +56,11 @@ class EnhancedPWAManager {
 
     try {
       const registration = await navigator.serviceWorker.register(swPath);
-      
-      this.updateState({ 
-        isRegistered: true, 
+
+      this.updateState({
+        isRegistered: true,
         registration,
-        lastUpdate: new Date()
+        lastUpdate: new Date(),
       });
 
       safeTelemetry.trackEvent('pwa-sw-registered');
@@ -71,14 +71,17 @@ class EnhancedPWAManager {
       });
 
       // Check for updates every 30 minutes
-      this.updateCheckInterval = window.setInterval(() => {
-        this.checkForUpdates();
-      }, 30 * 60 * 1000);
+      this.updateCheckInterval = window.setInterval(
+        () => {
+          this.checkForUpdates();
+        },
+        30 * 60 * 1000
+      );
 
       return true;
     } catch (error) {
-      safeTelemetry.trackEvent('pwa-sw-error', { 
-        error: error instanceof Error ? error.message : 'Unknown error'
+      safeTelemetry.trackEvent('pwa-sw-error', {
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       return false;
     }
@@ -90,7 +93,10 @@ class EnhancedPWAManager {
     if (!newWorker) return;
 
     newWorker.addEventListener('statechange', () => {
-      if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+      if (
+        newWorker.state === 'installed' &&
+        navigator.serviceWorker.controller
+      ) {
         // New update available
         this.updateState({ isUpdateAvailable: true });
         safeTelemetry.trackEvent('pwa-update-available');
@@ -104,18 +110,18 @@ class EnhancedPWAManager {
 
     try {
       await this.state.registration.update();
-      
+
       // Reload to activate new service worker
       if (this.state.isUpdateAvailable) {
         window.location.reload();
         return true;
       }
     } catch (error) {
-      safeTelemetry.trackEvent('pwa-update-error', { 
-        error: error instanceof Error ? error.message : 'Unknown error'
+      safeTelemetry.trackEvent('pwa-update-error', {
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
-    
+
     return false;
   }
 
@@ -132,7 +138,7 @@ class EnhancedPWAManager {
   }
 
   // Get cache storage statistics
-  async getCacheStats(): Promise<{ size: number; entries: number; } | null> {
+  async getCacheStats(): Promise<{ size: number; entries: number } | null> {
     if (!('caches' in window)) return null;
 
     try {
@@ -162,7 +168,7 @@ class EnhancedPWAManager {
     try {
       const cacheNames = await caches.keys();
       await Promise.all(cacheNames.map(name => caches.delete(name)));
-      
+
       safeTelemetry.trackEvent('pwa-cache-cleared');
       return true;
     } catch {
@@ -208,7 +214,7 @@ export const pwaManager = new EnhancedPWAManager();
 // React hook for PWA state
 export const usePWAState = () => {
   const [state, setState] = React.useState(pwaManager.getState());
-  
+
   React.useEffect(() => {
     const handleStateChange = (newState: ServiceWorkerState) => {
       setState(newState);

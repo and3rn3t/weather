@@ -98,14 +98,8 @@
     "overallScore": 50,
     "issues": 2,
     "successes": 2,
-    "issueDetails": [
-      "Bundle size: 0.90MB",
-      "Lighthouse average: 0%"
-    ],
-    "successDetails": [
-      "Build time: 10.6s",
-      "Dependencies: 34"
-    ]
+    "issueDetails": ["Bundle size: 0.90MB", "Lighthouse average: 0%"],
+    "successDetails": ["Build time: 10.6s", "Dependencies: 34"]
   },
   "recommendations": [
     "Consider code splitting and lazy loading for large bundles",

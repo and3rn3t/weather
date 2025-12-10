@@ -8,7 +8,9 @@
   min-height: 100dvh;
   background: var(--bg-primary, #f5f7fa);
   color: var(--text-primary, #1a1a1a);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Light Theme */
@@ -114,7 +116,9 @@
 .search-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: var(--shadow-md), 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .search-input::placeholder {
@@ -207,7 +211,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-state p {
@@ -538,4 +544,3 @@ input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-

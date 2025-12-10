@@ -45,7 +45,8 @@ export const trackBundleMetrics = (): BundleMetrics => {
     interface PerformanceMemory {
       usedJSHeapSize: number;
     }
-    const memInfo = (performance as unknown as { memory?: PerformanceMemory }).memory;
+    const memInfo = (performance as unknown as { memory?: PerformanceMemory })
+      .memory;
     if (memInfo) {
       metrics.memoryUsage = memInfo.usedJSHeapSize;
     }
@@ -69,7 +70,8 @@ export const safeTelemetry = {
   },
 
   trackTiming: (name: string, duration: number) => {
-    if (duration > 100) { // Only track slow operations
+    if (duration > 100) {
+      // Only track slow operations
       prodConsole.log(`[Timing] ${name}: ${duration}ms`);
     }
   },
@@ -93,11 +95,13 @@ export const monitorMemoryUsage = (component: string) => {
     interface PerformanceMemory {
       usedJSHeapSize: number;
     }
-    const memInfo = (performance as unknown as { memory?: PerformanceMemory }).memory;
+    const memInfo = (performance as unknown as { memory?: PerformanceMemory })
+      .memory;
     if (memInfo) {
       const usageMB = Math.round(memInfo.usedJSHeapSize / 1024 / 1024);
 
-      if (usageMB > 50) { // Alert if memory usage is high
+      if (usageMB > 50) {
+        // Alert if memory usage is high
         prodConsole.warn(`[Memory] High usage in ${component}: ${usageMB}MB`);
       }
     }

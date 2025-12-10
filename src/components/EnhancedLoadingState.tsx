@@ -1,6 +1,6 @@
 /**
  * Enhanced Loading States Component
- * 
+ *
  * Provides sophisticated loading states with context-aware messaging,
  * progress indication, and accessibility features for better UX.
  */
@@ -21,36 +21,42 @@ interface LoadingStateProps {
   theme?: 'light' | 'dark';
 }
 
-const LoadingSpinner: React.FC<{ size: string; theme: string }> = ({ size, theme }) => {
+const LoadingSpinner: React.FC<{ size: string; theme: string }> = ({
+  size,
+  theme,
+}) => {
   const sizeClasses = {
     small: 'w-6 h-6',
-    medium: 'w-8 h-8', 
-    large: 'w-12 h-12'
+    medium: 'w-8 h-8',
+    large: 'w-12 h-12',
   };
 
   return (
-    <div 
+    <div
       className={`${sizeClasses[size as keyof typeof sizeClasses]} animate-spin`}
       style={{
         border: `2px solid ${theme === 'dark' ? '#374151' : '#e5e7eb'}`,
         borderTop: `2px solid ${theme === 'dark' ? '#8b5cf6' : '#667eea'}`,
-        borderRadius: '50%'
+        borderRadius: '50%',
       }}
       aria-hidden="true"
     />
   );
 };
 
-const ProgressBar: React.FC<{ progress: number; theme: string }> = ({ progress, theme }) => (
-  <div 
+const ProgressBar: React.FC<{ progress: number; theme: string }> = ({
+  progress,
+  theme,
+}) => (
+  <div
     className="w-full bg-opacity-20 rounded-full h-1.5 mt-3"
     style={{ backgroundColor: theme === 'dark' ? '#374151' : '#e5e7eb' }}
   >
-    <div 
+    <div
       className="h-1.5 rounded-full transition-all duration-300 ease-out"
-      style={{ 
+      style={{
         width: `${Math.max(0, Math.min(100, progress))}%`,
-        backgroundColor: theme === 'dark' ? '#8b5cf6' : '#667eea'
+        backgroundColor: theme === 'dark' ? '#8b5cf6' : '#667eea',
       }}
       role="progressbar"
       aria-valuenow={progress}
@@ -70,7 +76,7 @@ export const EnhancedLoadingState: React.FC<LoadingStateProps> = ({
   onRetry,
   className = '',
   size = 'medium',
-  theme = 'dark'
+  theme = 'dark',
 }) => {
   // Context-aware default messages
   const getDefaultMessage = () => {
@@ -91,7 +97,7 @@ export const EnhancedLoadingState: React.FC<LoadingStateProps> = ({
   // Track loading times for analytics
   React.useEffect(() => {
     const startTime = performance.now();
-    
+
     return () => {
       const loadTime = performance.now() - startTime;
       safeTelemetry.trackTiming(`loading-${type}`, loadTime);
@@ -101,24 +107,24 @@ export const EnhancedLoadingState: React.FC<LoadingStateProps> = ({
   // Error state
   if (isError) {
     return (
-      <div 
+      <div
         className={`flex flex-col items-center justify-center p-6 text-center ${className}`}
         role="alert"
         aria-live="polite"
       >
-        <div 
+        <div
           className="text-4xl mb-3"
           style={{ color: theme === 'dark' ? '#ef4444' : '#dc2626' }}
         >
           ⚠️
         </div>
-        <h3 
+        <h3
           className="font-semibold mb-2"
           style={{ color: theme === 'dark' ? '#f9fafb' : '#1f2937' }}
         >
           Something went wrong
         </h3>
-        <p 
+        <p
           className="text-sm mb-4 opacity-75"
           style={{ color: theme === 'dark' ? '#d1d5db' : '#6b7280' }}
         >
@@ -130,7 +136,7 @@ export const EnhancedLoadingState: React.FC<LoadingStateProps> = ({
             className="px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105"
             style={{
               backgroundColor: theme === 'dark' ? '#8b5cf6' : '#667eea',
-              color: '#ffffff'
+              color: '#ffffff',
             }}
           >
             Try Again
@@ -142,25 +148,25 @@ export const EnhancedLoadingState: React.FC<LoadingStateProps> = ({
 
   // Success loading state
   return (
-    <div 
+    <div
       className={`flex flex-col items-center justify-center p-6 text-center ${className}`}
       role="status"
       aria-live="polite"
       aria-label={displayMessage}
     >
       <LoadingSpinner size={size} theme={theme} />
-      
-      <p 
+
+      <p
         className="mt-4 font-medium"
         style={{ color: theme === 'dark' ? '#f9fafb' : '#1f2937' }}
       >
         {displayMessage}
       </p>
-      
+
       {showProgress && progress !== undefined && (
         <>
           <ProgressBar progress={progress} theme={theme} />
-          <span 
+          <span
             className="text-xs mt-2 opacity-75"
             style={{ color: theme === 'dark' ? '#d1d5db' : '#6b7280' }}
             aria-label={`Loading progress: ${progress}%`}
@@ -178,11 +184,7 @@ export const SkeletonLoader: React.FC<{
   lines?: number;
   height?: string;
   theme?: 'light' | 'dark';
-}> = ({ 
-  lines = 3, 
-  height = '1rem',
-  theme = 'dark' 
-}) => {
+}> = ({ lines = 3, height = '1rem', theme = 'dark' }) => {
   const baseColor = theme === 'dark' ? '#374151' : '#e5e7eb';
   const shimmerColor = theme === 'dark' ? '#4b5563' : '#f3f4f6';
 
@@ -197,7 +199,7 @@ export const SkeletonLoader: React.FC<{
             backgroundColor: baseColor,
             backgroundImage: `linear-gradient(90deg, ${baseColor} 25%, ${shimmerColor} 50%, ${baseColor} 75%)`,
             backgroundSize: '200% 100%',
-            animation: 'shimmer 1.5s infinite'
+            animation: 'shimmer 1.5s infinite',
           }}
         />
       ))}
