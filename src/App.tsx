@@ -366,6 +366,14 @@ const WeatherApp: React.FC = () => {
                 }
               }
             }}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            data-lpignore="true"
+            data-form-type="other"
+            aria-label="Search for a city"
+            role="searchbox"
           />
           {showSuggestions && searchSuggestions.length > 0 && (
             <div className="suggestions-dropdown">
