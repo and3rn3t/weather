@@ -17,6 +17,10 @@ export interface RawHourlyData {
   surface_pressure?: number[];
   uv_index?: number[];
   visibility?: number[];
+  cloudcover?: number[];
+  precipitation?: number[];
+  precipitation_probability?: number[];
+  windgusts_10m?: number[];
 }
 
 export interface RawDailyData {
@@ -26,7 +30,11 @@ export interface RawDailyData {
   temperature_2_m_min?: never; // guard against typos
   temperature_2m_min: number[];
   precipitation_sum?: number[];
+  precipitation_probability_max?: number[];
   windspeed_10m_max?: number[];
+  windgusts_10m_max?: number[];
+  winddirection_10m_dominant?: number[];
+  uv_index_max?: number[];
 }
 
 export const processHourlyForecast = (
@@ -50,6 +58,13 @@ export const processHourlyForecast = (
         weatherCode: hourlyData.weathercode?.[i] || 0,
         humidity: Math.round(hourlyData.relative_humidity_2m?.[i] || 0),
         feelsLike: Math.round(hourlyData.apparent_temperature?.[i] || 0),
+        cloudcover: hourlyData.cloudcover?.[i],
+        precipitation: hourlyData.precipitation?.[i],
+        precipitationProbability: hourlyData.precipitation_probability?.[i],
+        windgusts: hourlyData.windgusts_10m?.[i],
+        pressure: hourlyData.surface_pressure?.[i],
+        uvIndex: hourlyData.uv_index?.[i],
+        visibility: hourlyData.visibility?.[i],
       });
     }
 
@@ -78,6 +93,10 @@ export const processDailyForecast = (
       precipitation:
         Math.round((dailyData.precipitation_sum?.[i] || 0) * 10) / 10,
       windSpeed: Math.round(dailyData.windspeed_10m_max?.[i] || 0),
+      precipitationProbabilityMax: dailyData.precipitation_probability_max?.[i],
+      uvIndexMax: dailyData.uv_index_max?.[i],
+      windgustsMax: dailyData.windgusts_10m_max?.[i],
+      windDirectionDominant: dailyData.winddirection_10m_dominant?.[i],
     });
   }
 

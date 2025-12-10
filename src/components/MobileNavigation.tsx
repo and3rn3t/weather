@@ -161,8 +161,12 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
                 }
               }}
             >
-              <div className="nav-icon">{displayIcon}</div>
+              <div className="nav-icon-wrapper">
+                <div className="nav-icon">{displayIcon}</div>
+                {isActive && <div className="nav-active-indicator" />}
+              </div>
               <span className="nav-label">{tab.label}</span>
+              {isActive && <div className="nav-underline" />}
             </button>
           );
         })}

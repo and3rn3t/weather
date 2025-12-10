@@ -65,9 +65,11 @@ export const ThemeProvider = ({
   const [themeName, setThemeName] = useState<ThemeName>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('weather-app-theme') as ThemeName;
-      // Accept only light/dark; map any other to 'dark' for simplicity
+      // Accept light/dark/horror; map any other to 'dark' for simplicity
       const valid =
-        savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark';
+        savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'horror'
+          ? savedTheme
+          : 'dark';
       return valid;
     }
     return 'light';
@@ -187,7 +189,11 @@ export const ThemeProvider = ({
 
   const toggleTheme = useCallback(() => {
     logInfo('🎨 Theme toggle triggered');
-    const newTheme: ThemeName = themeName === 'light' ? 'dark' : 'light';
+    // Cycle through: light -> dark -> horror -> light
+    const themeCycle: ThemeName[] = ['light', 'dark', 'horror'];
+    const currentIndex = themeCycle.indexOf(themeName);
+    const nextIndex = (currentIndex + 1) % themeCycle.length;
+    const newTheme = themeCycle[nextIndex];
     setThemeName(newTheme);
     localStorage.setItem('weather-app-theme', newTheme);
   }, [themeName]);
@@ -201,10 +207,12 @@ export const ThemeProvider = ({
         '🚫 React theme context disabled - nuclear system handling background'
       );
 
-      // Remove all theme classes first, then apply only light/dark class
-      document.body.classList.remove('dark-theme');
+      // Remove all theme classes first, then apply appropriate class
+      document.body.classList.remove('dark-theme', 'horror-theme');
       if (themeName === 'dark') {
         document.body.classList.add('dark-theme');
+      } else if (themeName === 'horror') {
+        document.body.classList.add('horror-theme');
       }
 
       // Store theme info for nuclear system but don't apply background

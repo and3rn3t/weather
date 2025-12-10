@@ -31,6 +31,14 @@ interface WeatherResponse {
     temperature_2m?: number[];
     weathercode?: number[];
     relative_humidity_2m?: number[];
+    apparent_temperature?: number[];
+    cloudcover?: number[];
+    precipitation?: number[];
+    precipitation_probability?: number[];
+    windgusts_10m?: number[];
+    surface_pressure?: number[];
+    uv_index?: number[];
+    visibility?: number[];
   };
   daily?: {
     time?: string[];
@@ -38,7 +46,10 @@ interface WeatherResponse {
     temperature_2m_min?: number[];
     weathercode?: number[];
     precipitation_sum?: number[];
+    precipitation_probability_max?: number[];
     windspeed_10m_max?: number[];
+    windgusts_10m_max?: number[];
+    winddirection_10m_dominant?: number[];
     uv_index_max?: number[];
   };
 }
@@ -101,7 +112,7 @@ export function useWeatherApiWithTelemetry() {
             const unit = getTemperatureUnitParam(getStoredUnits());
             const wind = getWindSpeedUnitParam(getStoredUnits());
             const precip = getPrecipitationUnitParam(getStoredUnits());
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`;
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`;
 
             return optimizedFetchJson<WeatherResponse>(
               weatherUrl,
@@ -168,7 +179,7 @@ export function useWeatherApiWithTelemetry() {
             const unit2 = _getTemperatureUnitParam3(_getStoredUnits3());
             const wind2 = getWindSpeedUnitParam(_getStoredUnits3());
             const precip2 = _getPrecipitationUnitParam3(_getStoredUnits3());
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max,uv_index_max&timezone=auto&temperature_unit=${unit2}&wind_speed_unit=${wind2}&precipitation_unit=${precip2}&forecast_days=7`;
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit2}&wind_speed_unit=${wind2}&precipitation_unit=${precip2}&forecast_days=7`;
 
             return optimizedFetchJson<WeatherResponse>(
               weatherUrl,
@@ -256,6 +267,14 @@ function transformHourlyData(
       humidity: hourlyData.relative_humidity_2m?.[index] || 0,
       weathercode: hourlyData.weathercode?.[index] || 0,
       description: getWeatherDescription(hourlyData.weathercode?.[index] || 0),
+      feelsLike: Math.round(hourlyData.apparent_temperature?.[index] || 0),
+      cloudcover: hourlyData.cloudcover?.[index],
+      precipitation: hourlyData.precipitation?.[index],
+      precipitationProbability: hourlyData.precipitation_probability?.[index],
+      windgusts: hourlyData.windgusts_10m?.[index],
+      pressure: hourlyData.surface_pressure?.[index],
+      uvIndex: hourlyData.uv_index?.[index],
+      visibility: hourlyData.visibility?.[index],
     })) || []
   );
 }
@@ -274,6 +293,9 @@ function transformDailyData(dailyData: NonNullable<WeatherResponse['daily']>) {
       uv_index: dailyData.uv_index_max?.[index] || 0,
       weathercode: dailyData.weathercode?.[index] || 0,
       description: getWeatherDescription(dailyData.weathercode?.[index] || 0),
+      precipitation_probability_max: dailyData.precipitation_probability_max?.[index],
+      windgusts_max: dailyData.windgusts_10m_max?.[index],
+      wind_direction_dominant: dailyData.winddirection_10m_dominant?.[index],
     })) || []
   );
 }

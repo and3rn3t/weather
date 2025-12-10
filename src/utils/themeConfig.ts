@@ -147,7 +147,55 @@ export const darkTheme: ThemeColors = {
   toggleIcon: '#cbd5e1',
 };
 
-export type ThemeName = 'light' | 'dark';
+export const horrorTheme: ThemeColors = {
+  // Primary gradients - Dark, eerie Crystal Lake atmosphere
+  primaryGradient: 'linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d0d0d 100%)',
+  secondaryGradient: 'linear-gradient(135deg, #1a3a1a, #0a1a0a)',
+
+  // Background colors - Dark forest/Crystal Lake
+  appBackground: 'linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d0d0d 100%)',
+  cardBackground: 'rgba(10, 26, 10, 0.95)',
+  cardBorder: 'rgba(139, 0, 0, 0.3)',
+
+  // Text colors - Eerie but readable
+  primaryText: '#e8f5e9', // Light green tint
+  secondaryText: '#a5d6a7', // Medium green
+  inverseText: '#ffffff', // White for contrast
+
+  // Interactive elements - Blood red accents
+  buttonGradient: 'linear-gradient(135deg, #8b0000 0%, #5a0000 100%)',
+  buttonGradientHover: 'linear-gradient(135deg, #a00000, #6a0000)',
+  buttonGradientDisabled: 'linear-gradient(135deg, #3a3a3a, #2a2a2a)',
+
+  // Weather card specific - Dark with red accents
+  weatherCardBackground: 'linear-gradient(135deg, #1a2a1a, #0f1f0f)',
+  weatherCardBorder: '#8b0000',
+  weatherCardBadge: 'linear-gradient(135deg, #8b0000, #5a0000)',
+
+  // Error states - Blood red
+  errorBackground: 'linear-gradient(135deg, #5a0000, #3a0000)',
+  errorText: '#ff6b6b',
+  errorBorder: '#8b0000',
+
+  // Forecast elements - Dark with subtle red
+  forecastCardBackground: 'rgba(10, 26, 10, 0.9)',
+  forecastCardBorder: 'rgba(139, 0, 0, 0.3)',
+
+  // Loading and disabled states
+  loadingBackground: 'linear-gradient(135deg, #3a3a3a, #2a2a2a)',
+  disabledText: '#6b7280',
+
+  // Shadows and effects - Darker, more dramatic
+  cardShadow: '0 20px 40px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(139, 0, 0, 0.3)',
+  buttonShadow: '0 10px 30px rgba(139, 0, 0, 0.5)',
+
+  // Theme toggle button
+  toggleBackground: 'rgba(139, 0, 0, 0.2)',
+  toggleBorder: 'rgba(139, 0, 0, 0.4)',
+  toggleIcon: '#a5d6a7',
+};
+
+export type ThemeName = 'light' | 'dark' | 'horror';
 
 /**
  * themes - Core themeConfig functionality
@@ -158,4 +206,5 @@ export type ThemeName = 'light' | 'dark';
 export const themes = {
   light: lightTheme,
   dark: darkTheme,
+  horror: horrorTheme,
 } as const;

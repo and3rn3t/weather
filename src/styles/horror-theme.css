@@ -1,1 +1,279 @@
-/* Deprecated: horror theme removed. File left intentionally empty. */
+/**
+ * Horror Theme Styles
+ * Friday the 13th inspired horror theme with effects
+ */
+
+/* ============================================================================
+   HORROR THEME BASE STYLES
+   ============================================================================ */
+
+[data-theme='horror'],
+.horror-theme {
+  --horror-primary: #0a1a0a;
+  --horror-secondary: #1a3a1a;
+  --horror-accent: #8b0000;
+  --horror-text: #e8f5e9;
+  --horror-text-secondary: #a5d6a7;
+  --horror-border: rgba(139, 0, 0, 0.3);
+  --horror-shadow: rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================================
+   SCREEN FLICKER ANIMATION
+   ============================================================================ */
+
+@keyframes horrorFlicker {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  2% {
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+  4% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  6% {
+    opacity: 0.9;
+    filter: brightness(0.95);
+  }
+  8% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+.horror-flicker {
+  animation: horrorFlicker 0.1s infinite;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .horror-flicker {
+    animation: none;
+  }
+}
+
+/* ============================================================================
+   COLOR SHIFT ANIMATION
+   ============================================================================ */
+
+@keyframes horrorColorShift {
+  0%, 100% {
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  25% {
+    filter: hue-rotate(-5deg) saturate(1.1);
+  }
+  50% {
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  75% {
+    filter: hue-rotate(5deg) saturate(1.1);
+  }
+}
+
+.horror-color-shift {
+  animation: horrorColorShift 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .horror-color-shift {
+    animation: none;
+  }
+}
+
+/* ============================================================================
+   STATIC OVERLAY
+   ============================================================================ */
+
+.horror-static-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 3px
+    );
+  mix-blend-mode: overlay;
+  animation: horrorStatic 0.1s infinite;
+}
+
+@keyframes horrorStatic {
+  0%, 100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.08;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .horror-static-overlay {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   HORROR THEME SPECIFIC COMPONENT STYLES
+   ============================================================================ */
+
+[data-theme='horror'] .weather-card {
+  background: linear-gradient(135deg, #1a2a1a, #0f1f0f);
+  border-color: var(--horror-accent);
+  box-shadow: 
+    0 20px 40px var(--horror-shadow),
+    0 1px 3px rgba(139, 0, 0, 0.3);
+}
+
+[data-theme='horror'] .metric-item {
+  background: rgba(10, 26, 10, 0.95);
+  border-color: var(--horror-border);
+}
+
+[data-theme='horror'] button {
+  background: linear-gradient(135deg, #8b0000 0%, #5a0000 100%);
+  color: var(--horror-text);
+  border-color: var(--horror-accent);
+}
+
+[data-theme='horror'] button:hover {
+  background: linear-gradient(135deg, #a00000, #6a0000);
+  box-shadow: 0 10px 30px rgba(139, 0, 0, 0.5);
+}
+
+[data-theme='horror'] .nav-tab.active {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(139, 0, 0, 0.15));
+  border-color: rgba(139, 0, 0, 0.4);
+}
+
+[data-theme='horror'] .nav-tab.active .nav-label {
+  color: #ff6b6b;
+}
+
+[data-theme='horror'] .nav-underline {
+  background: linear-gradient(90deg, #8b0000, #5a0000);
+}
+
+/* ============================================================================
+   HORROR QUOTE DISPLAY
+   ============================================================================ */
+
+.horror-quote-display {
+  padding: 1rem;
+  background: rgba(10, 26, 10, 0.8);
+  border: 1px solid var(--horror-border);
+  border-radius: 8px;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.horror-quote-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(139, 0, 0, 0.05) 50%,
+    transparent 70%
+  );
+  animation: horrorQuoteShimmer 3s ease-in-out infinite;
+}
+
+@keyframes horrorQuoteShimmer {
+  0%, 100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .horror-quote-display::before {
+    animation: none;
+  }
+}
+
+.horror-quote-text {
+  color: var(--horror-text);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.horror-quote-attribution {
+  color: var(--horror-text-secondary);
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================================
+   HORROR WEATHER ICONS
+   ============================================================================ */
+
+[data-theme='horror'] .weather-icon {
+  filter: drop-shadow(0 2px 4px rgba(139, 0, 0, 0.3));
+}
+
+[data-theme='horror'] .weather-icon.rain {
+  filter: drop-shadow(0 2px 4px rgba(139, 0, 0, 0.5)) 
+          hue-rotate(-10deg) 
+          saturate(1.2);
+}
+
+[data-theme='horror'] .weather-icon.storm {
+  filter: drop-shadow(0 2px 8px rgba(139, 0, 0, 0.6)) 
+          brightness(0.9) 
+          contrast(1.1);
+}
+
+/* ============================================================================
+   ACCESSIBILITY - ENSURE READABILITY
+   ============================================================================ */
+
+[data-theme='horror'] {
+  color-scheme: dark;
+}
+
+[data-theme='horror'] * {
+  /* Ensure minimum contrast ratios */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* High contrast mode overrides */
+@media (prefers-contrast: high) {
+  [data-theme='horror'] {
+    --horror-text: #ffffff;
+    --horror-text-secondary: #e0e0e0;
+    --horror-border: rgba(139, 0, 0, 0.6);
+  }
+}

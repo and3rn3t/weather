@@ -134,6 +134,142 @@
   isolation: isolate;
 }
 
+.mobile-navigation-safe-area {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  padding: 8px 4px;
+  gap: 4px;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px 12px 4px;
+  min-height: 64px;
+  min-width: 44px; /* Minimum touch target size */
+  position: relative;
+
+  /* Touch optimizations */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+
+  /* Transition effects */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  margin: 4px 2px;
+}
+
+.nav-tab.active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(102, 126, 234, 0.1));
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px rgba(102, 126, 234, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.nav-icon {
+  font-size: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.nav-tab.active .nav-icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.4));
+}
+
+.nav-active-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+  animation: pulse 2s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.7;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+
+.nav-tab.active .nav-label {
+  font-weight: 600;
+  opacity: 1;
+  color: #667eea;
+}
+
+.nav-underline {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 24px;
+    opacity: 1;
+  }
+}
+
+/* Enhanced hover/active states */
+.nav-tab:hover:not(.active) {
+  background: rgba(102, 126, 234, 0.05);
+  transform: translateY(-1px);
+}
+
+.nav-tab:active {
+  transform: translateY(0) scale(0.95);
+}
+
 .mobile-navigation-item {
   flex: 1;
   display: flex;
@@ -198,17 +334,30 @@
     min-height: 72px;
   }
 
+  .nav-tab,
   .mobile-navigation-item {
     min-height: 56px;
     padding: 6px 2px 10px 2px;
+    min-width: 44px; /* Maintain touch target size */
   }
 
+  .nav-icon,
   .mobile-navigation-icon {
     font-size: 20px;
   }
 
+  .nav-label,
   .mobile-navigation-label {
     font-size: 10px;
+  }
+
+  .nav-active-indicator {
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-underline {
+    width: 20px;
   }
 }
 
@@ -227,11 +376,13 @@
    ACCESSIBILITY IMPROVEMENTS
    ============================================================================ */
 
+.nav-tab:focus,
 .mobile-navigation-item:focus {
   outline: 2px solid #667eea;
   outline-offset: 2px;
 }
 
+.nav-tab:focus:not(:focus-visible),
 .mobile-navigation-item:focus:not(:focus-visible) {
   outline: none;
 }
@@ -250,6 +401,11 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+  .nav-tab,
+  .nav-icon,
+  .nav-label,
+  .nav-active-indicator,
+  .nav-underline,
   .mobile-navigation-item,
   .mobile-navigation-icon,
   .mobile-navigation-label,
@@ -268,10 +424,19 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+[data-theme='dark'] .nav-tab.active,
 [data-theme='dark'] .mobile-navigation-item.active {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.15));
   border: 1px solid rgba(102, 126, 234, 0.3);
   box-shadow:
     0 4px 12px rgba(102, 126, 234, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .nav-tab.active .nav-label {
+  color: #8b5cf6;
+}
+
+[data-theme='dark'] .nav-underline {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
 }

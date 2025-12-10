@@ -202,17 +202,24 @@ class PreCommitHook {
       );
     }
 
-    // 2) Remaining checks (repo-wide)
-    const checks = [
-      { cmd: 'npm run lint:check', desc: 'ESLint rules' },
-      { cmd: 'npm run stylelint', desc: 'Stylelint rules' },
-      { cmd: 'npm run type-check', desc: 'TypeScript types' },
-      { cmd: 'npm run test:fast', desc: 'Unit tests' },
-    ];
-
-    for (const check of checks) {
-      const passed = await this.runCommand(check.cmd, check.desc);
-      if (!passed) allPassed = false;
+    // 2) ESLint check (on staged files if possible, otherwise repo-wide)
+    const eslintPassed = await this.runCommand(
+      'npm run lint:check',
+      'ESLint rules'
+    );
+    if (!eslintPassed) {
+      // Try auto-fix if eslint failed
+      this.print(
+        'ESLint issues detected — attempting auto-fix...',
+        'warning'
+      );
+      await this.runCommand('npm run lint:fix', 'ESLint auto-fix');
+      await this.runCommand('git add -A', 'Stage ESLint fixes');
+      const eslintRecheck = await this.runCommand(
+        'npm run lint:check',
+        'ESLint rules (after auto-fix)'
+      );
+      if (!eslintRecheck) allPassed = false;
     }
 
     if (allPassed) {

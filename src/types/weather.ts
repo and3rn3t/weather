@@ -36,6 +36,13 @@ export interface HourlyForecast {
   weatherCode: number; // OpenMeteo weather code
   humidity: number; // Relative humidity percentage
   feelsLike: number; // Apparent temperature
+  cloudcover?: number; // Cloud cover percentage (0-100)
+  precipitation?: number; // Precipitation amount in mm
+  precipitationProbability?: number; // Precipitation probability (0-100)
+  windgusts?: number; // Wind gusts in mph
+  pressure?: number; // Surface pressure in hPa
+  uvIndex?: number; // UV index
+  visibility?: number; // Visibility in meters
 }
 
 // Daily forecast data structure
@@ -46,6 +53,10 @@ export interface DailyForecast {
   tempMin: number; // Minimum temperature in Fahrenheit
   precipitation: number; // Precipitation amount in mm
   windSpeed: number; // Maximum wind speed in mph
+  precipitationProbabilityMax?: number; // Maximum precipitation probability (0-100)
+  uvIndexMax?: number; // Maximum UV index
+  windgustsMax?: number; // Maximum wind gusts in mph
+  windDirectionDominant?: number; // Dominant wind direction in degrees
 }
 
 // Weather context for smart content prioritization

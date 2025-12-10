@@ -34,7 +34,12 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     haptic.settingsChange();
     await interactionFeedback.onButtonPress();
 
-    const nextTheme = themeName === 'light' ? 'dark' : 'light';
+    // Cycle through: light -> dark -> horror -> light
+    const themeCycle: Array<'light' | 'dark' | 'horror'> = ['light', 'dark', 'horror'];
+    const currentIndex = themeCycle.indexOf(themeName);
+    const nextIndex = (currentIndex + 1) % themeCycle.length;
+    const nextTheme = themeCycle[nextIndex];
+
     toggleTheme();
 
     telemetry.trackMetric({
@@ -58,6 +63,8 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
       case 'light':
         return '🌙'; // Next: dark
       case 'dark':
+        return '🎃'; // Next: horror
+      case 'horror':
         return '☀️'; // Next: light
       default:
         return '🌙';
@@ -69,6 +76,8 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
       case 'light':
         return 'Switch to dark mode';
       case 'dark':
+        return 'Switch to horror mode';
+      case 'horror':
         return 'Switch to light mode';
       default:
         return 'Switch theme';
@@ -79,6 +88,8 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     switch (themeName) {
       case 'dark':
         return 'theme-toggle-dark';
+      case 'horror':
+        return 'theme-toggle-horror';
       default:
         return 'theme-toggle-light';
     }

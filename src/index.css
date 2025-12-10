@@ -9,7 +9,8 @@
 
 /* TEMP: Heavy consolidated CSS imports removed while isolating overlay issue */
 
-/* Horror theme removed (Aug 2025): all related selectors and imports purged */
+/* Horror theme styles - Friday the 13th inspired */
+@import './styles/horror-theme.css';
 
 :root {
   font-family:
