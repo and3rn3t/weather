@@ -9,8 +9,8 @@
  */
 
 import React from 'react';
-import MobileNavigation, { type NavigationScreen } from './MobileNavigation';
-import InteractiveWeatherWidget from './modernWeatherUI/InteractiveWeatherWidget';
+import MobileNavigation, { type NavigationScreen } from '../../MobileNavigation';
+import InteractiveWeatherWidget from '../modernWeatherUI/InteractiveWeatherWidget';
 import { useTheme } from '../utils/useTheme';
 import { logInfo } from '../utils/logger';
 

@@ -8,7 +8,7 @@ import React from 'react';
 import {
   getScreenInfo,
   getAdaptiveFontSizes,
-} from '../utils/mobileScreenOptimization';
+} from '../../../utils/mobileScreenOptimization';
 
 export const MobileTest: React.FC = () => {
   // const { theme } = useTheme();

@@ -17,7 +17,7 @@
 
 import React, { useState, useEffect } from 'react';
 import WeatherIcon from '../../utils/weatherIcons';
-import type { ThemeColors } from '../../utils/themeConfig';
+import type { ThemeColors } from '../../../utils/themeConfig';
 import { SimpleStatusBadge, SimpleEnhancedButton } from './SimpleIOSComponents';
 
 interface ModernHomeScreenProps {

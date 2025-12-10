@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import type { ThemeColors } from '../../utils/themeConfig';
+import type { ThemeColors } from '../../../utils/themeConfig';
 import {
   SimpleSegmentedControl,
   SimpleActivityIndicator,
@@ -14,7 +14,7 @@ import {
   SimpleEnhancedButton,
   SimpleCard,
   SimpleProgressBar,
-} from './SimpleIOSComponents';
+} from '../SimpleIOSComponents';
 
 interface SimpleIOSDemoProps {
   theme: ThemeColors;

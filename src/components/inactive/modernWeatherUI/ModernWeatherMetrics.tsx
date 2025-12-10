@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import type { ThemeColors } from '../../utils/themeConfig';
+import type { ThemeColors } from '../../../utils/themeConfig';
 
 interface WeatherMetric {
   id: string;

@@ -9,16 +9,16 @@ import React, { useState } from 'react';
 import { logInfo } from '../../utils/logger';
 import type { ThemeColors } from '../../utils/themeConfig';
 import { ActionSheet } from './ActionSheet';
-import { EnhancedSearchBar } from './EnhancedSearchBar';
+import { EnhancedSearchBar } from '../../legacy-ui/EnhancedSearchBar';
 import {
   ActivityIndicator,
   ListItem,
   ProgressIndicator,
   SegmentedControl,
   StatusBadge,
-} from './IOSComponents';
-import { NavigationBar } from './NavigationBar';
-import { NavigationIcons } from './NavigationIcons';
+} from '../IOSComponents';
+import { NavigationBar } from '../NavigationBar';
+import { NavigationIcons } from '../NavigationIcons';
 
 interface IOSWeatherDemoProps {
   theme: ThemeColors;

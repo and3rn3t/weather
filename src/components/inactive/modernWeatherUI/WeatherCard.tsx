@@ -16,9 +16,9 @@
  */
 
 import React from 'react';
-import WeatherIcon from '../../utils/weatherIcons';
-import WeatherHapticIntegration from '../WeatherHapticIntegration';
-import type { ThemeColors } from '../../utils/themeConfig';
+import WeatherIcon from '../../../utils/weatherIcons';
+import WeatherHapticIntegration from '../../WeatherHapticIntegration';
+import type { ThemeColors } from '../../../utils/themeConfig';
 
 interface WeatherCardProps {
   temperature: number;
