@@ -100,7 +100,8 @@ export async function optimizedFetch(
   const maxRetries = computeMaxRetries(isOpenMeteo, isNominatim, isProd);
   const baseDelay = 300;
   // Increased timeout for slower connections, especially for Nominatim which can be slow
-  const timeoutMs = isNominatim ? 12000 : 10000;
+  // Nominatim can be very slow, so we give it more time
+  const timeoutMs = isNominatim ? 20000 : 10000;
 
   function shouldRetryStatus(status: number): boolean {
     return status === 429 || (status >= 500 && status < 600);
@@ -156,6 +157,16 @@ export async function optimizedFetch(
           }
           // Convert AbortError to a more user-friendly error
           throw new Error(`Request timeout after ${timeoutMs}ms. Please check your connection and try again.`);
+        }
+
+        // Handle network errors (connection refused, timeout, etc.)
+        if (err instanceof TypeError && (err.message.includes('Failed to fetch') || err.message.includes('network') || err.message.includes('ERR_CONNECTION'))) {
+          if (attempt < maxRetries) {
+            const waitMs = computeRetryWaitMs(attempt, null);
+            await delay(waitMs);
+            continue;
+          }
+          throw new Error('Network connection failed. Please check your internet connection and try again.');
         }
 
         if (attempt < maxRetries) {

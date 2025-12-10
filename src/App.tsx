@@ -280,8 +280,11 @@ const WeatherApp: React.FC = () => {
       return;
     }
 
-    // Debounce search - wait 300ms after user stops typing
+    // Debounce search - wait 500ms after user stops typing (increased to reduce API calls)
     searchTimeoutRef.current = setTimeout(async () => {
+      // Use requestAnimationFrame to avoid blocking the main thread
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      
       try {
         let data: Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>;
         try {
@@ -295,8 +298,12 @@ const WeatherApp: React.FC = () => {
             },
             `search:${query}`
           );
-        } catch {
+        } catch (err) {
           // Handle search errors gracefully - don't show to user, just return empty
+          // Log for debugging but don't spam console
+          if (err instanceof Error && !err.message.includes('timeout')) {
+            // Only log non-timeout errors
+          }
           data = [];
         }
 

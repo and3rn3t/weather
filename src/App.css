@@ -167,6 +167,9 @@
   z-index: 100;
   max-height: 300px;
   overflow-y: auto;
+  /* Use transform instead of position changes to avoid forced reflow */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .suggestion-item {
@@ -181,6 +184,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  /* Optimize rendering performance */
+  transform: translateZ(0);
+  will-change: background-color;
 }
 
 .suggestion-item:last-child {
@@ -383,6 +389,9 @@
   padding-bottom: 0.5rem;
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
+  /* Optimize scrolling performance */
+  transform: translateZ(0);
+  will-change: scroll-position;
 }
 
 .hourly-forecast::-webkit-scrollbar {
