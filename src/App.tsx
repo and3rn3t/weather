@@ -161,9 +161,19 @@ const WeatherApp: React.FC = () => {
       setDailyForecast(daily);
       if (cityName) setCity(cityName);
     } catch (err) {
-      const errorMessage = err instanceof Error
-        ? err.message
-        : 'Failed to fetch weather data. Please check your internet connection and try again.';
+      let errorMessage = 'Failed to fetch weather data. Please check your internet connection and try again.';
+
+      if (err instanceof Error) {
+        // Handle specific error types
+        if (err.name === 'AbortError' || err.message.includes('timeout')) {
+          errorMessage = 'Request timed out. Please check your connection and try again.';
+        } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+          errorMessage = 'Network error. Please check your internet connection.';
+        } else {
+          errorMessage = err.message || errorMessage;
+        }
+      }
+
       setError(errorMessage);
       setWeather(null);
       setHourlyForecast([]);
@@ -199,16 +209,22 @@ const WeatherApp: React.FC = () => {
       const { latitude, longitude } = position.coords;
 
       // Get city name from reverse geocoding
-      const geoData = await optimizedFetchJson<{address?: {city?: string; town?: string; village?: string; municipality?: string; state?: string}}>(
-        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-        {
-          headers: {
-            'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
-            'Accept': 'application/json',
+      let geoData: {address?: {city?: string; town?: string; village?: string; municipality?: string; state?: string}};
+      try {
+        geoData = await optimizedFetchJson<{address?: {city?: string; town?: string; village?: string; municipality?: string; state?: string}}>(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+          {
+            headers: {
+              'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
+              'Accept': 'application/json',
+            },
           },
-        },
-        `reverse:${latitude},${longitude}`
-      );
+          `reverse:${latitude},${longitude}`
+        );
+      } catch {
+        // If reverse geocoding fails, just use coordinates as fallback
+        geoData = { address: {} };
+      }
 
       const cityName =
         geoData.address?.city ||
@@ -267,16 +283,22 @@ const WeatherApp: React.FC = () => {
     // Debounce search - wait 300ms after user stops typing
     searchTimeoutRef.current = setTimeout(async () => {
       try {
-        const data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>>(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`,
-          {
-            headers: {
-              'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
-              'Accept': 'application/json',
+        let data: Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>;
+        try {
+          data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>>(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
+                'Accept': 'application/json',
+              },
             },
-          },
-          `search:${query}`
-        );
+            `search:${query}`
+          );
+        } catch {
+          // Handle search errors gracefully - don't show to user, just return empty
+          data = [];
+        }
 
         if (!data || !Array.isArray(data)) {
           setSearchSuggestions([]);

@@ -99,7 +99,8 @@ export async function optimizedFetch(
   // Retry/backoff policy (production-focused)
   const maxRetries = computeMaxRetries(isOpenMeteo, isNominatim, isProd);
   const baseDelay = 300;
-  const timeoutMs = 8000;
+  // Increased timeout for slower connections, especially for Nominatim which can be slow
+  const timeoutMs = isNominatim ? 12000 : 10000;
 
   function shouldRetryStatus(status: number): boolean {
     return status === 429 || (status >= 500 && status < 600);
@@ -145,6 +146,18 @@ export async function optimizedFetch(
         return res;
       } catch (err) {
         clearTimeout(timer);
+
+        // Handle AbortError (timeout) gracefully
+        if (err instanceof Error && err.name === 'AbortError') {
+          if (attempt < maxRetries) {
+            const waitMs = computeRetryWaitMs(attempt, null);
+            await delay(waitMs);
+            continue;
+          }
+          // Convert AbortError to a more user-friendly error
+          throw new Error(`Request timeout after ${timeoutMs}ms. Please check your connection and try again.`);
+        }
+
         if (attempt < maxRetries) {
           const waitMs = computeRetryWaitMs(attempt, null);
           await delay(waitMs);
@@ -161,9 +174,15 @@ export async function optimizedFetch(
   requestCache.set(cacheKey, promise);
   lastRequestTime.set(cacheKey, t);
 
-  promise.finally(() => {
-    setTimeout(() => requestCache.delete(cacheKey), 5000);
-  });
+  // Clean up cache after request completes (success or failure)
+  promise
+    .then(() => {
+      setTimeout(() => requestCache.delete(cacheKey), 5000);
+    })
+    .catch(() => {
+      // Error will be handled by caller, just clean up cache
+      setTimeout(() => requestCache.delete(cacheKey), 5000);
+    });
 
   return promise.then(res => res.clone());
 }
@@ -195,10 +214,18 @@ export async function optimizedFetchJson<T = unknown>(
     }
   }
 
-  const res = await optimizedFetch(url, options, cacheKey);
-  const data = (await res.json()) as T;
-  if (effectiveTtl > 0) jsonCache.set(cacheKey, { ts: now(), data });
-  return data;
+  try {
+    const res = await optimizedFetch(url, options, cacheKey);
+    const data = (await res.json()) as T;
+    if (effectiveTtl > 0) jsonCache.set(cacheKey, { ts: now(), data });
+    return data;
+  } catch (err) {
+    // Re-throw with context, but ensure it's a proper Error
+    if (err instanceof Error) {
+      throw err;
+    }
+    throw new Error(`Failed to fetch JSON from ${url}`);
+  }
 }
 
 export function clearAPICache() {
