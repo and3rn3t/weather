@@ -8,7 +8,7 @@
  * - Working functionality
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ThemeProvider } from './utils/themeContext';
 import { useTheme } from './utils/useTheme';
 import { optimizedFetchJson } from './utils/optimizedFetch';
@@ -83,6 +83,7 @@ const WeatherApp: React.FC = () => {
   const [error, setError] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState<Array<{name: string; lat: number; lon: number; display_name: string}>>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch weather data
   const fetchWeather = useCallback(async (lat: number, lon: number, cityName?: string) => {
@@ -175,7 +176,7 @@ const WeatherApp: React.FC = () => {
   // Get current location
   const getCurrentLocation = useCallback(async () => {
     if (!navigator.geolocation) {
-      setError('Geolocation not supported');
+      setError('Geolocation not supported by your browser');
       return;
     }
 
@@ -184,10 +185,15 @@ const WeatherApp: React.FC = () => {
 
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-        });
+        navigator.geolocation.getCurrentPosition(
+          resolve,
+          reject,
+          {
+            enableHighAccuracy: false, // Changed to false for faster response
+            timeout: 15000, // Increased timeout to 15 seconds
+            maximumAge: 300000, // Accept cached location up to 5 minutes old
+          }
+        );
       });
 
       const { latitude, longitude } = position.coords;
@@ -242,9 +248,15 @@ const WeatherApp: React.FC = () => {
     }
   }, [fetchWeather]);
 
-  // Search for cities
+  // Search for cities with debouncing
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query);
+
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
 
     if (query.length < 2) {
       setSearchSuggestions([]);
@@ -252,34 +264,48 @@ const WeatherApp: React.FC = () => {
       return;
     }
 
-    try {
-      const data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string}>>(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`,
-        {
-          headers: {
-            'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
-            'Accept': 'application/json',
+    // Debounce search - wait 300ms after user stops typing
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>>(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`,
+          {
+            headers: {
+              'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
+              'Accept': 'application/json',
+            },
           },
-        },
-        `search:${query}`
-      );
+          `search:${query}`
+        );
 
-      const suggestions = data
-        .filter(item => item.class === 'place')
-        .map(item => ({
-          name: item.name || item.display_name.split(',')[0],
-          lat: Number.parseFloat(item.lat),
-          lon: Number.parseFloat(item.lon),
-          display_name: item.display_name,
-        }));
+        if (!data || !Array.isArray(data)) {
+          setSearchSuggestions([]);
+          setShowSuggestions(false);
+          return;
+        }
 
-      setSearchSuggestions(suggestions);
-      setShowSuggestions(suggestions.length > 0);
-    } catch {
-      // Silently fail search suggestions
-      setSearchSuggestions([]);
-      setShowSuggestions(false);
-    }
+        const suggestions = data
+          .filter(item => {
+            // Accept place, city, town, village, municipality
+            const acceptableTypes = new Set(['place', 'city', 'town', 'village', 'municipality']);
+            return acceptableTypes.has(item.class || '') || acceptableTypes.has(item.type || '');
+          })
+          .map(item => ({
+            name: item.name || item.display_name.split(',')[0],
+            lat: Number.parseFloat(item.lat),
+            lon: Number.parseFloat(item.lon),
+            display_name: item.display_name,
+          }));
+
+        setSearchSuggestions(suggestions);
+        setShowSuggestions(suggestions.length > 0);
+      } catch (err) {
+        // Silently fail search suggestions - don't show error to user
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+      }
+      searchTimeoutRef.current = null;
+    }, 300);
   }, []);
 
   // Auto-fetch on mount if we have a saved city, or prompt for location
@@ -297,6 +323,15 @@ const WeatherApp: React.FC = () => {
     // Note: We don't auto-request location on mount to respect user privacy
     // User can click the location button if they want to use their location
   }, [fetchWeather]);
+
+  // Cleanup search timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const units = getStoredUnits();
   const tempSymbol = getTemperatureSymbol(units);
