@@ -55,14 +55,16 @@ import { useMemoryOptimization } from '../utils/memoryOptimization';
 
 // Type assertions for lazy-loaded components to preserve prop types
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LazyiOS26WeatherDemoTyped = LazyiOS26WeatherDemo as React.ComponentType<any>;
+const LazyiOS26WeatherDemoTyped =
+  LazyiOS26WeatherDemo as React.ComponentType<any>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LazyOptimizedMobileWeatherDisplayTyped =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   LazyOptimizedMobileWeatherDisplay as React.ComponentType<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LazyNativeStatusDisplayTyped = LazyNativeStatusDisplay as React.ComponentType<any>;
+const LazyNativeStatusDisplayTyped =
+  LazyNativeStatusDisplay as React.ComponentType<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LazyMobileDebugTyped = LazyMobileDebug as React.ComponentType<any>;
@@ -71,13 +73,15 @@ const LazyMobileDebugTyped = LazyMobileDebug as React.ComponentType<any>;
 const LazyPWAStatusTyped = LazyPWAStatus as React.ComponentType<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LazyIOSComponentShowcaseTyped = IOSComponentShowcase as React.ComponentType<any>;
+const LazyIOSComponentShowcaseTyped =
+  IOSComponentShowcase as React.ComponentType<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LazyPWAInstallPromptTyped = LazyPWAInstallPrompt as React.ComponentType<any>;
+const LazyPWAInstallPromptTyped =
+  LazyPWAInstallPrompt as React.ComponentType<any>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LazyPerformanceDashboardTyped =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   LazyPerformanceDashboard as React.ComponentType<any>;
 
 // Dash0 Telemetry Integration

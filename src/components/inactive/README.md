@@ -1,22 +1,29 @@
 # Inactive Components
 
-This folder contains components that are currently not being used in the active codebase but may be useful for future reference or re-implementation.
+This folder contains components that are currently not being used in the active codebase but may be
+useful for future reference or re-implementation.
 
 ## Folder Structure
 
 ### `deprecated/`
+
 Components that have been explicitly deprecated and replaced with newer implementations:
+
 - **HorrorQuoteDisplay.tsx** - Deprecated horror theme quote display (returns null)
 - **HorrorThemeActivator.tsx** - Deprecated horror theme activator (returns null)
 - **HorrorThemeActivator.css** - Associated styles
 
 ### `test/`
+
 Test and development components used for debugging and verification:
+
 - **MobileTest.tsx** - Mobile optimization testing component
 - **NavigationTest.tsx** - iOS-style navigation positioning test component
 
 ### `legacy-ui/`
+
 Legacy UI components that have been replaced by newer implementations:
+
 - **BottomSheet.tsx** - Legacy bottom sheet component
 - **FloatingActionButton.tsx** - Legacy floating action button
 - **IOSHIGNavigation.tsx** - Legacy iOS HIG navigation component
@@ -29,7 +36,9 @@ Legacy UI components that have been replaced by newer implementations:
 - **WeatherInteractionEnhancer.tsx** - Weather interaction enhancement component
 
 ### `modernWeatherUI/`
+
 Modern weather UI components that are not currently in use:
+
 - **SimpleIOSDemo.tsx** - Simple iOS demo component
 - **IOSWeatherDemo.tsx** - iOS weather demo (replaced by iOS26WeatherDemo)
 - **ModernHomeScreen.tsx** - Modern home screen component
@@ -53,8 +62,9 @@ Modern weather UI components that are not currently in use:
 ## Reactivation
 
 To reactivate a component:
-1. Move it back to the appropriate active folder (`src/components/` or `src/components/modernWeatherUI/`)
+
+1. Move it back to the appropriate active folder (`src/components/` or
+   `src/components/modernWeatherUI/`)
 2. Update any import paths in the component file
 3. Update imports in files that use the component
 4. Test thoroughly to ensure it works with the current codebase
-

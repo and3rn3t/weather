@@ -21,8 +21,8 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
-    "include": ["src"],
-    "exclude": ["src/components/inactive"],
+  "include": ["src"],
+  "exclude": ["src/components/inactive"],
   "exclude": [
     "node_modules",
     "dist",

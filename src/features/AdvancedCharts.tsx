@@ -5,10 +5,7 @@
 
 import React from 'react';
 import type { ComponentType } from 'react';
-import {
-  PrecipitationChart,
-  TemperatureTrend,
-} from '../utils/lazyComponents';
+import { PrecipitationChart, TemperatureTrend } from '../utils/lazyComponents';
 
 // Type assertions for lazy-loaded components
 const TemperatureTrendTyped = TemperatureTrend as ComponentType<{
