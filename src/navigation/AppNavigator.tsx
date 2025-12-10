@@ -53,6 +53,33 @@ import {
 } from '../utils/lazyComponents';
 import { useMemoryOptimization } from '../utils/memoryOptimization';
 
+// Type assertions for lazy-loaded components to preserve prop types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyiOS26WeatherDemoTyped = LazyiOS26WeatherDemo as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyOptimizedMobileWeatherDisplayTyped =
+  LazyOptimizedMobileWeatherDisplay as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyNativeStatusDisplayTyped = LazyNativeStatusDisplay as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyMobileDebugTyped = LazyMobileDebug as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyPWAStatusTyped = LazyPWAStatus as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyIOSComponentShowcaseTyped = IOSComponentShowcase as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyPWAInstallPromptTyped = LazyPWAInstallPrompt as React.ComponentType<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LazyPerformanceDashboardTyped =
+  LazyPerformanceDashboard as React.ComponentType<any>;
+
 // Dash0 Telemetry Integration
 import { Dash0ErrorBoundary } from '../dash0/components/Dash0ErrorBoundary';
 import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
@@ -505,7 +532,7 @@ function HomeScreen({
             At a Glance
           </h2>
           <React.Suspense fallback={null}>
-            <LazyiOS26WeatherDemo theme={theme} />
+            <LazyiOS26WeatherDemoTyped theme={theme} />
           </React.Suspense>
         </section>
       </div>
@@ -930,7 +957,7 @@ function WeatherDetailsScreen({
               <React.Suspense
                 fallback={<SmartWeatherSkeleton variant="current" />}
               >
-                <LazyOptimizedMobileWeatherDisplay
+                <LazyOptimizedMobileWeatherDisplayTyped
                   weather={weather}
                   hourlyForecast={hourlyForecast}
                   dailyForecast={dailyForecast}
@@ -2493,7 +2520,7 @@ const AppNavigator = () => {
               </div>
             }
           >
-            <LazyNativeStatusDisplay
+            <LazyNativeStatusDisplayTyped
               theme={theme}
               isMobile={screenInfo.width < 768}
             />
@@ -2777,7 +2804,7 @@ const AppNavigator = () => {
               </div>
             }
           >
-            <LazyMobileDebug enabled={false} position="bottom-right" />
+            <LazyMobileDebugTyped enabled={false} position="bottom-right" />
           </React.Suspense>
 
           {/* iOS 26 Live Activity - Weather Alerts and Updates */}
@@ -2839,7 +2866,7 @@ const AppNavigator = () => {
                 </div>
               }
             >
-              <LazyPWAStatus
+              <LazyPWAStatusTyped
                 pwaInstall={pwaInstall}
                 serviceWorker={serviceWorker}
                 isOnline={isOnline}
@@ -2855,7 +2882,7 @@ const AppNavigator = () => {
           {showIOSDemo && (
             <div className="ios26-overlay">
               <React.Suspense fallback={null}>
-                <IOSComponentShowcase
+                <LazyIOSComponentShowcaseTyped
                   theme={theme}
                   themeName={themeName}
                   onBack={() => setShowIOSDemo(false)}
@@ -2868,7 +2895,7 @@ const AppNavigator = () => {
 
           {/* PWA Install Prompt - Appears when app can be installed (lazy) */}
           <React.Suspense fallback={null}>
-            <LazyPWAInstallPrompt
+            <LazyPWAInstallPromptTyped
               canInstall={pwaInstall.canInstall}
               onInstall={async () => {
                 await pwaInstall.promptInstall();
@@ -2899,7 +2926,10 @@ const AppNavigator = () => {
                 </div>
               }
             >
-              <LazyPerformanceDashboard enabled={true} position="bottom-left" />
+              <LazyPerformanceDashboardTyped
+                enabled={true}
+                position="bottom-left"
+              />
             </React.Suspense>
           )}
 

@@ -4,7 +4,22 @@
  */
 
 import React from 'react';
-import { PrecipitationChart, TemperatureTrend } from '../utils/lazyComponents';
+import type { ComponentType } from 'react';
+import {
+  PrecipitationChart,
+  TemperatureTrend,
+} from '../utils/lazyComponents';
+
+// Type assertions for lazy-loaded components
+const TemperatureTrendTyped = TemperatureTrend as ComponentType<{
+  hourlyData: Array<{ time: string; temperature: number }>;
+  className?: string;
+}>;
+
+const PrecipitationChartTyped = PrecipitationChart as ComponentType<{
+  hourlyData: Array<{ time: string; precipitation: number }>;
+  className?: string;
+}>;
 
 export interface AdvancedChartsFeatureProps {
   hourlyData?: Array<{ time: string; temperature: number }>;
@@ -37,7 +52,7 @@ export const AdvancedChartsFeature: React.FC<AdvancedChartsFeatureProps> = ({
             <div className="chart-loading">Loading temperature chart...</div>
           }
         >
-          <TemperatureTrend hourlyData={hourlyData} />
+          <TemperatureTrendTyped hourlyData={hourlyData} />
         </React.Suspense>
       )}
 
@@ -47,7 +62,7 @@ export const AdvancedChartsFeature: React.FC<AdvancedChartsFeatureProps> = ({
             <div className="chart-loading">Loading precipitation chart...</div>
           }
         >
-          <PrecipitationChart hourlyData={precipitationHourlyData} />
+          <PrecipitationChartTyped hourlyData={precipitationHourlyData} />
         </React.Suspense>
       )}
     </div>

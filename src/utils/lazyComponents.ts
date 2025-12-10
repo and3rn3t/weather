@@ -8,7 +8,8 @@ import { lazy, ComponentType } from 'react';
 import { safeTelemetry } from './buildOptimizations';
 
 // Enhanced lazy loading with performance tracking
-const createLazyComponent = <T extends ComponentType<unknown>>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createLazyComponent = <T extends ComponentType<any>>(
   importFn: () => Promise<{ default: T }>,
   componentName: string
 ) => {
