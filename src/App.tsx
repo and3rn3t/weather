@@ -83,6 +83,8 @@ const WeatherApp: React.FC = () => {
   const [error, setError] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState<Array<{name: string; lat: number; lon: number; display_name: string}>>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState('');
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch weather data
@@ -267,6 +269,7 @@ const WeatherApp: React.FC = () => {
   // Search for cities with debouncing
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query);
+    setSearchError('');
 
     // Clear existing timeout
     if (searchTimeoutRef.current) {
@@ -277,6 +280,7 @@ const WeatherApp: React.FC = () => {
     if (query.length < 2) {
       setSearchSuggestions([]);
       setShowSuggestions(false);
+      setSearchLoading(false);
       return;
     }
 
@@ -284,12 +288,24 @@ const WeatherApp: React.FC = () => {
     searchTimeoutRef.current = setTimeout(async () => {
       // Use requestAnimationFrame to avoid blocking the main thread
       await new Promise(resolve => requestAnimationFrame(resolve));
-      
+
+      setSearchLoading(true);
+      setSearchError('');
+
+      if (import.meta.env.DEV) {
+        console.log('🔍 Searching for:', query);
+      }
+
       try {
         let data: Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>;
         try {
+          const searchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
+          if (import.meta.env.DEV) {
+            console.log('🌐 Fetching from:', searchUrl);
+          }
+
           data = await optimizedFetchJson<Array<{name?: string; lat: string; lon: string; display_name: string; class?: string; type?: string}>>(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`,
+            searchUrl,
             {
               headers: {
                 'User-Agent': 'PremiumWeatherApp/1.0 (weather-app@andernet.dev)',
@@ -298,12 +314,22 @@ const WeatherApp: React.FC = () => {
             },
             `search:${query}`
           );
-        } catch (err) {
-          // Handle search errors gracefully - don't show to user, just return empty
-          // Log for debugging but don't spam console
-          if (err instanceof Error && !err.message.includes('timeout')) {
-            // Only log non-timeout errors
+
+          if (import.meta.env.DEV) {
+            console.log('✅ Search results:', data?.length || 0, 'items');
           }
+        } catch (err) {
+          // Handle search errors - show user-friendly message
+          const errorMsg = err instanceof Error ? err.message : 'Search failed';
+          if (import.meta.env.DEV) {
+            console.error('❌ Search API error:', err);
+          }
+
+          // Show error message if it's a timeout or connection error
+          if (errorMsg.includes('timeout') || errorMsg.includes('connection') || errorMsg.includes('Network')) {
+            setSearchError('Search service is slow or unavailable. Please try again in a moment.');
+          }
+
           data = [];
         }
 
@@ -326,15 +352,33 @@ const WeatherApp: React.FC = () => {
             display_name: item.display_name,
           }));
 
+        // Always set suggestions and show dropdown if we have results
         setSearchSuggestions(suggestions);
-        setShowSuggestions(suggestions.length > 0);
+        setSearchLoading(false);
+        if (suggestions.length > 0) {
+          if (import.meta.env.DEV) {
+            console.log('📋 Showing', suggestions.length, 'suggestions');
+          }
+          setShowSuggestions(true);
+        } else {
+          if (import.meta.env.DEV) {
+            console.log('⚠️ No suggestions found');
+          }
+          setShowSuggestions(false);
+          if (!searchError) {
+            setSearchError('No cities found. Try a different search term.');
+          }
+        }
       } catch (err) {
-        // Silently fail search suggestions - don't show error to user
+        setSearchLoading(false);
         setSearchSuggestions([]);
         setShowSuggestions(false);
+        if (!searchError) {
+          setSearchError('Search failed. Please try again.');
+        }
       }
       searchTimeoutRef.current = null;
-    }, 300);
+    }, 500);
   }, []);
 
   // Auto-fetch on mount if we have a saved city, or prompt for location
@@ -412,8 +456,23 @@ const WeatherApp: React.FC = () => {
             className="search-input"
             placeholder="Search for a city..."
             value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
-            onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const value = e.target.value;
+              if (import.meta.env.DEV) {
+                console.log('⌨️ Input changed:', value);
+              }
+              handleSearch(value);
+            }}
+            onFocus={() => {
+              // Show suggestions if we have them when input is focused
+              if (searchSuggestions.length > 0) {
+                setShowSuggestions(true);
+              }
+            }}
+            onBlur={() => {
+              // Delay hiding suggestions to allow click on suggestion
+              setTimeout(() => setShowSuggestions(false), 200);
+            }}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Enter' && searchQuery.trim().length >= 2) {
                 // If user presses Enter, select first suggestion or trigger search
@@ -435,17 +494,49 @@ const WeatherApp: React.FC = () => {
             autoCapitalize="off"
             spellCheck="false"
             data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-dashlane-ignore="true"
+            data-keepass="false"
             data-form-type="other"
+            name="city-search"
+            id="city-search-input"
             aria-label="Search for a city"
             role="searchbox"
           />
+          {searchLoading && (
+            <div className="search-loading">
+              Searching...
+            </div>
+          )}
+          {searchError && !searchLoading && (
+            <div className="search-error">
+              {searchError}
+            </div>
+          )}
           {showSuggestions && searchSuggestions.length > 0 && (
-            <div className="suggestions-dropdown">
+            <div
+              className="suggestions-dropdown"
+              onMouseDown={(e) => {
+                // Prevent input blur when clicking on suggestions
+                e.preventDefault();
+              }}
+            >
               {searchSuggestions.map((suggestion: {name: string; lat: number; lon: number; display_name: string}, idx: number) => (
                 <button
                   key={`${suggestion.lat}-${suggestion.lon}-${idx}`}
                   className="suggestion-item"
-                  onClick={() => {
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (import.meta.env.DEV) {
+                      console.log('📍 Selected:', suggestion.name);
+                    }
                     setSearchQuery(suggestion.name);
                     setShowSuggestions(false);
                     fetchWeather(suggestion.lat, suggestion.lon, suggestion.name);

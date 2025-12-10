@@ -1,7 +1,66 @@
 /**
- * Clean, Modern Weather App Styles
- * Simple, beautiful, functional design
+ * iOS 26 Weather App Styles
+ * Fully integrated with Apple Human Interface Guidelines
+ * Uses iOS26 design tokens for typography, spacing, colors, and interactions
  */
+
+/* ============================================================================
+   iOS 26 TYPOGRAPHY SYSTEM (HIG Compliant)
+   ============================================================================ */
+.weather-app {
+  /* iOS 26 SF Pro Typography System */
+  font-family: var(--ios26-font-family-text, -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif);
+  font-size: var(--ios26-text-body, 17px);
+  line-height: 1.47; /* iOS 26 standard line height */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.01em; /* iOS 26 letter spacing */
+}
+
+/* iOS 26 Typography Scale Mapping */
+:root {
+  /* Map custom variables to iOS26 tokens for backward compatibility */
+  --font-size-xs: var(--ios26-text-caption1, 12px);
+  --font-size-sm: var(--ios26-text-subheadline, 14px);
+  --font-size-base: var(--ios26-text-body, 17px);
+  --font-size-lg: var(--ios26-text-headline, 20px);
+  --font-size-xl: var(--ios26-text-title3, 22px);
+  --font-size-2xl: var(--ios26-text-title2, 24px);
+  --font-size-3xl: var(--ios26-text-title1, 32px);
+  --font-size-4xl: var(--ios26-text-large-title, 40px);
+  --font-size-5xl: clamp(40px, 8vw, 48px);
+
+  /* iOS 26 Font Weights */
+  --font-weight-normal: var(--ios26-weight-regular, 400);
+  --font-weight-medium: var(--ios26-weight-medium, 500);
+  --font-weight-semibold: var(--ios26-weight-semibold, 600);
+  --font-weight-bold: var(--ios26-weight-bold, 700);
+
+  /* iOS 26 Spacing Scale (HIG Compliant) */
+  --spacing-1: var(--ios26-spacing-1, 4px);
+  --spacing-2: var(--ios26-spacing-2, 8px);
+  --spacing-3: var(--ios26-spacing-3, 12px);
+  --spacing-4: var(--ios26-spacing-4, 16px);
+  --spacing-5: var(--ios26-spacing-5, 20px);
+  --spacing-6: var(--ios26-spacing-6, 24px);
+  --spacing-8: var(--ios26-spacing-8, 32px);
+  --spacing-10: var(--ios26-spacing-10, 40px);
+  --spacing-12: var(--ios26-spacing-12, 48px);
+
+  /* iOS 26 Border Radius (HIG Compliant) */
+  --radius-sm: var(--ios26-radius-sm, 8px);
+  --radius-md: var(--ios26-radius-md, 12px);
+  --radius-lg: var(--ios26-radius-lg, 16px);
+  --radius-xl: var(--ios26-radius-xl, 20px);
+
+  /* iOS 26 Animation Curves */
+  --ease-in-out: var(--ios26-ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+  --ease-out: var(--ios26-ease-out, cubic-bezier(0, 0, 0.2, 1));
+  --duration-fast: var(--ios26-duration-fast, 0.15s);
+  --duration-normal: var(--ios26-duration-normal, 0.25s);
+  --duration-slow: var(--ios26-duration-slow, 0.35s);
+}
 
 .weather-app {
   min-height: 100vh;
@@ -11,36 +70,58 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Light Theme */
+/* ============================================================================
+   iOS 26 THEME SYSTEM (HIG Compliant)
+   ============================================================================ */
+
+/* Light Theme - iOS 26 Colors */
 .weather-app.theme-light {
-  --bg-primary: #f5f7fa;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --text-primary: #1a1a1a;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --border-color: #e5e7eb;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  /* iOS 26 Background Colors */
+  --bg-primary: var(--ios26-background-grouped-primary, #f2f2f7);
+  --bg-secondary: var(--ios26-background-grouped-secondary, #ffffff);
+  --bg-card: var(--ios26-background-secondary, #ffffff);
+
+  /* iOS 26 Text Colors */
+  --text-primary: var(--ios26-text-primary, #000000);
+  --text-secondary: var(--ios26-text-secondary, rgba(60, 60, 67, 0.6));
+  --text-muted: var(--ios26-text-tertiary, rgba(60, 60, 67, 0.3));
+
+  /* iOS 26 Border Colors */
+  --border-color: var(--ios26-border-tertiary, rgba(60, 60, 67, 0.12));
+
+  /* iOS 26 Shadows (subtle, HIG compliant) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.36);
+
+  /* iOS 26 Accent Color */
+  --accent: var(--ios26-color-primary, #007aff);
+  --accent-hover: color-mix(in srgb, var(--ios26-color-primary) 85%, black);
 }
 
-/* Dark Theme */
+/* Dark Theme - iOS 26 Colors */
 .weather-app.theme-dark {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --border-color: #334155;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-  --accent: #60a5fa;
-  --accent-hover: #3b82f6;
+  /* iOS 26 Dark Background Colors */
+  --bg-primary: var(--ios26-background-grouped-primary, #000000);
+  --bg-secondary: var(--ios26-background-grouped-secondary, #1c1c1e);
+  --bg-card: var(--ios26-background-secondary, #1c1c1e);
+
+  /* iOS 26 Dark Text Colors */
+  --text-primary: var(--ios26-text-primary, #ffffff);
+  --text-secondary: var(--ios26-text-secondary, rgba(235, 235, 245, 0.6));
+  --text-muted: var(--ios26-text-tertiary, rgba(235, 235, 245, 0.3));
+
+  /* iOS 26 Dark Border Colors */
+  --border-color: var(--ios26-border-tertiary, rgba(84, 84, 88, 0.24));
+
+  /* iOS 26 Dark Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.7);
+
+  /* iOS 26 Dark Accent Color */
+  --accent: var(--ios26-color-primary, #0a84ff);
+  --accent-hover: color-mix(in srgb, var(--ios26-color-primary) 115%, white);
 }
 
 .weather-container {
@@ -68,22 +149,27 @@
 .refresh-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  width: 48px;
-  height: 48px;
+  border-radius: var(--radius-lg);
+  /* iOS 26 HIG: Minimum 44px touch target */
+  min-width: var(--ios26-touch-minimum, 44px);
+  min-height: var(--ios26-touch-minimum, 44px);
+  width: var(--ios26-touch-medium, 50px);
+  height: var(--ios26-touch-medium, 50px);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.25rem;
-  transition: all 0.2s ease;
+  font-size: var(--ios26-text-headline, 20px);
+  transition: all var(--duration-fast) var(--ease-out);
   box-shadow: var(--shadow-sm);
+  font-family: inherit;
 }
 
 .refresh-btn:hover:not(:disabled) {
   background: var(--bg-secondary);
   transform: translateY(-1px) rotate(90deg);
   box-shadow: var(--shadow-md);
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .refresh-btn:disabled {
@@ -92,32 +178,39 @@
 }
 
 .app-title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: var(--ios26-text-large-title, clamp(33px, 8.2vw, 40px));
+  font-weight: var(--ios26-weight-bold, 700);
   margin: 0;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.02em; /* iOS 26 large title letter spacing */
+  line-height: 1.1; /* iOS 26 large title line height */
+  font-family: var(--ios26-font-family-display);
 }
 
 .location-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  width: 48px;
-  height: 48px;
+  border-radius: var(--radius-lg);
+  /* iOS 26 HIG: Minimum 44px touch target */
+  min-width: var(--ios26-touch-minimum, 44px);
+  min-height: var(--ios26-touch-minimum, 44px);
+  width: var(--ios26-touch-medium, 50px);
+  height: var(--ios26-touch-medium, 50px);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.5rem;
-  transition: all 0.2s ease;
+  font-size: var(--ios26-text-title2, 24px);
+  transition: all var(--duration-fast) var(--ease-out);
   box-shadow: var(--shadow-sm);
+  font-family: inherit;
 }
 
 .location-btn:hover:not(:disabled) {
   background: var(--bg-secondary);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .location-btn:disabled {
@@ -131,22 +224,65 @@
   margin-bottom: 1.5rem;
 }
 
-.search-input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  font-size: 1rem;
+.search-loading,
+.search-error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--ios26-spacing-2, 8px);
+  padding: var(--ios26-spacing-3, 12px) var(--ios26-spacing-4, 16px);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  font-size: var(--ios26-text-subheadline, clamp(14px, 3.5vw, 15px));
+  font-weight: var(--ios26-weight-regular, 400);
+  font-family: var(--ios26-font-family-text);
+  z-index: 999;
+  line-height: 1.47;
+}
+
+.search-loading {
+  color: var(--text-secondary);
+}
+
+.search-error {
+  color: #ef4444;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.weather-app.theme-dark .search-error {
+  background: #7f1d1d;
+  border-color: #991b1b;
+  color: #fecaca;
+}
+
+.search-input {
+  width: 100%;
+  /* iOS 26 HIG: Minimum 44px touch target for inputs */
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: var(--ios26-spacing-3, 12px) var(--ios26-spacing-4, 16px);
+  font-size: var(--ios26-text-body, 17px);
+  font-weight: var(--ios26-weight-regular, 400);
+  font-family: var(--ios26-font-family-text);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-out);
+  line-height: 1.47; /* iOS 26 standard line height */
+  /* Prevent browser extensions from interfering */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: var(--shadow-md), 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: var(--shadow-md), 0 0 0 3px rgba(0, 122, 255, 0.15); /* iOS 26 focus ring */
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .search-input::placeholder {
@@ -159,34 +295,44 @@
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 0.5rem;
+  margin-top: var(--ios26-spacing-2, 8px);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-xl); /* iOS 26 larger radius for dropdowns */
   box-shadow: var(--shadow-lg);
-  z-index: 100;
+  z-index: 1000;
   max-height: 300px;
   overflow-y: auto;
+  /* iOS 26 material effect */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   /* Use transform instead of position changes to avoid forced reflow */
   transform: translateZ(0);
   will-change: transform;
+  /* Ensure dropdown is visible */
+  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 .suggestion-item {
   width: 100%;
-  padding: 1rem;
+  /* iOS 26 HIG: Minimum 44px touch target */
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: var(--ios26-spacing-4, 16px);
   text-align: left;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--duration-fast) var(--ease-out);
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--ios26-spacing-1, 4px);
   /* Optimize rendering performance */
   transform: translateZ(0);
   will-change: background-color;
+  font-family: var(--ios26-font-family-text);
 }
 
 .suggestion-item:last-child {
@@ -195,28 +341,42 @@
 
 .suggestion-item:hover {
   background: var(--bg-secondary);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.suggestion-item:active {
+  background: var(--ios26-background-tertiary);
+  transition: background-color var(--duration-fast) var(--ease-in);
 }
 
 .suggestion-name {
-  font-weight: 600;
+  font-weight: var(--ios26-weight-semibold, 600);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: var(--ios26-text-body, 17px);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 .suggestion-details {
-  font-size: 0.875rem;
+  font-size: var(--ios26-text-subheadline, clamp(14px, 3.5vw, 15px));
+  font-weight: var(--ios26-weight-regular, 400);
+  font-family: var(--ios26-font-family-text);
   color: var(--text-secondary);
+  line-height: 1.47;
 }
 
 /* Error Message */
 .error-message {
-  padding: 1rem;
+  padding: var(--ios26-spacing-4, 16px);
   background: #fee2e2;
   border: 1px solid #fecaca;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #991b1b;
-  margin-bottom: 1.5rem;
-  font-size: 0.875rem;
+  margin-bottom: var(--ios26-spacing-6, 24px);
+  font-size: var(--ios26-text-subheadline, clamp(14px, 3.5vw, 15px));
+  font-weight: var(--ios26-weight-medium, 500);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 .weather-app.theme-dark .error-message {
@@ -251,17 +411,25 @@
 .loading-state p {
   color: var(--text-secondary);
   margin: 0;
+  font-size: var(--ios26-text-body, 17px);
+  font-weight: var(--ios26-weight-regular, 400);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
-/* Weather Card */
+/* Weather Card - Unified styling */
 .weather-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  border-radius: var(--radius-xl); /* iOS 26 larger radius for cards */
+  padding: var(--ios26-spacing-6, 24px);
+  margin-bottom: var(--ios26-spacing-6, 24px);
   box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--ease-in-out);
+  font-family: var(--ios26-font-family-text);
+  /* iOS 26 material effect */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .weather-card:hover {
@@ -281,10 +449,13 @@
 }
 
 .weather-location {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: var(--ios26-text-title3, clamp(19px, 4.8vw, 22px));
+  font-weight: var(--ios26-weight-semibold, 600);
+  margin-bottom: var(--ios26-spacing-4, 16px);
   color: var(--text-primary);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.35; /* iOS 26 title line height */
+  letter-spacing: -0.01em;
 }
 
 .weather-main {
@@ -299,25 +470,31 @@
 }
 
 .weather-temp {
-  font-size: 4rem;
-  font-weight: 700;
+  font-size: clamp(48px, 10vw, 64px); /* iOS 26 dynamic scaling */
+  font-weight: var(--ios26-weight-bold, 700);
   line-height: 1;
-  margin: 0.5rem 0;
-  letter-spacing: -0.02em;
+  margin: var(--spacing-2) 0;
+  letter-spacing: -0.03em; /* iOS 26 display letter spacing */
+  font-family: var(--ios26-font-family-display);
 }
 
 .weather-description {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0.5rem 0;
+  font-size: var(--ios26-text-headline, clamp(18px, 4.5vw, 20px));
+  font-weight: var(--ios26-weight-medium, 500);
+  margin: var(--ios26-spacing-2, 8px) 0;
   text-transform: capitalize;
   color: var(--text-secondary);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.4;
 }
 
 .weather-feels-like {
-  font-size: 1rem;
+  font-size: var(--ios26-text-body, 17px);
+  font-weight: var(--ios26-weight-regular, 400);
   color: var(--text-muted);
-  margin-top: 0.5rem;
+  margin-top: var(--ios26-spacing-2, 8px);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 /* Weather Metrics Grid */
@@ -343,12 +520,14 @@
 }
 
 .metric-label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--ios26-text-caption1, clamp(11px, 2.8vw, 12px));
+  font-weight: var(--ios26-weight-semibold, 600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--ios26-spacing-2, 8px);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.4;
 }
 
 .main-card .metric-label {
@@ -360,9 +539,12 @@
 }
 
 .metric-value {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--ios26-text-title3, clamp(19px, 4.8vw, 22px));
+  font-weight: var(--ios26-weight-semibold, 600);
   color: white;
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 .main-card .metric-value {
@@ -375,10 +557,13 @@
 
 /* Forecast Titles */
 .forecast-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 1.5rem 0;
+  font-size: var(--ios26-text-title3, clamp(19px, 4.8vw, 22px));
+  font-weight: var(--ios26-weight-semibold, 600);
+  margin: 0 0 var(--ios26-spacing-6, 24px) 0;
   color: var(--text-primary);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 /* Hourly Forecast */
@@ -414,22 +599,26 @@
 }
 
 .hourly-time {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--ios26-text-caption1, clamp(11px, 2.8vw, 12px));
+  font-weight: var(--ios26-weight-semibold, 600);
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--ios26-spacing-2, 8px);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.4;
 }
 
 .hourly-icon {
-  margin: 0.5rem 0;
+  margin: var(--ios26-spacing-2, 8px) 0;
   display: flex;
   justify-content: center;
 }
 
 .hourly-temp {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--ios26-text-body, 17px);
+  font-weight: var(--ios26-weight-semibold, 600);
   color: var(--text-primary);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 /* Daily Forecast */
@@ -453,9 +642,11 @@
 
 .daily-date {
   flex: 0 0 100px;
-  font-weight: 600;
+  font-weight: var(--ios26-weight-semibold, 600);
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: var(--ios26-text-subheadline, clamp(14px, 3.5vw, 15px));
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 .daily-icon {
@@ -467,27 +658,33 @@
 .daily-temps {
   flex: 1;
   display: flex;
-  gap: 1rem;
+  gap: var(--ios26-spacing-4, 16px);
   justify-content: flex-end;
   align-items: center;
 }
 
 .daily-temp-max {
-  font-weight: 600;
+  font-weight: var(--ios26-weight-semibold, 600);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: var(--ios26-text-body, 17px);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 .daily-temp-min {
-  font-weight: 400;
+  font-weight: var(--ios26-weight-regular, 400);
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--ios26-text-subheadline, clamp(14px, 3.5vw, 15px));
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 .daily-precip {
-  font-size: 0.75rem;
+  font-size: var(--ios26-text-caption1, clamp(11px, 2.8vw, 12px));
   color: var(--accent);
-  font-weight: 500;
+  font-weight: var(--ios26-weight-medium, 500);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.4;
 }
 
 /* Empty State */
@@ -502,15 +699,22 @@
 }
 
 .empty-state h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  font-size: var(--ios26-text-title2, clamp(21px, 5.2vw, 24px));
+  font-weight: var(--ios26-weight-semibold, 600);
+  margin: 0 0 var(--ios26-spacing-2, 8px) 0;
   color: var(--text-primary);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .empty-state p {
   color: var(--text-secondary);
-  margin: 0 0 2rem 0;
+  margin: 0 0 var(--ios26-spacing-8, 32px) 0;
+  font-size: var(--ios26-text-body, 17px);
+  font-weight: var(--ios26-weight-regular, 400);
+  font-family: var(--ios26-font-family-text);
+  line-height: 1.47;
 }
 
 /* Buttons */
@@ -518,19 +722,30 @@
   background: var(--accent);
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: var(--radius-lg);
+  /* iOS 26 HIG: Minimum 44px touch target */
+  min-height: var(--ios26-touch-minimum, 44px);
+  padding: var(--ios26-spacing-3, 12px) var(--ios26-spacing-6, 24px);
+  font-size: var(--ios26-text-body, 17px);
+  font-weight: var(--ios26-weight-semibold, 600);
+  font-family: var(--ios26-font-family-text);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-out);
   box-shadow: var(--shadow-sm);
+  line-height: 1.47; /* iOS 26 standard line height */
+  letter-spacing: -0.01em; /* iOS 26 letter spacing */
 }
 
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98); /* iOS 26 press feedback */
+  transition: all var(--duration-fast) var(--ease-in);
 }
 
 .btn-primary:active {
@@ -544,11 +759,11 @@
   }
 
   .app-title {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .weather-temp {
-    font-size: 3rem;
+    font-size: var(--font-size-4xl);
   }
 
   .weather-metrics {
@@ -564,7 +779,9 @@
   }
 }
 
-/* Accessibility */
+/* ============================================================================
+   iOS 26 ACCESSIBILITY (HIG Compliant)
+   ============================================================================ */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -573,9 +790,18 @@
   }
 }
 
-/* Focus styles */
+/* iOS 26: Support for Dynamic Type (Accessibility) */
+@media (prefers-reduced-motion: no-preference) {
+  .weather-app {
+    font-size: max(var(--ios26-text-body), 17px);
+  }
+}
+
+/* iOS 26 Focus styles (HIG Compliant) */
 button:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-fast) var(--ease-out);
 }
