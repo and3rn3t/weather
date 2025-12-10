@@ -357,7 +357,7 @@ onReady(() => {
   if (import.meta.env.DEV) {
     const mountAppDev = async () => {
       try {
-        const mod = await import('./navigation/AppNavigator');
+        const mod = await import('./App');
         const App = mod.default;
         root.render(
           <StrictMode>
@@ -426,8 +426,8 @@ onReady(() => {
 
   (async () => {
     try {
-      // Dynamically import AppNavigator (safe in dev and prod)
-      const mod = await import('./navigation/AppNavigator');
+      // Dynamically import App (clean new version)
+      const mod = await import('./App');
       log('app:imported');
       const App = mod.default;
       root.render(
@@ -584,7 +584,7 @@ onReady(() => {
                   <button
                     onClick={async () => {
                       try {
-                        const mod2 = await import('./navigation/AppNavigator');
+                        const mod2 = await import('./App');
                         const App2 = mod2.default;
                         root.render(
                           <StrictMode>
