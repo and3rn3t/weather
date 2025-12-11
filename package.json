@@ -28,7 +28,7 @@
     "test:coverage": "vitest run --coverage",
     "test:fast": "vitest run --reporter=basic",
     "test:ci": "vitest run --reporter=verbose",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "lint:check": "eslint . --max-warnings 0",
     "stylelint": "npx stylelint \"src/**/*.css\"",

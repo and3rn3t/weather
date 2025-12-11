@@ -22,31 +22,34 @@ export interface SwipeConfig {
  */
 export const useScreenSwipeConfig = (currentScreen: string): SwipeConfig => {
   const getSwipeConfig = (): SwipeConfig => {
-    switch (currentScreen) {
-      case 'Home':
-        return {
-          canSwipeLeft: true, // Can swipe left to go to WeatherDetails
-          canSwipeRight: false, // Cannot swipe right (no previous screen)
-          leftHint: 'Weather Details',
-          rightHint: null,
-        };
+    // Define screen order for circular navigation
+    const screenOrder: Array<
+      'Home' | 'Weather' | 'Search' | 'Favorites' | 'Settings'
+    > = ['Home', 'Weather', 'Search', 'Favorites', 'Settings'];
 
-      case 'WeatherDetails':
-        return {
-          canSwipeLeft: false, // Cannot swipe left (no next screen)
-          canSwipeRight: true, // Can swipe right to go back to Home
-          leftHint: null,
-          rightHint: 'Home',
-        };
+    const currentIndex = screenOrder.indexOf(
+      currentScreen as 'Home' | 'Weather' | 'Search' | 'Favorites' | 'Settings'
+    );
 
-      default:
-        return {
-          canSwipeLeft: false,
-          canSwipeRight: false,
-          leftHint: null,
-          rightHint: null,
-        };
+    if (currentIndex === -1) {
+      return {
+        canSwipeLeft: false,
+        canSwipeRight: false,
+        leftHint: null,
+        rightHint: null,
+      };
     }
+
+    const nextScreen = screenOrder[(currentIndex + 1) % screenOrder.length];
+    const prevScreen =
+      screenOrder[(currentIndex - 1 + screenOrder.length) % screenOrder.length];
+
+    return {
+      canSwipeLeft: true, // Can always swipe to next screen
+      canSwipeRight: true, // Can always swipe to previous screen
+      leftHint: nextScreen,
+      rightHint: prevScreen,
+    };
   };
 
   return getSwipeConfig();

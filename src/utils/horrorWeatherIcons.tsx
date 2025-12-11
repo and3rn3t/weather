@@ -3,6 +3,7 @@
  * Enhanced weather icons with Friday the 13th horror theme effects
  */
 
+/* eslint-disable react-refresh/only-export-components */
 import React from 'react';
 
 export interface HorrorWeatherIconProps {

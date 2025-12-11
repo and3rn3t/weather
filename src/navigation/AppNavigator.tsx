@@ -107,6 +107,7 @@ import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
 } from '../components/MobileNavigation';
+import { BreadcrumbNavigation } from '../components/navigation/BreadcrumbNavigation';
 // PWAInstallPrompt will be lazy-loaded via utils/lazyComponents
 import { ScreenContainer } from '../components/ScreenTransition';
 import SearchScreen from '../components/SearchScreen';
@@ -1873,67 +1874,68 @@ const AppNavigator = () => {
   );
 
   // Enhanced swipe navigation handlers with haptic feedback
-  const handleSwipeLeft = () => {
-    if (currentScreen === 'Home') {
-      // Track swipe navigation
-      telemetry.trackUserInteraction({
-        action: 'swipe_navigation',
-        component: 'AppNavigator',
-        metadata: {
-          direction: 'left',
-          from: currentScreen,
-          to: 'Weather',
-          gestureType: 'swipe',
-        },
-      });
+  // Circular navigation: Home -> Weather -> Search -> Favorites -> Settings -> Home
+  const screenOrder: Array<
+    'Home' | 'Weather' | 'Search' | 'Favorites' | 'Settings'
+  > = ['Home', 'Weather', 'Search', 'Favorites', 'Settings'];
 
-      haptic.navigation();
-      navigate('Weather'); // Use new screen name
-    } else {
-      // Track invalid swipe attempt
-      telemetry.trackUserInteraction({
-        action: 'invalid_swipe',
-        component: 'AppNavigator',
-        metadata: {
-          direction: 'left',
-          currentScreen,
-          reason: 'no_valid_target',
-        },
-      });
+  const handleSwipeLeft = () => {
+    const currentIndex = screenOrder.indexOf(
+      currentScreen as 'Home' | 'Weather' | 'Search' | 'Favorites' | 'Settings'
+    );
+
+    if (currentIndex === -1) {
+      haptic.light();
+      return;
     }
+
+    const nextIndex = (currentIndex + 1) % screenOrder.length;
+    const nextScreen = screenOrder[nextIndex];
+
+    // Track swipe navigation
+    telemetry.trackUserInteraction({
+      action: 'swipe_navigation',
+      component: 'AppNavigator',
+      metadata: {
+        direction: 'left',
+        from: currentScreen,
+        to: nextScreen,
+        gestureType: 'swipe',
+      },
+    });
+
+    haptic.navigation();
+    navigate(nextScreen);
   };
 
   const handleSwipeRight = () => {
-    if (currentScreen === 'Weather') {
-      // Track swipe navigation
-      telemetry.trackUserInteraction({
-        action: 'swipe_navigation',
-        component: 'AppNavigator',
-        metadata: {
-          direction: 'right',
-          from: currentScreen,
-          to: 'Home',
-          gestureType: 'swipe',
-        },
-      });
+    const currentIndex = screenOrder.indexOf(
+      currentScreen as 'Home' | 'Weather' | 'Search' | 'Favorites' | 'Settings'
+    );
 
-      haptic.navigation();
-      navigate('Home');
-    } else {
-      // Track invalid swipe with telemetry
-      telemetry.trackUserInteraction({
-        action: 'invalid_swipe',
-        component: 'AppNavigator',
-        metadata: {
-          direction: 'right',
-          currentScreen,
-          reason: 'no_valid_target',
-        },
-      });
-
-      // Subtle error feedback for invalid swipe
+    if (currentIndex === -1) {
       haptic.light();
+      return;
     }
+
+    const prevIndex =
+      (currentIndex - 1 + screenOrder.length) % screenOrder.length;
+    const prevScreen = screenOrder[prevIndex];
+
+    // Track swipe navigation
+    telemetry.trackUserInteraction({
+      action: 'swipe_navigation',
+      component: 'AppNavigator',
+      metadata: {
+        direction: 'right',
+        from: currentScreen,
+        to: prevScreen,
+        gestureType: 'swipe',
+      },
+    });
+
+    haptic.navigation();
+    navigate(prevScreen);
   };
 
   // iOS26 Phase 3C: Weather condition mapping for multi-sensory experience
@@ -2684,6 +2686,21 @@ const AppNavigator = () => {
                   />
                 ),
               }}
+            />
+          )}
+
+          {/* Breadcrumb Navigation (Desktop) */}
+          {screenInfo.width >= 768 && (
+            <BreadcrumbNavigation
+              currentScreen={
+                currentScreen as
+                  | 'Home'
+                  | 'Weather'
+                  | 'Search'
+                  | 'Favorites'
+                  | 'Settings'
+              }
+              onNavigate={handleMobileNavigation}
             />
           )}
 

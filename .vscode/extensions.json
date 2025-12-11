@@ -37,9 +37,15 @@
     "johnpapa.vscode-peacock",
     "oderwat.indent-rainbow",
 
-    // PowerShell & Terminal
+    // PowerShell & Terminal - Enhanced
     "ms-vscode.powershell",
     "ms-vscode.remote-containers",
+    "tamasfe.even-better-toml",
+    "ms-vscode.shell-format",
+    "timonwong.shellcheck",
+    "ms-vscode.powershell-preview",
+    "formulahendry.code-runner",
+    "webrender.synthwave-vscode",
 
     // Performance & Analysis
     "ms-vscode.references-view",

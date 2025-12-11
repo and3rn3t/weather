@@ -6,9 +6,9 @@
  */
 
 import { exec } from 'child_process';
-import { promisify } from 'util';
 import { appendFile } from 'fs/promises';
 import { EOL } from 'os';
+import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 const LOG_FILE = '.git/pre-commit.log';
@@ -202,21 +202,15 @@ class PreCommitHook {
       );
     }
 
-    // 2) ESLint check (on staged files if possible, otherwise repo-wide)
-    const eslintPassed = await this.runCommand(
-      'npm run lint:check',
-      'ESLint rules'
-    );
+    // 2) ESLint check (matches CI: npm run lint)
+    const eslintPassed = await this.runCommand('npm run lint', 'ESLint rules');
     if (!eslintPassed) {
       // Try auto-fix if eslint failed
-      this.print(
-        'ESLint issues detected — attempting auto-fix...',
-        'warning'
-      );
+      this.print('ESLint issues detected — attempting auto-fix...', 'warning');
       await this.runCommand('npm run lint:fix', 'ESLint auto-fix');
       await this.runCommand('git add -A', 'Stage ESLint fixes');
       const eslintRecheck = await this.runCommand(
-        'npm run lint:check',
+        'npm run lint',
         'ESLint rules (after auto-fix)'
       );
       if (!eslintRecheck) allPassed = false;

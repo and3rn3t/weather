@@ -13,12 +13,12 @@ export interface HorrorQuote {
 // Friday the 13th movie quotes
 const friday13Quotes: HorrorQuote[] = [
   {
-    text: 'Camp Blood. We're all gonna die.',
+    text: 'Camp Blood. We\'re all gonna die.',
     movie: 'Friday the 13th',
     category: 'crystal-lake',
   },
   {
-    text: 'You're doomed. You're all doomed.',
+    text: 'You\'re doomed. You\'re all doomed.',
     movie: 'Friday the 13th',
     category: 'general',
   },

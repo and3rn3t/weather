@@ -89,6 +89,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [units, setUnits] = useState<TemperatureUnits>('imperial');
   const [refreshInterval, setRefreshInterval] = useState<string>('15min');
 
+  // Collapsible sections state
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(['Appearance', 'Weather']) // Default expanded sections
+  );
+
   // Location & GPS
   const [highAccuracyGPS, setHighAccuracyGPS] = useState<boolean>(false);
   const [locationTimeout, setLocationTimeout] = useState<string>('8sec');
@@ -747,22 +752,47 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
       {/* Content */}
       <div className="ios26-container settings-content">
-        {settingsSections.map(section => (
-          <section
-            key={section.title}
-            className="ios26-section settings-section"
-            aria-labelledby={`section-${section.title}`}
-          >
-            <h2
-              id={`section-${section.title}`}
-              className="settings-section-title"
+        {settingsSections.map(section => {
+          const isExpanded = expandedSections.has(section.title);
+          const toggleSection = () => {
+            const newExpanded = new Set(expandedSections);
+            if (isExpanded) {
+              newExpanded.delete(section.title);
+            } else {
+              newExpanded.add(section.title);
+            }
+            setExpandedSections(newExpanded);
+            haptic.buttonPress();
+          };
+
+          return (
+            <section
+              key={section.title}
+              className="ios26-section settings-section"
+              aria-labelledby={`section-${section.title}`}
             >
-              {section.title}
-            </h2>
-            <ul
-              className="ios26-card ios26-liquid-glass settings-list"
-              aria-label={section.title}
-            >
+              <button
+                className="settings-section-header"
+                onClick={toggleSection}
+                aria-expanded={isExpanded}
+                aria-controls={`section-content-${section.title}`}
+                id={`section-${section.title}`}
+              >
+                <h2 className="settings-section-title">{section.title}</h2>
+                <div className="settings-section-toggle">
+                  {isExpanded ? (
+                    <NavigationIcons.ChevronDown />
+                  ) : (
+                    <NavigationIcons.ChevronRight />
+                  )}
+                </div>
+              </button>
+              {isExpanded && (
+                <ul
+                  id={`section-content-${section.title}`}
+                  className="ios26-card ios26-liquid-glass settings-list"
+                  aria-label={section.title}
+                >
               {section.items.map((item, index) => (
                 <li
                   key={item.id}
@@ -808,15 +838,15 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
               ))}
             </ul>
 
-            {/* Advanced custom thresholds editor */}
-            {section.title === 'Appearance' &&
-              colorizeTemps &&
-              tempThresholdsEnabled && (
-                <div
-                  className="ios26-card ios26-liquid-glass settings-list"
-                  role="group"
-                  aria-label="Custom temperature thresholds"
-                >
+              {/* Advanced custom thresholds editor */}
+              {section.title === 'Appearance' &&
+                colorizeTemps &&
+                tempThresholdsEnabled && (
+                  <div
+                    className="ios26-card ios26-liquid-glass settings-list"
+                    role="group"
+                    aria-label="Custom temperature thresholds"
+                  >
                   <div className="ios26-list-item settings-list-item">
                     <div className="settings-item-main">
                       <div className="settings-item-title">Imperial (°F)</div>
@@ -958,8 +988,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   </div>
                 </div>
               )}
-          </section>
-        ))}
+                </ul>
+              )}
+            </section>
+          );
+        })}
       </div>
     </div>
   );
