@@ -170,36 +170,24 @@ class PreCommitHook {
 
     let allPassed = true;
 
-    // 1) Code formatting check on staged files only (with auto-fix fallback)
-    const staged = await this.getStagedFilesForPrettier();
-    if (staged.length > 0) {
-      const quoted = this.quotePaths(staged);
-      const formattingPassed = await this.runCommand(
-        `npx prettier --check --ignore-unknown ${quoted}`,
-        'Code formatting (staged)'
-      );
-
-      if (!formattingPassed) {
-        this.print(
-          'Formatting issues detected — attempting auto-fix on staged files...',
-          'warning'
-        );
-        await this.runCommand(
-          `npx prettier --write --ignore-unknown ${quoted}`,
-          'Prettier formatting (staged)'
-        );
-        await this.runCommand('git add -A', 'Stage formatting changes');
-        const recheck = await this.runCommand(
-          `npx prettier --check --ignore-unknown ${quoted}`,
-          'Code formatting (staged, after auto-fix)'
-        );
-        if (!recheck) allPassed = false;
-      }
-    } else {
+    // 1) Code formatting check (full project to ensure consistency)
+    const formattingPassed = await this.runCommand(
+      'npx prettier --check .',
+      'Code formatting (Prettier)'
+    );
+    if (!formattingPassed) {
+      // Try auto-fix if formatting failed
       this.print(
-        'No staged files require Prettier formatting; skipping formatting check.',
-        'info'
+        'Formatting issues detected — attempting auto-fix...',
+        'warning'
       );
+      await this.runCommand('npx prettier --write .', 'Prettier auto-fix');
+      await this.runCommand('git add -A', 'Stage formatting changes');
+      const recheck = await this.runCommand(
+        'npx prettier --check .',
+        'Code formatting (after auto-fix)'
+      );
+      if (!recheck) allPassed = false;
     }
 
     // 2) ESLint check (matches CI: npm run lint)
@@ -214,6 +202,15 @@ class PreCommitHook {
         'ESLint rules (after auto-fix)'
       );
       if (!eslintRecheck) allPassed = false;
+    }
+
+    // 3) TypeScript type checking
+    const typeCheckPassed = await this.runCommand(
+      'npx tsc --noEmit',
+      'TypeScript type check'
+    );
+    if (!typeCheckPassed) {
+      allPassed = false;
     }
 
     if (allPassed) {
