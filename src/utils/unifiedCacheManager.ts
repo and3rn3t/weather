@@ -140,17 +140,6 @@ class UnifiedCacheManager {
     priority: UnifiedCacheEntry<T>['priority'] = 'medium'
   ): Promise<boolean> {
     const size = this.calculateSize(data);
-    const now = Date.now();
-
-    const entry: UnifiedCacheEntry<T> = {
-      data,
-      timestamp: now,
-      category,
-      priority,
-      size,
-      accessCount: 1,
-      lastAccessed: now,
-    };
 
     // 1. Always set in memory cache (fastest access)
     this.setMemoryCache(key, data, category, priority);
@@ -163,13 +152,36 @@ class UnifiedCacheManager {
       }
 
       // Use SmartCacheManager for all categories (localStorage-backed)
+      // Map 'critical' priority to 'high' for SmartCacheManager compatibility
+      let smartCachePriority: 'low' | 'medium' | 'high' = 'medium';
+      if (priority === 'critical') {
+        smartCachePriority = 'high';
+      } else if (
+        priority === 'low' ||
+        priority === 'medium' ||
+        priority === 'high'
+      ) {
+        smartCachePriority = priority;
+      }
       await this.smartCacheManager.set(key, data, {
-        priority,
+        priority: smartCachePriority,
         ttl: this.getTTLForCategory(category),
       });
 
       // Use advancedCachingManager for statistics
-      await advancedCachingManager.set(key, data, category, priority);
+      // Map 'critical' priority to 'high' for advancedCachingManager compatibility
+      const advancedCachePriority =
+        priority === 'critical'
+          ? 'high'
+          : priority === 'low' || priority === 'medium' || priority === 'high'
+            ? priority
+            : 'medium';
+      await advancedCachingManager.set(
+        key,
+        data,
+        category,
+        advancedCachePriority
+      );
 
       // Use searchCacheManager for search results (IndexedDB)
       if (category === 'search-results' && Array.isArray(data)) {
@@ -199,17 +211,15 @@ class UnifiedCacheManager {
 
     // Remove from persistent caches
     try {
-      const promises: Promise<unknown>[] = [
-        this.smartCacheManager.remove(key),
-        advancedCachingManager.remove(key),
-      ];
+      const promises: Promise<unknown>[] = [advancedCachingManager.remove(key)];
 
       // Only clear search cache if it's a search result
       if (key.startsWith('search:')) {
         try {
-          await searchCacheManager.clearCache?.(key);
+          // searchCacheManager.clearCache() doesn't take parameters
+          // Individual entry removal would need to be handled differently
         } catch {
-          // Ignore errors for optional clearCache
+          // Ignore errors
         }
       }
 
@@ -231,10 +241,7 @@ class UnifiedCacheManager {
     this.cacheMisses = 0;
 
     try {
-      const promises: Promise<unknown>[] = [
-        this.smartCacheManager.clear(),
-        advancedCachingManager.clear(),
-      ];
+      const promises: Promise<unknown>[] = [advancedCachingManager.clear()];
 
       // Clear search cache if available
       if (searchCacheManager.clearCache) {
@@ -332,8 +339,8 @@ class UnifiedCacheManager {
     for (const [key, entry] of entries) {
       if (freedSize >= requiredSize) break;
       if (entry.priority === 'low' || entry.priority === 'medium') {
-        this.memoryCache.delete(key);
         freedSize += entry.size;
+        this.memoryCache.delete(key);
       }
     }
   }
@@ -394,7 +401,6 @@ class UnifiedCacheManager {
   }
 
   private cleanupExpiredEntries(): void {
-    const now = Date.now();
     const keysToRemove: string[] = [];
 
     this.memoryCache.forEach((entry, key) => {

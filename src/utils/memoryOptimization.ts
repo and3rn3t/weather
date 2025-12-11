@@ -96,11 +96,15 @@ class MemoryOptimizationManager {
    */
   getMemoryStats(): MemoryStats | null {
     try {
-      const performanceMemory = (performance as { memory?: {
-        usedJSHeapSize: number;
-        totalJSHeapSize: number;
-        jsHeapSizeLimit: number;
-      }}).memory;
+      const performanceMemory = (
+        performance as {
+          memory?: {
+            usedJSHeapSize: number;
+            totalJSHeapSize: number;
+            jsHeapSizeLimit: number;
+          };
+        }
+      ).memory;
 
       if (!performanceMemory) {
         return null;
@@ -134,14 +138,10 @@ class MemoryOptimizationManager {
 
     // Check if we're over thresholds
     if (stats.percentage >= this.thresholds.critical) {
-      logger.warn(
-        `Critical memory usage: ${stats.percentage.toFixed(2)}%`
-      );
+      logger.warn(`Critical memory usage: ${stats.percentage.toFixed(2)}%`);
       await this.emergencyCleanup();
     } else if (stats.percentage >= this.thresholds.warning) {
-      logger.warn(
-        `High memory usage: ${stats.percentage.toFixed(2)}%`
-      );
+      logger.warn(`High memory usage: ${stats.percentage.toFixed(2)}%`);
       await this.aggressiveCleanup();
     }
 
@@ -173,7 +173,10 @@ class MemoryOptimizationManager {
       }
 
       // Force garbage collection hint (if available)
-      if ('gc' in window && typeof (window as { gc?: () => void }).gc === 'function') {
+      if (
+        'gc' in window &&
+        typeof (window as { gc?: () => void }).gc === 'function'
+      ) {
         (window as { gc: () => void }).gc();
       }
     } catch (error) {
@@ -222,9 +225,12 @@ class MemoryOptimizationManager {
    */
   private startPeriodicCleanup(): void {
     // Cleanup every 5 minutes
-    this.cleanupInterval = window.setInterval(() => {
-      this.cacheCleanup();
-    }, 5 * 60 * 1000);
+    this.cleanupInterval = window.setInterval(
+      () => {
+        this.cacheCleanup();
+      },
+      5 * 60 * 1000
+    );
   }
 
   /**
@@ -255,5 +261,6 @@ class MemoryOptimizationManager {
 }
 
 // Export singleton instance
-export const memoryOptimizationManager = MemoryOptimizationManager.getInstance();
+export const memoryOptimizationManager =
+  MemoryOptimizationManager.getInstance();
 export type { MemoryStats, MemoryThresholds };
