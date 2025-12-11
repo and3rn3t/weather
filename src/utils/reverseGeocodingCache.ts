@@ -10,7 +10,7 @@ import { optimizedFetchJson } from './optimizedFetch';
 
 export type ReverseGeoResult = { city?: string; country?: string };
 
-const DEFAULT_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours (increased from 12h for better caching)
 const CACHE_PREFIX = 'reverse-geo-cache:';
 
 const memoryCache = new Map<string, { value: ReverseGeoResult; ts: number }>();

@@ -5,9 +5,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { advancedCachingManager } from './advancedCachingManager';
-import { backgroundSyncManager } from './backgroundSyncManager';
 import { logError } from './logger';
 import { pushNotificationManager } from './pushNotificationManager';
+import { backgroundSyncManager } from './unifiedBackgroundSyncManager';
 
 interface WeatherData {
   current_weather?: {

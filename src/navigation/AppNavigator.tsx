@@ -32,7 +32,6 @@ import React, {
 import { formatTimeForHourly } from '../utils/timeUtils';
 import {
   formatDayInfo,
-  mapOpenMeteoToWeatherData,
   processDailyForecast,
   processHourlyForecast,
   type RawDailyData,
@@ -42,6 +41,7 @@ import {
 // Lazy-loaded heavy components for performance optimization
 import {
   IOSComponentShowcase,
+  LazyFavoritesScreen,
   iOS26WeatherDemo as LazyiOS26WeatherDemo,
   MobileDebug as LazyMobileDebug,
   NativeStatusDisplay as LazyNativeStatusDisplay,
@@ -49,6 +49,8 @@ import {
   PerformanceDashboard as LazyPerformanceDashboard,
   PWAInstallPrompt as LazyPWAInstallPrompt,
   PWAStatus as LazyPWAStatus,
+  LazySearchScreen,
+  LazySettingsScreen,
   trackLazyComponentLoad,
 } from '../utils/lazyComponents';
 import { useMemoryOptimization } from '../utils/memoryOptimization';
@@ -91,6 +93,8 @@ import { Dash0ErrorBoundary } from '../dash0/components/Dash0ErrorBoundary';
 import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
 // Performance monitoring
 import { usePerformanceMonitor } from '../components/Dash0ErrorBoundary';
+// Unified Weather API Service
+import { useWeatherApiWithTelemetry } from '../services/weatherApiWithTelemetry';
 
 // Unified Type Definitions - Phase 2B: Type System Unification
 import type {
@@ -102,7 +106,7 @@ import type {
 type AlertSeverity = 'info' | 'warning' | 'severe';
 // Weather code helpers centralized inside mapOpenMeteoToWeatherData
 
-import FavoritesScreen from '../components/FavoritesScreen';
+// Screens - Lazy loaded for route-based code splitting (Phase 3.1)
 import LocationManager from '../components/LocationManager';
 import MobileNavigation, {
   type NavigationScreen,
@@ -110,8 +114,7 @@ import MobileNavigation, {
 import { BreadcrumbNavigation } from '../components/navigation/BreadcrumbNavigation';
 // PWAInstallPrompt will be lazy-loaded via utils/lazyComponents
 import { ScreenContainer } from '../components/ScreenTransition';
-import SearchScreen from '../components/SearchScreen';
-import SettingsScreen from '../components/SettingsScreen';
+// Screens are now lazy loaded via lazyComponents
 import DeploymentStatus from '../utils/DeploymentStatus';
 import GeolocationVerification from '../utils/GeolocationVerification';
 import { useHaptic } from '../utils/hapticHooks';
@@ -128,10 +131,7 @@ import { useWeatherBackgroundRefresh } from '../utils/useBackgroundRefresh';
 import { useCityManagement } from '../utils/useCityManagement';
 import { useScreenSwipeConfig } from '../utils/useScreenSwipeConfig';
 import { useTheme } from '../utils/useTheme';
-import {
-  useWeatherAPIOptimization,
-  useWeatherDataTransform,
-} from '../utils/useWeatherOptimization';
+import { useWeatherAPIOptimization } from '../utils/useWeatherOptimization';
 import WeatherIcon from '../utils/weatherIcons';
 // Enhanced Mobile Components
 import EnhancedMobileContainer from '../components/EnhancedMobileContainer';
@@ -177,13 +177,10 @@ import {
   formatPressure,
   formatVisibility,
   formatWindSpeed,
-  getPrecipitationUnitParam,
   getStoredUnits,
   getTemperatureSymbol,
-  getTemperatureUnitParam,
   getUnitSystemName,
   getWindSpeedLabel,
-  getWindSpeedUnitParam,
   setStoredUnits,
 } from '../utils/units';
 // OptimizedMobileWeatherDisplay will be lazy-loaded via utils/lazyComponents
@@ -958,7 +955,7 @@ function WeatherDetailsScreen({
             </ContextMenu>
           )}
 
-          {/* Phase 2B: Optimized Mobile Weather Display - ENABLED */}
+          {/* Phase 2B: Optimized Mobile Weather Display - ENABLED with Smart Content Priority */}
           {weather && selectedView === 0 && (
             <div className="ios26-mb-4">
               <React.Suspense
@@ -1676,7 +1673,6 @@ const AppNavigator = () => {
   const { addToRecent, setCurrentCity, toggleFavorite, isFavorite, favorites } =
     useCityManagement();
   const { optimizedFetch } = useWeatherAPIOptimization();
-  const { optimizedTransform } = useWeatherDataTransform();
 
   // PWA functionality - NOW ACTIVE for full offline and installation support
   const pwaInstall = usePWAInstall();
@@ -1740,14 +1736,55 @@ const AppNavigator = () => {
   const isDev = import.meta.env.DEV;
   const hasFetchedOnceRef = useRef(false);
 
-  // Phase 3: Progressive Loading Hook Integration
-  const _progressiveWeatherData = useProgressiveWeatherLoading(
+  // Phase 2.1: Progressive Loading Hook Integration - ACTIVE
+  const progressiveWeatherData = useProgressiveWeatherLoading(
     currentCoordinates?.latitude || 0,
     currentCoordinates?.longitude || 0
   );
 
   // Enable progressive loading when coordinates are available
-  const _useProgressiveMode = Boolean(currentCoordinates);
+  const useProgressiveMode = Boolean(currentCoordinates);
+
+  // Phase 2.1: Use progressive data when available, fallback to regular state
+  useEffect(() => {
+    if (useProgressiveMode && progressiveWeatherData.current) {
+      // Progressive data is already in WeatherData format
+      setWeather(progressiveWeatherData.current);
+      setHourlyForecast(progressiveWeatherData.hourly);
+      setDailyForecast(progressiveWeatherData.daily);
+
+      // Update weather code from current weather
+      if (progressiveWeatherData.current.weather[0]) {
+        const code = progressiveWeatherData.current.weather[0].main;
+        // Map weather main to code (simplified)
+        if (code === 'Clear') setWeatherCode(0);
+        else if (code === 'Rain') setWeatherCode(61);
+        else if (code === 'Clouds') setWeatherCode(2);
+        else setWeatherCode(0);
+      }
+
+      // Update loading state based on progressive stages
+      if (progressiveWeatherData.isLoading) {
+        weatherLoading.setLoading(true, progressiveWeatherData.progress || 0);
+      } else {
+        weatherLoading.setLoading(false);
+      }
+
+      // Handle errors
+      if (progressiveWeatherData.error) {
+        setError(progressiveWeatherData.error);
+      }
+    }
+  }, [
+    useProgressiveMode,
+    progressiveWeatherData.current,
+    progressiveWeatherData.hourly,
+    progressiveWeatherData.daily,
+    progressiveWeatherData.isLoading,
+    progressiveWeatherData.progress,
+    progressiveWeatherData.error,
+    weatherLoading,
+  ]);
 
   // Weather Display Optimization Hooks - August 2025 (ENABLED in Phase 2B)
   // Create weather context for smart content prioritization
@@ -1770,7 +1807,10 @@ const AppNavigator = () => {
     [weather, weatherCode, weatherAlert]
   );
 
-  const _smartContent = useSmartContentPriority(weatherContext);
+  // Phase 2.2: Smart Content Priority Integration - ACTIVE
+  // Note: OptimizedMobileWeatherDisplay already uses useSmartContentPriority internally
+  // This hook is kept for potential future use in other components
+  const _smartContentPriority = useSmartContentPriority(weatherContext);
 
   // Memoized weather data processing
   const memoizedHourlyForecast = useMemo(
@@ -1954,7 +1994,10 @@ const AppNavigator = () => {
     []
   );
 
-  // Common weather data fetching logic with optimization
+  // Unified Weather API Service - Phase 1.1: API Consolidation
+  const weatherApi = useWeatherApiWithTelemetry();
+
+  // Common weather data fetching logic - now using unified API service
   const fetchWeatherData = useCallback(
     async (lat: number, lon: number) => {
       return telemetry.trackOperation('weather_data_fetch', async () => {
@@ -1968,24 +2011,14 @@ const AppNavigator = () => {
             component: 'AppNavigator',
           });
 
-          const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
-          const __units = getStoredUnits();
-          const tempUnit = getTemperatureUnitParam(__units);
-          const windUnit = getWindSpeedUnitParam(__units);
-          const precipUnit = getPrecipitationUnitParam(__units);
-          const weatherUrl = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index,visibility,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&timezone=auto&forecast_days=7`;
-
           // Update progress
           weatherLoading.setLoading(true, 25);
 
-          const cacheKey = `weather-${lat}-${lon}`;
           const startTime = performance.now();
 
-          const weatherResponse = await optimizedFetch(
-            weatherUrl,
-            {},
-            cacheKey
-          );
+          // Use unified API service with legacy format for AppNavigator compatibility
+          const transformedData =
+            await weatherApi.getWeatherByCoordinatesLegacy(lat, lon);
 
           // Track API response time
           const apiResponseTime = performance.now() - startTime;
@@ -1996,51 +2029,25 @@ const AppNavigator = () => {
           });
 
           // Update progress after fetch
-          weatherLoading.setLoading(true, 50);
-
-          if (!weatherResponse.ok) {
-            const error = new Error(
-              `Weather API failed: ${weatherResponse.status}`
-            );
-            telemetry.trackError(error, {
-              context: 'weather_api_error',
-              metadata: { status: weatherResponse.status },
-            });
-            throw error;
-          }
-
-          const weatherData = await weatherResponse.json();
-
-          // Update progress after data parsing
           weatherLoading.setLoading(true, 75);
 
-          // Use optimized transform for weather data processing
-          const transformStartTime = performance.now();
-          const transformedData = optimizedTransform(
-            weatherData,
-            data => {
-              const mapped = mapOpenMeteoToWeatherData(data);
-              setWeatherCode(mapped.weatherCode);
-              return mapped.weatherData;
-            },
-            `transform-${lat}-${lon}-${Date.now()}`
-          );
-
-          // Track data transformation performance
-          const transformTime = performance.now() - transformStartTime;
-          telemetry.trackPerformance({
-            name: 'weather_data_transform_time',
-            value: transformTime,
-            tags: { unit: 'milliseconds', operation: 'data_transform' },
-          });
+          // Extract weather code from transformed data
+          const extractedWeatherCode = transformedData.weathercode || 0;
+          setWeatherCode(extractedWeatherCode);
 
           setWeather(transformedData);
-          setHourlyForecast(
-            processHourlyForecast(weatherData.hourly as RawHourlyData)
-          );
-          setDailyForecast(
-            processDailyForecast(weatherData.daily as RawDailyData)
-          );
+
+          // Process hourly and daily forecasts from the service response
+          if (transformedData.hourly) {
+            setHourlyForecast(
+              processHourlyForecast(transformedData.hourly as RawHourlyData)
+            );
+          }
+          if (transformedData.daily) {
+            setDailyForecast(
+              processDailyForecast(transformedData.daily as RawDailyData)
+            );
+          }
 
           // Track successful weather data load
           telemetry.trackUserInteraction({
@@ -2084,7 +2091,7 @@ const AppNavigator = () => {
           // iOS26 Feature: Check for weather alerts
           const currentTemp = transformedData.main.temp;
           const windSpeed = transformedData.wind.speed;
-          const weatherCode =
+          const weatherDescription =
             transformedData.weather[0].description.toLowerCase();
 
           if (currentTemp > 95) {
@@ -2122,8 +2129,8 @@ const AppNavigator = () => {
             // iOS26 Phase 3C: Multi-sensory wind warning alert
             await multiSensory.playWeatherAlert('warning', alertData.message);
           } else if (
-            weatherCode.includes('thunderstorm') ||
-            weatherCode.includes('storm')
+            weatherDescription.includes('thunderstorm') ||
+            weatherDescription.includes('storm')
           ) {
             const alertData = {
               title: 'Storm Alert',
@@ -2161,8 +2168,8 @@ const AppNavigator = () => {
       });
     },
     [
+      weatherApi,
       optimizedFetch,
-      optimizedTransform,
       weatherLoading,
       telemetry,
       city,
@@ -2247,48 +2254,33 @@ const AppNavigator = () => {
       });
 
       try {
+        // Use unified API service - Phase 1.1: API Consolidation
+        const transformedData =
+          await weatherApi.searchWeatherByCityLegacy(city);
+
+        // Extract coordinates from the result for state management
+        // Note: The legacy format doesn't include lat/lon, so we'll need to geocode
+        // or enhance the service. For now, we'll geocode separately to get coordinates.
         const GEOCODING_URL = 'https://nominatim.openstreetmap.org/search';
         const geoUrl = `${GEOCODING_URL}?q=${encodeURIComponent(
           city
         )}&format=json&limit=1`;
-
-        const geocodingStartTime = performance.now();
         const geoResponse = await optimizedFetch(
           geoUrl,
           {},
           `geocoding-${city}`
         );
-
-        const geocodingTime = performance.now() - geocodingStartTime;
-        telemetry.trackPerformance({
-          name: 'geocoding_api_response_time',
-          value: geocodingTime,
-          tags: { unit: 'milliseconds', city },
-        });
-
-        if (!geoResponse.ok) {
-          const error = new Error(`Geocoding failed: ${geoResponse.status}`);
-          telemetry.trackError(error, {
-            context: 'geocoding_api_error',
-            metadata: { status: geoResponse.status, city },
-          });
-          throw error;
+        if (geoResponse.ok) {
+          const geoData = await geoResponse.json();
+          if (geoData && geoData.length > 0) {
+            const { lat, lon } = geoData[0];
+            setCurrentCoordinates({ latitude: lat, longitude: lon });
+            // Also fetch hourly/daily forecasts
+            await fetchWeatherData(lat, lon);
+          }
         }
 
-        const geoData = await geoResponse.json();
-        if (!geoData || geoData.length === 0) {
-          const error = new Error(
-            'City not found. Please check the spelling and try again.'
-          );
-          telemetry.trackError(error, {
-            context: 'city_not_found',
-            metadata: { city, searchAttempt: 'geocoding' },
-          });
-          throw error;
-        }
-
-        const { lat, lon } = geoData[0];
-        await fetchWeatherData(lat, lon);
+        setWeather(transformedData);
 
         telemetry.trackUserInteraction({
           action: 'city_search_successful',
@@ -2314,7 +2306,7 @@ const AppNavigator = () => {
         setLoading(false);
       }
     });
-  }, [city, haptic, fetchWeatherData, optimizedFetch, telemetry]);
+  }, [city, haptic, weatherApi, fetchWeatherData, optimizedFetch, telemetry]);
 
   // Direct weather fetching (from autocomplete, city selector, etc.)
   const getWeatherByLocation = useCallback(
@@ -2655,35 +2647,49 @@ const AppNavigator = () => {
                   />
                 ),
                 Search: (
-                  <SearchScreen
-                    theme={theme}
-                    onBack={() => navigate('Home')}
-                    onLocationSelect={(cityName, latitude, longitude) => {
-                      getWeatherByLocation(cityName, latitude, longitude);
-                      navigate('Weather');
-                    }}
-                  />
+                  <React.Suspense fallback={<div>Loading search...</div>}>
+                    <LazySearchScreen
+                      theme={theme}
+                      onBack={() => navigate('Home')}
+                      onLocationSelect={(
+                        cityName: string,
+                        latitude: number,
+                        longitude: number
+                      ) => {
+                        getWeatherByLocation(cityName, latitude, longitude);
+                        navigate('Weather');
+                      }}
+                    />
+                  </React.Suspense>
                 ),
                 Settings: (
-                  <SettingsScreen
-                    theme={theme}
-                    screenInfo={screenInfo}
-                    onBack={() => navigate('Home')}
-                  />
+                  <React.Suspense fallback={<div>Loading settings...</div>}>
+                    <LazySettingsScreen
+                      theme={theme}
+                      screenInfo={screenInfo}
+                      onBack={() => navigate('Home')}
+                    />
+                  </React.Suspense>
                 ),
                 Favorites: (
-                  <FavoritesScreen
-                    theme={theme}
-                    onBack={() => navigate('Home')}
-                    onCitySelect={(cityName, latitude, longitude) => {
-                      getWeatherByLocation(cityName, latitude, longitude);
-                      setCity(cityName);
-                      navigate('Weather');
-                      haptic.light();
-                    }}
-                    onAddFavorite={() => navigate('Search')}
-                    currentCity={city}
-                  />
+                  <React.Suspense fallback={<div>Loading favorites...</div>}>
+                    <LazyFavoritesScreen
+                      theme={theme}
+                      onBack={() => navigate('Home')}
+                      onCitySelect={(
+                        cityName: string,
+                        latitude: number,
+                        longitude: number
+                      ) => {
+                        getWeatherByLocation(cityName, latitude, longitude);
+                        setCity(cityName);
+                        navigate('Weather');
+                        haptic.light();
+                      }}
+                      onAddFavorite={() => navigate('Search')}
+                      currentCity={city}
+                    />
+                  </React.Suspense>
                 ),
               }}
             />
@@ -2792,11 +2798,13 @@ const AppNavigator = () => {
               )}
 
               {currentScreen === 'Settings' && (
-                <SettingsScreen
-                  theme={theme}
-                  screenInfo={screenInfo}
-                  onBack={() => navigate('Home')}
-                />
+                <React.Suspense fallback={<div>Loading settings...</div>}>
+                  <LazySettingsScreen
+                    theme={theme}
+                    screenInfo={screenInfo}
+                    onBack={() => navigate('Home')}
+                  />
+                </React.Suspense>
               )}
             </SwipeNavigationContainer>
           )}

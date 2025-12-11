@@ -54,6 +54,33 @@ interface WeatherResponse {
   };
 }
 
+// Request deduplication cache - prevents duplicate API calls
+const pendingRequests = new Map<string, Promise<unknown>>();
+const REQUEST_DEDUP_WINDOW_MS = 2000; // 2 second deduplication window
+
+/**
+ * Deduplicate requests by cache key
+ */
+function deduplicateRequest<T>(
+  cacheKey: string,
+  requestFn: () => Promise<T>
+): Promise<T> {
+  const existing = pendingRequests.get(cacheKey);
+  if (existing) {
+    return existing as Promise<T>;
+  }
+
+  const promise = requestFn().finally(() => {
+    // Clean up after request completes
+    setTimeout(() => {
+      pendingRequests.delete(cacheKey);
+    }, REQUEST_DEDUP_WINDOW_MS);
+  });
+
+  pendingRequests.set(cacheKey, promise);
+  return promise;
+}
+
 // Enhanced API service with telemetry
 export function useWeatherApiWithTelemetry() {
   const telemetry = useWeatherTelemetry();
@@ -62,96 +89,95 @@ export function useWeatherApiWithTelemetry() {
    * Search for weather by city name with full telemetry tracking
    */
   const searchWeatherByCity = async (city: string) => {
-    // Track the overall weather search operation
-    return telemetry.trackOperation(
-      'weather_search_complete',
-      async () => {
-        // Step 1: Geocoding with telemetry
-        const geocodingResult: GeocodingResult[] = await telemetry.trackApiCall(
-          'geocoding',
-          city,
-          async () => {
-            return optimizedFetchJson<GeocodingResult[]>(
-              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-                city
-              )}&format=json&limit=1`,
-              {},
-              `telemetry:geocode:${city}`
+    const cacheKey = `weather:city:${city.toLowerCase().trim()}`;
+    return deduplicateRequest(cacheKey, () =>
+      telemetry.trackOperation(
+        'weather_search_complete',
+        async () => {
+          // Step 1: Geocoding with telemetry
+          const geocodingResult: GeocodingResult[] =
+            await telemetry.trackApiCall('geocoding', city, async () => {
+              return optimizedFetchJson<GeocodingResult[]>(
+                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+                  city
+                )}&format=json&limit=1`,
+                {},
+                `telemetry:geocode:${city}`
+              );
+            });
+
+          if (!geocodingResult || geocodingResult.length === 0) {
+            throw new Error(
+              'City not found. Please check the spelling and try again.'
             );
           }
-        );
 
-        if (!geocodingResult || geocodingResult.length === 0) {
-          throw new Error(
-            'City not found. Please check the spelling and try again.'
+          const { lat, lon } = geocodingResult[0];
+          const cityName = geocodingResult[0].display_name || city;
+          const latitude = Number.parseFloat(lat);
+          const longitude = Number.parseFloat(lon);
+
+          // Track successful geocoding
+          telemetry.trackUserInteraction({
+            action: 'geocoding_success',
+            component: 'WeatherAPI',
+          });
+
+          // Step 2: Weather data with telemetry
+          const weatherData: WeatherResponse = await telemetry.trackApiCall(
+            'weather',
+            cityName,
+            async () => {
+              const {
+                getStoredUnits,
+                getTemperatureUnitParam,
+                getWindSpeedUnitParam,
+                getPrecipitationUnitParam,
+              } = await import('../utils/units');
+              const unit = getTemperatureUnitParam(getStoredUnits());
+              const wind = getWindSpeedUnitParam(getStoredUnits());
+              const precip = getPrecipitationUnitParam(getStoredUnits());
+              const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`;
+
+              return optimizedFetchJson<WeatherResponse>(
+                weatherUrl,
+                {},
+                `telemetry:weather:${cityName}`
+              );
+            }
           );
+
+          // Track successful weather data retrieval
+          telemetry.trackUserInteraction({
+            action: 'weather_data_retrieved',
+            component: 'WeatherAPI',
+          });
+
+          // Transform and return data
+          const transformedData = transformWeatherData(
+            weatherData,
+            cityName,
+            latitude,
+            longitude
+          );
+
+          // Track data transformation performance
+          const { getStoredUnits: _getStoredUnitsTelemetry } = await import(
+            '../utils/units'
+          );
+          telemetry.trackPerformance({
+            name: 'weather_data_transformation',
+            value: transformedData.current?.temp || 0,
+            unit: _getStoredUnitsTelemetry(),
+          });
+
+          return transformedData;
+        },
+        {
+          city,
+          coordinates: 'pending_geocoding',
         }
-
-        const { lat, lon } = geocodingResult[0];
-        const cityName = geocodingResult[0].display_name || city;
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(lon);
-
-        // Track successful geocoding
-        telemetry.trackUserInteraction({
-          action: 'geocoding_success',
-          component: 'WeatherAPI',
-        });
-
-        // Step 2: Weather data with telemetry
-        const weatherData: WeatherResponse = await telemetry.trackApiCall(
-          'weather',
-          cityName,
-          async () => {
-            const {
-              getStoredUnits,
-              getTemperatureUnitParam,
-              getWindSpeedUnitParam,
-              getPrecipitationUnitParam,
-            } = await import('../utils/units');
-            const unit = getTemperatureUnitParam(getStoredUnits());
-            const wind = getWindSpeedUnitParam(getStoredUnits());
-            const precip = getPrecipitationUnitParam(getStoredUnits());
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`;
-
-            return optimizedFetchJson<WeatherResponse>(
-              weatherUrl,
-              {},
-              `telemetry:weather:${cityName}`
-            );
-          }
-        );
-
-        // Track successful weather data retrieval
-        telemetry.trackUserInteraction({
-          action: 'weather_data_retrieved',
-          component: 'WeatherAPI',
-        });
-
-        // Transform and return data
-        const transformedData = transformWeatherData(
-          weatherData,
-          cityName,
-          latitude,
-          longitude
-        );
-
-        // Track data transformation performance
-        const { getStoredUnits: _getStoredUnitsTelemetry } = await import(
-          '../utils/units'
-        );
-        telemetry.trackPerformance({
-          name: 'weather_data_transformation',
-          value: transformedData.current?.temp || 0,
-          unit: _getStoredUnitsTelemetry(),
-        });
-
-        return transformedData;
-      },
-      {
-        city,
-        coordinates: 'pending_geocoding',
-      }
+      )
     );
   };
 
@@ -159,44 +185,50 @@ export function useWeatherApiWithTelemetry() {
    * Get weather by coordinates (for geolocation)
    */
   const getWeatherByCoordinates = async (lat: number, lon: number) => {
-    return telemetry.trackOperation(
-      'weather_by_coordinates',
-      async () => {
-        // Track geolocation usage
-        telemetry.trackLocationRequest({ method: 'geolocation' });
+    // Round coordinates to 2 decimal places for deduplication (~1km precision)
+    const roundedLat = Math.round(lat * 100) / 100;
+    const roundedLon = Math.round(lon * 100) / 100;
+    const cacheKey = `weather:coords:${roundedLat},${roundedLon}`;
+    return deduplicateRequest(cacheKey, () =>
+      telemetry.trackOperation(
+        'weather_by_coordinates',
+        async () => {
+          // Track geolocation usage
+          telemetry.trackLocationRequest({ method: 'geolocation' });
 
-        // Get weather data
-        const weatherData = await telemetry.trackApiCall(
-          'weather',
-          `${lat},${lon}`,
-          async () => {
-            const {
-              getStoredUnits: _getStoredUnits3,
-              getTemperatureUnitParam: _getTemperatureUnitParam3,
-              getWindSpeedUnitParam,
-              getPrecipitationUnitParam: _getPrecipitationUnitParam3,
-            } = await import('../utils/units');
-            const unit2 = _getTemperatureUnitParam3(_getStoredUnits3());
-            const wind2 = getWindSpeedUnitParam(_getStoredUnits3());
-            const precip2 = _getPrecipitationUnitParam3(_getStoredUnits3());
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit2}&wind_speed_unit=${wind2}&precipitation_unit=${precip2}&forecast_days=7`;
+          // Get weather data
+          const weatherData = await telemetry.trackApiCall(
+            'weather',
+            `${lat},${lon}`,
+            async () => {
+              const {
+                getStoredUnits: _getStoredUnits3,
+                getTemperatureUnitParam: _getTemperatureUnitParam3,
+                getWindSpeedUnitParam,
+                getPrecipitationUnitParam: _getPrecipitationUnitParam3,
+              } = await import('../utils/units');
+              const unit2 = _getTemperatureUnitParam3(_getStoredUnits3());
+              const wind2 = getWindSpeedUnitParam(_getStoredUnits3());
+              const precip2 = _getPrecipitationUnitParam3(_getStoredUnits3());
+              const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit2}&wind_speed_unit=${wind2}&precipitation_unit=${precip2}&forecast_days=7`;
 
-            return optimizedFetchJson<WeatherResponse>(
-              weatherUrl,
-              {},
-              `telemetry:weather:${lat},${lon}`
-            );
-          }
-        );
+              return optimizedFetchJson<WeatherResponse>(
+                weatherUrl,
+                {},
+                `telemetry:weather:${lat},${lon}`
+              );
+            }
+          );
 
-        // Get city name from coordinates (skip in dev to reduce requests)
-        const cityName = import.meta.env?.DEV
-          ? 'Current Location'
-          : await getReverseGeocodingWithTelemetry(lat, lon);
+          // Get city name from coordinates (skip in dev to reduce requests)
+          const cityName = import.meta.env?.DEV
+            ? 'Current Location'
+            : await getReverseGeocodingWithTelemetry(lat, lon);
 
-        return transformWeatherData(weatherData, cityName, lat, lon);
-      },
-      { latitude: lat, longitude: lon }
+          return transformWeatherData(weatherData, cityName, lat, lon);
+        },
+        { latitude: lat, longitude: lon }
+      )
     );
   };
 
@@ -214,15 +246,152 @@ export function useWeatherApiWithTelemetry() {
     );
   };
 
+  /**
+   * Get weather by coordinates in AppNavigator format (for backward compatibility)
+   */
+  const getWeatherByCoordinatesLegacy = async (lat: number, lon: number) => {
+    // Round coordinates to 2 decimal places for deduplication
+    const roundedLat = Math.round(lat * 100) / 100;
+    const roundedLon = Math.round(lon * 100) / 100;
+    const cacheKey = `weather:coords:legacy:${roundedLat},${roundedLon}`;
+    return deduplicateRequest(cacheKey, () =>
+      telemetry.trackOperation(
+        'weather_by_coordinates_legacy',
+        async () => {
+          // Track geolocation usage
+          telemetry.trackLocationRequest({ method: 'geolocation' });
+
+          // Get weather data
+          const weatherData = await telemetry.trackApiCall(
+            'weather',
+            `${lat},${lon}`,
+            async () => {
+              const {
+                getStoredUnits: _getStoredUnits3,
+                getTemperatureUnitParam: _getTemperatureUnitParam3,
+                getWindSpeedUnitParam,
+                getPrecipitationUnitParam: _getPrecipitationUnitParam3,
+              } = await import('../utils/units');
+              const unit2 = _getTemperatureUnitParam3(_getStoredUnits3());
+              const wind2 = getWindSpeedUnitParam(_getStoredUnits3());
+              const precip2 = _getPrecipitationUnitParam3(_getStoredUnits3());
+              const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit2}&wind_speed_unit=${wind2}&precipitation_unit=${precip2}&forecast_days=7`;
+
+              return optimizedFetchJson<WeatherResponse>(
+                weatherUrl,
+                {},
+                `telemetry:weather:${lat},${lon}`
+              );
+            }
+          );
+
+          // Get city name from coordinates (skip in dev to reduce requests)
+          const cityName = import.meta.env?.DEV
+            ? 'Current Location'
+            : await getReverseGeocodingWithTelemetry(lat, lon);
+
+          return transformToAppNavigatorFormat(weatherData, cityName, lat, lon);
+        },
+        { latitude: lat, longitude: lon }
+      )
+    );
+  };
+
+  /**
+   * Search weather by city in AppNavigator format (for backward compatibility)
+   */
+  const searchWeatherByCityLegacy = async (city: string) => {
+    const cacheKey = `weather:city:legacy:${city.toLowerCase().trim()}`;
+    return deduplicateRequest(cacheKey, () =>
+      telemetry.trackOperation(
+        'weather_search_complete_legacy',
+        async () => {
+          // Step 1: Geocoding with telemetry
+          const geocodingResult: GeocodingResult[] =
+            await telemetry.trackApiCall('geocoding', city, async () => {
+              return optimizedFetchJson<GeocodingResult[]>(
+                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+                  city
+                )}&format=json&limit=1`,
+                {},
+                `telemetry:geocode:${city}`
+              );
+            });
+
+          if (!geocodingResult || geocodingResult.length === 0) {
+            throw new Error(
+              'City not found. Please check the spelling and try again.'
+            );
+          }
+
+          const { lat, lon } = geocodingResult[0];
+          const cityName = geocodingResult[0].display_name || city;
+          const latitude = Number.parseFloat(lat);
+          const longitude = Number.parseFloat(lon);
+
+          // Track successful geocoding
+          telemetry.trackUserInteraction({
+            action: 'geocoding_success',
+            component: 'WeatherAPI',
+          });
+
+          // Step 2: Weather data with telemetry
+          const weatherData: WeatherResponse = await telemetry.trackApiCall(
+            'weather',
+            cityName,
+            async () => {
+              const {
+                getStoredUnits,
+                getTemperatureUnitParam,
+                getWindSpeedUnitParam,
+                getPrecipitationUnitParam,
+              } = await import('../utils/units');
+              const unit = getTemperatureUnitParam(getStoredUnits());
+              const wind = getWindSpeedUnitParam(getStoredUnits());
+              const precip = getPrecipitationUnitParam(getStoredUnits());
+              const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m,apparent_temperature,cloudcover,precipitation,precipitation_probability,windgusts_10m,surface_pressure,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,uv_index_max&timezone=auto&temperature_unit=${unit}&wind_speed_unit=${wind}&precipitation_unit=${precip}&forecast_days=7`;
+
+              return optimizedFetchJson<WeatherResponse>(
+                weatherUrl,
+                {},
+                `telemetry:weather:${cityName}`
+              );
+            }
+          );
+
+          // Track successful weather data retrieval
+          telemetry.trackUserInteraction({
+            action: 'weather_data_retrieved',
+            component: 'WeatherAPI',
+          });
+
+          return transformToAppNavigatorFormat(
+            weatherData,
+            cityName,
+            latitude,
+            longitude
+          );
+        },
+        {
+          city,
+          coordinates: 'pending_geocoding',
+        }
+      )
+    );
+  };
+
   return {
     searchWeatherByCity,
     getWeatherByCoordinates,
     getReverseGeocodingWithTelemetry,
+    // Legacy format methods for AppNavigator compatibility
+    searchWeatherByCityLegacy,
+    getWeatherByCoordinatesLegacy,
   };
 }
 
 /**
- * Transform OpenMeteo data to app format
+ * Transform OpenMeteo data to app format (optimized format)
  */
 function transformWeatherData(
   weatherData: WeatherResponse,
@@ -252,6 +421,60 @@ function transformWeatherData(
     daily: weatherData.daily ? transformDailyData(weatherData.daily) : [],
     timestamp: Date.now(),
   };
+}
+
+/**
+ * Transform to AppNavigator format (legacy compatibility)
+ * Converts the optimized format to the format expected by AppNavigator
+ * Also includes hourly and daily forecasts
+ */
+function transformToAppNavigatorFormat(
+  weatherData: WeatherResponse,
+  _cityName: string,
+  _lat: number,
+  _lon: number
+) {
+  const weatherCode = weatherData.current?.weathercode || 0;
+  const description = getWeatherDescription(weatherCode);
+  const mainCategory = getWeatherMainCategory(weatherCode);
+
+  return {
+    main: {
+      temp: Math.round(weatherData.current?.temperature_2m || 0),
+      feels_like: Math.round(weatherData.current?.apparent_temperature || 0),
+      humidity: weatherData.current?.relative_humidity_2m || 0,
+      pressure: weatherData.current?.surface_pressure || 0,
+    },
+    weather: [
+      {
+        description,
+        main: mainCategory,
+      },
+    ],
+    wind: {
+      speed: weatherData.current?.windspeed_10m || 0,
+      deg: weatherData.current?.winddirection_10m || 0,
+    },
+    uv_index: weatherData.current?.uv_index || 0,
+    visibility: weatherData.current?.visibility || 0,
+    weathercode: weatherCode,
+    // Include raw hourly and daily data for processing
+    hourly: weatherData.hourly,
+    daily: weatherData.daily,
+  };
+}
+
+/**
+ * Get weather main category from code
+ */
+function getWeatherMainCategory(code: number): string {
+  if (code === 0) return 'Clear';
+  if (code <= 3) return 'Clouds';
+  if (code <= 48) return 'Mist';
+  if (code <= 67) return 'Rain';
+  if (code <= 82) return 'Rain';
+  if (code >= 95) return 'Thunderstorm';
+  return 'Unknown';
 }
 
 /**

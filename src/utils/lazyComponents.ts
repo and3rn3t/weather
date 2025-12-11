@@ -4,7 +4,7 @@
  * for heavy weather components with loading states and error handling
  */
 
-import { lazy, ComponentType } from 'react';
+import { ComponentType, lazy } from 'react';
 import { safeTelemetry } from './buildOptimizations';
 
 // Enhanced lazy loading with performance tracking
@@ -58,16 +58,6 @@ export const LazyHomeScreen = createLazyComponent(
 export const LazyWeatherDetailsScreen = createLazyComponent(
   () => import('../screens/LazyWeatherDetailsScreen'),
   'LazyWeatherDetailsScreen'
-);
-
-export const LazySearchScreen = createLazyComponent(
-  () => import('../screens/LazySearchScreen'),
-  'LazySearchScreen'
-);
-
-export const LazySettingsScreen = createLazyComponent(
-  () => import('../screens/LazySettingsScreen'),
-  'LazySettingsScreen'
 );
 
 // Feature Components - Feature-based code splitting for modular loading
@@ -158,6 +148,22 @@ export const PWAStatus = createLazyComponent(
 export const PWAInstallPrompt = createLazyComponent(
   () => import('../components/PWAInstallPrompt'),
   'PWAInstallPrompt'
+);
+
+// Screen Components - Route-based code splitting (Phase 3.1)
+export const LazySearchScreen = createLazyComponent(
+  () => import('../components/SearchScreen'),
+  'LazySearchScreen'
+);
+
+export const LazySettingsScreen = createLazyComponent(
+  () => import('../components/SettingsScreen'),
+  'LazySettingsScreen'
+);
+
+export const LazyFavoritesScreen = createLazyComponent(
+  () => import('../components/FavoritesScreen'),
+  'LazyFavoritesScreen'
 );
 
 // Theme-specific components removed; only light/dark supported
