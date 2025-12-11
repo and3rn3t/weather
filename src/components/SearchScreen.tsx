@@ -20,6 +20,7 @@ import { NavigationBar } from './modernWeatherUI/NavigationBar';
 import { NavigationIcons } from './modernWeatherUI/NavigationIcons';
 import './SearchScreen.css';
 import VoiceSearchButton from './VoiceSearchButton';
+import ThemeToggle from '../utils/ThemeToggle';
 
 interface SearchScreenProps {
   theme: ThemeColors;
@@ -587,6 +588,15 @@ function SearchScreen({
           title: 'Back',
           onPress: onBack,
         }}
+        trailingButtons={[
+          {
+            icon: <ThemeToggle className="ios26-nav-theme-toggle" />,
+            title: 'Theme',
+            onPress: () => {
+              // Theme toggle handles its own click
+            },
+          },
+        ]}
       />
 
       {/* Search Input */}

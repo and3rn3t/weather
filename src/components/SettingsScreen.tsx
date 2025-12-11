@@ -5,6 +5,7 @@ import {
 } from '../services/mobile/FavoriteCitiesManager';
 import { smartCacheManager } from '../services/mobile/SmartCacheManager';
 import { weatherAlertManager } from '../services/mobile/WeatherAlertManager';
+import ThemeToggle from '../utils/ThemeToggle';
 import { advancedCachingManager } from '../utils/advancedCachingManager';
 import { useHaptic } from '../utils/hapticHooks';
 import { logInfo, logWarn } from '../utils/logger';
@@ -748,6 +749,15 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           title: 'Back',
           onPress: onBack,
         }}
+        trailingButtons={[
+          {
+            icon: <ThemeToggle className="ios26-nav-theme-toggle" />,
+            title: 'Theme',
+            onPress: () => {
+              // Theme toggle handles its own click
+            },
+          },
+        ]}
       />
 
       {/* Content */}

@@ -2,6 +2,7 @@ import { QuickActionsPanel } from '../components/modernWeatherUI/iOS26MainScreen
 import { IOS26WeatherDemo } from '../components/modernWeatherUI/iOS26WeatherDemo';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
+import ThemeToggle from '../utils/ThemeToggle';
 
 interface LazyHomeScreenProps {
   theme: ThemeColors;
@@ -19,15 +20,18 @@ function LazyHomeScreen({ theme, navigate, haptic }: LazyHomeScreenProps) {
       {/* iOS 26 Navigation Bar */}
       <div className="ios26-navigation-bar">
         <h1 className="ios-title1 ios26-text-primary">Today's Weather</h1>
-        <button
-          className="ios26-button ios26-button-secondary"
-          onClick={() => {
-            haptic.buttonPress();
-            navigate('Settings');
-          }}
-        >
-          ⚙️
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <ThemeToggle className="ios26-nav-theme-toggle" />
+          <button
+            className="ios26-button ios26-button-secondary"
+            onClick={() => {
+              haptic.buttonPress();
+              navigate('Settings');
+            }}
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
 
       {/* Quick Actions Panel */}

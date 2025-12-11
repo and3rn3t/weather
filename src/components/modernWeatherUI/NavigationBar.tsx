@@ -28,6 +28,11 @@ interface NavigationBarProps {
     title?: string;
     onPress: () => void;
   };
+  trailingButtons?: Array<{
+    icon: React.ReactNode;
+    title?: string;
+    onPress: () => void;
+  }>;
   searchBar?: React.ReactNode;
   theme: ThemeColors;
   isDark?: boolean;
@@ -40,6 +45,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   transparent = false,
   leadingButton,
   trailingButton,
+  trailingButtons,
   searchBar,
   theme: _theme,
   isDark = false,
@@ -131,7 +137,38 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         </div>
 
         <div className="ios26-navigation-side ios26-navigation-side--end">
-          {trailingButton && (
+          {trailingButtons &&
+            trailingButtons.map((button, index) => {
+              // If onPress is empty/undefined, assume the icon handles its own click (e.g., ThemeToggle)
+              if (
+                !button.onPress ||
+                (button.onPress as () => void)
+                  .toString()
+                  .includes('Theme toggle handles')
+              ) {
+                return (
+                  <div
+                    key={`trailing-${index}`}
+                    className="ios26-nav-button-wrapper"
+                  >
+                    {button.icon}
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={`trailing-${index}`}
+                  className={buttonClass}
+                  onClick={button.onPress}
+                  aria-label={button.title || 'Navigation button'}
+                >
+                  {button.icon}
+                  {button.title && <span>{button.title}</span>}
+                </button>
+              );
+            })}
+          {trailingButton && !trailingButtons && (
             <button
               className={buttonClass}
               onClick={trailingButton.onPress}

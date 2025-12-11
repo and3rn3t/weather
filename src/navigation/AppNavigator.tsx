@@ -183,6 +183,11 @@ import {
   getWindSpeedLabel,
   setStoredUnits,
 } from '../utils/units';
+// Enhanced Weather Components
+import { CloudCoverDisplay } from '../components/weather/CloudCoverDisplay';
+import { EnhancedMetricsGrid } from '../components/weather/EnhancedMetricsGrid';
+import { PrecipitationProbability } from '../components/weather/PrecipitationProbability';
+import { WindGustDisplay } from '../components/weather/WindGustDisplay';
 // OptimizedMobileWeatherDisplay will be lazy-loaded via utils/lazyComponents
 // Core styles now centralized via src/index.css to prevent overlap
 // Navigation & UI Fixes - August 21, 2025
@@ -675,10 +680,20 @@ function WeatherDetailsScreen({
           title: 'Location',
           onPress: () => setShowLocationSetup(true),
         }}
-        trailingButton={{
-          icon: <NavigationIcons.Settings />,
-          onPress: () => navigate('Settings'),
-        }}
+        trailingButtons={[
+          {
+            icon: <ThemeToggle className="ios26-nav-theme-toggle" />,
+            title: 'Theme',
+            onPress: () => {
+              // Theme toggle handles its own click
+            },
+          },
+          {
+            icon: <NavigationIcons.Settings />,
+            title: 'Settings',
+            onPress: () => navigate('Settings'),
+          },
+        ]}
         theme={theme}
         isDark={themeName === 'dark'}
       />
@@ -694,8 +709,6 @@ function WeatherDetailsScreen({
       />
 
       {/* LiveActivity rendered once later; duplicate instance removed to prevent overlapping pills. */}
-
-      <ThemeToggle />
       <PullToRefresh
         onRefresh={onRefresh}
         disabled={loading}
@@ -1239,6 +1252,7 @@ const WeatherMainCard = React.memo(
     isMobile: _isMobile,
     weatherCode,
     onRefresh,
+    hourlyForecast,
   }: Readonly<{
     weather: WeatherData;
     city: string;
@@ -1246,6 +1260,7 @@ const WeatherMainCard = React.memo(
     isMobile: boolean;
     weatherCode: number;
     onRefresh?: () => void;
+    hourlyForecast?: HourlyForecast[];
   }>) => {
     const contextMenuActions = [
       {
@@ -1396,6 +1411,32 @@ const WeatherMainCard = React.memo(
               )}
             </div>
           </div>
+
+          {/* Enhanced Metrics Grid - Cloud Cover, Wind Gusts, etc. */}
+          {hourlyForecast && hourlyForecast.length > 0 && (
+            <div className="ios26-weather-metrics-section ios26-mt-4">
+              <div className="ios26-weather-metrics-header">
+                <h3 className="ios26-weather-metrics-title">
+                  Additional Details
+                </h3>
+              </div>
+              <EnhancedMetricsGrid
+                cloudcover={hourlyForecast[0]?.cloudcover}
+                precipitation={hourlyForecast[0]?.precipitation}
+                precipitationProbability={
+                  hourlyForecast[0]?.precipitationProbability
+                }
+                windSpeed={weather.wind.speed}
+                windGusts={hourlyForecast[0]?.windgusts}
+                pressure={weather.main.pressure}
+                uvIndex={weather.uv_index}
+                visibility={weather.visibility}
+                units={getStoredUnits()}
+                className="ios26-enhanced-metrics"
+              />
+            </div>
+          )}
+
           <div className="ios26-pull-indicator"></div>
         </div>
       </ContextMenu>
@@ -1415,6 +1456,8 @@ const HourlyForecastSection = React.memo(
     theme: ThemeColors;
     isMobile: boolean;
   }>) => {
+    const [expandedHour, setExpandedHour] = useState<string | null>(null);
+
     if (loading && hourlyForecast.length === 0) {
       return (
         <div className="ios26-forecast-section">
@@ -1439,33 +1482,130 @@ const HourlyForecastSection = React.memo(
           <div className="ios26-forecast-scroll enhanced-readability ios26-timeline">
             {hourlyForecast.slice(0, 24).map((hour, index) => {
               const timeStr = formatTimeForHourly(hour.time);
+              const isExpanded = expandedHour === hour.time;
+              const hasAdditionalData =
+                hour.cloudcover !== undefined ||
+                hour.precipitation !== undefined ||
+                hour.precipitationProbability !== undefined ||
+                (hour.windgusts !== undefined && hour.windgusts > 0) ||
+                hour.pressure !== undefined ||
+                hour.uvIndex !== undefined ||
+                hour.visibility !== undefined;
+
               return (
                 <div
                   key={`hour-${hour.time}`}
-                  className={`ios26-forecast-item enhanced-readability ${index === 0 ? 'now' : ''}`}
+                  className={`ios26-forecast-item enhanced-readability ${index === 0 ? 'now' : ''} ${isExpanded ? 'expanded' : ''}`}
                 >
-                  <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time enhanced-readability">
-                    {index === 0 ? 'Now' : timeStr}
-                  </div>
-                  <div className="ios26-forecast-icon">
-                    <WeatherIcon
-                      code={hour.weatherCode}
-                      size={32}
-                      animated={true}
-                    />
-                  </div>
-                  <div className="ios26-forecast-temperature enhanced-readability">
-                    <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
-                      {hour.temperature}
-                      {getTemperatureSymbol(getStoredUnits())}
+                  <div
+                    className="ios26-forecast-item-main"
+                    onClick={() => {
+                      if (hasAdditionalData) {
+                        setExpandedHour(isExpanded ? null : hour.time);
+                      }
+                    }}
+                    style={{
+                      cursor: hasAdditionalData ? 'pointer' : 'default',
+                    }}
+                    {...(hasAdditionalData
+                      ? {
+                          role: 'button',
+                          'aria-expanded': isExpanded ? 'true' : 'false',
+                          'aria-label': `Toggle details for ${index === 0 ? 'Now' : timeStr}`,
+                        }
+                      : {})}
+                  >
+                    <div className="ios26-text-footnote ios26-text-secondary ios26-forecast-time enhanced-readability">
+                      {index === 0 ? 'Now' : timeStr}
                     </div>
+                    <div className="ios26-forecast-icon">
+                      <WeatherIcon
+                        code={hour.weatherCode}
+                        size={32}
+                        animated={true}
+                      />
+                    </div>
+                    <div className="ios26-forecast-temperature enhanced-readability">
+                      <div className="ios26-text-subheadline ios26-text-semibold ios26-text-primary">
+                        {hour.temperature}
+                        {getTemperatureSymbol(getStoredUnits())}
+                      </div>
+                    </div>
+                    <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-sub">
+                      Humidity {hour.humidity}%
+                    </div>
+                    <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-sub">
+                      Feels {hour.feelsLike}°
+                    </div>
+                    {hasAdditionalData && (
+                      <div className="ios26-forecast-expand-indicator">
+                        {isExpanded ? '▼' : '▶'}
+                      </div>
+                    )}
                   </div>
-                  <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-sub">
-                    Humidity {hour.humidity}%
-                  </div>
-                  <div className="ios26-text-caption2 ios26-text-tertiary ios26-forecast-sub">
-                    Feels {hour.feelsLike}°
-                  </div>
+                  {isExpanded && hasAdditionalData && (
+                    <div className="ios26-forecast-details">
+                      <div className="ios26-forecast-details-grid">
+                        {hour.cloudcover !== undefined && (
+                          <div className="ios26-forecast-detail-item">
+                            <CloudCoverDisplay cloudcover={hour.cloudcover} />
+                          </div>
+                        )}
+                        {(hour.precipitationProbability !== undefined ||
+                          hour.precipitation !== undefined) && (
+                          <div className="ios26-forecast-detail-item">
+                            <PrecipitationProbability
+                              probability={hour.precipitationProbability || 0}
+                              precipitation={hour.precipitation}
+                            />
+                          </div>
+                        )}
+                        {hour.windgusts !== undefined && hour.windgusts > 0 && (
+                          <div className="ios26-forecast-detail-item">
+                            <WindGustDisplay
+                              windSpeed={0}
+                              windGusts={hour.windgusts}
+                              units={getStoredUnits()}
+                            />
+                          </div>
+                        )}
+                        {hour.pressure !== undefined && (
+                          <div className="ios26-forecast-detail-item">
+                            <div className="ios-caption ios26-text-secondary">
+                              Pressure
+                            </div>
+                            <div className="ios-subheadline ios26-text-primary">
+                              {formatPressure(hour.pressure, getStoredUnits())}
+                            </div>
+                          </div>
+                        )}
+                        {hour.uvIndex !== undefined && hour.uvIndex > 0 && (
+                          <div className="ios26-forecast-detail-item">
+                            <div className="ios-caption ios26-text-secondary">
+                              UV Index
+                            </div>
+                            <div className="ios-subheadline ios26-text-primary">
+                              {Math.round(hour.uvIndex)}
+                            </div>
+                          </div>
+                        )}
+                        {hour.visibility !== undefined &&
+                          hour.visibility > 0 && (
+                            <div className="ios26-forecast-detail-item">
+                              <div className="ios-caption ios26-text-secondary">
+                                Visibility
+                              </div>
+                              <div className="ios-subheadline ios26-text-primary">
+                                {formatVisibility(
+                                  hour.visibility,
+                                  getStoredUnits()
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -1487,6 +1627,48 @@ const DailyForecastSection = React.memo(
     dailyForecast: DailyForecast[];
     theme: ThemeColors;
   }>) => {
+    const [expandedDay, setExpandedDay] = useState<string | null>(null);
+
+    // Helper function to convert wind direction degrees to direction name
+    const getWindDirectionName = (degrees?: number): string => {
+      if (degrees === undefined) return '';
+      const directions = [
+        'N',
+        'NNE',
+        'NE',
+        'ENE',
+        'E',
+        'ESE',
+        'SE',
+        'SSE',
+        'S',
+        'SSW',
+        'SW',
+        'WSW',
+        'W',
+        'WNW',
+        'NW',
+        'NNW',
+      ];
+      const index = Math.round(degrees / 22.5) % 16;
+      return directions[index] || '';
+    };
+
+    // Helper function to get UV index category
+    const getUVIndexCategory = (
+      uv?: number
+    ): {
+      label: string;
+      color: string;
+    } => {
+      if (uv === undefined) return { label: '', color: '' };
+      if (uv < 3) return { label: 'Low', color: '#4CAF50' };
+      if (uv < 6) return { label: 'Moderate', color: '#FFC107' };
+      if (uv < 8) return { label: 'High', color: '#FF9800' };
+      if (uv < 11) return { label: 'Very High', color: '#F44336' };
+      return { label: 'Extreme', color: '#9C27B0' };
+    };
+
     if (loading && dailyForecast.length === 0) {
       return (
         <div className="ios26-forecast-section enhanced-readability">
@@ -1529,55 +1711,169 @@ const DailyForecastSection = React.memo(
                 day.tempMin,
                 day.tempMax
               );
+              const isExpanded = expandedDay === day.date;
+              const hasAdditionalData =
+                day.precipitationProbabilityMax !== undefined ||
+                (day.windgustsMax !== undefined &&
+                  day.windgustsMax > day.windSpeed) ||
+                day.windDirectionDominant !== undefined ||
+                day.uvIndexMax !== undefined;
+
               return (
                 <div
                   key={`day-${day.date}`}
-                  className={`ios26-forecast-item enhanced-readability ${isToday ? 'today' : ''}`}
+                  className={`ios26-forecast-item enhanced-readability ${isToday ? 'today' : ''} ${isExpanded ? 'expanded' : ''}`}
                 >
-                  <div className="ios26-forecast-time enhanced-readability">
-                    <div
-                      className={`ios-subheadline ${
-                        isToday
-                          ? 'ios26-text-bold ios26-text-primary'
-                          : 'ios26-text-semibold ios26-text-primary'
-                      }`}
-                    >
-                      {dayName}
+                  <div
+                    className="ios26-forecast-item-main"
+                    onClick={() => {
+                      if (hasAdditionalData) {
+                        setExpandedDay(isExpanded ? null : day.date);
+                      }
+                    }}
+                    style={{
+                      cursor: hasAdditionalData ? 'pointer' : 'default',
+                    }}
+                    {...(hasAdditionalData
+                      ? {
+                          role: 'button',
+                          'aria-expanded': isExpanded ? 'true' : 'false',
+                          'aria-label': `Toggle details for ${dayName}`,
+                        }
+                      : {})}
+                  >
+                    <div className="ios26-forecast-time enhanced-readability">
+                      <div
+                        className={`ios-subheadline ${
+                          isToday
+                            ? 'ios26-text-bold ios26-text-primary'
+                            : 'ios26-text-semibold ios26-text-primary'
+                        }`}
+                      >
+                        {dayName}
+                      </div>
+                      <div className="ios-caption ios26-text-secondary">
+                        {dateStr}
+                      </div>
                     </div>
-                    <div className="ios-caption ios26-text-secondary">
-                      {dateStr}
+                    <div className="ios26-forecast-icon">
+                      <WeatherIcon
+                        code={day.weatherCode}
+                        size={36}
+                        animated={true}
+                      />
                     </div>
-                  </div>
-                  <div className="ios26-forecast-icon">
-                    <WeatherIcon
-                      code={day.weatherCode}
-                      size={36}
-                      animated={true}
-                    />
-                  </div>
-                  <div className="ios26-daily-range">
-                    <div className="ios26-range-rail" />
-                    <div
-                      className={`ios26-range-fill start-s${startStep} width-w${widthStep}`}
-                    />
-                  </div>
-                  <div className="ios26-forecast-temp-range">
-                    <div className="ios-subheadline ios26-text-semibold ios26-text-primary ios26-forecast-temperature enhanced-readability">
-                      {day.tempMax}°
+                    <div className="ios26-daily-range">
+                      <div className="ios26-range-rail" />
+                      <div
+                        className={`ios26-range-fill start-s${startStep} width-w${widthStep}`}
+                      />
                     </div>
-                    <div className="ios-subheadline ios26-text-secondary ios26-forecast-temperature enhanced-readability">
-                      {day.tempMin}°
+                    <div className="ios26-forecast-temp-range">
+                      <div className="ios-subheadline ios26-text-semibold ios26-text-primary ios26-forecast-temperature enhanced-readability">
+                        {day.tempMax}°
+                      </div>
+                      <div className="ios-subheadline ios26-text-secondary ios26-forecast-temperature enhanced-readability">
+                        {day.tempMin}°
+                      </div>
                     </div>
+                    {day.precipitation > 0 && (
+                      <div className="ios-caption2 ios26-text-tertiary ios26-forecast-precipitation enhanced-readability">
+                        Precip{' '}
+                        {formatPrecipitation(
+                          day.precipitation,
+                          getStoredUnits()
+                        )}
+                      </div>
+                    )}
+                    {day.precipitationProbabilityMax !== undefined &&
+                      day.precipitationProbabilityMax > 0 && (
+                        <div className="ios-caption2 ios26-text-tertiary ios26-forecast-badge">
+                          {Math.round(day.precipitationProbabilityMax)}% chance
+                        </div>
+                      )}
+                    <div className="ios-caption2 ios26-text-tertiary">
+                      Wind {formatWindSpeed(day.windSpeed, getStoredUnits())}
+                    </div>
+                    {day.windgustsMax !== undefined &&
+                      day.windgustsMax > day.windSpeed && (
+                        <div className="ios-caption2 ios26-text-tertiary">
+                          Gusts{' '}
+                          {formatWindSpeed(day.windgustsMax, getStoredUnits())}
+                        </div>
+                      )}
+                    {day.windDirectionDominant !== undefined && (
+                      <div className="ios-caption2 ios26-text-tertiary">
+                        {getWindDirectionName(day.windDirectionDominant)}
+                      </div>
+                    )}
+                    {day.uvIndexMax !== undefined && day.uvIndexMax > 0 && (
+                      <div
+                        className="ios-caption2 ios26-text-tertiary ios26-forecast-badge"
+                        style={{
+                          color: getUVIndexCategory(day.uvIndexMax).color,
+                        }}
+                      >
+                        UV {Math.round(day.uvIndexMax)}
+                      </div>
+                    )}
+                    {hasAdditionalData && (
+                      <div className="ios26-forecast-expand-indicator">
+                        {isExpanded ? '▼' : '▶'}
+                      </div>
+                    )}
                   </div>
-                  {day.precipitation > 0 && (
-                    <div className="ios-caption2 ios26-text-tertiary ios26-forecast-precipitation enhanced-readability">
-                      Precip{' '}
-                      {formatPrecipitation(day.precipitation, getStoredUnits())}
+                  {isExpanded && hasAdditionalData && (
+                    <div className="ios26-forecast-details">
+                      <div className="ios26-forecast-details-grid">
+                        {day.precipitationProbabilityMax !== undefined && (
+                          <div className="ios26-forecast-detail-item">
+                            <PrecipitationProbability
+                              probability={day.precipitationProbabilityMax}
+                              precipitation={day.precipitation}
+                            />
+                          </div>
+                        )}
+                        {day.windgustsMax !== undefined &&
+                          day.windgustsMax > day.windSpeed && (
+                            <div className="ios26-forecast-detail-item">
+                              <WindGustDisplay
+                                windSpeed={day.windSpeed}
+                                windGusts={day.windgustsMax}
+                                units={getStoredUnits()}
+                              />
+                            </div>
+                          )}
+                        {day.windDirectionDominant !== undefined && (
+                          <div className="ios26-forecast-detail-item">
+                            <div className="ios-caption ios26-text-secondary">
+                              Wind Direction
+                            </div>
+                            <div className="ios-subheadline ios26-text-primary">
+                              {getWindDirectionName(day.windDirectionDominant)}{' '}
+                              ({Math.round(day.windDirectionDominant)}°)
+                            </div>
+                          </div>
+                        )}
+                        {day.uvIndexMax !== undefined && day.uvIndexMax > 0 && (
+                          <div className="ios26-forecast-detail-item">
+                            <div className="ios-caption ios26-text-secondary">
+                              Max UV Index
+                            </div>
+                            <div
+                              className="ios-subheadline ios26-text-primary"
+                              style={{
+                                color: getUVIndexCategory(day.uvIndexMax).color,
+                              }}
+                            >
+                              {Math.round(day.uvIndexMax)} -{' '}
+                              {getUVIndexCategory(day.uvIndexMax).label}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
-                  <div className="ios-caption2 ios26-text-tertiary">
-                    Wind {formatWindSpeed(day.windSpeed, getStoredUnits())}
-                  </div>
                 </div>
               );
             })}

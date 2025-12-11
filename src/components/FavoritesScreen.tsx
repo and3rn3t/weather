@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHaptic } from '../utils/hapticHooks';
 import type { ThemeColors } from '../utils/themeConfig';
+import ThemeToggle from '../utils/ThemeToggle';
 import {
   getPrecipitationUnitParam,
   getStoredUnits,
@@ -380,15 +381,24 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
           title: 'Back',
           onPress: onBack,
         }}
-        trailingButton={
-          onAddFavorite
-            ? {
-                icon: <NavigationIcons.Add />,
-                title: 'Add',
-                onPress: onAddFavorite,
-              }
-            : undefined
-        }
+        trailingButtons={[
+          {
+            icon: <ThemeToggle className="ios26-nav-theme-toggle" />,
+            title: 'Theme',
+            onPress: () => {
+              // Theme toggle handles its own click
+            },
+          },
+          ...(onAddFavorite
+            ? [
+                {
+                  icon: <NavigationIcons.Add />,
+                  title: 'Add',
+                  onPress: onAddFavorite,
+                },
+              ]
+            : []),
+        ]}
       />
 
       {/* Tabs */}
