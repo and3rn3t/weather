@@ -111,11 +111,16 @@ class UnifiedBackgroundSyncManager {
     const existingTask = this.findDuplicateTask(type, data);
     if (existingTask) {
       // Conflict resolution: upgrade priority if new task has higher priority
-      if (this.getPriorityValue(priority) > this.getPriorityValue(existingTask.priority)) {
+      if (
+        this.getPriorityValue(priority) >
+        this.getPriorityValue(existingTask.priority)
+      ) {
         existingTask.priority = priority;
         existingTask.scheduledAt = this.calculateScheduledTime(priority);
         this.syncStats.conflictResolutions++;
-        logger.info(`🔄 Resolved conflict: upgraded task ${existingTask.id} priority`);
+        logger.info(
+          `🔄 Resolved conflict: upgraded task ${existingTask.id} priority`
+        );
         this.persistQueue();
         return existingTask.id;
       }
@@ -220,9 +225,7 @@ class UnifiedBackgroundSyncManager {
       }
     } catch (error) {
       logger.error('❌ Error processing sync queue:', error);
-      errors.push(
-        error instanceof Error ? error.message : String(error)
-      );
+      errors.push(error instanceof Error ? error.message : String(error));
     } finally {
       this.isProcessing = false;
       this.persistQueue();
@@ -247,7 +250,11 @@ class UnifiedBackgroundSyncManager {
       switch (task.type) {
         case 'weather-update': {
           return await this.processWeatherUpdate(
-            task.data as { cityName: string; latitude: number; longitude: number }
+            task.data as {
+              cityName: string;
+              latitude: number;
+              longitude: number;
+            }
           );
         }
         case 'city-search': {
@@ -340,7 +347,11 @@ class UnifiedBackgroundSyncManager {
       const results = await nominatimQueue.enqueue(
         `sync:search:${query}`,
         () =>
-          optimizedFetchJson<NominatimSearchResult[]>(searchUrl, {}, `search:${query}`),
+          optimizedFetchJson<NominatimSearchResult[]>(
+            searchUrl,
+            {},
+            `search:${query}`
+          ),
         'low'
       );
 
@@ -678,4 +689,3 @@ export const unifiedBackgroundSyncManager =
 
 // Export types
 export type { SyncResult, SyncStats, SyncTask };
-
