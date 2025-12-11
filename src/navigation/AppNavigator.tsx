@@ -1775,16 +1775,7 @@ const AppNavigator = () => {
         setError(progressiveWeatherData.error);
       }
     }
-  }, [
-    useProgressiveMode,
-    progressiveWeatherData.current,
-    progressiveWeatherData.hourly,
-    progressiveWeatherData.daily,
-    progressiveWeatherData.isLoading,
-    progressiveWeatherData.progress,
-    progressiveWeatherData.error,
-    weatherLoading,
-  ]);
+  }, [useProgressiveMode, progressiveWeatherData, weatherLoading]);
 
   // Weather Display Optimization Hooks - August 2025 (ENABLED in Phase 2B)
   // Create weather context for smart content prioritization
@@ -2169,7 +2160,6 @@ const AppNavigator = () => {
     },
     [
       weatherApi,
-      optimizedFetch,
       weatherLoading,
       telemetry,
       city,
