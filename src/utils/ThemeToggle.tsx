@@ -35,7 +35,11 @@ const ThemeToggle = ({ className }: ThemeToggleProps): JSX.Element => {
     await interactionFeedback.onButtonPress();
 
     // Cycle through: light -> dark -> horror -> light
-    const themeCycle: Array<'light' | 'dark' | 'horror'> = ['light', 'dark', 'horror'];
+    const themeCycle: Array<'light' | 'dark' | 'horror'> = [
+      'light',
+      'dark',
+      'horror',
+    ];
     const currentIndex = themeCycle.indexOf(themeName);
     const nextIndex = (currentIndex + 1) % themeCycle.length;
     const nextTheme = themeCycle[nextIndex];

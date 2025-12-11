@@ -4,7 +4,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { getRandomHorrorQuote, getHorrorQuoteCategory, type HorrorQuote } from '../../utils/horrorQuotes';
+import {
+  getRandomHorrorQuote,
+  getHorrorQuoteCategory,
+  type HorrorQuote,
+} from '../../utils/horrorQuotes';
 import '../../styles/horror-theme.css';
 
 interface HorrorQuoteDisplayProps {
@@ -55,4 +59,3 @@ export const HorrorQuoteDisplay: React.FC<HorrorQuoteDisplayProps> = ({
 };
 
 export default HorrorQuoteDisplay;
-

@@ -149,11 +149,13 @@ export const darkTheme: ThemeColors = {
 
 export const horrorTheme: ThemeColors = {
   // Primary gradients - Dark, eerie Crystal Lake atmosphere
-  primaryGradient: 'linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d0d0d 100%)',
+  primaryGradient:
+    'linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d0d0d 100%)',
   secondaryGradient: 'linear-gradient(135deg, #1a3a1a, #0a1a0a)',
 
   // Background colors - Dark forest/Crystal Lake
-  appBackground: 'linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d0d0d 100%)',
+  appBackground:
+    'linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d0d0d 100%)',
   cardBackground: 'rgba(10, 26, 10, 0.95)',
   cardBorder: 'rgba(139, 0, 0, 0.3)',
 

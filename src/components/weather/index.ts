@@ -12,4 +12,3 @@ export type { default as CloudCoverDisplayType } from './CloudCoverDisplay';
 export type { default as PrecipitationProbabilityType } from './PrecipitationProbability';
 export type { default as WindGustDisplayType } from './WindGustDisplay';
 export type { default as EnhancedMetricsGridType } from './EnhancedMetricsGrid';
-

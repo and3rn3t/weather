@@ -54,4 +54,3 @@ export const CloudCoverDisplay: React.FC<CloudCoverDisplayProps> = ({
 };
 
 export default CloudCoverDisplay;
-

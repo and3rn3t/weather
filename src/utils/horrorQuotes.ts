@@ -13,12 +13,12 @@ export interface HorrorQuote {
 // Friday the 13th movie quotes
 const friday13Quotes: HorrorQuote[] = [
   {
-    text: 'Camp Blood. We\'re all gonna die.',
+    text: "Camp Blood. We're all gonna die.",
     movie: 'Friday the 13th',
     category: 'crystal-lake',
   },
   {
-    text: 'You\'re doomed. You\'re all doomed.',
+    text: "You're doomed. You're all doomed.",
     movie: 'Friday the 13th',
     category: 'general',
   },
@@ -68,7 +68,7 @@ const friday13Quotes: HorrorQuote[] = [
     category: 'weather',
   },
   {
-    text: 'He\'s watching. Always watching.',
+    text: "He's watching. Always watching.",
     movie: 'Friday the 13th',
     category: 'general',
   },
@@ -88,7 +88,7 @@ const friday13Quotes: HorrorQuote[] = [
     category: 'general',
   },
   {
-    text: 'When the moon is full, he\'s stronger.',
+    text: "When the moon is full, he's stronger.",
     movie: 'Friday the 13th Part VI: Jason Lives',
     category: 'weather',
   },
@@ -108,7 +108,7 @@ const friday13Quotes: HorrorQuote[] = [
     category: 'weather',
   },
   {
-    text: 'You can\'t escape. He\'s everywhere.',
+    text: "You can't escape. He's everywhere.",
     movie: 'Friday the 13th',
     category: 'general',
   },
@@ -129,11 +129,11 @@ export const getRandomHorrorQuote = (category?: string): HorrorQuote => {
   const quotes = category
     ? friday13Quotes.filter(q => q.category === category)
     : friday13Quotes;
-  
+
   if (quotes.length === 0) {
     return friday13Quotes[0];
   }
-  
+
   const randomIndex = Math.floor(Math.random() * quotes.length);
   return quotes[randomIndex];
 };

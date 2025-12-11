@@ -67,7 +67,9 @@ export const ThemeProvider = ({
       const savedTheme = localStorage.getItem('weather-app-theme') as ThemeName;
       // Accept light/dark/horror; map any other to 'dark' for simplicity
       const valid =
-        savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'horror'
+        savedTheme === 'light' ||
+        savedTheme === 'dark' ||
+        savedTheme === 'horror'
           ? savedTheme
           : 'dark';
       return valid;

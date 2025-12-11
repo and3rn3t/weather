@@ -33,7 +33,9 @@ export const PrecipitationProbability: React.FC<
     <div className={`precipitation-probability ${className}`}>
       <div className="precipitation-header">
         <span className="precipitation-label">Precipitation</span>
-        <span className="precipitation-prob-value">{Math.round(probability)}%</span>
+        <span className="precipitation-prob-value">
+          {Math.round(probability)}%
+        </span>
       </div>
       <div className="precipitation-bar-container">
         <div
@@ -59,4 +61,3 @@ export const PrecipitationProbability: React.FC<
 };
 
 export default PrecipitationProbability;
-

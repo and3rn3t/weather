@@ -6,7 +6,10 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useTheme } from '../utils/useTheme';
-import { initializeHorrorEffects, type HorrorEffectsConfig } from '../utils/horrorEffects';
+import {
+  initializeHorrorEffects,
+  type HorrorEffectsConfig,
+} from '../utils/horrorEffects';
 import { HorrorQuoteDisplay } from '../components/horror/HorrorQuoteDisplay';
 import '../styles/horror-theme.css';
 

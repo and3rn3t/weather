@@ -23,7 +23,8 @@
    ============================================================================ */
 
 @keyframes horrorFlicker {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     filter: brightness(1);
   }
@@ -61,7 +62,8 @@
    ============================================================================ */
 
 @keyframes horrorColorShift {
-  0%, 100% {
+  0%,
+  100% {
     filter: hue-rotate(0deg) saturate(1);
   }
   25% {
@@ -98,27 +100,16 @@
   pointer-events: none;
   z-index: 9999;
   opacity: 0.05;
-  background-image: 
-    repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.1) 0px,
-      transparent 1px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.1) 3px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.1) 0px,
-      transparent 1px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.1) 3px
-    );
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0px, transparent 1px, transparent 2px, rgba(0, 0, 0, 0.1) 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0px, transparent 1px, transparent 2px, rgba(0, 0, 0, 0.1) 3px);
   mix-blend-mode: overlay;
   animation: horrorStatic 0.1s infinite;
 }
 
 @keyframes horrorStatic {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.05;
   }
   50% {
@@ -139,7 +130,7 @@
 [data-theme='horror'] .weather-card {
   background: linear-gradient(135deg, #1a2a1a, #0f1f0f);
   border-color: var(--horror-accent);
-  box-shadow: 
+  box-shadow:
     0 20px 40px var(--horror-shadow),
     0 1px 3px rgba(139, 0, 0, 0.3);
 }
@@ -194,17 +185,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(139, 0, 0, 0.05) 50%,
-    transparent 70%
-  );
+  background: linear-gradient(45deg, transparent 30%, rgba(139, 0, 0, 0.05) 50%, transparent 70%);
   animation: horrorQuoteShimmer 3s ease-in-out infinite;
 }
 
 @keyframes horrorQuoteShimmer {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(-100%);
   }
   50% {
@@ -245,15 +232,11 @@
 }
 
 [data-theme='horror'] .weather-icon.rain {
-  filter: drop-shadow(0 2px 4px rgba(139, 0, 0, 0.5)) 
-          hue-rotate(-10deg) 
-          saturate(1.2);
+  filter: drop-shadow(0 2px 4px rgba(139, 0, 0, 0.5)) hue-rotate(-10deg) saturate(1.2);
 }
 
 [data-theme='horror'] .weather-icon.storm {
-  filter: drop-shadow(0 2px 8px rgba(139, 0, 0, 0.6)) 
-          brightness(0.9) 
-          contrast(1.1);
+  filter: drop-shadow(0 2px 8px rgba(139, 0, 0, 0.6)) brightness(0.9) contrast(1.1);
 }
 
 /* ============================================================================

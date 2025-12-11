@@ -59,7 +59,8 @@ export const EnhancedMetricsGrid: React.FC<EnhancedMetricsGridProps> = ({
         </div>
       )}
 
-      {(precipitationProbability !== undefined || precipitation !== undefined) && (
+      {(precipitationProbability !== undefined ||
+        precipitation !== undefined) && (
         <div className="metric-item">
           <PrecipitationProbability
             probability={precipitationProbability || 0}
@@ -115,4 +116,3 @@ export const EnhancedMetricsGrid: React.FC<EnhancedMetricsGridProps> = ({
 };
 
 export default EnhancedMetricsGrid;
-

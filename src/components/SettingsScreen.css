@@ -32,8 +32,7 @@
     justify-content: space-between;
     min-height: 56px;
     padding: 12px 16px;
-    border-bottom: 1px solid
-      color-mix(in oklab, var(--ios26-separator) 40%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--ios26-separator) 40%, transparent);
   }
   .settings-list-item.is-last {
     border-bottom: none;

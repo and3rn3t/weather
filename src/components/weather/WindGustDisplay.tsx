@@ -56,7 +56,9 @@ export const WindGustDisplay: React.FC<WindGustDisplayProps> = ({
       </div>
       <div className="wind-gust-comparison">
         <div className="wind-speed-bar">
-          <div className="wind-speed-label">Base: {formatWindSpeed(windSpeed)}</div>
+          <div className="wind-speed-label">
+            Base: {formatWindSpeed(windSpeed)}
+          </div>
         </div>
         <div className="wind-gust-bar-container">
           <div
@@ -73,4 +75,3 @@ export const WindGustDisplay: React.FC<WindGustDisplayProps> = ({
 };
 
 export default WindGustDisplay;
-

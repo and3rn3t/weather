@@ -17,7 +17,7 @@ export interface HorrorWeatherIconProps {
  */
 export const getHorrorIconClass = (code: number): string => {
   const baseClass = 'horror-weather-icon';
-  
+
   // Special horror effects for different weather conditions
   if (code >= 61 && code <= 67) {
     return `${baseClass} horror-rain`; // Rain - blood splatter effect
@@ -34,7 +34,7 @@ export const getHorrorIconClass = (code: number): string => {
   if (code === 45 || code === 48) {
     return `${baseClass} horror-fog`; // Fog - mysterious effect
   }
-  
+
   return baseClass;
 };
 

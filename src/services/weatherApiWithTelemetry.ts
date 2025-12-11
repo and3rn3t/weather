@@ -293,7 +293,8 @@ function transformDailyData(dailyData: NonNullable<WeatherResponse['daily']>) {
       uv_index: dailyData.uv_index_max?.[index] || 0,
       weathercode: dailyData.weathercode?.[index] || 0,
       description: getWeatherDescription(dailyData.weathercode?.[index] || 0),
-      precipitation_probability_max: dailyData.precipitation_probability_max?.[index],
+      precipitation_probability_max:
+        dailyData.precipitation_probability_max?.[index],
       windgusts_max: dailyData.windgusts_10m_max?.[index],
       wind_direction_dominant: dailyData.winddirection_10m_dominant?.[index],
     })) || []

@@ -38,7 +38,7 @@ export const applyScreenFlicker = (
   config: Partial<HorrorEffectsConfig> = {}
 ): (() => void) => {
   const finalConfig = { ...defaultConfig, ...config };
-  
+
   if (!finalConfig.flickerEnabled || prefersReducedMotion()) {
     return () => {}; // No-op cleanup
   }
@@ -99,7 +99,7 @@ export const applyStaticOverlay = (
   config: Partial<HorrorEffectsConfig> = {}
 ): (() => void) => {
   const finalConfig = { ...defaultConfig, ...config };
-  
+
   if (!finalConfig.staticEnabled || prefersReducedMotion()) {
     return () => {}; // No-op cleanup
   }
@@ -143,7 +143,7 @@ export const applyColorShift = (
   config: Partial<HorrorEffectsConfig> = {}
 ): (() => void) => {
   const finalConfig = { ...defaultConfig, ...config };
-  
+
   if (!finalConfig.colorShiftEnabled || prefersReducedMotion()) {
     return () => {}; // No-op cleanup
   }
@@ -175,4 +175,3 @@ export const initializeHorrorEffects = (
     cleanups.forEach(cleanup => cleanup());
   };
 };
-
