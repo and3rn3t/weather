@@ -178,7 +178,11 @@ export default defineConfig(({ mode }) => {
         treeshake: {
           moduleSideEffects: false,
           preset: 'smallest',
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false,
         },
+        cssCodeSplit: true,
+        cssMinify: true,
       },
 
       minify: 'esbuild',
