@@ -788,207 +788,220 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 </div>
               </button>
               {isExpanded && (
-                <ul
-                  id={`section-content-${section.title}`}
-                  className="ios26-card ios26-liquid-glass settings-list"
-                  aria-label={section.title}
-                >
-              {section.items.map((item, index) => (
-                <li
-                  key={item.id}
-                  className={`ios26-list-item settings-list-item${index === section.items.length - 1 ? ' is-last' : ''}`}
-                >
-                  <div className="settings-icon">{item.icon}</div>
-
-                  <div className="settings-item-main">
-                    <div className="settings-item-title">{item.title}</div>
-                    {item.subtitle && (
-                      <div className="settings-item-subtitle">
-                        {item.subtitle}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="settings-item-trailing">
-                    {item.type === 'toggle' && (
-                      <ToggleSwitch
-                        checked={Boolean(item.value)}
-                        ariaLabel={item.title}
-                        onChange={checked =>
-                          handleToggleChange(item.id, checked)
-                        }
-                        size="medium"
-                      />
-                    )}
-                    {item.type === 'selection' &&
-                      item.options &&
-                      renderSelection(
-                        item.value,
-                        item.options,
-                        value => handleSelectionChange(item.id, value),
-                        item.title
-                      )}
-                    {item.type === 'action' && (
-                      <div className="settings-action-arrow" aria-hidden>
-                        <NavigationIcons.ChevronRight />
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-              {/* Advanced custom thresholds editor */}
-              {section.title === 'Appearance' &&
-                colorizeTemps &&
-                tempThresholdsEnabled && (
-                  <div
+                <>
+                  <ul
+                    id={`section-content-${section.title}`}
                     className="ios26-card ios26-liquid-glass settings-list"
-                    role="group"
-                    aria-label="Custom temperature thresholds"
+                    aria-label={section.title}
                   >
-                  <div className="ios26-list-item settings-list-item">
-                    <div className="settings-item-main">
-                      <div className="settings-item-title">Imperial (°F)</div>
-                      <div className="settings-item-subtitle">
-                        Warm ≥ and Cool ≤ values
-                      </div>
-                    </div>
-                    <div className="settings-item-trailing settings-inline-group">
-                      <label aria-label="Warm threshold Fahrenheit">
-                        <input
-                          type="number"
-                          className="settings-select settings-number"
-                          value={tempThresholds.imperial.warm}
-                          onChange={e => {
-                            const v = Math.round(Number(e.target.value));
-                            const warm = Math.max(-100, Math.min(200, v));
-                            const cold = Math.min(
-                              tempThresholds.imperial.cold,
-                              warm
-                            );
-                            setTempThresholds({
-                              ...tempThresholds,
-                              imperial: { warm, cold },
-                            });
+                    {section.items.map((item, index) => (
+                      <li
+                        key={item.id}
+                        className={`ios26-list-item settings-list-item${index === section.items.length - 1 ? ' is-last' : ''}`}
+                      >
+                        <div className="settings-icon">{item.icon}</div>
+
+                        <div className="settings-item-main">
+                          <div className="settings-item-title">
+                            {item.title}
+                          </div>
+                          {item.subtitle && (
+                            <div className="settings-item-subtitle">
+                              {item.subtitle}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="settings-item-trailing">
+                          {item.type === 'toggle' && (
+                            <ToggleSwitch
+                              checked={Boolean(item.value)}
+                              ariaLabel={item.title}
+                              onChange={checked =>
+                                handleToggleChange(item.id, checked)
+                              }
+                              size="medium"
+                            />
+                          )}
+                          {item.type === 'selection' &&
+                            item.options &&
+                            renderSelection(
+                              item.value,
+                              item.options,
+                              value => handleSelectionChange(item.id, value),
+                              item.title
+                            )}
+                          {item.type === 'action' && (
+                            <div className="settings-action-arrow" aria-hidden>
+                              <NavigationIcons.ChevronRight />
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Advanced custom thresholds editor */}
+                  {section.title === 'Appearance' &&
+                    colorizeTemps &&
+                    tempThresholdsEnabled && (
+                      <div
+                        className="ios26-card ios26-liquid-glass settings-list"
+                        role="group"
+                        aria-label="Custom temperature thresholds"
+                      >
+                        <div className="ios26-list-item settings-list-item">
+                          <div className="settings-item-main">
+                            <div className="settings-item-title">
+                              Imperial (°F)
+                            </div>
+                            <div className="settings-item-subtitle">
+                              Warm ≥ and Cool ≤ values
+                            </div>
+                          </div>
+                          <div className="settings-item-trailing settings-inline-group">
+                            <label aria-label="Warm threshold Fahrenheit">
+                              <input
+                                type="number"
+                                className="settings-select settings-number"
+                                value={tempThresholds.imperial.warm}
+                                onChange={e => {
+                                  const v = Math.round(Number(e.target.value));
+                                  const warm = Math.max(-100, Math.min(200, v));
+                                  const cold = Math.min(
+                                    tempThresholds.imperial.cold,
+                                    warm
+                                  );
+                                  setTempThresholds({
+                                    ...tempThresholds,
+                                    imperial: { warm, cold },
+                                  });
+                                }}
+                                min={-100}
+                                max={200}
+                                step={1}
+                              />
+                            </label>
+                            <label aria-label="Cold threshold Fahrenheit">
+                              <input
+                                type="number"
+                                className="settings-select settings-number"
+                                value={tempThresholds.imperial.cold}
+                                onChange={e => {
+                                  const v = Math.round(Number(e.target.value));
+                                  const cold = Math.max(-100, Math.min(200, v));
+                                  const warm = Math.max(
+                                    tempThresholds.imperial.warm,
+                                    cold
+                                  );
+                                  setTempThresholds({
+                                    ...tempThresholds,
+                                    imperial: { warm, cold },
+                                  });
+                                }}
+                                min={-100}
+                                max={200}
+                                step={1}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                        <div className="ios26-list-item settings-list-item">
+                          <div className="settings-item-main">
+                            <div className="settings-item-title">
+                              Metric (°C)
+                            </div>
+                            <div className="settings-item-subtitle">
+                              Warm ≥ and Cool ≤ values
+                            </div>
+                          </div>
+                          <div className="settings-item-trailing settings-inline-group">
+                            <label aria-label="Warm threshold Celsius">
+                              <input
+                                type="number"
+                                className="settings-select settings-number"
+                                value={tempThresholds.metric.warm}
+                                onChange={e => {
+                                  const v = Math.round(Number(e.target.value));
+                                  const warm = Math.max(-50, Math.min(100, v));
+                                  const cold = Math.min(
+                                    tempThresholds.metric.cold,
+                                    warm
+                                  );
+                                  setTempThresholds({
+                                    ...tempThresholds,
+                                    metric: { warm, cold },
+                                  });
+                                }}
+                                min={-50}
+                                max={100}
+                                step={1}
+                              />
+                            </label>
+                            <label aria-label="Cold threshold Celsius">
+                              <input
+                                type="number"
+                                className="settings-select settings-number"
+                                value={tempThresholds.metric.cold}
+                                onChange={e => {
+                                  const v = Math.round(Number(e.target.value));
+                                  const cold = Math.max(-50, Math.min(100, v));
+                                  const warm = Math.max(
+                                    tempThresholds.metric.warm,
+                                    cold
+                                  );
+                                  setTempThresholds({
+                                    ...tempThresholds,
+                                    metric: { warm, cold },
+                                  });
+                                }}
+                                min={-50}
+                                max={100}
+                                step={1}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                        <div
+                          className="ios26-list-item settings-list-item is-last"
+                          role="button"
+                          tabIndex={0}
+                          onClick={() =>
+                            setTempThresholds(
+                              getProfileDefaults(tempColorProfile)
+                            )
+                          }
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setTempThresholds(
+                                getProfileDefaults(tempColorProfile)
+                              );
+                            }
                           }}
-                          min={-100}
-                          max={200}
-                          step={1}
-                        />
-                      </label>
-                      <label aria-label="Cold threshold Fahrenheit">
-                        <input
-                          type="number"
-                          className="settings-select settings-number"
-                          value={tempThresholds.imperial.cold}
-                          onChange={e => {
-                            const v = Math.round(Number(e.target.value));
-                            const cold = Math.max(-100, Math.min(200, v));
-                            const warm = Math.max(
-                              tempThresholds.imperial.warm,
-                              cold
-                            );
-                            setTempThresholds({
-                              ...tempThresholds,
-                              imperial: { warm, cold },
-                            });
-                          }}
-                          min={-100}
-                          max={200}
-                          step={1}
-                        />
-                      </label>
-                    </div>
-                  </div>
-                  <div className="ios26-list-item settings-list-item">
-                    <div className="settings-item-main">
-                      <div className="settings-item-title">Metric (°C)</div>
-                      <div className="settings-item-subtitle">
-                        Warm ≥ and Cool ≤ values
+                          aria-label="Reset thresholds to profile defaults"
+                        >
+                          <div className="settings-item-main">
+                            <div className="settings-item-title">
+                              Reset to Profile Defaults
+                            </div>
+                            <div className="settings-item-subtitle">
+                              Restores warm/cool values for {tempColorProfile}{' '}
+                              profile
+                            </div>
+                          </div>
+                          <div className="settings-action-arrow" aria-hidden>
+                            <NavigationIcons.ChevronRight />
+                          </div>
+                        </div>
+                        <div className="settings-hint" aria-live="polite">
+                          These values control when temperatures are shown as
+                          warm (≥) or cool (≤). Overrides apply across the app
+                          when enabled.
+                        </div>
                       </div>
-                    </div>
-                    <div className="settings-item-trailing settings-inline-group">
-                      <label aria-label="Warm threshold Celsius">
-                        <input
-                          type="number"
-                          className="settings-select settings-number"
-                          value={tempThresholds.metric.warm}
-                          onChange={e => {
-                            const v = Math.round(Number(e.target.value));
-                            const warm = Math.max(-50, Math.min(100, v));
-                            const cold = Math.min(
-                              tempThresholds.metric.cold,
-                              warm
-                            );
-                            setTempThresholds({
-                              ...tempThresholds,
-                              metric: { warm, cold },
-                            });
-                          }}
-                          min={-50}
-                          max={100}
-                          step={1}
-                        />
-                      </label>
-                      <label aria-label="Cold threshold Celsius">
-                        <input
-                          type="number"
-                          className="settings-select settings-number"
-                          value={tempThresholds.metric.cold}
-                          onChange={e => {
-                            const v = Math.round(Number(e.target.value));
-                            const cold = Math.max(-50, Math.min(100, v));
-                            const warm = Math.max(
-                              tempThresholds.metric.warm,
-                              cold
-                            );
-                            setTempThresholds({
-                              ...tempThresholds,
-                              metric: { warm, cold },
-                            });
-                          }}
-                          min={-50}
-                          max={100}
-                          step={1}
-                        />
-                      </label>
-                    </div>
-                  </div>
-                  <div
-                    className="ios26-list-item settings-list-item is-last"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() =>
-                      setTempThresholds(getProfileDefaults(tempColorProfile))
-                    }
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setTempThresholds(getProfileDefaults(tempColorProfile));
-                      }
-                    }}
-                    aria-label="Reset thresholds to profile defaults"
-                  >
-                    <div className="settings-item-main">
-                      <div className="settings-item-title">
-                        Reset to Profile Defaults
-                      </div>
-                      <div className="settings-item-subtitle">
-                        Restores warm/cool values for {tempColorProfile} profile
-                      </div>
-                    </div>
-                    <div className="settings-action-arrow" aria-hidden>
-                      <NavigationIcons.ChevronRight />
-                    </div>
-                  </div>
-                  <div className="settings-hint" aria-live="polite">
-                    These values control when temperatures are shown as warm (≥)
-                    or cool (≤). Overrides apply across the app when enabled.
-                  </div>
-                </div>
-              )}
-                </ul>
+                    )}
+                </>
               )}
             </section>
           );
