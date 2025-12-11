@@ -58,7 +58,7 @@
     "@capacitor/haptics": "^7.0.2",
     "@capacitor/local-notifications": "^7.0.2",
     "@capacitor/network": "^7.0.2",
-    "@dash0/sdk-web": "^0.13.3",
+    "@dash0/sdk-web": "^0.16.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
