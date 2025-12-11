@@ -5,7 +5,7 @@
  * - Priority-based request scheduling
  */
 
-interface QueuedRequest<T> {
+interface QueuedRequest<T = unknown> {
   id: string;
   priority: 'high' | 'medium' | 'low';
   execute: () => Promise<T>;
@@ -22,12 +22,12 @@ interface QueueConfig {
 }
 
 class APIRequestQueue {
-  private queue: QueuedRequest<unknown>[] = [];
+  private queue: QueuedRequest[] = [];
   private activeRequests = 0;
   private lastRequestTime = 0;
-  private config: QueueConfig;
+  private readonly config: QueueConfig;
   private batchTimer: ReturnType<typeof setTimeout> | null = null;
-  private pendingBatch: QueuedRequest<unknown>[] = [];
+  private pendingBatch: QueuedRequest[] = [];
 
   constructor(config: Partial<QueueConfig> = {}) {
     this.config = {
@@ -56,8 +56,8 @@ class APIRequestQueue {
       const request: QueuedRequest<T> = {
         id,
         priority,
-        execute: execute as () => Promise<unknown>,
-        resolve: resolve as (value: unknown) => void,
+        execute,
+        resolve: resolve as (value: T) => void,
         reject: reject as (error: Error) => void,
         timestamp: Date.now(),
       };
@@ -68,9 +68,9 @@ class APIRequestQueue {
         r => priorityOrder[r.priority] > priorityOrder[priority]
       );
       if (insertIndex === -1) {
-        this.queue.push(request);
+        this.queue.push(request as QueuedRequest);
       } else {
-        this.queue.splice(insertIndex, 0, request);
+        this.queue.splice(insertIndex, 0, request as QueuedRequest);
       }
 
       this.processQueue();
