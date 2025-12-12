@@ -53,7 +53,7 @@ import {
   LazySettingsScreen,
   trackLazyComponentLoad,
 } from '../utils/lazyComponents';
-import { useMemoryOptimization } from '../utils/memoryOptimization';
+import { memoryOptimizationManager } from '../utils/memoryOptimization';
 
 // Type assertions for lazy-loaded components to preserve prop types
 const LazyiOS26WeatherDemoTyped =
@@ -1964,7 +1964,8 @@ const AppNavigator = () => {
   }, []);
 
   // Optimization Systems Integration - August 2025
-  const memoryOptimization = useMemoryOptimization();
+  // Use singleton memory optimization manager
+  const memoryOptimization = memoryOptimizationManager;
 
   // Track lazy component loading for performance monitoring
 

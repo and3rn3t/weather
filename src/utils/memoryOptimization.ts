@@ -27,7 +27,7 @@ interface MemoryThresholds {
 
 class MemoryOptimizationManager {
   private static instance: MemoryOptimizationManager;
-  private readonly thresholds: MemoryThresholds = {
+  private thresholds: MemoryThresholds = {
     warning: 70, // 70% memory usage
     critical: 85, // 85% memory usage
     maxCacheSize: 50 * 1024 * 1024, // 50MB
@@ -257,6 +257,35 @@ class MemoryOptimizationManager {
    */
   getThresholds(): MemoryThresholds {
     return { ...this.thresholds };
+  }
+
+  /**
+   * Get memory info for dev tools display
+   */
+  get memoryInfo(): { usedJSHeapSize: number; totalJSHeapSize: number } | null {
+    const stats = this.getMemoryStats();
+    if (!stats) return null;
+    return {
+      usedJSHeapSize: stats.used,
+      totalJSHeapSize: stats.total,
+    };
+  }
+
+  /**
+   * Get memory usage percentage
+   */
+  get memoryUsagePercent(): number {
+    const stats = this.getMemoryStats();
+    return stats?.percentage ?? 0;
+  }
+
+  /**
+   * Check if under memory pressure
+   */
+  get isMemoryPressure(): boolean {
+    const stats = this.getMemoryStats();
+    if (!stats) return false;
+    return stats.percentage >= this.thresholds.critical;
   }
 }
 
