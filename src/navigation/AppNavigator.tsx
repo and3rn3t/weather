@@ -361,14 +361,23 @@ function HomeScreen({
             navigate('Search');
           },
         }}
-        trailingButton={{
-          icon: <NavigationIcons.Settings />,
-          title: 'Settings',
-          onPress: () => {
-            haptic.buttonPress();
-            navigate('Settings');
+        trailingButtons={[
+          {
+            icon: <ThemeToggle className="ios26-nav-theme-toggle" />,
+            title: 'Theme',
+            onPress: () => {
+              // Theme toggle handles its own click
+            },
           },
-        }}
+          {
+            icon: <NavigationIcons.Settings />,
+            title: 'Settings',
+            onPress: () => {
+              haptic.buttonPress();
+              navigate('Settings');
+            },
+          },
+        ]}
         theme={theme}
       />
 
@@ -984,6 +993,31 @@ function WeatherDetailsScreen({
                   className="ios26-optimized-weather-display"
                 />
               </React.Suspense>
+
+              {/* Enhanced Metrics Grid - Cloud Cover, Wind Gusts, etc. */}
+              {hourlyForecast && hourlyForecast.length > 0 && (
+                <div className="ios26-weather-metrics-section ios26-mt-4">
+                  <div className="ios26-weather-metrics-header">
+                    <h3 className="ios26-weather-metrics-title">
+                      Additional Details
+                    </h3>
+                  </div>
+                  <EnhancedMetricsGrid
+                    cloudcover={hourlyForecast[0]?.cloudcover}
+                    precipitation={hourlyForecast[0]?.precipitation}
+                    precipitationProbability={
+                      hourlyForecast[0]?.precipitationProbability
+                    }
+                    windSpeed={weather.wind.speed}
+                    windGusts={hourlyForecast[0]?.windgusts}
+                    pressure={weather.main.pressure}
+                    uvIndex={weather.uv_index}
+                    visibility={weather.visibility}
+                    units={getStoredUnits()}
+                    className="ios26-enhanced-metrics"
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -1504,9 +1538,19 @@ const HourlyForecastSection = React.memo(
                         setExpandedHour(isExpanded ? null : hour.time);
                       }
                     }}
+                    onKeyDown={e => {
+                      if (
+                        hasAdditionalData &&
+                        (e.key === 'Enter' || e.key === ' ')
+                      ) {
+                        e.preventDefault();
+                        setExpandedHour(isExpanded ? null : hour.time);
+                      }
+                    }}
                     style={{
                       cursor: hasAdditionalData ? 'pointer' : 'default',
                     }}
+                    tabIndex={hasAdditionalData ? 0 : undefined}
                     {...(hasAdditionalData
                       ? {
                           role: 'button',
@@ -1731,9 +1775,19 @@ const DailyForecastSection = React.memo(
                         setExpandedDay(isExpanded ? null : day.date);
                       }
                     }}
+                    onKeyDown={e => {
+                      if (
+                        hasAdditionalData &&
+                        (e.key === 'Enter' || e.key === ' ')
+                      ) {
+                        e.preventDefault();
+                        setExpandedDay(isExpanded ? null : day.date);
+                      }
+                    }}
                     style={{
                       cursor: hasAdditionalData ? 'pointer' : 'default',
                     }}
+                    tabIndex={hasAdditionalData ? 0 : undefined}
                     {...(hasAdditionalData
                       ? {
                           role: 'button',

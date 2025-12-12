@@ -1075,6 +1075,79 @@
   outline-offset: 2px;
 }
 
+/* Expandable forecast item styles */
+.ios26-forecast-item-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ios26-spacing-2);
+  position: relative;
+}
+
+.ios26-forecast-expand-indicator {
+  position: absolute;
+  top: var(--ios26-spacing-2);
+  right: var(--ios26-spacing-2);
+  font-size: 10px;
+  color: var(--ios26-text-tertiary);
+  transition: transform 0.2s var(--ios26-ease-out);
+}
+
+.ios26-forecast-item.expanded .ios26-forecast-expand-indicator {
+  transform: rotate(90deg);
+}
+
+.ios26-forecast-details {
+  width: 100%;
+  margin-top: var(--ios26-spacing-3);
+  padding-top: var(--ios26-spacing-3);
+  border-top: 1px solid var(--ios26-border-tertiary);
+  animation: slideDown 0.3s var(--ios26-ease-out);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ios26-forecast-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--ios26-spacing-3);
+  width: 100%;
+}
+
+.ios26-forecast-detail-item {
+  background: var(--ios26-background-secondary);
+  border-radius: var(--ios26-radius-md);
+  padding: var(--ios26-spacing-2);
+  text-align: center;
+}
+
+.ios26-forecast-item.expanded {
+  background: var(--ios26-background-tertiary);
+  padding-bottom: var(--ios26-spacing-4);
+}
+
+/* Navigation bar button wrapper for components that handle their own clicks */
+.ios26-nav-button-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ios26-nav-theme-toggle {
+  margin: 0;
+  padding: var(--ios26-spacing-2);
+}
+
 /* Touch optimization for mobile */
 @media (hover: none) and (pointer: coarse) {
   .ios26-button:active,
