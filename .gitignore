@@ -65,6 +65,14 @@ android/
 ios/
 capacitor/
 
+# Build Artifacts
+html/
+
+# Generated Reports
+*-report*.json
+performance-report-*.json
+eslint-report.json
+
 # Temporary and Cache Files
 .cache/
 .vite/
