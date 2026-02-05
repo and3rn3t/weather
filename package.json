@@ -49,16 +49,19 @@
     "deploy:preview": "npm run build && npx wrangler pages deploy dist --project-name weather",
     "mobile:build": "npm run build && npx cap sync",
     "mobile:android": "npx cap run android",
-    "mobile:ios": "npx cap run ios"
+    "mobile:ios": "npx cap run ios",
+    "screenshots": "npx playwright test e2e/screenshots.spec.ts",
+    "screenshots:frame": "node scripts/frame-screenshots.mjs",
+    "screenshots:all": "npm run screenshots && npm run screenshots:frame"
   },
   "dependencies": {
     "@capacitor/app": "^7.0.2",
     "@capacitor/device": "^7.0.2",
     "@capacitor/geolocation": "^7.1.5",
     "@capacitor/haptics": "^7.0.2",
+    "@capacitor/ios": "^7.4.5",
     "@capacitor/local-notifications": "^7.0.2",
     "@capacitor/network": "^7.0.2",
-    "@dash0/sdk-web": "^0.13.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -66,6 +69,7 @@
     "@capacitor/cli": "^7.4.3",
     "@capacitor/core": "^7.4.3",
     "@eslint/js": "^9.34.0",
+    "@playwright/test": "^1.58.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^24.3.0",
@@ -83,6 +87,7 @@
     "jsdom": "^26.1.0",
     "prettier": "^3.3.3",
     "rollup": "^4.50.1",
+    "sharp": "^0.34.5",
     "simple-git-hooks": "^2.13.1",
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.35.1",

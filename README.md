@@ -174,21 +174,60 @@ npm run analyze
 ### Mobile Development
 
 ```bash
-# Install Capacitor dependencies
-npm install @capacitor/core @capacitor/app @capacitor/haptics
+# Build web assets and sync to native platforms
+npm run mobile:build
 
-# Add mobile platforms
-npx cap add android
-npx cap add ios
+# Run on iOS (requires Xcode)
+npm run mobile:ios
 
-# Build and sync to mobile
-npm run build
-npx cap sync
-
-# Open in mobile IDE
-npx cap open android
-npx cap open ios
+# Run on Android (requires Android Studio)
+npm run mobile:android
 ```
+
+### iOS Development Setup
+
+The iOS platform is already initialized. To run on iOS:
+
+1. **Configure Xcode CLI Tools** (one-time setup):
+
+   ```bash
+   sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+   ```
+
+2. **Install CocoaPods dependencies**:
+
+   ```bash
+   cd ios/App && pod install && cd ../..
+   ```
+
+3. **Open in Xcode**:
+
+   ```bash
+   npx cap open ios
+   ```
+
+4. **For App Store submission**, generate screenshots:
+
+   ```bash
+   npm run screenshots:all
+   ```
+
+### App Store Screenshot Generation
+
+Automated screenshots for all required iOS device sizes:
+
+```bash
+# Generate screenshots for all device sizes
+npm run screenshots
+
+# Add device frames and marketing text
+npm run screenshots:frame
+
+# Or run both in sequence
+npm run screenshots:all
+```
+
+Output: `screenshots/framed/` directory with App Store-ready images.
 
 ## 🔧 Configuration
 

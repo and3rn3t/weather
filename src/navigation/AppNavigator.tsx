@@ -88,14 +88,6 @@ const LazyPerformanceDashboardTyped =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   LazyPerformanceDashboard as React.ComponentType<any>;
 
-// Dash0 Telemetry Integration
-import { Dash0ErrorBoundary } from '../dash0/components/Dash0ErrorBoundary';
-import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
-// Performance monitoring
-import { usePerformanceMonitor } from '../components/Dash0ErrorBoundary';
-// Unified Weather API Service
-import { useWeatherApiWithTelemetry } from '../services/weatherApiWithTelemetry';
-
 // Unified Type Definitions - Phase 2B: Type System Unification
 import type {
   DailyForecast,
@@ -1940,15 +1932,25 @@ const DailyForecastSection = React.memo(
 );
 
 const AppNavigator = () => {
-  // Dash0 Telemetry Integration
-  const telemetry = useDash0Telemetry();
-  const performanceMonitor = usePerformanceMonitor({
-    componentName: 'AppNavigator',
-    trackRender: true,
-    trackMount: true,
-    trackUnmount: true,
-    trackInteractions: true,
-  });
+  // No-op telemetry stubs for removed Dash0 integration
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const telemetry: any = useMemo(
+    () => ({
+      trackUserInteraction: (_data: unknown) => {},
+      trackMetric: (_data: unknown) => {},
+      trackOperation: async <T,>(_name: string, fn: () => Promise<T>) => fn(),
+      trackPerformance: (_data: unknown) => {},
+      trackError: (_error: unknown, _context?: unknown) => {},
+    }),
+    []
+  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const performanceMonitor: any = useMemo(
+    () => ({
+      trackInteraction: (_type: string, _data?: unknown) => {},
+    }),
+    []
+  );
 
   // Dev tools visibility gate: hidden by default, enable with ?devtools=1 or localStorage 'showDevTools'='1'
   const showDevTools = useMemo(() => {
@@ -2336,8 +2338,100 @@ const AppNavigator = () => {
     []
   );
 
-  // Unified Weather API Service - Phase 1.1: API Consolidation
-  const weatherApi = useWeatherApiWithTelemetry();
+  // Weather API helper functions (replacing removed telemetry wrapper)
+  const weatherApi = useMemo(
+    () => ({
+      getWeatherByCoordinatesLegacy: async (lat: number, lon: number) => {
+        const units = getStoredUnits();
+        const tempUnit = units === 'imperial' ? 'fahrenheit' : 'celsius';
+        const windUnit = units === 'imperial' ? 'mph' : 'kmh';
+        const precipUnit = units === 'imperial' ? 'inch' : 'mm';
+
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,surface_pressure,weathercode,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum&timezone=auto&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&forecast_days=7`;
+
+        const response = await optimizedFetch(url, {}, `weather:${lat},${lon}`);
+        if (!response.ok) throw new Error('Failed to fetch weather data');
+        const data = await response.json();
+
+        // Transform to legacy format expected by AppNavigator
+        return {
+          weathercode: data.current?.weathercode || 0,
+          main: {
+            temp: data.current?.temperature_2m || 0,
+            feels_like: data.current?.apparent_temperature || 0,
+            humidity: data.current?.relative_humidity_2m || 0,
+            pressure: data.current?.surface_pressure || 0,
+          },
+          wind: {
+            speed: data.current?.windspeed_10m || 0,
+            deg: data.current?.winddirection_10m || 0,
+          },
+          weather: [
+            {
+              main: 'Weather',
+              description: 'Current conditions',
+            },
+          ],
+          uv_index: data.current?.uv_index || 0,
+          visibility: data.current?.visibility || 10000,
+          hourly: data.hourly,
+          daily: data.daily,
+        };
+      },
+      searchWeatherByCityLegacy: async (cityName: string) => {
+        // First geocode the city
+        const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`;
+        const geoResponse = await optimizedFetch(
+          geoUrl,
+          {
+            headers: { 'User-Agent': 'PremiumWeatherApp/1.0' },
+          },
+          `geo:${cityName}`
+        );
+        if (!geoResponse.ok) throw new Error('Failed to geocode city');
+        const geoData = await geoResponse.json();
+        if (!geoData || geoData.length === 0) throw new Error('City not found');
+
+        const { lat, lon } = geoData[0];
+        const units = getStoredUnits();
+        const tempUnit = units === 'imperial' ? 'fahrenheit' : 'celsius';
+        const windUnit = units === 'imperial' ? 'mph' : 'kmh';
+        const precipUnit = units === 'imperial' ? 'inch' : 'mm';
+
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,surface_pressure,weathercode,windspeed_10m,winddirection_10m,uv_index,visibility&hourly=temperature_2m,weathercode,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum&timezone=auto&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&precipitation_unit=${precipUnit}&forecast_days=7`;
+
+        const response = await optimizedFetch(url, {}, `weather:${lat},${lon}`);
+        if (!response.ok) throw new Error('Failed to fetch weather data');
+        const data = await response.json();
+
+        return {
+          weathercode: data.current?.weathercode || 0,
+          main: {
+            temp: data.current?.temperature_2m || 0,
+            feels_like: data.current?.apparent_temperature || 0,
+            humidity: data.current?.relative_humidity_2m || 0,
+            pressure: data.current?.surface_pressure || 0,
+          },
+          wind: {
+            speed: data.current?.windspeed_10m || 0,
+            deg: data.current?.winddirection_10m || 0,
+          },
+          weather: [
+            {
+              main: 'Weather',
+              description: 'Current conditions',
+            },
+          ],
+          uv_index: data.current?.uv_index || 0,
+          visibility: data.current?.visibility || 10000,
+          hourly: data.hourly,
+          daily: data.daily,
+          coordinates: { lat: parseFloat(lat), lon: parseFloat(lon) },
+        };
+      },
+    }),
+    [optimizedFetch]
+  );
 
   // Common weather data fetching logic - now using unified API service
   const fetchWeatherData = useCallback(
@@ -2840,240 +2934,86 @@ const AppNavigator = () => {
   ]);
 
   return (
-    <Dash0ErrorBoundary
-      fallback={<div>Something went wrong with weather data</div>}
-    >
-      <LoadingProvider>
-        <EnhancedMobileContainer
-          enablePullToRefresh={true}
-          onRefresh={handleRefresh}
-          enableSwipeGestures={screenInfo.width < 768}
-          onSwipeLeft={handleSwipeLeft}
-          onSwipeRight={handleSwipeRight}
-          className="safe-area-container"
-          style={getMobileOptimizedContainer(theme, screenInfo)}
+    <LoadingProvider>
+      <EnhancedMobileContainer
+        enablePullToRefresh={true}
+        onRefresh={handleRefresh}
+        enableSwipeGestures={screenInfo.width < 768}
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
+        className="safe-area-container"
+        style={getMobileOptimizedContainer(theme, screenInfo)}
+      >
+        {/* Native API Status Display - Shows native capabilities when on mobile */}
+        <React.Suspense
+          fallback={
+            <div className="optimization-loading">Loading native status...</div>
+          }
         >
-          {/* Native API Status Display - Shows native capabilities when on mobile */}
-          <React.Suspense
-            fallback={
-              <div className="optimization-loading">
-                Loading native status...
-              </div>
-            }
-          >
-            <LazyNativeStatusDisplayTyped
-              theme={theme}
-              isMobile={screenInfo.width < 768}
-            />
-          </React.Suspense>
-
-          {/* Enhanced Auto Location Manager - Phase F-2 */}
-          <LocationManager
-            onLocationReceived={(detectedCity, lat, lon) => {
-              // Guard against duplicate initial triggers causing double fetches
-              if (hasFetchedOnceRef.current) {
-                logInfo('📍 Auto location ignored (already fetched once)');
-                return;
-              }
-              logInfo(
-                `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
-              );
-              setCity(detectedCity);
-              getWeatherByLocation(detectedCity, lat, lon).then(() => {
-                hasFetchedOnceRef.current = true;
-              });
-              haptic.light();
-              navigate('Weather');
-            }}
-            onError={errorMessage => {
-              logWarn('📍 Auto location failed:', errorMessage);
-              // Don't show error to user for automatic detection, just log it
-            }}
-            enableAutoDetection={true}
-            enableBackgroundUpdates={false} // Disabled for battery optimization
+          <LazyNativeStatusDisplayTyped
+            theme={theme}
+            isMobile={screenInfo.width < 768}
           />
+        </React.Suspense>
 
-          {/* DEBUG: Location Tester - Hidden by default; enable with ?devtools=1 */}
-          {showDevTools && <LocationTester />}
+        {/* Enhanced Auto Location Manager - Phase F-2 */}
+        <LocationManager
+          onLocationReceived={(detectedCity, lat, lon) => {
+            // Guard against duplicate initial triggers causing double fetches
+            if (hasFetchedOnceRef.current) {
+              logInfo('📍 Auto location ignored (already fetched once)');
+              return;
+            }
+            logInfo(
+              `📍 Auto location detected: ${detectedCity} (${lat}, ${lon})`
+            );
+            setCity(detectedCity);
+            getWeatherByLocation(detectedCity, lat, lon).then(() => {
+              hasFetchedOnceRef.current = true;
+            });
+            haptic.light();
+            navigate('Weather');
+          }}
+          onError={errorMessage => {
+            logWarn('📍 Auto location failed:', errorMessage);
+            // Don't show error to user for automatic detection, just log it
+          }}
+          enableAutoDetection={true}
+          enableBackgroundUpdates={false} // Disabled for battery optimization
+        />
 
-          {/* Background Refresh Status - Hidden by default; enable with ?devtools=1 */}
-          {showDevTools && backgroundRefresh.isInitialized && (
-            <div className="ios26-dev-status">
-              🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} |
-              📊 {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
-              {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
-              {backgroundRefresh.stats.lastRefreshTime > 0 && (
-                <div>
-                  Last:{' '}
-                  {new Date(
-                    backgroundRefresh.stats.lastRefreshTime
-                  ).toLocaleTimeString()}
-                </div>
-              )}
-            </div>
-          )}
+        {/* DEBUG: Location Tester - Hidden by default; enable with ?devtools=1 */}
+        {showDevTools && <LocationTester />}
 
-          {/* Modern Mobile Navigation System - Only for mobile devices */}
-          {screenInfo.width < 768 && (
-            <ScreenContainer
-              currentScreen={currentScreen}
-              transitionDirection="slide-left"
-              transitionDuration={300}
-              theme={theme}
-              onSwipeLeft={handleSwipeLeft}
-              onSwipeRight={handleSwipeRight}
-              enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
-              screens={{
-                Home: (
-                  <HomeScreen
-                    theme={theme}
-                    screenInfo={screenInfo}
-                    adaptiveFonts={adaptiveFonts}
-                    adaptiveSpacing={adaptiveSpacing}
-                    adaptiveBorders={adaptiveBorders}
-                    navigate={navigate}
-                    haptic={haptic}
-                    city={city}
-                    weatherAlert={weatherAlert}
-                    lastUpdated={backgroundRefresh?.stats?.lastRefreshTime}
-                    onOpenAlerts={() => setShowWeatherAlertPanel(true)}
-                    loading={loading}
-                    getWeatherByLocation={getWeatherByLocation}
-                    getWeather={getWeather}
-                    handleLocationDetected={handleLocationDetected}
-                    setError={setError}
-                    favorites={favorites}
-                    toggleFavorite={toggleFavorite}
-                    isFavorite={isFavorite}
-                    setShowLiveActivity={setShowLiveActivity}
-                    setWeatherAlert={setWeatherAlert}
-                  />
-                ),
-                Weather: (
-                  <WeatherDetailsScreen
-                    theme={theme}
-                    screenInfo={screenInfo}
-                    adaptiveFonts={adaptiveFonts}
-                    adaptiveSpacing={adaptiveSpacing}
-                    adaptiveBorders={adaptiveBorders}
-                    navigate={navigate}
-                    createMobileButton={createMobileButton}
-                    city={city}
-                    loading={loading}
-                    error={error}
-                    setError={setError}
-                    weather={weather}
-                    hourlyForecast={memoizedHourlyForecast}
-                    dailyForecast={memoizedDailyForecast}
-                    weatherCode={weatherCode}
-                    getWeather={getWeather}
-                    getWeatherByLocation={getWeatherByLocation}
-                    onRefresh={handleRefresh}
-                    haptic={haptic}
-                    handleLocationDetected={handleLocationDetected}
-                    selectedView={selectedView}
-                    setSelectedView={setSelectedView}
-                    showActionSheet={showActionSheet}
-                    setShowActionSheet={setShowActionSheet}
-                    themeName={themeName}
-                    showLiveActivity={showLiveActivity}
-                    weatherAlert={weatherAlert}
-                    favorites={favorites}
-                    setShowLiveActivity={setShowLiveActivity}
-                    setWeatherAlert={setWeatherAlert}
-                    toggleFavorite={toggleFavorite}
-                    isFavorite={isFavorite}
-                    showWeatherSettingsModal={showWeatherSettingsModal}
-                    setShowWeatherSettingsModal={setShowWeatherSettingsModal}
-                  />
-                ),
-                Search: (
-                  <React.Suspense fallback={<div>Loading search...</div>}>
-                    <LazySearchScreen
-                      theme={theme}
-                      onBack={() => navigate('Home')}
-                      onLocationSelect={(
-                        cityName: string,
-                        latitude: number,
-                        longitude: number
-                      ) => {
-                        getWeatherByLocation(cityName, latitude, longitude);
-                        navigate('Weather');
-                      }}
-                    />
-                  </React.Suspense>
-                ),
-                Settings: (
-                  <React.Suspense fallback={<div>Loading settings...</div>}>
-                    <LazySettingsScreen
-                      theme={theme}
-                      screenInfo={screenInfo}
-                      onBack={() => navigate('Home')}
-                    />
-                  </React.Suspense>
-                ),
-                Favorites: (
-                  <React.Suspense fallback={<div>Loading favorites...</div>}>
-                    <LazyFavoritesScreen
-                      theme={theme}
-                      onBack={() => navigate('Home')}
-                      onCitySelect={(
-                        cityName: string,
-                        latitude: number,
-                        longitude: number
-                      ) => {
-                        getWeatherByLocation(cityName, latitude, longitude);
-                        setCity(cityName);
-                        navigate('Weather');
-                        haptic.light();
-                      }}
-                      onAddFavorite={() => navigate('Search')}
-                      currentCity={city}
-                    />
-                  </React.Suspense>
-                ),
-              }}
-            />
-          )}
+        {/* Background Refresh Status - Hidden by default; enable with ?devtools=1 */}
+        {showDevTools && backgroundRefresh.isInitialized && (
+          <div className="ios26-dev-status">
+            🔄 BG: {backgroundRefresh.isAppActive ? 'Active' : 'Background'} |
+            📊 {backgroundRefresh.stats.totalRefreshes} total | 🌐{' '}
+            {backgroundRefresh.isOnline ? 'Online' : 'Offline'}
+            {backgroundRefresh.stats.lastRefreshTime > 0 && (
+              <div>
+                Last:{' '}
+                {new Date(
+                  backgroundRefresh.stats.lastRefreshTime
+                ).toLocaleTimeString()}
+              </div>
+            )}
+          </div>
+        )}
 
-          {/* Breadcrumb Navigation (Desktop) */}
-          {screenInfo.width >= 768 && (
-            <BreadcrumbNavigation
-              currentScreen={
-                currentScreen as
-                  | 'Home'
-                  | 'Weather'
-                  | 'Search'
-                  | 'Favorites'
-                  | 'Settings'
-              }
-              onNavigate={handleMobileNavigation}
-            />
-          )}
-
-          {/* Mobile Bottom Navigation */}
-          {screenInfo.width < 768 && (
-            <MobileNavigation
-              currentScreen={currentScreen}
-              onNavigate={handleMobileNavigation}
-            />
-          )}
-
-          {/* Desktop/Legacy Navigation (for larger screens) */}
-          {screenInfo.width >= 768 && (
-            <SwipeNavigationContainer
-              currentScreen={currentScreen}
-              onSwipeLeft={handleSwipeLeft}
-              onSwipeRight={handleSwipeRight}
-              canSwipeLeft={swipeConfig.canSwipeLeft}
-              canSwipeRight={swipeConfig.canSwipeRight}
-              theme={theme}
-              isMobile={false}
-              swipeThreshold={80}
-              enableDesktopSupport={true}
-            >
-              {/* Legacy screen rendering for desktop */}
-              {currentScreen === 'Home' && (
+        {/* Modern Mobile Navigation System - Only for mobile devices */}
+        {screenInfo.width < 768 && (
+          <ScreenContainer
+            currentScreen={currentScreen}
+            transitionDirection="slide-left"
+            transitionDuration={300}
+            theme={theme}
+            onSwipeLeft={handleSwipeLeft}
+            onSwipeRight={handleSwipeRight}
+            enableSwipeGestures={screenInfo.width < 768} // Enable for mobile only
+            screens={{
+              Home: (
                 <HomeScreen
                   theme={theme}
                   screenInfo={screenInfo}
@@ -3097,9 +3037,8 @@ const AppNavigator = () => {
                   setShowLiveActivity={setShowLiveActivity}
                   setWeatherAlert={setWeatherAlert}
                 />
-              )}
-
-              {currentScreen === 'Weather' && (
+              ),
+              Weather: (
                 <WeatherDetailsScreen
                   theme={theme}
                   screenInfo={screenInfo}
@@ -3136,9 +3075,24 @@ const AppNavigator = () => {
                   showWeatherSettingsModal={showWeatherSettingsModal}
                   setShowWeatherSettingsModal={setShowWeatherSettingsModal}
                 />
-              )}
-
-              {currentScreen === 'Settings' && (
+              ),
+              Search: (
+                <React.Suspense fallback={<div>Loading search...</div>}>
+                  <LazySearchScreen
+                    theme={theme}
+                    onBack={() => navigate('Home')}
+                    onLocationSelect={(
+                      cityName: string,
+                      latitude: number,
+                      longitude: number
+                    ) => {
+                      getWeatherByLocation(cityName, latitude, longitude);
+                      navigate('Weather');
+                    }}
+                  />
+                </React.Suspense>
+              ),
+              Settings: (
                 <React.Suspense fallback={<div>Loading settings...</div>}>
                   <LazySettingsScreen
                     theme={theme}
@@ -3146,203 +3100,333 @@ const AppNavigator = () => {
                     onBack={() => navigate('Home')}
                   />
                 </React.Suspense>
-              )}
-            </SwipeNavigationContainer>
-          )}
-
-          {/* Deployment Status Indicator - Only show in production */}
-          {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
-            <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
-          )}
-
-          {/* Geolocation Verification Modal - Temporarily disabled */}
-          <GeolocationVerification
-            isOpen={false}
-            locationData={pendingLocationData}
-            theme={theme}
-            isMobile={screenInfo.width < 768}
-            onConfirm={handleVerificationConfirm}
-            onCancel={handleVerificationCancel}
+              ),
+              Favorites: (
+                <React.Suspense fallback={<div>Loading favorites...</div>}>
+                  <LazyFavoritesScreen
+                    theme={theme}
+                    onBack={() => navigate('Home')}
+                    onCitySelect={(
+                      cityName: string,
+                      latitude: number,
+                      longitude: number
+                    ) => {
+                      getWeatherByLocation(cityName, latitude, longitude);
+                      setCity(cityName);
+                      navigate('Weather');
+                      haptic.light();
+                    }}
+                    onAddFavorite={() => navigate('Search')}
+                    currentCity={city}
+                  />
+                </React.Suspense>
+              ),
+            }}
           />
+        )}
 
-          {/* Performance Monitor - Development only - Temporarily disabled */}
-          {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
+        {/* Breadcrumb Navigation (Desktop) */}
+        {screenInfo.width >= 768 && (
+          <BreadcrumbNavigation
+            currentScreen={
+              currentScreen as
+                | 'Home'
+                | 'Weather'
+                | 'Search'
+                | 'Favorites'
+                | 'Settings'
+            }
+            onNavigate={handleMobileNavigation}
+          />
+        )}
 
-          {/* Mobile Debug - Development only - Temporarily disabled */}
+        {/* Mobile Bottom Navigation */}
+        {screenInfo.width < 768 && (
+          <MobileNavigation
+            currentScreen={currentScreen}
+            onNavigate={handleMobileNavigation}
+          />
+        )}
+
+        {/* Desktop/Legacy Navigation (for larger screens) */}
+        {screenInfo.width >= 768 && (
+          <SwipeNavigationContainer
+            currentScreen={currentScreen}
+            onSwipeLeft={handleSwipeLeft}
+            onSwipeRight={handleSwipeRight}
+            canSwipeLeft={swipeConfig.canSwipeLeft}
+            canSwipeRight={swipeConfig.canSwipeRight}
+            theme={theme}
+            isMobile={false}
+            swipeThreshold={80}
+            enableDesktopSupport={true}
+          >
+            {/* Legacy screen rendering for desktop */}
+            {currentScreen === 'Home' && (
+              <HomeScreen
+                theme={theme}
+                screenInfo={screenInfo}
+                adaptiveFonts={adaptiveFonts}
+                adaptiveSpacing={adaptiveSpacing}
+                adaptiveBorders={adaptiveBorders}
+                navigate={navigate}
+                haptic={haptic}
+                city={city}
+                weatherAlert={weatherAlert}
+                lastUpdated={backgroundRefresh?.stats?.lastRefreshTime}
+                onOpenAlerts={() => setShowWeatherAlertPanel(true)}
+                loading={loading}
+                getWeatherByLocation={getWeatherByLocation}
+                getWeather={getWeather}
+                handleLocationDetected={handleLocationDetected}
+                setError={setError}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                setShowLiveActivity={setShowLiveActivity}
+                setWeatherAlert={setWeatherAlert}
+              />
+            )}
+
+            {currentScreen === 'Weather' && (
+              <WeatherDetailsScreen
+                theme={theme}
+                screenInfo={screenInfo}
+                adaptiveFonts={adaptiveFonts}
+                adaptiveSpacing={adaptiveSpacing}
+                adaptiveBorders={adaptiveBorders}
+                navigate={navigate}
+                createMobileButton={createMobileButton}
+                city={city}
+                loading={loading}
+                error={error}
+                setError={setError}
+                weather={weather}
+                hourlyForecast={memoizedHourlyForecast}
+                dailyForecast={memoizedDailyForecast}
+                weatherCode={weatherCode}
+                getWeather={getWeather}
+                getWeatherByLocation={getWeatherByLocation}
+                onRefresh={handleRefresh}
+                haptic={haptic}
+                handleLocationDetected={handleLocationDetected}
+                selectedView={selectedView}
+                setSelectedView={setSelectedView}
+                showActionSheet={showActionSheet}
+                setShowActionSheet={setShowActionSheet}
+                themeName={themeName}
+                showLiveActivity={showLiveActivity}
+                weatherAlert={weatherAlert}
+                favorites={favorites}
+                setShowLiveActivity={setShowLiveActivity}
+                setWeatherAlert={setWeatherAlert}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                showWeatherSettingsModal={showWeatherSettingsModal}
+                setShowWeatherSettingsModal={setShowWeatherSettingsModal}
+              />
+            )}
+
+            {currentScreen === 'Settings' && (
+              <React.Suspense fallback={<div>Loading settings...</div>}>
+                <LazySettingsScreen
+                  theme={theme}
+                  screenInfo={screenInfo}
+                  onBack={() => navigate('Home')}
+                />
+              </React.Suspense>
+            )}
+          </SwipeNavigationContainer>
+        )}
+
+        {/* Deployment Status Indicator - Only show in production */}
+        {import.meta.env.VITE_APP_ENVIRONMENT === 'production' && (
+          <DeploymentStatus theme={themeName === 'dark' ? 'dark' : 'light'} />
+        )}
+
+        {/* Geolocation Verification Modal - Temporarily disabled */}
+        <GeolocationVerification
+          isOpen={false}
+          locationData={pendingLocationData}
+          theme={theme}
+          isMobile={screenInfo.width < 768}
+          onConfirm={handleVerificationConfirm}
+          onCancel={handleVerificationCancel}
+        />
+
+        {/* Performance Monitor - Development only - Temporarily disabled */}
+        {/* <PerformanceMonitor theme={theme} enabled={false} position="bottom-left" /> */}
+
+        {/* Mobile Debug - Development only - Temporarily disabled */}
+        <React.Suspense
+          fallback={
+            <div className="optimization-loading">Loading mobile debug...</div>
+          }
+        >
+          <LazyMobileDebugTyped enabled={false} position="bottom-right" />
+        </React.Suspense>
+
+        {/* iOS 26 Live Activity - Weather Alerts and Updates */}
+        {(() => {
+          let liveActivityIcon: React.ReactNode;
+          if (weatherAlert) {
+            let Icon: React.ComponentType | null = null;
+            if (weatherAlert.severity === 'severe') {
+              Icon = NavigationIcons.Warning;
+            } else if (weatherAlert.severity === 'warning') {
+              Icon = NavigationIcons.Info;
+            } else {
+              Icon = NavigationIcons.Info;
+            }
+            liveActivityIcon = (
+              <span className="ios-body">{Icon ? <Icon /> : null}</span>
+            );
+          } else {
+            liveActivityIcon = (
+              <WeatherIcon code={weatherCode} size={20} animated={true} />
+            );
+          }
+          return (
+            <LiveActivity
+              isVisible={showLiveActivity || !!weatherAlert}
+              title={
+                weatherAlert?.title ||
+                (weather
+                  ? `${Math.round(weather.main.temp)}${getTemperatureSymbol(getStoredUnits())} in ${city}`
+                  : 'Weather Update')
+              }
+              subtitle={
+                weatherAlert?.message ||
+                (weather
+                  ? `${weather.weather[0].description} • Updated now`
+                  : undefined)
+              }
+              icon={liveActivityIcon}
+              theme={theme}
+              onTap={() => {
+                haptic.buttonPress();
+                if (weatherAlert) {
+                  setWeatherAlert(null);
+                }
+                setShowLiveActivity(false);
+                navigate('Weather');
+              }}
+              duration={0}
+            />
+          );
+        })()}
+
+        {/* PWA Status - Hidden by default; enable with ?devtools=1 */}
+        {showDevTools && (
+          <React.Suspense
+            fallback={
+              <div className="optimization-loading">Loading PWA status...</div>
+            }
+          >
+            <LazyPWAStatusTyped
+              pwaInstall={pwaInstall}
+              serviceWorker={serviceWorker}
+              isOnline={isOnline}
+              updateAvailable={updateAvailable}
+              applyUpdate={applyUpdate}
+              enabled={true}
+              position="top-right"
+            />
+          </React.Suspense>
+        )}
+
+        {/* iOS Component Showcase - Overlay */}
+        {showIOSDemo && (
+          <div className="ios26-overlay">
+            <React.Suspense fallback={null}>
+              <LazyIOSComponentShowcaseTyped
+                theme={theme}
+                themeName={themeName}
+                onBack={() => setShowIOSDemo(false)}
+              />
+            </React.Suspense>
+          </div>
+        )}
+
+        {/* Theme variations limited to light/dark */}
+
+        {/* PWA Install Prompt - Appears when app can be installed (lazy) */}
+        <React.Suspense fallback={null}>
+          <LazyPWAInstallPromptTyped
+            canInstall={pwaInstall.canInstall}
+            onInstall={async () => {
+              await pwaInstall.promptInstall();
+            }}
+            onDismiss={() => {
+              // User dismissed the install prompt
+              // Could store preference to not show again for some time
+            }}
+          />
+        </React.Suspense>
+
+        {/* Phase 5C: Weather Alerts Floating Action Button */}
+        <button
+          className="weather-alert-fab"
+          onClick={() => setShowWeatherAlertPanel(true)}
+          aria-label="Open weather alerts"
+          title="Weather Alerts"
+        >
+          🚨
+        </button>
+
+        {/* Performance Dashboard - Hidden by default; enable with ?devtools=1 */}
+        {showDevTools && (
           <React.Suspense
             fallback={
               <div className="optimization-loading">
-                Loading mobile debug...
+                Loading performance dashboard...
               </div>
             }
           >
-            <LazyMobileDebugTyped enabled={false} position="bottom-right" />
-          </React.Suspense>
-
-          {/* iOS 26 Live Activity - Weather Alerts and Updates */}
-          {(() => {
-            let liveActivityIcon: React.ReactNode;
-            if (weatherAlert) {
-              let Icon: React.ComponentType | null = null;
-              if (weatherAlert.severity === 'severe') {
-                Icon = NavigationIcons.Warning;
-              } else if (weatherAlert.severity === 'warning') {
-                Icon = NavigationIcons.Info;
-              } else {
-                Icon = NavigationIcons.Info;
-              }
-              liveActivityIcon = (
-                <span className="ios-body">{Icon ? <Icon /> : null}</span>
-              );
-            } else {
-              liveActivityIcon = (
-                <WeatherIcon code={weatherCode} size={20} animated={true} />
-              );
-            }
-            return (
-              <LiveActivity
-                isVisible={showLiveActivity || !!weatherAlert}
-                title={
-                  weatherAlert?.title ||
-                  (weather
-                    ? `${Math.round(weather.main.temp)}${getTemperatureSymbol(getStoredUnits())} in ${city}`
-                    : 'Weather Update')
-                }
-                subtitle={
-                  weatherAlert?.message ||
-                  (weather
-                    ? `${weather.weather[0].description} • Updated now`
-                    : undefined)
-                }
-                icon={liveActivityIcon}
-                theme={theme}
-                onTap={() => {
-                  haptic.buttonPress();
-                  if (weatherAlert) {
-                    setWeatherAlert(null);
-                  }
-                  setShowLiveActivity(false);
-                  navigate('Weather');
-                }}
-                duration={0}
-              />
-            );
-          })()}
-
-          {/* PWA Status - Hidden by default; enable with ?devtools=1 */}
-          {showDevTools && (
-            <React.Suspense
-              fallback={
-                <div className="optimization-loading">
-                  Loading PWA status...
-                </div>
-              }
-            >
-              <LazyPWAStatusTyped
-                pwaInstall={pwaInstall}
-                serviceWorker={serviceWorker}
-                isOnline={isOnline}
-                updateAvailable={updateAvailable}
-                applyUpdate={applyUpdate}
-                enabled={true}
-                position="top-right"
-              />
-            </React.Suspense>
-          )}
-
-          {/* iOS Component Showcase - Overlay */}
-          {showIOSDemo && (
-            <div className="ios26-overlay">
-              <React.Suspense fallback={null}>
-                <LazyIOSComponentShowcaseTyped
-                  theme={theme}
-                  themeName={themeName}
-                  onBack={() => setShowIOSDemo(false)}
-                />
-              </React.Suspense>
-            </div>
-          )}
-
-          {/* Theme variations limited to light/dark */}
-
-          {/* PWA Install Prompt - Appears when app can be installed (lazy) */}
-          <React.Suspense fallback={null}>
-            <LazyPWAInstallPromptTyped
-              canInstall={pwaInstall.canInstall}
-              onInstall={async () => {
-                await pwaInstall.promptInstall();
-              }}
-              onDismiss={() => {
-                // User dismissed the install prompt
-                // Could store preference to not show again for some time
-              }}
+            <LazyPerformanceDashboardTyped
+              enabled={true}
+              position="bottom-left"
             />
           </React.Suspense>
+        )}
 
-          {/* Phase 5C: Weather Alerts Floating Action Button */}
-          <button
-            className="weather-alert-fab"
-            onClick={() => setShowWeatherAlertPanel(true)}
-            aria-label="Open weather alerts"
-            title="Weather Alerts"
-          >
-            🚨
-          </button>
-
-          {/* Performance Dashboard - Hidden by default; enable with ?devtools=1 */}
-          {showDevTools && (
-            <React.Suspense
-              fallback={
-                <div className="optimization-loading">
-                  Loading performance dashboard...
-                </div>
-              }
-            >
-              <LazyPerformanceDashboardTyped
-                enabled={true}
-                position="bottom-left"
-              />
-            </React.Suspense>
-          )}
-
-          {/* Memory Optimization Display - Hidden by default; enable with ?devtools=1 */}
-          {showDevTools && memoryOptimization.memoryInfo && (
-            <div className="memory-stats-panel">
-              <div>
-                Memory: {memoryOptimization.memoryUsagePercent.toFixed(1)}%
-              </div>
-              <div>
-                Used:{' '}
-                {(
-                  memoryOptimization.memoryInfo.usedJSHeapSize /
-                  1024 /
-                  1024
-                ).toFixed(1)}
-                MB
-              </div>
-              <div>
-                Total:{' '}
-                {(
-                  memoryOptimization.memoryInfo.totalJSHeapSize /
-                  1024 /
-                  1024
-                ).toFixed(1)}
-                MB
-              </div>
-              {memoryOptimization.isMemoryPressure && (
-                <div className="warning">⚠️ Memory Pressure</div>
-              )}
+        {/* Memory Optimization Display - Hidden by default; enable with ?devtools=1 */}
+        {showDevTools && memoryOptimization.memoryInfo && (
+          <div className="memory-stats-panel">
+            <div>
+              Memory: {memoryOptimization.memoryUsagePercent.toFixed(1)}%
             </div>
-          )}
-        </EnhancedMobileContainer>
+            <div>
+              Used:{' '}
+              {(
+                memoryOptimization.memoryInfo.usedJSHeapSize /
+                1024 /
+                1024
+              ).toFixed(1)}
+              MB
+            </div>
+            <div>
+              Total:{' '}
+              {(
+                memoryOptimization.memoryInfo.totalJSHeapSize /
+                1024 /
+                1024
+              ).toFixed(1)}
+              MB
+            </div>
+            {memoryOptimization.isMemoryPressure && (
+              <div className="warning">⚠️ Memory Pressure</div>
+            )}
+          </div>
+        )}
+      </EnhancedMobileContainer>
 
-        {/* Phase 5C: Weather Alerts Panel */}
-        <WeatherAlertPanel
-          isVisible={showWeatherAlertPanel}
-          onClose={() => setShowWeatherAlertPanel(false)}
-        />
-      </LoadingProvider>
-    </Dash0ErrorBoundary>
+      {/* Phase 5C: Weather Alerts Panel */}
+      <WeatherAlertPanel
+        isVisible={showWeatherAlertPanel}
+        onClose={() => setShowWeatherAlertPanel(false)}
+      />
+    </LoadingProvider>
   );
 };
 

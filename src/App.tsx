@@ -22,7 +22,6 @@ import {
 import { getWeatherDescription } from './utils/weatherCodes';
 import WeatherIcon from './utils/weatherIcons';
 import ErrorBoundary from './ErrorBoundary';
-import { HorrorModeFeature } from './features/HorrorMode';
 import './App.css';
 
 // Types
@@ -461,7 +460,6 @@ const WeatherApp: React.FC = () => {
 
   return (
     <div className={`weather-app theme-${themeName}`}>
-      <HorrorModeFeature enabled={true} showQuotes={true} />
       <div className="weather-container">
         {/* Header */}
         <header className="weather-header">

@@ -26,7 +26,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDash0Telemetry } from '../../dash0/hooks/useDash0Telemetry';
 import type { ThemeColors } from '../../utils/themeConfig';
 
 // ============================================================================
@@ -545,37 +544,18 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
   const [currentDetent, setCurrentDetent] = useState<'medium' | 'large'>(
     'medium'
   );
-  const telemetry = useDash0Telemetry();
 
   const isDark =
     theme.appBackground.includes('28, 28, 30') ||
     theme.appBackground.includes('#1c1c1e');
 
-  // Track modal sheet visibility changes
+  // Modal visibility tracking (telemetry removed)
   useEffect(() => {
-    if (isVisible) {
-      telemetry.trackUserInteraction({
-        action: 'modal_sheet_opened',
-        component: 'ModalSheet',
-        metadata: {
-          title,
-          detents: detents.join(','),
-          initialDetent: currentDetent,
-          isDarkMode: isDark,
-        },
-      });
-
-      telemetry.trackMetric({
-        name: 'modal_sheet_display',
-        value: 1,
-        tags: {
-          title,
-          detent_count: String(detents.length),
-          initial_size: currentDetent,
-        },
-      });
+    // Modal sheet opened - haptic feedback
+    if (isVisible && navigator.vibrate) {
+      navigator.vibrate(10);
     }
-  }, [isVisible, title, detents, currentDetent, isDark, telemetry]);
+  }, [isVisible]);
 
   const detentHeights = {
     medium: '50vh',
@@ -652,34 +632,11 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({
 
   const handleDetentChange = () => {
     if (detents.length > 1) {
-      const previousDetent = currentDetent;
       const currentIndex = detents.indexOf(currentDetent);
       const nextIndex = (currentIndex + 1) % detents.length;
       const nextDetent = detents[nextIndex];
 
       setCurrentDetent(nextDetent);
-
-      // Track detent change
-      telemetry.trackUserInteraction({
-        action: 'modal_sheet_detent_change',
-        component: 'ModalSheet',
-        metadata: {
-          fromDetent: previousDetent,
-          toDetent: nextDetent,
-          title,
-          method: 'handle_interaction',
-        },
-      });
-
-      telemetry.trackMetric({
-        name: 'modal_sheet_resize',
-        value: 1,
-        tags: {
-          from_size: previousDetent,
-          to_size: nextDetent,
-          interaction_type: 'handle_drag',
-        },
-      });
 
       // Haptic feedback
       if (navigator.vibrate) {

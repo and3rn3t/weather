@@ -9,9 +9,6 @@
 
 /* TEMP: Heavy consolidated CSS imports removed while isolating overlay issue */
 
-/* Horror theme styles - Friday the 13th inspired */
-@import './styles/horror-theme.css';
-
 :root {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',

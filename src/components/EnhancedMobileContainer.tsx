@@ -10,7 +10,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useDash0Telemetry } from '../dash0/hooks/useDash0Telemetry';
 import '../styles/mobileEnhancements.css';
 import { useTheme } from '../utils/useTheme';
 
@@ -36,7 +35,6 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
   onSwipeRight,
 }) => {
   const { theme } = useTheme();
-  const telemetry = useDash0Telemetry();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullProgress, setPullProgress] = useState(0);
@@ -60,17 +58,6 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       if (container.scrollTop === 0) {
         startY = e.touches[0].clientY;
         isPulling = true;
-
-        // Track pull-to-refresh initiation
-        telemetry.trackUserInteraction({
-          action: 'pull_to_refresh_started',
-          component: 'EnhancedMobileContainer',
-          metadata: {
-            scrollPosition: container.scrollTop,
-            startY: Math.round(startY),
-            hasRefreshHandler: !!onRefresh,
-          },
-        });
       }
     };
 
@@ -98,55 +85,16 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
 
       const pullTriggered = pullProgress >= 0.6;
 
-      // Track pull-to-refresh completion
-      telemetry.trackUserInteraction({
-        action: 'pull_to_refresh_completed',
-        component: 'EnhancedMobileContainer',
-        metadata: {
-          pullProgress: Math.round(pullProgress * 100),
-          triggered: pullTriggered,
-          hasRefreshHandler: !!onRefresh,
-          wasRefreshing: isRefreshing,
-        },
-      });
-
-      if (pullTriggered) {
-        telemetry.trackMetric({
-          name: 'pull_to_refresh_trigger',
-          value: 1,
-          tags: {
-            progress: String(Math.round(pullProgress * 100)),
-            has_handler: String(!!onRefresh),
-          },
-        });
-      }
-
       isPulling = false;
       container.style.transform = '';
 
       if (pullTriggered && onRefresh && !isRefreshing) {
         setIsRefreshing(true);
-        const refreshStartTime = performance.now();
 
         try {
           await onRefresh();
-
-          // Track successful refresh
-          const refreshDuration = performance.now() - refreshStartTime;
-          telemetry.trackMetric({
-            name: 'pull_to_refresh_success',
-            value: 1,
-            tags: {
-              duration_ms: String(Math.round(refreshDuration)),
-              method: 'pull_gesture',
-            },
-          });
-        } catch (error) {
-          // Track refresh error
-          telemetry.trackError(error as Error, {
-            context: 'pull_to_refresh_error',
-            metadata: { method: 'pull_gesture' },
-          });
+        } catch {
+          // Refresh error handled silently
         } finally {
           setIsRefreshing(false);
         }
@@ -168,7 +116,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [enablePullToRefresh, onRefresh, pullProgress, isRefreshing, telemetry]);
+  }, [enablePullToRefresh, onRefresh, pullProgress, isRefreshing]);
 
   // Swipe gesture logic
   useEffect(() => {
@@ -212,71 +160,12 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
         deltaY < maxVerticalMovement &&
         deltaTime < maxSwipeTime;
 
-      // Track swipe attempt
-      telemetry.trackUserInteraction({
-        action: 'swipe_gesture_attempt',
-        component: 'EnhancedMobileContainer',
-        metadata: {
-          deltaX: Math.round(deltaX),
-          deltaY: Math.round(deltaY),
-          deltaTime,
-          isValidSwipe,
-          direction: deltaX > 0 ? 'right' : 'left',
-          hasHandlers: { left: !!onSwipeLeft, right: !!onSwipeRight },
-        },
-      });
-
       if (isValidSwipe) {
-        const direction = deltaX > 0 ? 'right' : 'left';
-        const hasHandler =
-          direction === 'right' ? !!onSwipeRight : !!onSwipeLeft;
-
-        // Track successful swipe
-        telemetry.trackUserInteraction({
-          action: 'swipe_gesture_success',
-          component: 'EnhancedMobileContainer',
-          metadata: {
-            direction,
-            distance: Math.round(Math.abs(deltaX)),
-            speed: Math.round((Math.abs(deltaX) / deltaTime) * 1000), // pixels per second
-            hasHandler,
-          },
-        });
-
-        telemetry.trackMetric({
-          name: 'swipe_gesture',
-          value: 1,
-          tags: {
-            direction,
-            distance_bucket: Math.abs(deltaX) > 100 ? 'long' : 'short',
-            speed_bucket:
-              (Math.abs(deltaX) / deltaTime) * 1000 > 500 ? 'fast' : 'slow',
-          },
-        });
-
         if (deltaX > 0 && onSwipeRight) {
           onSwipeRight();
         } else if (deltaX < 0 && onSwipeLeft) {
           onSwipeLeft();
         }
-      } else {
-        // Track failed swipe attempt
-        let failureReason = 'unknown';
-        if (Math.abs(deltaX) <= minSwipeDistance)
-          failureReason = 'insufficient_distance';
-        else if (deltaY >= maxVerticalMovement) failureReason = 'too_vertical';
-        else if (deltaTime >= maxSwipeTime) failureReason = 'too_slow';
-
-        telemetry.trackUserInteraction({
-          action: 'swipe_gesture_failed',
-          component: 'EnhancedMobileContainer',
-          metadata: {
-            reason: failureReason,
-            deltaX: Math.round(deltaX),
-            deltaY: Math.round(deltaY),
-            deltaTime,
-          },
-        });
       }
 
       touchStartRef.current = null;
@@ -294,7 +183,7 @@ const EnhancedMobileContainer: React.FC<EnhancedMobileContainerProps> = ({
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [enableSwipeGestures, onSwipeLeft, onSwipeRight, telemetry]);
+  }, [enableSwipeGestures, onSwipeLeft, onSwipeRight]);
 
   const containerStyle: React.CSSProperties = {
     background: theme.appBackground,

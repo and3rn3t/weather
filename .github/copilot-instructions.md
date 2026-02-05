@@ -95,6 +95,28 @@ features and animations.
 - **Zero Configuration**: No API keys or environment variables required for deployment
 - **SSL/Security**: Automatic HTTPS, security headers, and Cloudflare protection
 
+### 📱 **iOS App Store Preparation** (NEW - January 2026)
+
+- **Capacitor iOS Platform**: Native iOS project initialized with Capacitor 7.x
+- **Xcode Project**: Full iOS app structure in `ios/` folder ready for App Store builds
+- **Playwright Screenshots**: Automated screenshot capture for all required device sizes
+- **Sharp Post-Processing**: Device frames and marketing text overlay for App Store images
+- **Device Sizes Covered**: iPhone 16 Pro Max (6.9"), iPhone 14 Plus (6.5"), iPhone 8 Plus (5.5"),
+  iPad Pro 12.9"
+
+#### iOS Development Commands
+
+```bash
+# Build and sync to iOS
+npm run mobile:build
+
+# Run on iOS simulator
+npm run mobile:ios
+
+# Generate App Store screenshots
+npm run screenshots:all
+```
+
 ### 🌤️ **Core Weather Features**
 
 - **HomeScreen**: Modern glassmorphism design with animated weather icon preview grid

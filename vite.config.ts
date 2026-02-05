@@ -127,11 +127,6 @@ export default defineConfig(({ mode }) => {
               return 'ios26-suite';
             }
 
-            // Dash0 telemetry - lazy load in production only
-            if (id.includes('@dash0/sdk-web') || id.includes('/src/dash0/')) {
-              return 'dash0-telemetry';
-            }
-
             // Route-based splitting for screens
             if (id.includes('/src/screens/')) {
               return 'screens';
