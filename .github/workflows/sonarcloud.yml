@@ -109,7 +109,7 @@ jobs:
 
       - name: 🔰 Bootstrap default branch on Sonar (main)
         if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists == 'true' && steps.ensure_project.outputs.needs_bootstrap == 'true' }}
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarcloud-github-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -123,7 +123,7 @@ jobs:
 
       - name: 🔎 SonarCloud Scan
         if: ${{ steps.token.outputs.present == 'true' && steps.ensure_project.outputs.project_exists == 'true' }}
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarcloud-github-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
